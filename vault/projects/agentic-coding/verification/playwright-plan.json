@@ -1,0 +1,92 @@
+{
+  "schemaVersion": 1,
+  "project": "agentic-coding",
+  "generatedAt": "2026-05-15T21:29:14.025Z",
+  "targetUrl": "http://localhost:3000",
+  "scenarios": [
+    {
+      "id": "PW-001",
+      "title": "Source evidence intake",
+      "requirementIds": [
+        "REQ-001"
+      ],
+      "assertions": [
+        "Raw artifacts are copied into the durable vault.",
+        "Each artifact has a digest, source path, kind, and timestamp.",
+        "Extracted text remains linked to the raw evidence."
+      ]
+    },
+    {
+      "id": "PW-002",
+      "title": "Source-grounded PRD synthesis",
+      "requirementIds": [
+        "REQ-002"
+      ],
+      "assertions": [
+        "PRD records source references for every major claim.",
+        "Ambiguities are separated from accepted requirements.",
+        "Manual exports work before automation is attempted."
+      ]
+    },
+    {
+      "id": "PW-003",
+      "title": "GSD2 task bridge",
+      "requirementIds": [
+        "REQ-003"
+      ],
+      "assertions": [
+        "Tasks are independently inspectable as JSON and Markdown.",
+        "Each task names expected write areas and verification commands.",
+        "Tasks preserve requirement traceability."
+      ]
+    },
+    {
+      "id": "PW-004",
+      "title": "Bounded execution loop",
+      "requirementIds": [
+        "REQ-004"
+      ],
+      "assertions": [
+        "Execution runs are recorded before work begins.",
+        "The system can identify planned worktrees and gates.",
+        "External mutations remain blocked unless a later approved adapter is enabled."
+      ]
+    },
+    {
+      "id": "PW-005",
+      "title": "Playwright UI verification evidence",
+      "requirementIds": [
+        "REQ-005"
+      ],
+      "assertions": [
+        "Generated tests use role-oriented locators where possible.",
+        "Scenario records link back to requirement ids.",
+        "Evidence paths are recorded separately from claims."
+      ]
+    },
+    {
+      "id": "PW-006",
+      "title": "Review and CI control plane",
+      "requirementIds": [
+        "REQ-006"
+      ],
+      "assertions": [
+        "Merge readiness lists satisfied and missing gates.",
+        "CI and review records are imported without being treated as hidden authority.",
+        "Blocked states are explicit."
+      ]
+    },
+    {
+      "id": "PW-007",
+      "title": "Infrastructure substrate registry",
+      "requirementIds": [
+        "REQ-007"
+      ],
+      "assertions": [
+        "Infrastructure records are readable without model calls.",
+        "Runner trust boundaries are explicit.",
+        "Mutation plans require approval and remain non-executing in this slice."
+      ]
+    }
+  ]
+}

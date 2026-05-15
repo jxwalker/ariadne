@@ -1,0 +1,237 @@
+#!/usr/bin/env node
+import path from "node:path";
+import { generateControlReport } from "./controlPlane.js";
+import { planExecution } from "./execution.js";
+import { generateGsd } from "./gsd.js";
+import { generateInfrastructureRegistry } from "./infrastructure.js";
+import { defaultVaultRoot } from "./paths.js";
+import { generatePlaywrightPlan } from "./playwrightPlan.js";
+import { generatePrd } from "./prd.js";
+import { assembleDossier, ingestFiles, projectStatus } from "./vault.js";
+
+interface ParsedArgs {
+  command?: string;
+  positionals: string[];
+  options: Map<string, string | true>;
+}
+
+function parseArgs(argv: string[]): ParsedArgs {
+  const [command, ...rest] = argv;
+  const positionals: string[] = [];
+  const options = new Map<string, string | true>();
+
+  for (let index = 0; index < rest.length; index += 1) {
+    const value = rest[index];
+    if (value?.startsWith("--")) {
+      const key = value.slice(2);
+      const next = rest[index + 1];
+      if (next && !next.startsWith("--")) {
+        options.set(key, next);
+        index += 1;
+      } else {
+        options.set(key, true);
+      }
+    } else if (value) {
+      positionals.push(value);
+    }
+  }
+
+  return { command, positionals, options };
+}
+
+function optionString(options: Map<string, string | true>, key: string, fallback: string): string {
+  const value = options.get(key);
+  return typeof value === "string" ? value : fallback;
+}
+
+function usage(): string {
+  return [
+    "Usage:",
+    "  dev-pipeline ingest --project <project> [--notes <text>] <files...>",
+    "  dev-pipeline assemble --project <project> [--max-chars <number>]",
+    "  dev-pipeline prd --project <project> [--from <dossier.md>]",
+    "  dev-pipeline gsd --project <project>",
+    "  dev-pipeline execution --project <project> [--task <id>] [--repo <path>]",
+    "  dev-pipeline playwright --project <project> [--target-url <url>]",
+    "  dev-pipeline infra --project <project>",
+    "  dev-pipeline control --project <project>",
+    "  dev-pipeline roadmap --project <project> [--target-url <url>] [--repo <path>]",
+    "  dev-pipeline status --project <project>",
+    "",
+    "Options:",
+    "  --vault <path>       Override the vault root. Defaults to ./vault.",
+    "  --project <name>     Project slug or name. Defaults to default.",
+    "  --sensitivity <val>  public, internal, confidential, or secret for ingested sources.",
+    ""
+  ].join("\n");
+}
+
+async function main(): Promise<void> {
+  const parsed = parseArgs(process.argv.slice(2));
+  const vaultRoot = path.resolve(optionString(parsed.options, "vault", defaultVaultRoot()));
+  const project = optionString(parsed.options, "project", "default");
+
+  if (!parsed.command || parsed.command === "help" || parsed.options.has("help")) {
+    console.log(usage());
+    return;
+  }
+
+  if (parsed.command === "ingest") {
+    const notes = optionString(parsed.options, "notes", "");
+    const records = await ingestFiles(parsed.positionals, {
+      project,
+      vaultRoot,
+      notes: notes || undefined,
+      sensitivity: sensitivityOption(parsed.options)
+    });
+
+    for (const record of records) {
+      console.log(`Ingested ${record.fileName}`);
+      console.log(`  Record: ${record.id}`);
+      console.log(`  Evidence: ${record.storedPath}`);
+      if (record.extractedTextPath) {
+        console.log(`  Extracted: ${record.extractedTextPath}`);
+      }
+      if (record.handoffPath) {
+        console.log(`  Handoff: ${record.handoffPath}`);
+      }
+    }
+    return;
+  }
+
+  if (parsed.command === "assemble") {
+    const maxChars = Number(optionString(parsed.options, "max-chars", "12000"));
+    if (!Number.isFinite(maxChars) || maxChars <= 0) {
+      throw new Error("--max-chars must be a positive number.");
+    }
+
+    const dossierPath = await assembleDossier({
+      project,
+      vaultRoot,
+      maxCharsPerSource: maxChars
+    });
+    console.log(`Dossier: ${dossierPath}`);
+    return;
+  }
+
+  if (parsed.command === "prd") {
+    const sourcePath = optionString(parsed.options, "from", "");
+    const result = await generatePrd({
+      project,
+      vaultRoot,
+      sourcePath: sourcePath || undefined
+    });
+    console.log(`PRD JSON: ${result.jsonPath}`);
+    console.log(`PRD Markdown: ${result.markdownPath}`);
+    console.log(`Requirements: ${result.prd.requirements.length}`);
+    console.log(`Ambiguities: ${result.prd.ambiguities.length}`);
+    return;
+  }
+
+  if (parsed.command === "gsd") {
+    const result = await generateGsd({ project, vaultRoot });
+    console.log(`GSD JSON: ${result.jsonPath}`);
+    console.log(`GSD Tasks: ${result.markdownPath}`);
+    console.log(`Verification commands: ${result.commandsPath}`);
+    return;
+  }
+
+  if (parsed.command === "execution") {
+    const result = await planExecution({
+      project,
+      vaultRoot,
+      taskId: optionString(parsed.options, "task", "all"),
+      repoPath: optionString(parsed.options, "repo", "") || undefined
+    });
+    console.log(`Execution run: ${result.run.id}`);
+    console.log(`Execution JSON: ${result.jsonPath}`);
+    console.log(`Execution Markdown: ${result.markdownPath}`);
+    return;
+  }
+
+  if (parsed.command === "playwright") {
+    const result = await generatePlaywrightPlan({
+      project,
+      vaultRoot,
+      targetUrl: optionString(parsed.options, "target-url", "http://localhost:3000")
+    });
+    console.log(`Playwright plan: ${result.markdownPath}`);
+    console.log(`Playwright spec: ${result.specPath}`);
+    console.log(`Scenarios: ${result.plan.scenarios.length}`);
+    return;
+  }
+
+  if (parsed.command === "infra") {
+    const result = await generateInfrastructureRegistry({ project, vaultRoot });
+    console.log(`Infrastructure registry: ${result.jsonPath}`);
+    console.log(`Infrastructure plan: ${result.markdownPath}`);
+    return;
+  }
+
+  if (parsed.command === "control") {
+    const result = await generateControlReport({ project, vaultRoot });
+    console.log(`Merge readiness: ${result.markdownPath}`);
+    console.log(`Status: ${result.report.status}`);
+    if (result.report.missing.length > 0) {
+      console.log(`Missing: ${result.report.missing.length}`);
+    }
+    return;
+  }
+
+  if (parsed.command === "roadmap") {
+    const prd = await generatePrd({ project, vaultRoot });
+    const gsd = await generateGsd({ project, vaultRoot });
+    const execution = await planExecution({
+      project,
+      vaultRoot,
+      repoPath: optionString(parsed.options, "repo", "") || undefined
+    });
+    const playwright = await generatePlaywrightPlan({
+      project,
+      vaultRoot,
+      targetUrl: optionString(parsed.options, "target-url", "http://localhost:3000")
+    });
+    const infra = await generateInfrastructureRegistry({ project, vaultRoot });
+    const control = await generateControlReport({ project, vaultRoot });
+
+    console.log("Roadmap artifacts generated");
+    console.log(`  PRD: ${prd.markdownPath}`);
+    console.log(`  GSD: ${gsd.markdownPath}`);
+    console.log(`  Execution: ${execution.markdownPath}`);
+    console.log(`  Playwright: ${playwright.markdownPath}`);
+    console.log(`  Infrastructure: ${infra.markdownPath}`);
+    console.log(`  Control: ${control.markdownPath}`);
+    console.log(`  Readiness: ${control.report.status}`);
+    return;
+  }
+
+  if (parsed.command === "status") {
+    const status = await projectStatus(vaultRoot, project);
+    console.log(`Project: ${status.project}`);
+    console.log(`Directory: ${status.projectDir}`);
+    console.log(`Records: ${status.records}`);
+    console.log(`Extracted: ${status.extracted}`);
+    if (status.latestIngestedAt) {
+      console.log(`Latest: ${status.latestIngestedAt}`);
+    }
+    return;
+  }
+
+  throw new Error(`Unknown command: ${parsed.command}\n\n${usage()}`);
+}
+
+function sensitivityOption(
+  options: Map<string, string | true>
+): "public" | "internal" | "confidential" | "secret" | undefined {
+  const value = options.get("sensitivity");
+  if (value === undefined) return undefined;
+  if (value === "public" || value === "internal" || value === "confidential" || value === "secret") {
+    return value;
+  }
+  throw new Error("--sensitivity must be public, internal, confidential, or secret.");
+}
+
+main().catch((error: unknown) => {
+  console.error(error instanceof Error ? error.message : String(error));
+  process.exitCode = 1;
+});

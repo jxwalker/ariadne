@@ -1,0 +1,8 @@
+node_modules/
+dist/
+.env
+.DS_Store
+vault/projects/*/raw/
+vault/projects/*/context/
+vault/projects/*/manifest.jsonl
+vault/projects/*/HOT_INDEX.md

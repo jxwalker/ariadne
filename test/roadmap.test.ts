@@ -1,0 +1,58 @@
+import fs from "node:fs/promises";
+import os from "node:os";
+import path from "node:path";
+import { describe, expect, it } from "vitest";
+import { generateControlReport } from "../src/controlPlane.js";
+import { planExecution } from "../src/execution.js";
+import { generateGsd } from "../src/gsd.js";
+import { generateInfrastructureRegistry } from "../src/infrastructure.js";
+import { generatePlaywrightPlan } from "../src/playwrightPlan.js";
+import { generatePrd } from "../src/prd.js";
+import { assembleDossier, ingestFiles } from "../src/vault.js";
+
+describe("roadmap generation", () => {
+  it("turns an evidence dossier into PRD, GSD, execution, verification, infra, and control artifacts", async () => {
+    const temp = await fs.mkdtemp(path.join(os.tmpdir(), "dev-pipeline-roadmap-"));
+    const source = path.join(temp, "manifesto.md");
+    const vaultRoot = path.join(temp, "vault");
+
+    await fs.writeFile(
+      source,
+      [
+        "# Agentic Coding System",
+        "",
+        "Use NotebookLM for grounded source synthesis.",
+        "Use GSD2 for task decomposition.",
+        "Use Playwright for browser evidence.",
+        "Use Proxmox, Hermes, OpenScorpion, and CodeRabbit behind explicit gates.",
+        ""
+      ].join("\n")
+    );
+
+    await ingestFiles([source], { project: "agentic-coding", vaultRoot });
+    await assembleDossier({ project: "agentic-coding", vaultRoot, maxCharsPerSource: 4000 });
+
+    const prd = await generatePrd({ project: "agentic-coding", vaultRoot });
+    expect(prd.prd.requirements).toHaveLength(7);
+
+    const gsd = await generateGsd({ project: "agentic-coding", vaultRoot });
+    expect(gsd.roadmap.milestones.flatMap((milestone) => milestone.tasks)).toHaveLength(7);
+
+    const execution = await planExecution({ project: "agentic-coding", vaultRoot, repoPath: temp });
+    expect(execution.run.status).toBe("planned");
+
+    const playwright = await generatePlaywrightPlan({
+      project: "agentic-coding",
+      vaultRoot,
+      targetUrl: "http://localhost:6001"
+    });
+    expect(playwright.plan.targetUrl).toBe("http://localhost:6001");
+
+    const infra = await generateInfrastructureRegistry({ project: "agentic-coding", vaultRoot });
+    expect(infra.registry.hosts.map((host) => host.id)).toContain("beast");
+
+    const control = await generateControlReport({ project: "agentic-coding", vaultRoot });
+    expect(control.report.status).toBe("review_required");
+    expect(control.report.missing).toContain(`Execution run ${execution.run.id} is not complete`);
+  });
+});
