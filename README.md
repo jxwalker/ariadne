@@ -20,6 +20,8 @@ npm test
 npm run cli -- ingest --project agentic-coding /path/to/source.md /path/to/source.docx
 npm run cli -- assemble --project agentic-coding
 npm run cli -- roadmap --project agentic-coding --target-url http://localhost:3000 --repo /path/to/repo
+npm run cli -- gsd2-export --project agentic-coding
+npm run cli -- worktree-guard --project agentic-coding --run /path/to/run.json
 npm run cli -- status --project agentic-coding
 ```
 
@@ -62,3 +64,19 @@ The larger system is a set of contracts, not a replacement coding assistant.
 5. Playwright planner/generator/healer loop. Implemented as test-plan and generated-spec artifact contract; browser execution comes when a target app exists.
 6. GitHub Actions, CodeRabbit, and branch protection control plane. Implemented as merge-readiness evidence surface; live adapter is next.
 7. Hermes and infrastructure adapters for Proxmox, DGX Spark, and local model endpoints. Implemented as read-only registry and placement-plan contract; live inventory is next.
+
+## Adapter Commands
+
+These commands add live-safe integration surfaces without mutating external systems by default:
+
+```bash
+npm run cli -- notebooklm-import --project agentic-coding --from notebooklm-export.md
+npm run cli -- gsd2-export --project agentic-coding
+npm run cli -- gsd2-import --project agentic-coding --from gsd2-bundle.json
+npm run cli -- worktree-guard --project agentic-coding --run run.json
+npm run cli -- playwright-evidence --project agentic-coding --target-url http://localhost:3000 --status skipped
+npm run cli -- import-ci --project agentic-coding --from checks.json
+npm run cli -- import-coderabbit --project agentic-coding --from coderabbit.md
+npm run cli -- infra-snapshot --project agentic-coding --from manifest.json
+npm run cli -- openscorpion-draft --project agentic-coding --title "Evidence package" --type dev-pipeline.evidence --evidence path-a,path-b
+```

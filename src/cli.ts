@@ -1,13 +1,20 @@
 #!/usr/bin/env node
 import path from "node:path";
+import { importCiStatus, importCodeRabbitReview } from "./ciImport.js";
 import { generateControlReport, recordCheck, recordReview } from "./controlPlane.js";
+import { recordDecision } from "./decisions.js";
 import { markRunStatus, planExecution } from "./execution.js";
 import { generateGsd } from "./gsd.js";
+import { exportGsd2Bundle, importGsd2Bundle } from "./gsdAdapter.js";
 import { generateInfrastructureRegistry } from "./infrastructure.js";
+import { draftOpenScorpionActivity, importInfraSnapshot } from "./infraSnapshot.js";
+import { importNotebookLmExport } from "./notebooklm.js";
 import { defaultVaultRoot } from "./paths.js";
+import { recordPlaywrightEvidence } from "./playwrightEvidence.js";
 import { generatePlaywrightPlan } from "./playwrightPlan.js";
 import { generatePrd } from "./prd.js";
 import { assembleDossier, ingestFiles, projectStatus } from "./vault.js";
+import { guardWorktrees } from "./worktreeGuard.js";
 
 interface ParsedArgs {
   command?: string;
@@ -50,11 +57,21 @@ function usage(): string {
     "  dev-pipeline ingest --project <project> [--notes <text>] <files...>",
     "  dev-pipeline assemble --project <project> [--max-chars <number>]",
     "  dev-pipeline prd --project <project> [--from <dossier.md>]",
+    "  dev-pipeline notebooklm-import --project <project> --from <export.md>",
     "  dev-pipeline gsd --project <project>",
+    "  dev-pipeline gsd2-export --project <project>",
+    "  dev-pipeline gsd2-import --project <project> --from <bundle.json>",
+    "  dev-pipeline decision --project <project> --title <title> --context <text> --decision <text>",
     "  dev-pipeline execution --project <project> [--task <id>] [--repo <path>]",
     "  dev-pipeline execution-status --project <project> --run <run.json> --status <status>",
+    "  dev-pipeline worktree-guard --project <project> --run <run.json> [--apply]",
     "  dev-pipeline playwright --project <project> [--target-url <url>]",
+    "  dev-pipeline playwright-evidence --project <project> --target-url <url> --status <status>",
     "  dev-pipeline infra --project <project>",
+    "  dev-pipeline infra-snapshot --project <project> --from <manifest.json>",
+    "  dev-pipeline openscorpion-draft --project <project> --title <title> --type <type> --evidence <paths>",
+    "  dev-pipeline import-ci --project <project> --from <checks.json>",
+    "  dev-pipeline import-coderabbit --project <project> --from <review.md>",
     "  dev-pipeline record-check --project <project> --name <name> --status <status> --command <cmd>",
     "  dev-pipeline record-review --project <project> --source <source> --status <status> --summary <text>",
     "  dev-pipeline control --project <project>",
@@ -85,7 +102,8 @@ async function main(): Promise<void> {
       project,
       vaultRoot,
       notes: notes || undefined,
-      sensitivity: sensitivityOption(parsed.options)
+      sensitivity: sensitivityOption(parsed.options),
+      allowSecretFindings: parsed.options.has("allow-secret-findings")
     });
 
     for (const record of records) {
@@ -131,11 +149,51 @@ async function main(): Promise<void> {
     return;
   }
 
+  if (parsed.command === "notebooklm-import") {
+    const sourcePath = requiredOption(parsed.options, "from");
+    const result = await importNotebookLmExport({ project, vaultRoot, sourcePath });
+    console.log(`NotebookLM JSON: ${result.jsonPath}`);
+    console.log(`NotebookLM Markdown: ${result.markdownPath}`);
+    console.log(`Sections: ${result.imported.sections.length}`);
+    console.log(`Citations: ${result.imported.citations.length}`);
+    return;
+  }
+
   if (parsed.command === "gsd") {
     const result = await generateGsd({ project, vaultRoot });
     console.log(`GSD JSON: ${result.jsonPath}`);
     console.log(`GSD Tasks: ${result.markdownPath}`);
     console.log(`Verification commands: ${result.commandsPath}`);
+    return;
+  }
+
+  if (parsed.command === "gsd2-export") {
+    const result = await exportGsd2Bundle({ project, vaultRoot });
+    console.log(`GSD2 bundle: ${result.jsonPath}`);
+    console.log(`GSD2 Markdown: ${result.markdownPath}`);
+    console.log(`Tasks: ${result.bundle.tasks.length}`);
+    return;
+  }
+
+  if (parsed.command === "gsd2-import") {
+    const sourcePath = requiredOption(parsed.options, "from");
+    const result = await importGsd2Bundle({ project, vaultRoot, sourcePath });
+    console.log(`Imported GSD roadmap: ${result.jsonPath}`);
+    console.log(`Imported GSD tasks: ${result.markdownPath}`);
+    return;
+  }
+
+  if (parsed.command === "decision") {
+    const result = await recordDecision({
+      project,
+      vaultRoot,
+      title: requiredOption(parsed.options, "title"),
+      context: requiredOption(parsed.options, "context"),
+      decision: requiredOption(parsed.options, "decision"),
+      consequences: splitList(optionString(parsed.options, "consequences", "Decision is now part of the durable project record.")),
+      sourceRefs: splitList(optionString(parsed.options, "sources", "manual"))
+    });
+    console.log(`Decision: ${result.markdownPath}`);
     return;
   }
 
@@ -167,6 +225,18 @@ async function main(): Promise<void> {
     return;
   }
 
+  if (parsed.command === "worktree-guard") {
+    const result = await guardWorktrees({
+      project,
+      vaultRoot,
+      runFile: requiredOption(parsed.options, "run"),
+      apply: parsed.options.has("apply")
+    });
+    console.log(`Worktree guard: ${result.markdownPath}`);
+    console.log(`Status: ${result.report.status}`);
+    return;
+  }
+
   if (parsed.command === "playwright") {
     const result = await generatePlaywrightPlan({
       project,
@@ -179,10 +249,75 @@ async function main(): Promise<void> {
     return;
   }
 
+  if (parsed.command === "playwright-evidence") {
+    const status = optionString(parsed.options, "status", "");
+    if (status !== "passed" && status !== "failed" && status !== "skipped") {
+      throw new Error("--status must be passed, failed, or skipped.");
+    }
+    const result = await recordPlaywrightEvidence({
+      project,
+      vaultRoot,
+      targetUrl: requiredOption(parsed.options, "target-url"),
+      status,
+      tracePath: optionString(parsed.options, "trace", "") || undefined,
+      screenshotPath: optionString(parsed.options, "screenshot", "") || undefined,
+      notes: optionString(parsed.options, "notes", "") || undefined
+    });
+    console.log(`Playwright evidence: ${result.markdownPath}`);
+    return;
+  }
+
   if (parsed.command === "infra") {
     const result = await generateInfrastructureRegistry({ project, vaultRoot });
     console.log(`Infrastructure registry: ${result.jsonPath}`);
     console.log(`Infrastructure plan: ${result.markdownPath}`);
+    return;
+  }
+
+  if (parsed.command === "infra-snapshot") {
+    const kind = optionString(parsed.options, "kind", "manifest");
+    if (kind !== "manual" && kind !== "manifest" && kind !== "live_read_only") {
+      throw new Error("--kind must be manual, manifest, or live_read_only.");
+    }
+    const result = await importInfraSnapshot({
+      project,
+      vaultRoot,
+      sourcePath: requiredOption(parsed.options, "from"),
+      snapshotKind: kind
+    });
+    console.log(`Infrastructure snapshot: ${result.markdownPath}`);
+    return;
+  }
+
+  if (parsed.command === "openscorpion-draft") {
+    const result = await draftOpenScorpionActivity({
+      project,
+      vaultRoot,
+      title: requiredOption(parsed.options, "title"),
+      activityType: requiredOption(parsed.options, "type"),
+      evidenceRefs: splitList(requiredOption(parsed.options, "evidence"))
+    });
+    console.log(`OpenScorpion activity draft: ${result.markdownPath}`);
+    return;
+  }
+
+  if (parsed.command === "import-ci") {
+    const count = await importCiStatus({
+      project,
+      vaultRoot,
+      sourcePath: requiredOption(parsed.options, "from")
+    });
+    console.log(`Imported CI checks: ${count}`);
+    return;
+  }
+
+  if (parsed.command === "import-coderabbit") {
+    await importCodeRabbitReview({
+      project,
+      vaultRoot,
+      sourcePath: requiredOption(parsed.options, "from")
+    });
+    console.log("Imported CodeRabbit review.");
     return;
   }
 
@@ -253,6 +388,7 @@ async function main(): Promise<void> {
   if (parsed.command === "roadmap") {
     const prd = await generatePrd({ project, vaultRoot });
     const gsd = await generateGsd({ project, vaultRoot });
+    const gsd2 = await exportGsd2Bundle({ project, vaultRoot });
     const execution = await planExecution({
       project,
       vaultRoot,
@@ -269,6 +405,7 @@ async function main(): Promise<void> {
     console.log("Roadmap artifacts generated");
     console.log(`  PRD: ${prd.markdownPath}`);
     console.log(`  GSD: ${gsd.markdownPath}`);
+    console.log(`  GSD2 bundle: ${gsd2.markdownPath}`);
     console.log(`  Execution: ${execution.markdownPath}`);
     console.log(`  Playwright: ${playwright.markdownPath}`);
     console.log(`  Infrastructure: ${infra.markdownPath}`);
@@ -290,6 +427,21 @@ async function main(): Promise<void> {
   }
 
   throw new Error(`Unknown command: ${parsed.command}\n\n${usage()}`);
+}
+
+function requiredOption(options: Map<string, string | true>, key: string): string {
+  const value = optionString(options, key, "");
+  if (!value) {
+    throw new Error(`--${key} is required.`);
+  }
+  return value;
+}
+
+function splitList(value: string): string[] {
+  return value
+    .split(/[|,]/)
+    .map((item) => item.trim())
+    .filter(Boolean);
 }
 
 function sensitivityOption(

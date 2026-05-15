@@ -1,0 +1,39 @@
+# Adapter Contracts
+
+The roadmap adapters are file-contract surfaces first. They produce evidence and plans that humans and later live adapters can inspect.
+
+## Source Hygiene
+
+`ingest` scans text-bearing sources for common secret patterns before copying them into the vault. High-severity findings block promotion unless `--allow-secret-findings` is passed.
+
+## NotebookLM
+
+`notebooklm-import` normalises a manual NotebookLM markdown/text export into:
+
+- `requirements/notebooklm-import.json`
+- `requirements/notebooklm-import.md`
+
+Automation is intentionally not implemented yet. Manual import remains the fallback.
+
+## GSD2
+
+`gsd2-export` writes `gsd/gsd2-bundle.json`, a flattened task bundle with milestone metadata. `gsd2-import` can rebuild a roadmap from that bundle.
+
+## Execution
+
+`worktree-guard` checks the execution run before any worktree creation:
+
+- repo path present
+- working tree clean
+- worktree paths available
+- branches do not already exist
+
+`--apply` is the only mode that creates worktrees.
+
+## Verification And Review
+
+`playwright-evidence`, `import-ci`, and `import-coderabbit` write evidence records into the project control plane. They do not mark the project ready unless the required gates are satisfied.
+
+## Infrastructure And Governance
+
+`infra-snapshot` imports a read-only JSON snapshot. `openscorpion-draft` writes a governed activity draft with `submit: false`; live submission requires a later approved adapter.

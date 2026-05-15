@@ -15,6 +15,7 @@ export interface IngestRecord {
   storedPath: string;
   extractedTextPath?: string;
   handoffPath?: string;
+  hygieneReportPath?: string;
   fileName: string;
   kind: SourceKind;
   sensitivity: "public" | "internal" | "confidential" | "secret";
@@ -29,6 +30,7 @@ export interface IngestOptions {
   vaultRoot: string;
   notes?: string;
   sensitivity?: IngestRecord["sensitivity"];
+  allowSecretFindings?: boolean;
 }
 
 export interface DossierOptions {
@@ -150,6 +152,97 @@ export interface ReviewRecord {
   status: "approved" | "changes_requested" | "pending" | "failed" | "passed";
   summary: string;
   evidence?: string;
+}
+
+export interface SecretFinding {
+  kind: string;
+  severity: "low" | "medium" | "high";
+  line: number;
+  evidence: string;
+}
+
+export interface SourceHygieneReport {
+  schemaVersion: 1;
+  sourcePath: string;
+  scannedAt: string;
+  status: "clean" | "warning" | "blocked";
+  findings: SecretFinding[];
+}
+
+export interface NotebookLmImport {
+  schemaVersion: 1;
+  project: string;
+  importedAt: string;
+  sourcePath: string;
+  title: string;
+  sections: Array<{
+    heading: string;
+    body: string;
+  }>;
+  citations: Array<{
+    marker: string;
+    text: string;
+  }>;
+}
+
+export interface DecisionRecord {
+  schemaVersion: 1;
+  id: string;
+  project: string;
+  recordedAt: string;
+  title: string;
+  status: "proposed" | "accepted" | "superseded";
+  context: string;
+  decision: string;
+  consequences: string[];
+  sourceRefs: string[];
+}
+
+export interface WorktreeGuardReport {
+  schemaVersion: 1;
+  project: string;
+  generatedAt: string;
+  runId: string;
+  apply: boolean;
+  status: "ready" | "created" | "blocked";
+  checks: Array<{
+    name: string;
+    status: "passed" | "failed";
+    detail: string;
+  }>;
+}
+
+export interface PlaywrightEvidenceRecord {
+  schemaVersion: 1;
+  id: string;
+  project: string;
+  recordedAt: string;
+  targetUrl: string;
+  status: "passed" | "failed" | "skipped";
+  tracePath?: string;
+  screenshotPath?: string;
+  notes?: string;
+}
+
+export interface InfraSnapshot {
+  schemaVersion: 1;
+  project: string;
+  importedAt: string;
+  sourcePath: string;
+  snapshotKind: "manual" | "manifest" | "live_read_only";
+  summary: Record<string, unknown>;
+  raw: unknown;
+}
+
+export interface OpenScorpionActivityDraft {
+  schemaVersion: 1;
+  project: string;
+  generatedAt: string;
+  title: string;
+  activityType: string;
+  evidenceRefs: string[];
+  payload: Record<string, unknown>;
+  submit: false;
 }
 
 export interface InfraRegistry {
