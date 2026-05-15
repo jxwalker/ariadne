@@ -1,7 +1,9 @@
-import { latestFile, readJsonArtifact, writeJsonArtifact, writeTextArtifact } from "./artifacts.js";
+import fs from "node:fs/promises";
+import path from "node:path";
+import { ensureArtifactDir, latestFile, readJsonArtifact, timestampFile, writeJsonArtifact, writeTextArtifact } from "./artifacts.js";
 import { loadPlaywrightPlan } from "./playwrightPlan.js";
-import { slugifyProject } from "./paths.js";
-import type { ControlReport, ExecutionRun, GsdRoadmap } from "./types.js";
+import { projectDir, slugifyProject } from "./paths.js";
+import type { CheckRecord, ControlReport, ExecutionRun, GsdRoadmap, ReviewRecord } from "./types.js";
 
 interface GenerateControlOptions {
   project: string;
@@ -45,6 +47,27 @@ export async function generateControlReport(options: GenerateControlOptions): Pr
     evidence.push(`GSD tasks: ${taskCount}`);
   }
 
+  const checks = await readJsonl<CheckRecord>(options.vaultRoot, project, "control", "check-history.jsonl");
+  const requiredChecks = ["typecheck", "unit-tests", "build"];
+  for (const checkName of requiredChecks) {
+    const latest = checks.filter((check) => check.name === checkName).at(-1);
+    if (latest?.status === "passed") {
+      evidence.push(`Check ${checkName}: passed (${latest.command})`);
+    } else {
+      missing.push(`Check ${checkName} has not passed`);
+    }
+  }
+
+  const reviews = await readJsonl<ReviewRecord>(options.vaultRoot, project, "control", "reviews.jsonl");
+  const approvedReview = reviews.find(
+    (review) => (review.source === "human" || review.source === "coderabbit") && review.status === "approved"
+  );
+  if (approvedReview) {
+    evidence.push(`Review approved by ${approvedReview.source}: ${approvedReview.summary}`);
+  } else {
+    missing.push("CodeRabbit or human review approval");
+  }
+
   const report: ControlReport = {
     schemaVersion: 1,
     project,
@@ -74,6 +97,52 @@ export async function generateControlReport(options: GenerateControlOptions): Pr
   return { jsonPath, markdownPath, report };
 }
 
+export async function recordCheck(input: {
+  vaultRoot: string;
+  project: string;
+  name: string;
+  command: string;
+  status: CheckRecord["status"];
+  evidence?: string;
+}): Promise<CheckRecord> {
+  const project = slugifyProject(input.project);
+  const record: CheckRecord = {
+    schemaVersion: 1,
+    id: `check-${input.name}-${timestampFile()}`,
+    project,
+    recordedAt: new Date().toISOString(),
+    name: input.name,
+    command: input.command,
+    status: input.status,
+    evidence: input.evidence
+  };
+  await appendJsonl(input.vaultRoot, project, "control", "check-history.jsonl", record);
+  return record;
+}
+
+export async function recordReview(input: {
+  vaultRoot: string;
+  project: string;
+  source: ReviewRecord["source"];
+  status: ReviewRecord["status"];
+  summary: string;
+  evidence?: string;
+}): Promise<ReviewRecord> {
+  const project = slugifyProject(input.project);
+  const record: ReviewRecord = {
+    schemaVersion: 1,
+    id: `review-${input.source}-${timestampFile()}`,
+    project,
+    recordedAt: new Date().toISOString(),
+    source: input.source,
+    status: input.status,
+    summary: input.summary,
+    evidence: input.evidence
+  };
+  await appendJsonl(input.vaultRoot, project, "control", "reviews.jsonl", record);
+  return record;
+}
+
 async function collectRequired(
   vaultRoot: string,
   project: string,
@@ -100,8 +169,40 @@ async function readJsonArtifactFromProject(
 }
 
 async function readJsonArtifactFromPath<T>(filePath: string): Promise<T> {
-  const fs = await import("node:fs/promises");
   return JSON.parse(await fs.readFile(filePath, "utf8")) as T;
+}
+
+async function appendJsonl(
+  vaultRoot: string,
+  project: string,
+  dirName: string,
+  fileName: string,
+  value: unknown
+): Promise<void> {
+  const dir = await ensureArtifactDir(vaultRoot, project, dirName);
+  await fs.appendFile(path.join(dir, fileName), `${JSON.stringify(value)}\n`);
+}
+
+async function readJsonl<T>(
+  vaultRoot: string,
+  project: string,
+  dirName: string,
+  fileName: string
+): Promise<T[]> {
+  const filePath = path.join(projectDir(vaultRoot, project), dirName, fileName);
+  try {
+    const text = await fs.readFile(filePath, "utf8");
+    return text
+      .split("\n")
+      .map((line) => line.trim())
+      .filter(Boolean)
+      .map((line) => JSON.parse(line) as T);
+  } catch (error) {
+    if ((error as NodeJS.ErrnoException).code === "ENOENT") {
+      return [];
+    }
+    throw error;
+  }
 }
 
 async function maybeReadRoadmap(vaultRoot: string, project: string): Promise<GsdRoadmap | undefined> {

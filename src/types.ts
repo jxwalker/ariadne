@@ -130,6 +130,28 @@ export interface ControlReport {
   mergeGates: string[];
 }
 
+export interface CheckRecord {
+  schemaVersion: 1;
+  id: string;
+  project: string;
+  recordedAt: string;
+  name: string;
+  command: string;
+  status: "passed" | "failed" | "skipped";
+  evidence?: string;
+}
+
+export interface ReviewRecord {
+  schemaVersion: 1;
+  id: string;
+  project: string;
+  recordedAt: string;
+  source: "human" | "coderabbit" | "ci" | "local";
+  status: "approved" | "changes_requested" | "pending" | "failed" | "passed";
+  summary: string;
+  evidence?: string;
+}
+
 export interface InfraRegistry {
   schemaVersion: 1;
   project: string;

@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 import path from "node:path";
-import { generateControlReport } from "./controlPlane.js";
-import { planExecution } from "./execution.js";
+import { generateControlReport, recordCheck, recordReview } from "./controlPlane.js";
+import { markRunStatus, planExecution } from "./execution.js";
 import { generateGsd } from "./gsd.js";
 import { generateInfrastructureRegistry } from "./infrastructure.js";
 import { defaultVaultRoot } from "./paths.js";
@@ -52,8 +52,11 @@ function usage(): string {
     "  dev-pipeline prd --project <project> [--from <dossier.md>]",
     "  dev-pipeline gsd --project <project>",
     "  dev-pipeline execution --project <project> [--task <id>] [--repo <path>]",
+    "  dev-pipeline execution-status --project <project> --run <run.json> --status <status>",
     "  dev-pipeline playwright --project <project> [--target-url <url>]",
     "  dev-pipeline infra --project <project>",
+    "  dev-pipeline record-check --project <project> --name <name> --status <status> --command <cmd>",
+    "  dev-pipeline record-review --project <project> --source <source> --status <status> --summary <text>",
     "  dev-pipeline control --project <project>",
     "  dev-pipeline roadmap --project <project> [--target-url <url>] [--repo <path>]",
     "  dev-pipeline status --project <project>",
@@ -149,6 +152,21 @@ async function main(): Promise<void> {
     return;
   }
 
+  if (parsed.command === "execution-status") {
+    const runFile = optionString(parsed.options, "run", "");
+    const status = optionString(parsed.options, "status", "");
+    if (!runFile) {
+      throw new Error("--run <run.json> is required.");
+    }
+    if (status !== "planned" && status !== "running" && status !== "blocked" && status !== "complete") {
+      throw new Error("--status must be planned, running, blocked, or complete.");
+    }
+    const updated = await markRunStatus(vaultRoot, project, runFile, status);
+    console.log(`Updated execution run: ${updated}`);
+    console.log(`Status: ${status}`);
+    return;
+  }
+
   if (parsed.command === "playwright") {
     const result = await generatePlaywrightPlan({
       project,
@@ -167,6 +185,60 @@ async function main(): Promise<void> {
     console.log(`Infrastructure plan: ${result.markdownPath}`);
     return;
   }
+
+  if (parsed.command === "record-check") {
+    const name = optionString(parsed.options, "name", "");
+    const command = optionString(parsed.options, "command", "");
+    const status = optionString(parsed.options, "status", "");
+    if (!name || !command) {
+      throw new Error("--name and --command are required.");
+    }
+    if (status !== "passed" && status !== "failed" && status !== "skipped") {
+      throw new Error("--status must be passed, failed, or skipped.");
+    }
+    const record = await recordCheck({
+      project,
+      vaultRoot,
+      name,
+      command,
+      status,
+      evidence: optionString(parsed.options, "evidence", "") || undefined
+    });
+    console.log(`Recorded check: ${record.id}`);
+    return;
+  }
+
+  if (parsed.command === "record-review") {
+    const source = optionString(parsed.options, "source", "");
+    const status = optionString(parsed.options, "status", "");
+    const summary = optionString(parsed.options, "summary", "");
+    if (!summary) {
+      throw new Error("--summary is required.");
+    }
+    if (source !== "human" && source !== "coderabbit" && source !== "ci" && source !== "local") {
+      throw new Error("--source must be human, coderabbit, ci, or local.");
+    }
+    if (
+      status !== "approved" &&
+      status !== "changes_requested" &&
+      status !== "pending" &&
+      status !== "failed" &&
+      status !== "passed"
+    ) {
+      throw new Error("--status must be approved, changes_requested, pending, failed, or passed.");
+    }
+    const record = await recordReview({
+      project,
+      vaultRoot,
+      source,
+      status,
+      summary,
+      evidence: optionString(parsed.options, "evidence", "") || undefined
+    });
+    console.log(`Recorded review: ${record.id}`);
+    return;
+  }
+
 
   if (parsed.command === "control") {
     const result = await generateControlReport({ project, vaultRoot });

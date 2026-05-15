@@ -14,7 +14,7 @@
   ],
   "repoPath": "/Users/james/Documents/dev/dev-pipeline",
   "branchPrefix": "jxw/dev-pipeline",
-  "status": "planned",
+  "status": "complete",
   "gates": [
     "npm run check",
     "npm test",
