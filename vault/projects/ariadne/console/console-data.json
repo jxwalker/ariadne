@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "project": "ariadne",
-  "generatedAt": "2026-05-16T17:37:18.719Z",
+  "generatedAt": "2026-05-16T22:29:45.662Z",
   "projectDir": "projects/ariadne",
   "summary": {
     "sources": 3,
@@ -13,6 +13,7 @@
     "reviews": 2,
     "decisions": 1,
     "evaluations": 1,
+    "benchmarkRuns": 0,
     "infraSnapshots": 1,
     "gsd2ProcessSnapshots": 1,
     "sleepRoutines": 1,
@@ -27,7 +28,13 @@
     "approvals": 1,
     "pendingApprovals": 1,
     "mutationReadinessPlans": 1,
+    "mutationDryRuns": 0,
+    "mutationExecutions": 0,
     "mutationReadinessAuditStatus": "blocked",
+    "liveAdapterReadinessStatus": "blocked",
+    "liveAdapterReady": 0,
+    "liveAdapterBlocked": 6,
+    "liveAdapterActionItems": 28,
     "recoveryIssues": 5,
     "consoleBrowserChecks": "passed",
     "readinessStatus": "ready",
@@ -829,10 +836,12 @@
       "execute": false
     }
   ],
+  "mutationDryRuns": [],
+  "mutationExecutions": [],
   "mutationReadinessAudit": {
     "schemaVersion": 1,
     "project": "ariadne",
-    "generatedAt": "2026-05-16T17:36:25.633Z",
+    "generatedAt": "2026-05-16T22:15:34.338Z",
     "status": "blocked",
     "mutationAllowed": false,
     "summary": {
@@ -870,6 +879,501 @@
           "CodeRabbit or human review approval",
           "post-action verification command defined",
           "branch, PR, and merge policy verified"
+        ]
+      }
+    ]
+  },
+  "liveAdapterReadiness": {
+    "schemaVersion": 1,
+    "project": "ariadne",
+    "generatedAt": "2026-05-16T22:15:34.340Z",
+    "status": "blocked",
+    "summary": {
+      "targets": 6,
+      "ready": 0,
+      "blocked": 6,
+      "passedPlans": 0,
+      "passedDryRuns": 0,
+      "passedExecutions": 0
+    },
+    "targets": [
+      {
+        "target": "github",
+        "status": "blocked",
+        "planCount": 1,
+        "passedPlanCount": 0,
+        "passedDryRunCount": 0,
+        "passedExecutionCount": 0,
+        "executeCommand": "github-mutation-execute",
+        "blockers": [
+          "no readiness plan passes audit",
+          "no passed dry-run evidence exists for an audit-passed plan",
+          "no passed target-guarded execution evidence exists"
+        ],
+        "evidenceRefs": [
+          "control/mutation-readiness-audit.json"
+        ]
+      },
+      {
+        "target": "deployment",
+        "status": "blocked",
+        "planCount": 0,
+        "passedPlanCount": 0,
+        "passedDryRunCount": 0,
+        "passedExecutionCount": 0,
+        "executeCommand": "deployment-mutation-execute",
+        "blockers": [
+          "no target-specific readiness plan exists",
+          "no readiness plan passes audit",
+          "no passed dry-run evidence exists for an audit-passed plan",
+          "no passed target-guarded execution evidence exists"
+        ],
+        "evidenceRefs": [
+          "control/mutation-readiness-audit.json"
+        ]
+      },
+      {
+        "target": "hermes-cron",
+        "status": "blocked",
+        "planCount": 0,
+        "passedPlanCount": 0,
+        "passedDryRunCount": 0,
+        "passedExecutionCount": 0,
+        "executeCommand": "hermes-cron-mutation-execute",
+        "blockers": [
+          "no target-specific readiness plan exists",
+          "no readiness plan passes audit",
+          "no passed dry-run evidence exists for an audit-passed plan",
+          "no passed target-guarded execution evidence exists"
+        ],
+        "evidenceRefs": [
+          "control/mutation-readiness-audit.json"
+        ]
+      },
+      {
+        "target": "openscorpion",
+        "status": "blocked",
+        "planCount": 0,
+        "passedPlanCount": 0,
+        "passedDryRunCount": 0,
+        "passedExecutionCount": 0,
+        "executeCommand": "openscorpion-mutation-execute",
+        "blockers": [
+          "no target-specific readiness plan exists",
+          "no readiness plan passes audit",
+          "no passed dry-run evidence exists for an audit-passed plan",
+          "no passed target-guarded execution evidence exists"
+        ],
+        "evidenceRefs": [
+          "control/mutation-readiness-audit.json"
+        ]
+      },
+      {
+        "target": "gsd2",
+        "status": "blocked",
+        "planCount": 0,
+        "passedPlanCount": 0,
+        "passedDryRunCount": 0,
+        "passedExecutionCount": 0,
+        "executeCommand": "gsd2-mutation-execute",
+        "blockers": [
+          "no target-specific readiness plan exists",
+          "no readiness plan passes audit",
+          "no passed dry-run evidence exists for an audit-passed plan",
+          "no passed target-guarded execution evidence exists"
+        ],
+        "evidenceRefs": [
+          "control/mutation-readiness-audit.json"
+        ]
+      },
+      {
+        "target": "notebooklm",
+        "status": "blocked",
+        "planCount": 0,
+        "passedPlanCount": 0,
+        "passedDryRunCount": 0,
+        "passedExecutionCount": 0,
+        "executeCommand": "notebooklm-mutation-execute",
+        "blockers": [
+          "no target-specific readiness plan exists",
+          "no readiness plan passes audit",
+          "no passed dry-run evidence exists for an audit-passed plan",
+          "no passed target-guarded execution evidence exists"
+        ],
+        "evidenceRefs": [
+          "control/mutation-readiness-audit.json"
+        ]
+      }
+    ]
+  },
+  "liveAdapterNextActions": {
+    "schemaVersion": 1,
+    "project": "ariadne",
+    "generatedAt": "2026-05-16T22:15:34.341Z",
+    "status": "actions_required",
+    "summary": {
+      "targets": 6,
+      "ready": 0,
+      "blocked": 6,
+      "actionItems": 28
+    },
+    "readinessRef": "projects/ariadne/control/live-adapter-readiness.json",
+    "targets": [
+      {
+        "target": "github",
+        "readinessStatus": "blocked",
+        "executeCommand": "github-mutation-execute",
+        "blockers": [
+          "no readiness plan passes audit",
+          "no passed dry-run evidence exists for an audit-passed plan",
+          "no passed target-guarded execution evidence exists"
+        ],
+        "actions": [
+          {
+            "id": "github-audit-fix",
+            "status": "pending",
+            "title": "Resolve existing readiness plan blockers",
+            "rationale": "Existing plan mutation-readiness-github-2026-05-16T16-50-54-241Z is blocked by: approval state is approval_required; approval record is requested; post-action verification command is missing. Approve the existing plan only after operator review, and regenerate it with post-action verification if that gate is missing.",
+            "command": "Review mutation-readiness-github-2026-05-16T16-50-54-241Z; after operator approval, record approval-decision, ensure --post-verify is present, then rerun npm run ariadne -- mutation-readiness-audit --project <project>",
+            "evidenceRefs": [
+              "control/mutation-readiness-audit.json"
+            ]
+          },
+          {
+            "id": "github-dry-run",
+            "status": "pending",
+            "title": "Run the reviewed dry-run command",
+            "rationale": "Dry-run evidence proves the reviewed command path before the live command is eligible for target-guarded execution.",
+            "command": "After mutation-readiness-github-2026-05-16T16-50-54-241Z passes audit, run npm run ariadne -- mutation-dry-run --project <project> --plan mutation-readiness-github-2026-05-16T16-50-54-241Z",
+            "evidenceRefs": [
+              "control/mutation-readiness-audit.json"
+            ]
+          },
+          {
+            "id": "github-target-execution",
+            "status": "blocked",
+            "title": "Capture target-guarded execution evidence",
+            "rationale": "The live adapter should only replace placeholder shell commands after the audited target wrapper has successfully verified the same target and recorded post-action verification evidence.",
+            "command": "Run a passed dry-run for an audit-passed plan first.",
+            "evidenceRefs": [
+              "control/mutation-readiness-audit.json"
+            ]
+          }
+        ]
+      },
+      {
+        "target": "deployment",
+        "readinessStatus": "blocked",
+        "executeCommand": "deployment-mutation-execute",
+        "blockers": [
+          "no target-specific readiness plan exists",
+          "no readiness plan passes audit",
+          "no passed dry-run evidence exists for an audit-passed plan",
+          "no passed target-guarded execution evidence exists"
+        ],
+        "actions": [
+          {
+            "id": "deployment-approval-request",
+            "status": "pending",
+            "title": "Record an operator approval request",
+            "rationale": "Live adapters need explicit human authorization before any target-specific readiness plan can be treated as reviewable.",
+            "command": "npm run ariadne -- approval-request --project <project> --by <operator> --target deployment --action \"<bounded action>\" --risk <low|medium|high> --reason \"<why this target should mutate>\" --rollback \"<operator rollback path>\" --evidence <auth-or-policy-evidence>",
+            "evidenceRefs": [
+              "control/mutation-readiness-audit.json"
+            ]
+          },
+          {
+            "id": "deployment-mutation-plan",
+            "status": "blocked",
+            "title": "Create a target-specific mutation-readiness plan",
+            "rationale": "Ariadne needs reviewed dry-run, live, post-verification, rollback, auth evidence, and approval refs before any live adapter can be wired.",
+            "command": "npm run ariadne -- deployment-mutation-plan --project <project> --system <proxmox|truenas|dgx-spark|mac> --host <host> --scope <scope> --auth-evidence <paths> --dry-run <cmd> --live-command <cmd> --post-verify <cmd> --rollback <text> --approval <approval-id>",
+            "evidenceRefs": [
+              "control/mutation-readiness-audit.json"
+            ]
+          },
+          {
+            "id": "deployment-audit-fix",
+            "status": "pending",
+            "title": "Fix readiness audit blockers",
+            "rationale": "The readiness audit must pass before dry-run or execution evidence can count for a live adapter.",
+            "command": "npm run ariadne -- mutation-readiness-audit --project <project>",
+            "evidenceRefs": [
+              "control/mutation-readiness-audit.json"
+            ]
+          },
+          {
+            "id": "deployment-dry-run",
+            "status": "blocked",
+            "title": "Run the reviewed dry-run command",
+            "rationale": "Dry-run evidence proves the reviewed command path before the live command is eligible for target-guarded execution.",
+            "command": "Create and audit-pass a target-specific readiness plan first.",
+            "evidenceRefs": [
+              "control/mutation-readiness-audit.json"
+            ]
+          },
+          {
+            "id": "deployment-target-execution",
+            "status": "blocked",
+            "title": "Capture target-guarded execution evidence",
+            "rationale": "The live adapter should only replace placeholder shell commands after the audited target wrapper has successfully verified the same target and recorded post-action verification evidence.",
+            "command": "Run a passed dry-run for an audit-passed plan first.",
+            "evidenceRefs": [
+              "control/mutation-readiness-audit.json"
+            ]
+          }
+        ]
+      },
+      {
+        "target": "hermes-cron",
+        "readinessStatus": "blocked",
+        "executeCommand": "hermes-cron-mutation-execute",
+        "blockers": [
+          "no target-specific readiness plan exists",
+          "no readiness plan passes audit",
+          "no passed dry-run evidence exists for an audit-passed plan",
+          "no passed target-guarded execution evidence exists"
+        ],
+        "actions": [
+          {
+            "id": "hermes-cron-approval-request",
+            "status": "pending",
+            "title": "Record an operator approval request",
+            "rationale": "Live adapters need explicit human authorization before any target-specific readiness plan can be treated as reviewable.",
+            "command": "npm run ariadne -- approval-request --project <project> --by <operator> --target hermes-cron --action \"<bounded action>\" --risk <low|medium|high> --reason \"<why this target should mutate>\" --rollback \"<operator rollback path>\" --evidence <auth-or-policy-evidence>",
+            "evidenceRefs": [
+              "control/mutation-readiness-audit.json"
+            ]
+          },
+          {
+            "id": "hermes-cron-mutation-plan",
+            "status": "blocked",
+            "title": "Create a target-specific mutation-readiness plan",
+            "rationale": "Ariadne needs reviewed dry-run, live, post-verification, rollback, auth evidence, and approval refs before any live adapter can be wired.",
+            "command": "npm run ariadne -- hermes-cron-mutation-plan --project <project> --action <create|update|enable|disable|delete> --job <id> --scope <scope> --auth-evidence <paths> --dry-run <cmd> --live-command <cmd> --post-verify <cmd> --rollback <text> --approval <approval-id>",
+            "evidenceRefs": [
+              "control/mutation-readiness-audit.json"
+            ]
+          },
+          {
+            "id": "hermes-cron-audit-fix",
+            "status": "pending",
+            "title": "Fix readiness audit blockers",
+            "rationale": "The readiness audit must pass before dry-run or execution evidence can count for a live adapter.",
+            "command": "npm run ariadne -- mutation-readiness-audit --project <project>",
+            "evidenceRefs": [
+              "control/mutation-readiness-audit.json"
+            ]
+          },
+          {
+            "id": "hermes-cron-dry-run",
+            "status": "blocked",
+            "title": "Run the reviewed dry-run command",
+            "rationale": "Dry-run evidence proves the reviewed command path before the live command is eligible for target-guarded execution.",
+            "command": "Create and audit-pass a target-specific readiness plan first.",
+            "evidenceRefs": [
+              "control/mutation-readiness-audit.json"
+            ]
+          },
+          {
+            "id": "hermes-cron-target-execution",
+            "status": "blocked",
+            "title": "Capture target-guarded execution evidence",
+            "rationale": "The live adapter should only replace placeholder shell commands after the audited target wrapper has successfully verified the same target and recorded post-action verification evidence.",
+            "command": "Run a passed dry-run for an audit-passed plan first.",
+            "evidenceRefs": [
+              "control/mutation-readiness-audit.json"
+            ]
+          }
+        ]
+      },
+      {
+        "target": "openscorpion",
+        "readinessStatus": "blocked",
+        "executeCommand": "openscorpion-mutation-execute",
+        "blockers": [
+          "no target-specific readiness plan exists",
+          "no readiness plan passes audit",
+          "no passed dry-run evidence exists for an audit-passed plan",
+          "no passed target-guarded execution evidence exists"
+        ],
+        "actions": [
+          {
+            "id": "openscorpion-approval-request",
+            "status": "pending",
+            "title": "Record an operator approval request",
+            "rationale": "Live adapters need explicit human authorization before any target-specific readiness plan can be treated as reviewable.",
+            "command": "npm run ariadne -- approval-request --project <project> --by <operator> --target openscorpion --action \"<bounded action>\" --risk <low|medium|high> --reason \"<why this target should mutate>\" --rollback \"<operator rollback path>\" --evidence <auth-or-policy-evidence>",
+            "evidenceRefs": [
+              "control/mutation-readiness-audit.json"
+            ]
+          },
+          {
+            "id": "openscorpion-mutation-plan",
+            "status": "blocked",
+            "title": "Create a target-specific mutation-readiness plan",
+            "rationale": "Ariadne needs reviewed dry-run, live, post-verification, rollback, auth evidence, and approval refs before any live adapter can be wired.",
+            "command": "npm run ariadne -- openscorpion-mutation-plan --project <project> --activity <id> --type <type> --action <submit-activity|update-activity|withdraw-activity> --route <governed|staging> --scope <scope> --auth-evidence <paths> --dry-run <cmd> --live-command <cmd> --post-verify <cmd> --rollback <text> --approval <approval-id>",
+            "evidenceRefs": [
+              "control/mutation-readiness-audit.json"
+            ]
+          },
+          {
+            "id": "openscorpion-audit-fix",
+            "status": "pending",
+            "title": "Fix readiness audit blockers",
+            "rationale": "The readiness audit must pass before dry-run or execution evidence can count for a live adapter.",
+            "command": "npm run ariadne -- mutation-readiness-audit --project <project>",
+            "evidenceRefs": [
+              "control/mutation-readiness-audit.json"
+            ]
+          },
+          {
+            "id": "openscorpion-dry-run",
+            "status": "blocked",
+            "title": "Run the reviewed dry-run command",
+            "rationale": "Dry-run evidence proves the reviewed command path before the live command is eligible for target-guarded execution.",
+            "command": "Create and audit-pass a target-specific readiness plan first.",
+            "evidenceRefs": [
+              "control/mutation-readiness-audit.json"
+            ]
+          },
+          {
+            "id": "openscorpion-target-execution",
+            "status": "blocked",
+            "title": "Capture target-guarded execution evidence",
+            "rationale": "The live adapter should only replace placeholder shell commands after the audited target wrapper has successfully verified the same target and recorded post-action verification evidence.",
+            "command": "Run a passed dry-run for an audit-passed plan first.",
+            "evidenceRefs": [
+              "control/mutation-readiness-audit.json"
+            ]
+          }
+        ]
+      },
+      {
+        "target": "gsd2",
+        "readinessStatus": "blocked",
+        "executeCommand": "gsd2-mutation-execute",
+        "blockers": [
+          "no target-specific readiness plan exists",
+          "no readiness plan passes audit",
+          "no passed dry-run evidence exists for an audit-passed plan",
+          "no passed target-guarded execution evidence exists"
+        ],
+        "actions": [
+          {
+            "id": "gsd2-approval-request",
+            "status": "pending",
+            "title": "Record an operator approval request",
+            "rationale": "Live adapters need explicit human authorization before any target-specific readiness plan can be treated as reviewable.",
+            "command": "npm run ariadne -- approval-request --project <project> --by <operator> --target gsd2 --action \"<bounded action>\" --risk <low|medium|high> --reason \"<why this target should mutate>\" --rollback \"<operator rollback path>\" --evidence <auth-or-policy-evidence>",
+            "evidenceRefs": [
+              "control/mutation-readiness-audit.json"
+            ]
+          },
+          {
+            "id": "gsd2-mutation-plan",
+            "status": "blocked",
+            "title": "Create a target-specific mutation-readiness plan",
+            "rationale": "Ariadne needs reviewed dry-run, live, post-verification, rollback, auth evidence, and approval refs before any live adapter can be wired.",
+            "command": "npm run ariadne -- gsd2-mutation-plan --project <project> --task <id> --mode <headless|auto|worktree> --scope <scope> --auth-evidence <paths> --dry-run <cmd> --live-command <cmd> --post-verify <cmd> --rollback <text> --approval <approval-id>",
+            "evidenceRefs": [
+              "control/mutation-readiness-audit.json"
+            ]
+          },
+          {
+            "id": "gsd2-audit-fix",
+            "status": "pending",
+            "title": "Fix readiness audit blockers",
+            "rationale": "The readiness audit must pass before dry-run or execution evidence can count for a live adapter.",
+            "command": "npm run ariadne -- mutation-readiness-audit --project <project>",
+            "evidenceRefs": [
+              "control/mutation-readiness-audit.json"
+            ]
+          },
+          {
+            "id": "gsd2-dry-run",
+            "status": "blocked",
+            "title": "Run the reviewed dry-run command",
+            "rationale": "Dry-run evidence proves the reviewed command path before the live command is eligible for target-guarded execution.",
+            "command": "Create and audit-pass a target-specific readiness plan first.",
+            "evidenceRefs": [
+              "control/mutation-readiness-audit.json"
+            ]
+          },
+          {
+            "id": "gsd2-target-execution",
+            "status": "blocked",
+            "title": "Capture target-guarded execution evidence",
+            "rationale": "The live adapter should only replace placeholder shell commands after the audited target wrapper has successfully verified the same target and recorded post-action verification evidence.",
+            "command": "Run a passed dry-run for an audit-passed plan first.",
+            "evidenceRefs": [
+              "control/mutation-readiness-audit.json"
+            ]
+          }
+        ]
+      },
+      {
+        "target": "notebooklm",
+        "readinessStatus": "blocked",
+        "executeCommand": "notebooklm-mutation-execute",
+        "blockers": [
+          "no target-specific readiness plan exists",
+          "no readiness plan passes audit",
+          "no passed dry-run evidence exists for an audit-passed plan",
+          "no passed target-guarded execution evidence exists"
+        ],
+        "actions": [
+          {
+            "id": "notebooklm-approval-request",
+            "status": "pending",
+            "title": "Record an operator approval request",
+            "rationale": "Live adapters need explicit human authorization before any target-specific readiness plan can be treated as reviewable.",
+            "command": "npm run ariadne -- approval-request --project <project> --by <operator> --target notebooklm --action \"<bounded action>\" --risk <low|medium|high> --reason \"<why this target should mutate>\" --rollback \"<operator rollback path>\" --evidence <auth-or-policy-evidence>",
+            "evidenceRefs": [
+              "control/mutation-readiness-audit.json"
+            ]
+          },
+          {
+            "id": "notebooklm-mutation-plan",
+            "status": "blocked",
+            "title": "Create a target-specific mutation-readiness plan",
+            "rationale": "Ariadne needs reviewed dry-run, live, post-verification, rollback, auth evidence, and approval refs before any live adapter can be wired.",
+            "command": "npm run ariadne -- notebooklm-mutation-plan --project <project> --notebook <id> --action <create-source|refresh-source|generate-summary|export-notes> --scope <scope> --auth-evidence <paths> --dry-run <cmd> --live-command <cmd> --post-verify <cmd> --rollback <text> --approval <approval-id>",
+            "evidenceRefs": [
+              "control/mutation-readiness-audit.json"
+            ]
+          },
+          {
+            "id": "notebooklm-audit-fix",
+            "status": "pending",
+            "title": "Fix readiness audit blockers",
+            "rationale": "The readiness audit must pass before dry-run or execution evidence can count for a live adapter.",
+            "command": "npm run ariadne -- mutation-readiness-audit --project <project>",
+            "evidenceRefs": [
+              "control/mutation-readiness-audit.json"
+            ]
+          },
+          {
+            "id": "notebooklm-dry-run",
+            "status": "blocked",
+            "title": "Run the reviewed dry-run command",
+            "rationale": "Dry-run evidence proves the reviewed command path before the live command is eligible for target-guarded execution.",
+            "command": "Create and audit-pass a target-specific readiness plan first.",
+            "evidenceRefs": [
+              "control/mutation-readiness-audit.json"
+            ]
+          },
+          {
+            "id": "notebooklm-target-execution",
+            "status": "blocked",
+            "title": "Capture target-guarded execution evidence",
+            "rationale": "The live adapter should only replace placeholder shell commands after the audited target wrapper has successfully verified the same target and recorded post-action verification evidence.",
+            "command": "Run a passed dry-run for an audit-passed plan first.",
+            "evidenceRefs": [
+              "control/mutation-readiness-audit.json"
+            ]
+          }
         ]
       }
     ]
@@ -1012,6 +1516,7 @@
       ]
     }
   ],
+  "benchmarkRuns": [],
   "evaluationTrends": {
     "schemaVersion": 1,
     "project": "ariadne",
@@ -1139,9 +1644,9 @@
   "consoleBrowserChecks": {
     "schemaVersion": 1,
     "project": "ariadne",
-    "generatedAt": "2026-05-16T17:37:17.918Z",
+    "generatedAt": "2026-05-16T22:29:44.821Z",
     "htmlPath": "projects/ariadne/console/index.html",
-    "screenshotPath": "projects/ariadne/console/screenshots/console-2026-05-16T17-37-17-918Z.png",
+    "screenshotPath": "projects/ariadne/console/screenshots/console-2026-05-16T22-29-44-821Z.png",
     "status": "passed",
     "viewport": {
       "width": 1440,
@@ -1192,7 +1697,7 @@
         "id": "screenshot",
         "label": "Screenshot captured",
         "status": "passed",
-        "detail": "862881 bytes captured."
+        "detail": "1028921 bytes captured."
       }
     ]
   },
@@ -2258,6 +2763,7 @@
     "roadmap": "projects/ariadne/gsd/roadmap.json",
     "control": "projects/ariadne/control/merge-readiness.json",
     "evaluationPlan": "projects/ariadne/evaluation/evaluation-plan.json",
+    "benchmarkRuns": "projects/ariadne/evaluation",
     "artifactChecks": "projects/ariadne/evaluation/artifact-checks.json",
     "evaluationTrends": "projects/ariadne/evaluation/evaluation-trends.json",
     "usageReport": "projects/ariadne/evaluation/usage-report.json",
@@ -2270,6 +2776,8 @@
     "approvals": "projects/ariadne/control/approvals",
     "mutationReadinessPlans": "projects/ariadne/control/mutation-readiness",
     "mutationReadinessAudit": "projects/ariadne/control/mutation-readiness-audit.json",
+    "liveAdapterReadiness": "projects/ariadne/control/live-adapter-readiness.json",
+    "liveAdapterNextActions": "projects/ariadne/control/live-adapter-next-actions.json",
     "recoveryReport": "projects/ariadne/control/recovery-report.json",
     "healerProposals": "projects/ariadne/verification/healer-proposals"
   }
