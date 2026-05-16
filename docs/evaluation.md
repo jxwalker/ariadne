@@ -33,6 +33,13 @@ vault/projects/<project>/evaluation/evaluation-trends.json
 vault/projects/<project>/evaluation/evaluation-trends.md
 ```
 
+`gsd2-process` writes selected local GSD process evidence:
+
+```text
+vault/projects/<project>/gsd/process/gsd2-process-<timestamp>.json
+vault/projects/<project>/gsd/process/gsd2-process-<timestamp>.md
+```
+
 `usage-import` appends normalised token/cost records and `usage-report` writes the aggregate report:
 
 ```text

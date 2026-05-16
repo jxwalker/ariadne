@@ -24,6 +24,7 @@ The system starts with source-grounded intake: drawings, white papers, dictated 
 - Plan OCR/transcription/PDF extraction runner selection before external tools run.
 - Import OCR, transcription, PDF text, and visual-description results back onto the original source record.
 - Write manifests, hot indexes, context dossiers, PRDs, GSD roadmaps, GSD2 bundles, execution plans, decision records, Playwright plans, infrastructure registries, evaluation plans, merge-readiness reports, and crash-recovery reports.
+- Collect a read-only GSD2 process snapshot from the selected local `gsd` executable.
 - Import manual NotebookLM exports, CI status, CodeRabbit review text, read-only GitHub PR/check snapshots, read-only infrastructure snapshots, and Playwright evidence.
 - Collect a sanitized live read-only local host inventory snapshot.
 - Capture target-app screenshots and Playwright traces from a URL before recording the evidence.
@@ -123,6 +124,7 @@ npm run ariadne -- extraction-plan --project ariadne --record <record-id> --tool
 npm run ariadne -- extraction-import --project ariadne --record <record-id> --from extracted.md --kind visual-description --tool manual-review
 npm run ariadne -- gsd2-export --project ariadne
 npm run ariadne -- gsd2-import --project ariadne --from gsd2-bundle.json
+npm run ariadne -- gsd2-process --project ariadne --binary gsd
 npm run ariadne -- decision --project ariadne --title "Decision" --context "Context" --decision "Choice"
 npm run ariadne -- execution --project ariadne --repo /path/to/repo
 npm run ariadne -- worktree-guard --project ariadne --run run.json
