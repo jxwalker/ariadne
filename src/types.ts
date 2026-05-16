@@ -382,11 +382,40 @@ export interface MutationDryRunRecord {
   command: string;
   exitCode?: number;
   signal?: string;
+  bufferExceeded?: boolean;
   durationMs: number;
   stdout: string;
   stderr: string;
   auditRef: string;
   execute: false;
+}
+
+export interface MutationExecutionRecord {
+  schemaVersion: 1;
+  id: string;
+  project: string;
+  planId: string;
+  target: MutationReadinessPlan["target"];
+  startedAt: string;
+  finishedAt: string;
+  status: "passed" | "failed" | "timed_out" | "post_verify_failed" | "post_verify_skipped";
+  liveCommand: string;
+  liveExitCode?: number;
+  liveSignal?: string;
+  liveBufferExceeded?: boolean;
+  liveStdout: string;
+  liveStderr: string;
+  postVerificationCommand: string;
+  postVerificationExitCode?: number;
+  postVerificationSignal?: string;
+  postVerificationBufferExceeded?: boolean;
+  postVerificationStdout: string;
+  postVerificationStderr: string;
+  durationMs: number;
+  auditRef: string;
+  dryRunRef: string;
+  rollback: string;
+  execute: true;
 }
 
 export interface InfraRegistry {
@@ -968,6 +997,7 @@ export interface ConsoleData {
     pendingApprovals: number;
     mutationReadinessPlans: number;
     mutationDryRuns: number;
+    mutationExecutions: number;
     mutationReadinessAuditStatus?: MutationReadinessAudit["status"];
     recoveryIssues: number;
     consoleBrowserChecks?: ConsoleBrowserCheckReport["status"];
@@ -1027,6 +1057,7 @@ export interface ConsoleData {
   approvals: ApprovalRecord[];
   mutationReadinessPlans: MutationReadinessPlan[];
   mutationDryRuns: MutationDryRunRecord[];
+  mutationExecutions: MutationExecutionRecord[];
   mutationReadinessAudit?: MutationReadinessAudit;
   recovery?: RecoveryReport;
   readiness?: ControlReport;
@@ -1049,6 +1080,7 @@ export interface ConsoleData {
     approvals?: string;
     mutationReadinessPlans?: string;
     mutationDryRuns?: string;
+    mutationExecutions?: string;
     mutationReadinessAudit?: string;
     recoveryReport?: string;
     extractionResults?: string;

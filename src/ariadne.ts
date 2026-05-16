@@ -38,6 +38,7 @@ import { importNotebookLmExport } from "./notebooklm.js";
 import { mutationTargetOption, planMutationReadiness } from "./mutationReadiness.js";
 import { generateMutationReadinessAudit } from "./mutationReadinessAudit.js";
 import { runMutationDryRun } from "./mutationDryRun.js";
+import { runMutationExecution } from "./mutationExecute.js";
 import { defaultVaultRoot } from "./paths.js";
 import { recordPlaywrightEvidence } from "./playwrightEvidence.js";
 import { generatePlaywrightPlan } from "./playwrightPlan.js";
@@ -140,6 +141,7 @@ function usage(): string {
     "  ariadne mutation-readiness --project <project> --target <target> --scope <text> --auth-evidence <paths> --dry-run <cmd> --live-command <cmd> --post-verify <cmd> --rollback <text> [--approval <id|json>] [--risk <low|medium|high>] [--evidence <paths>] [--notes <text>]",
     "  ariadne mutation-readiness-audit --project <project>",
     "  ariadne mutation-dry-run --project <project> --plan <id|json> [--timeout-ms <ms>]",
+    "  ariadne mutation-execute --project <project> --plan <id|json> --confirm-plan <id> [--timeout-ms <ms>]",
     "  ariadne control --project <project>",
     "  ariadne recovery-report --project <project>",
     "  ariadne console-data --project <project>",
@@ -905,6 +907,21 @@ async function main(): Promise<void> {
     console.log(`Mutation dry run: ${result.markdownPath}`);
     console.log(`Status: ${result.record.status}`);
     console.log(`Exit code: ${result.record.exitCode ?? "none"}`);
+    return;
+  }
+
+  if (parsed.command === "mutation-execute") {
+    const result = await runMutationExecution({
+      project,
+      vaultRoot,
+      plan: requiredOption(parsed.options, "plan"),
+      confirmPlan: requiredOption(parsed.options, "confirm-plan"),
+      timeoutMs: optionalNumber(parsed.options, "timeout-ms")
+    });
+    console.log(`Mutation execution: ${result.markdownPath}`);
+    console.log(`Status: ${result.record.status}`);
+    console.log(`Live exit code: ${result.record.liveExitCode ?? "none"}`);
+    console.log(`Post-verify exit code: ${result.record.postVerificationExitCode ?? "none"}`);
     return;
   }
 

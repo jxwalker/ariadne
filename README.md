@@ -46,7 +46,7 @@ The system starts with source-grounded intake: drawings, white papers, dictated 
 
 - It does not call model APIs.
 - It does not call NotebookLM.
-- It does not mutate Proxmox, TrueNAS, GitHub, runners, or external repos.
+- Normal flows do not mutate Proxmox, TrueNAS, GitHub, runners, or external repos; external-system changes are only permitted through `mutation-execute` with an approved plan, a passed dry-run record, and an exact `--confirm-plan` match.
 - It does not create, enable, disable, or run Hermes cron jobs.
 - It does not execute generated plans automatically.
 - It does not submit governed OpenScorpion activity.
@@ -67,6 +67,7 @@ npm run ariadne -- artifact-checks --project ariadne
 npm run ariadne -- benchmark-pack --set all
 npm run ariadne -- benchmark-run --project bench-smoke --set smoke
 npm run ariadne -- mutation-dry-run --project ariadne --plan mutation-readiness-github-...
+npm run ariadne -- mutation-execute --project ariadne --plan mutation-readiness-github-... --confirm-plan mutation-readiness-github-...
 npm run ariadne -- evaluation-trends --project ariadne
 npm run ariadne -- usage-report --project ariadne
 npm run ariadne -- control --project ariadne

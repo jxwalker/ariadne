@@ -30,6 +30,7 @@ import { collectLocalInfraSnapshot, collectSshInfraSnapshot, parseSshInventory }
 import { planMutationReadiness } from "../src/mutationReadiness.js";
 import { generateMutationReadinessAudit } from "../src/mutationReadinessAudit.js";
 import { runMutationDryRun } from "../src/mutationDryRun.js";
+import { runMutationExecution } from "../src/mutationExecute.js";
 import { generatePlaywrightPlan } from "../src/playwrightPlan.js";
 import { generateEvaluationPlan, recordEvaluationRun } from "../src/evaluation.js";
 import { generateEvaluationTrendReport } from "../src/evaluationTrends.js";
@@ -549,8 +550,8 @@ describe("roadmap adapters", () => {
       authEvidenceRefs: [approval.jsonPath],
       evidenceRefs: [behavior.jsonPath],
       dryRunCommand: "node -e \"console.log('mutation dry run ok')\"",
-      proposedLiveCommand: "gh pr merge 1 --squash --delete-branch",
-      postVerificationCommand: "gh pr view 1 --json mergeStateStatus,statusCheckRollup",
+      proposedLiveCommand: "node -e \"console.log('live command ok')\"",
+      postVerificationCommand: "node -e \"console.log('post verify ok')\"",
       rollback: "Revert the merge commit and disable the mutation adapter.",
       approvalRef: approval.record.id
     });
@@ -622,6 +623,26 @@ describe("roadmap adapters", () => {
     expect(dryRun.record.status).toBe("passed");
     expect(dryRun.record.command).toBe(mutationReadiness.plan.dryRunCommand);
     expect(dryRun.record.execute).toBe(false);
+    await expect(
+      runMutationExecution({
+        project: "ariadne",
+        vaultRoot,
+        plan: mutationReadiness.plan.id,
+        confirmPlan: "wrong-plan-id",
+        timeoutMs: 10_000
+      })
+    ).rejects.toThrow(/--confirm-plan/);
+    const mutationExecution = await runMutationExecution({
+      project: "ariadne",
+      vaultRoot,
+      plan: mutationReadiness.plan.id,
+      confirmPlan: mutationReadiness.plan.id,
+      timeoutMs: 10_000
+    });
+    expect(mutationExecution.record.status).toBe("passed");
+    expect(mutationExecution.record.execute).toBe(true);
+    expect(mutationExecution.record.liveStdout).toContain("live command ok");
+    expect(mutationExecution.record.postVerificationStdout).toContain("post verify ok");
     await expect(
       runMutationDryRun({
         project: "ariadne",
@@ -755,12 +776,14 @@ describe("roadmap adapters", () => {
     const readinessCheck = artifactChecks.report.checks.find((check) => check.id === "mutation-readiness-plans");
     const readinessAuditCheck = artifactChecks.report.checks.find((check) => check.id === "mutation-readiness-audit");
     const mutationDryRunCheck = artifactChecks.report.checks.find((check) => check.id === "mutation-dry-runs");
+    const mutationExecutionCheck = artifactChecks.report.checks.find((check) => check.id === "mutation-executions");
     expect(coordinationCheck?.matches?.some((match) => match.includes("coordination/hermes"))).toBe(false);
     expect(hermesCheck?.count).toBe(1);
     expect(hermesProposalCheck?.count).toBe(2);
     expect(readinessCheck?.count).toBe(2);
     expect(readinessAuditCheck?.status).toBe("present");
     expect(mutationDryRunCheck?.status).toBe("present");
+    expect(mutationExecutionCheck?.status).toBe("present");
   });
 
   it("records CI, CodeRabbit, Playwright, infra, OpenScorpion, and guarded worktree evidence", async () => {

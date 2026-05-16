@@ -110,10 +110,11 @@ Implemented:
 - mutation-readiness artifacts for future live adapters
 - mutation-readiness audit report for blocked live-adapter plans
 - guarded execution records for approved readiness dry-run commands
+- confirmed live-command execution records with post-action verification evidence
 
 Next:
 
-- GitHub mutation and check-retry adapter only after an approved readiness plan passes audit and dry-run evidence is recorded
+- target-specific GitHub, deployment, Hermes, GSD2, NotebookLM, and OpenScorpion adapters on top of the generic audited execution substrate
 
 ## Milestone 6: Infrastructure Substrate
 
