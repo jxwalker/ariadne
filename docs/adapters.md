@@ -149,6 +149,19 @@ Supported systems are `proxmox`, `truenas`, `dgx-spark`, and `mac`. The host lab
 - `control/mutation-readiness/mutation-readiness-deployment-<timestamp>.json`
 - `control/mutation-readiness/mutation-readiness-deployment-<timestamp>.md`
 
+`hermes-cron-mutation-plan` is the target-specific Hermes scheduler bridge on top of mutation readiness. It does not create, update, enable, disable, delete, or run Hermes jobs. It records one scheduler action and one job label, then captures the exact reviewed dry-run, live, post-verification, and rollback commands:
+
+```bash
+npm run ariadne -- hermes-cron-mutation-plan --project ariadne --action update --job nightly-memory-review --host beast --scope "Update nightly memory review schedule" --auth-evidence control/approvals/approval-...json --dry-run "hermes cron get nightly-memory-review --host beast" --live-command "hermes cron update nightly-memory-review --host beast --from reviewed-job.json" --post-verify "hermes cron get nightly-memory-review --host beast" --rollback "hermes cron update nightly-memory-review --host beast --from previous-job.json" --approval approval-...
+```
+
+Supported actions are `create`, `update`, `enable`, `disable`, and `delete`. `run-now` is intentionally excluded from the planning wrapper because it is an immediate execution action, not a durable scheduler-state change.
+
+`hermes-cron-mutation-plan` artifacts:
+
+- `control/mutation-readiness/mutation-readiness-hermes-cron-<timestamp>.json`
+- `control/mutation-readiness/mutation-readiness-hermes-cron-<timestamp>.md`
+
 ## Recovery
 
 `recovery-report` reads the vault state and writes a crash-resume report without mutating worktrees, branches, PRs, or external systems. It identifies incomplete execution runs, missing worktree guard reports, failed checks, pending reviews, and missing readiness gates.
@@ -174,6 +187,7 @@ Artifacts:
 npm run ariadne -- approval-request --project ariadne --by planner --target github --action "Enable PR mutation adapter" --risk medium --reason "Manual gate before live mutation" --rollback "Disable adapter and return to manual PR flow"
 npm run ariadne -- approval-decision --project ariadne --approval approval-... --status approved --by james --notes "Approved for a bounded test only."
 npm run ariadne -- mutation-readiness --project ariadne --target github --scope "Single PR merge adapter" --auth-evidence control/approvals/approval-...json --dry-run "gh pr view 1 --json statusCheckRollup" --live-command "gh pr merge 1 --squash" --post-verify "gh pr view 1 --json mergeStateStatus,statusCheckRollup" --rollback "Revert merge commit and disable adapter" --approval approval-...
+npm run ariadne -- hermes-cron-mutation-plan --project ariadne --action update --job nightly-memory-review --host beast --scope "Update nightly memory review schedule" --auth-evidence control/approvals/approval-...json --dry-run "hermes cron get nightly-memory-review --host beast" --live-command "hermes cron update nightly-memory-review --host beast --from reviewed-job.json" --post-verify "hermes cron get nightly-memory-review --host beast" --rollback "hermes cron update nightly-memory-review --host beast --from previous-job.json" --approval approval-...
 npm run ariadne -- deployment-mutation-plan --project ariadne --system proxmox --host beast --scope "Restart Ariadne worker service" --auth-evidence control/approvals/approval-...json --dry-run "ssh beast systemctl status ariadne" --live-command "ssh beast sudo systemctl restart ariadne" --post-verify "ssh beast systemctl is-active ariadne" --rollback "ssh beast sudo systemctl restart ariadne-previous" --approval approval-...
 npm run ariadne -- mutation-readiness-audit --project ariadne
 npm run ariadne -- mutation-dry-run --project ariadne --plan mutation-readiness-github-...
@@ -276,6 +290,14 @@ Artifacts:
 - `coordination/hermes/hermes-cron-<timestamp>.md`
 - `coordination/hermes/hermes-cron-proposal-<timestamp>.json`
 - `coordination/hermes/hermes-cron-proposal-<timestamp>.md`
+
+`hermes-cron-mutation-plan` is the review gate before any live Hermes scheduler adapter. Use it to bind one scheduler action and job label to the proposed commands:
+
+```bash
+npm run ariadne -- hermes-cron-mutation-plan --project ariadne --action update --job nightly-memory-review --host beast --scope "Update nightly memory review schedule" --auth-evidence control/approvals/approval-...json --dry-run "hermes cron get nightly-memory-review --host beast" --live-command "hermes cron update nightly-memory-review --host beast --from reviewed-job.json" --post-verify "hermes cron get nightly-memory-review --host beast" --rollback "hermes cron update nightly-memory-review --host beast --from previous-job.json" --approval approval-...
+```
+
+The plan remains non-executing. It feeds the same `mutation-readiness-audit`, `mutation-dry-run`, and `mutation-execute` gates used by other mutation adapters.
 
 ## Console Data
 
