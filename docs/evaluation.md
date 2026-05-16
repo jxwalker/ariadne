@@ -26,6 +26,13 @@ vault/projects/<project>/evaluation/evaluation-<timestamp>.json
 vault/projects/<project>/evaluation/evaluation-<timestamp>.md
 ```
 
+`evaluation-trends` writes the longitudinal trend report:
+
+```text
+vault/projects/<project>/evaluation/evaluation-trends.json
+vault/projects/<project>/evaluation/evaluation-trends.md
+```
+
 `artifact-checks` writes the deterministic artifact contract report:
 
 ```text
@@ -61,6 +68,7 @@ npm test
 npm run build
 npm run cli -- artifact-checks --project ariadne
 npm run cli -- benchmark-pack --set all
+npm run cli -- evaluation-trends --project ariadne
 npm run cli -- control --project ariadne
 npm run cli -- evaluation-record --project ariadne --plan vault/projects/ariadne/evaluation/evaluation-plan.json --scores D1=80,D2=75,D3=70,D4=65,D5=60 --evidence vault/projects/ariadne/control/merge-readiness.md
 ```
@@ -88,6 +96,7 @@ A run is acceptable when:
 - artifact checks have no missing required artifacts,
 - control report has no unexplained missing gates,
 - evaluation records cite the evidence used for scoring,
+- trend reports show whether scores are stable, improving, or declining,
 - regressions are listed rather than hidden.
 
 ## Future Automation
@@ -96,5 +105,4 @@ Next evaluation work should add:
 
 - Playwright screenshot and trace ingestion,
 - mutation or fixture-based tests for behavior harness confidence,
-- cost and token metrics from Hermes or CodeRabbit,
-- longitudinal trend reports for console visualisation.
+- cost and token metrics from Hermes or CodeRabbit.

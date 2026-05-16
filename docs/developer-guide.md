@@ -32,6 +32,7 @@ npm run build
 - `src/consoleData.ts`: normalised read-only console projection.
 - `src/consoleHtml.ts`: static console renderer over console data.
 - `src/evaluation.ts`: pipeline evaluation plans and run scores.
+- `src/evaluationTrends.ts`: longitudinal evaluation report generation.
 - `src/artifactChecks.ts`: deterministic artifact contract checks for the evaluation harness.
 - `src/benchmarkPacks.ts`: repeatable smoke, realistic, and stress source-pack generation.
 - `src/infrastructure.ts` and `src/infraSnapshot.ts`: substrate registry and read-only imports.

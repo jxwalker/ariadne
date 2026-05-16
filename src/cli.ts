@@ -8,6 +8,7 @@ import { generateConsoleData } from "./consoleData.js";
 import { generateConsoleHtml } from "./consoleHtml.js";
 import { recordDecision } from "./decisions.js";
 import { generateEvaluationPlan, recordEvaluationRun } from "./evaluation.js";
+import { generateEvaluationTrendReport } from "./evaluationTrends.js";
 import { markRunStatus, planExecution } from "./execution.js";
 import { generateGsd } from "./gsd.js";
 import { exportGsd2Bundle, importGsd2Bundle } from "./gsdAdapter.js";
@@ -74,6 +75,7 @@ function usage(): string {
     "  ariadne playwright-evidence --project <project> --target-url <url> --status <status>",
     "  ariadne evaluation --project <project> [--target <name>]",
     "  ariadne evaluation-record --project <project> --plan <plan.json> --scores <D1=80,D2=75> [--evidence <paths>]",
+    "  ariadne evaluation-trends --project <project>",
     "  ariadne artifact-checks --project <project>",
     "  ariadne benchmark-pack --set <smoke|realistic|stress|all> [--output <dir>]",
     "  ariadne infra --project <project>",
@@ -304,6 +306,17 @@ async function main(): Promise<void> {
     });
     console.log(`Evaluation run: ${result.markdownPath}`);
     console.log(`Overall score: ${result.run.overallScore}`);
+    return;
+  }
+
+  if (parsed.command === "evaluation-trends") {
+    const result = await generateEvaluationTrendReport({ project, vaultRoot });
+    console.log(`Evaluation trends: ${result.markdownPath}`);
+    console.log(`Status: ${result.report.status}`);
+    console.log(`Runs: ${result.report.runCount}`);
+    if (result.report.delta !== undefined) {
+      console.log(`Delta: ${result.report.delta}`);
+    }
     return;
   }
 

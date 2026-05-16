@@ -138,11 +138,11 @@ Implemented:
 - D1-D5 score model for evidence, planning, execution, verification, and operations
 - automatic artifact existence checks
 - benchmark source packs for smoke, realistic, and stress runs
-- CLI support for `evaluation`, `evaluation-record`, `artifact-checks`, and `benchmark-pack`
+- trend report generation
+- CLI support for `evaluation`, `evaluation-record`, `evaluation-trends`, `artifact-checks`, and `benchmark-pack`
 
 Next:
 
-- trend report generation
 - token/cost metrics from Hermes and review tools
 - mutation and approved-fixture checks for behavior confidence
 

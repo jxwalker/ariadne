@@ -16,6 +16,7 @@ import { generateInfrastructureRegistry } from "../src/infrastructure.js";
 import { draftOpenScorpionActivity, importInfraSnapshot } from "../src/infraSnapshot.js";
 import { generatePlaywrightPlan } from "../src/playwrightPlan.js";
 import { generateEvaluationPlan, recordEvaluationRun } from "../src/evaluation.js";
+import { generateEvaluationTrendReport } from "../src/evaluationTrends.js";
 import { importNotebookLmExport } from "../src/notebooklm.js";
 import { recordPlaywrightEvidence } from "../src/playwrightEvidence.js";
 import { generatePrd } from "../src/prd.js";
@@ -163,6 +164,50 @@ describe("roadmap adapters", () => {
     await assembleDossier({ project: "bench-realistic", vaultRoot, maxCharsPerSource: 4000 });
     const prd = await generatePrd({ project: "bench-realistic", vaultRoot });
     expect(prd.prd.requirements.length).toBeGreaterThan(0);
+  });
+
+  it("generates evaluation trend reports across scored runs", async () => {
+    const { vaultRoot } = await preparedProject();
+    const evaluation = await generateEvaluationPlan({ project: "ariadne", vaultRoot, target: "mac-local" });
+    await recordEvaluationRun({
+      project: "ariadne",
+      vaultRoot,
+      planPath: evaluation.jsonPath,
+      target: "mac-local",
+      operator: "vitest",
+      dimensionScores: [
+        { id: "D1", score: 60, notes: "baseline evidence" },
+        { id: "D4", score: 50, notes: "weak verification" }
+      ],
+      evidenceRefs: ["baseline.md"],
+      regressions: ["No Playwright trace."],
+      recommendations: ["Add UI evidence."]
+    });
+    await new Promise((resolve) => setTimeout(resolve, 2));
+    await recordEvaluationRun({
+      project: "ariadne",
+      vaultRoot,
+      planPath: evaluation.jsonPath,
+      target: "mac-local",
+      operator: "vitest",
+      dimensionScores: [
+        { id: "D1", score: 70, notes: "better source refs" },
+        { id: "D4", score: 80, notes: "verification improved" }
+      ],
+      evidenceRefs: ["latest.md", "artifact-checks.md"],
+      regressions: [],
+      recommendations: ["Start trend charts."]
+    });
+
+    const trends = await generateEvaluationTrendReport({ project: "ariadne", vaultRoot });
+    expect(trends.report.status).toBe("improving");
+    expect(trends.report.runCount).toBe(2);
+    expect(trends.report.delta).toBeGreaterThan(0);
+    expect(trends.report.dimensions.find((dimension) => dimension.id === "D4")?.delta).toBe(30);
+
+    const markdown = await fs.readFile(trends.markdownPath, "utf8");
+    expect(markdown).toContain("# Evaluation Trends");
+    expect(markdown).toContain("Start trend charts.");
   });
 
   it("records CI, CodeRabbit, Playwright, infra, OpenScorpion, and guarded worktree evidence", async () => {
