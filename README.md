@@ -1,6 +1,6 @@
 # Ariadne
 
-![Ariadne logo](assets/ariadne-logo.svg)
+![Ariadne logo](assets/ariadne-logo-simple.png)
 
 `ariadne` is the control layer for an end-to-end agentic coding system. It is not a replacement coding assistant. It is the outer harness around assistants, consoles, memory systems, testing tools, CI, review bots, and local infrastructure.
 
