@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "project": "agentic-coding",
-  "generatedAt": "2026-05-15T21:29:14.023Z",
+  "generatedAt": "2026-05-16T06:09:25.008Z",
   "milestones": [
     {
       "id": "M1",
@@ -136,7 +136,7 @@
           ],
           "canRunInParallel": true,
           "writes": [
-            "src/infrastructure.ts",
+            "src/infraSnapshot.ts",
             "vault/projects/<project>/infrastructure/"
           ]
         }
@@ -165,7 +165,7 @@
           ],
           "canRunInParallel": true,
           "writes": [
-            "src/playwrightPlan.ts",
+            "src/playwrightEvidence.ts",
             "vault/projects/<project>/verification/"
           ]
         }

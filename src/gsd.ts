@@ -37,11 +37,11 @@ function writesForRequirement(id: string): string[] {
     case "REQ-004":
       return ["src/execution.ts", "vault/projects/<project>/execution/"];
     case "REQ-005":
-      return ["src/playwrightPlan.ts", "vault/projects/<project>/verification/"];
+      return ["src/playwrightEvidence.ts", "vault/projects/<project>/verification/"];
     case "REQ-006":
       return ["src/controlPlane.ts", "vault/projects/<project>/control/"];
     case "REQ-007":
-      return ["src/infrastructure.ts", "vault/projects/<project>/infrastructure/"];
+      return ["src/infraSnapshot.ts", "vault/projects/<project>/infrastructure/"];
     default:
       return ["src/"];
   }

@@ -3,6 +3,7 @@ import path from "node:path";
 import { extractText, normaliseExtractedText, sourceKind } from "./extract.js";
 import { sha256File } from "./hash.js";
 import { projectDir, safeFileName, slugifyProject } from "./paths.js";
+import { scanTextForSecrets, shouldBlockHygiene } from "./sourceHygiene.js";
 import type { DossierOptions, IngestOptions, IngestRecord, ProjectStatus, SourceKind } from "./types.js";
 
 function timestampId(date = new Date()): string {
@@ -102,13 +103,26 @@ export async function ingestFiles(files: string[], options: IngestOptions): Prom
     const fileName = safeFileName(path.basename(sourcePath));
     const storedPath = path.join(recordDir, fileName);
     const kind = sourceKind(sourcePath);
+    const extracted = await extractText(sourcePath);
+    const scanText = extracted ?? (kind === "unknown" ? await tryReadUtf8(sourcePath) : undefined);
+    const hygieneReport = scanText !== undefined ? scanTextForSecrets(sourcePath, scanText) : undefined;
+
+    if (hygieneReport !== undefined && shouldBlockHygiene(hygieneReport) && !options.allowSecretFindings) {
+      const details = hygieneReport.findings
+        .filter((finding) => finding.severity === "high")
+        .map((finding) => `${finding.kind} at line ${finding.line}`)
+        .join(", ");
+      throw new Error(
+        `Source hygiene blocked ${sourcePath}: ${details}. Re-run with --allow-secret-findings only if this is intentional.`
+      );
+    }
 
     await fs.mkdir(recordDir, { recursive: true });
     await fs.copyFile(sourcePath, storedPath);
 
-    const extracted = await extractText(sourcePath);
     let extractedTextPath: string | undefined;
     let handoffPath: string | undefined;
+    let hygieneReportPath: string | undefined;
 
     if (extracted !== undefined) {
       const text = normaliseExtractedText(extracted);
@@ -128,6 +142,11 @@ export async function ingestFiles(files: string[], options: IngestOptions): Prom
       await fs.writeFile(handoffPath, renderHandoff({ sourcePath, storedPath, kind, sha256 }));
     }
 
+    if (hygieneReport !== undefined) {
+      hygieneReportPath = path.join(recordDir, "hygiene.json");
+      await fs.writeFile(hygieneReportPath, `${JSON.stringify(hygieneReport, null, 2)}\n`);
+    }
+
     const record: IngestRecord = {
       schemaVersion: 1,
       id,
@@ -136,6 +155,7 @@ export async function ingestFiles(files: string[], options: IngestOptions): Prom
       storedPath,
       extractedTextPath,
       handoffPath,
+      hygieneReportPath,
       fileName,
       kind,
       sensitivity: options.sensitivity ?? "internal",
@@ -187,6 +207,7 @@ export async function assembleDossier(options: DossierOptions): Promise<string> 
         `- SHA-256: ${record.sha256}`,
     record.extractedTextPath ? `- Extracted text: ${record.extractedTextPath}` : "- Extracted text: none",
         record.handoffPath ? `- Handoff: ${record.handoffPath}` : "- Handoff: none",
+        record.hygieneReportPath ? `- Hygiene: ${record.hygieneReportPath}` : "- Hygiene: not scanned",
         `- Sensitivity: ${record.sensitivity}`,
         "",
         fenceText(excerpt),
@@ -224,6 +245,14 @@ export async function assembleDossier(options: DossierOptions): Promise<string> 
   await fs.writeFile(dossierPath, body);
   await writeHotIndex(options.vaultRoot, project);
   return dossierPath;
+}
+
+async function tryReadUtf8(filePath: string): Promise<string | undefined> {
+  try {
+    return await fs.readFile(filePath, "utf8");
+  } catch {
+    return undefined;
+  }
 }
 
 function renderHandoff(input: {

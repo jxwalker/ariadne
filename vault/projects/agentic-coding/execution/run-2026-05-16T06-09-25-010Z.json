@@ -1,8 +1,8 @@
 {
   "schemaVersion": 1,
-  "id": "run-2026-05-15T21-29-14-025Z",
+  "id": "run-2026-05-16T06-09-25-010Z",
   "project": "agentic-coding",
-  "createdAt": "2026-05-15T21:29:14.025Z",
+  "createdAt": "2026-05-16T06:09:25.010Z",
   "taskIds": [
     "TASK-001",
     "TASK-002",
@@ -14,7 +14,7 @@
   ],
   "repoPath": "<REPO_ROOT>",
   "branchPrefix": "jxw/dev-pipeline",
-  "status": "complete",
+  "status": "planned",
   "gates": [
     "npm run check",
     "npm test",

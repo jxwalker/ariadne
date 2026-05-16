@@ -15,12 +15,12 @@ Implemented:
 - audio transcription handoff contracts
 - source sensitivity labels
 - manifest schema versioning
+- secret scanning before vault promotion
 
 Next:
 
 - optional OCR adapter implementation
 - optional transcription adapter implementation
-- secret scanning before vault promotion
 
 ## Milestone 1: Source-Grounded PRD
 
@@ -33,10 +33,10 @@ Implemented:
 - PRD Markdown export
 - source reference map
 - ambiguity log
+- NotebookLM manual export normaliser
 
 Next:
 
-- NotebookLM manual export normaliser
 - NotebookLM automation adapter only after authentication and safety are explicit
 
 ## Milestone 2: GSD2 Bridge
@@ -49,11 +49,12 @@ Implemented:
 - task Markdown export
 - task success criteria
 - verification command registry
+- GSD2-compatible bundle export/import
+- decision log records
 
 Next:
 
-- actual GSD2 local import/export adapter
-- decision log updates
+- actual GSD2 process adapter if a local GSD2 install is selected
 
 ## Milestone 3: Execution Loop
 
@@ -66,10 +67,10 @@ Implemented:
 - branch naming
 - explicit gates
 - stop conditions and human escalation
+- guarded worktree readiness checks
 
 Next:
 
-- guarded worktree creation
 - commit/PR/check/review loop
 - crash recovery from state files
 
@@ -82,6 +83,7 @@ Implemented:
 - Playwright test plan generation from PRD
 - generated role-oriented test skeleton
 - trace/screenshot/accessibility evidence contract
+- Playwright evidence records
 
 Next:
 
@@ -98,12 +100,13 @@ Implemented:
 - merge readiness reports
 - policy gate list
 - evidence and missing-gate classification
+- CI status ingestion
+- CodeRabbit feedback ingestion
+- test history through check records
 
 Next:
 
-- CI status ingestion
-- CodeRabbit feedback ingestion
-- test history
+- GitHub live check adapter
 
 ## Milestone 6: Infrastructure Substrate
 
@@ -115,9 +118,72 @@ Implemented:
 - runner pool planning contract
 - local model endpoint registry contract
 - explicit no-mutation rules
+- read-only infrastructure snapshot imports
+- OpenScorpion governed activity drafts
 
 Next:
 
-- live read-only infrastructure inventory
-- OpenScorpion governed activity adapter
+- live read-only infrastructure inventory from approved hosts
+- OpenScorpion governed activity submission after approval
 - explicit approval before any mutation
+
+## Milestone 7: Evaluation Harness
+
+Goal: measure whether the pipeline is producing better, safer, more verified work.
+
+Implemented:
+
+- evaluation plan artifacts
+- evaluation run records
+- D1-D5 score model for evidence, planning, execution, verification, and operations
+- CLI support for `evaluation` and `evaluation-record`
+
+Next:
+
+- automatic artifact existence checks
+- benchmark source packs for smoke, realistic, and stress runs
+- trend report generation
+- token/cost metrics from Hermes and review tools
+- mutation and approved-fixture checks for behavior confidence
+
+## Milestone 8: Orchestration Visualisation
+
+Goal: make the harness inspectable as a live operations surface.
+
+Implemented:
+
+- documented dashboard object model
+- documented gate matrix and infrastructure map concepts
+
+Next:
+
+- read-only vault dashboard
+- project timeline from artifacts
+- evaluation trend charts
+- infra topology view for Macs, DGX Spark, Proxmox, TrueNAS, runners, Hermes, and model endpoints
+- approval queue backed by decision and control artifacts
+
+## Milestone 9: Sleep, Memory, And Agent Mail
+
+Goal: let long-running agents coordinate without losing state or hiding decisions.
+
+Next:
+
+- file-backed sleep routine records
+- memory consolidation proposals with evidence refs
+- agent mail inbox/outbox records scoped to project, task, and run ids
+- interagent lease and ownership records
+- Hermes cron integration after read-only evidence paths are proven
+
+## Milestone 10: Live Deployment Adapters
+
+Goal: safely deploy across the local estate.
+
+Next:
+
+- read-only Proxmox inventory adapter
+- read-only TrueNAS storage snapshot adapter
+- DGX Spark model/evaluation endpoint registry
+- Mac workstation capability snapshots
+- GitHub live check adapter
+- explicit approval workflow before any mutation-capable adapter

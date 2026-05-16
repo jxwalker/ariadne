@@ -1,7 +1,7 @@
 # Agentic Coding PRD
 
-Generated: 2026-05-15T21:29:14.020Z
-Source dossier: /Users/james/Documents/dev/dev-pipeline/vault/projects/agentic-coding/context/dossier-2026-05-15T21-29-09-496Z.md
+Generated: 2026-05-16T06:09:25.006Z
+Source dossier: <VAULT_ROOT>/projects/agentic-coding/context/dossier-2026-05-15T21-29-09-496Z.md
 
 ## Goals
 
@@ -29,14 +29,14 @@ Acceptance:
 - Extracted text remains linked to the raw evidence.
 
 Sources:
-- /Users/james/Documents/dev/dev-pipeline/vault/projects/agentic-coding/context/dossier-2026-05-15T21-29-09-496Z.md
-- /Users/james/Documents/dev/dev-pipeline/vault/projects/agentic-coding/context/dossier-2026-05-15T21-29-09-496Z.md:7
-- /Users/james/Documents/dev/dev-pipeline/vault/projects/agentic-coding/context/dossier-2026-05-15T21-29-09-496Z.md:9
-- /Users/james/Documents/dev/dev-pipeline/vault/projects/agentic-coding/context/dossier-2026-05-15T21-29-09-496Z.md:16
-- /Users/james/Documents/dev/dev-pipeline/vault/projects/agentic-coding/context/dossier-2026-05-15T21-29-09-496Z.md:22
-- /Users/james/Documents/dev/dev-pipeline/vault/projects/agentic-coding/context/dossier-2026-05-15T21-29-09-496Z.md:34
-- /Users/james/Documents/dev/dev-pipeline/vault/projects/agentic-coding/context/dossier-2026-05-15T21-29-09-496Z.md:35
-- /Users/james/Documents/dev/dev-pipeline/vault/projects/agentic-coding/context/dossier-2026-05-15T21-29-09-496Z.md:36
+- <VAULT_ROOT>/projects/agentic-coding/context/dossier-2026-05-15T21-29-09-496Z.md
+- <VAULT_ROOT>/projects/agentic-coding/context/dossier-2026-05-15T21-29-09-496Z.md:7
+- <VAULT_ROOT>/projects/agentic-coding/context/dossier-2026-05-15T21-29-09-496Z.md:9
+- <VAULT_ROOT>/projects/agentic-coding/context/dossier-2026-05-15T21-29-09-496Z.md:16
+- <VAULT_ROOT>/projects/agentic-coding/context/dossier-2026-05-15T21-29-09-496Z.md:22
+- <VAULT_ROOT>/projects/agentic-coding/context/dossier-2026-05-15T21-29-09-496Z.md:34
+- <VAULT_ROOT>/projects/agentic-coding/context/dossier-2026-05-15T21-29-09-496Z.md:35
+- <VAULT_ROOT>/projects/agentic-coding/context/dossier-2026-05-15T21-29-09-496Z.md:36
 
 ### REQ-002: Source-grounded PRD synthesis
 
@@ -50,14 +50,14 @@ Acceptance:
 - Manual exports work before automation is attempted.
 
 Sources:
-- /Users/james/Documents/dev/dev-pipeline/vault/projects/agentic-coding/context/dossier-2026-05-15T21-29-09-496Z.md
-- /Users/james/Documents/dev/dev-pipeline/vault/projects/agentic-coding/context/dossier-2026-05-15T21-29-09-496Z.md:7
-- /Users/james/Documents/dev/dev-pipeline/vault/projects/agentic-coding/context/dossier-2026-05-15T21-29-09-496Z.md:9
-- /Users/james/Documents/dev/dev-pipeline/vault/projects/agentic-coding/context/dossier-2026-05-15T21-29-09-496Z.md:16
-- /Users/james/Documents/dev/dev-pipeline/vault/projects/agentic-coding/context/dossier-2026-05-15T21-29-09-496Z.md:22
-- /Users/james/Documents/dev/dev-pipeline/vault/projects/agentic-coding/context/dossier-2026-05-15T21-29-09-496Z.md:34
-- /Users/james/Documents/dev/dev-pipeline/vault/projects/agentic-coding/context/dossier-2026-05-15T21-29-09-496Z.md:35
-- /Users/james/Documents/dev/dev-pipeline/vault/projects/agentic-coding/context/dossier-2026-05-15T21-29-09-496Z.md:36
+- <VAULT_ROOT>/projects/agentic-coding/context/dossier-2026-05-15T21-29-09-496Z.md
+- <VAULT_ROOT>/projects/agentic-coding/context/dossier-2026-05-15T21-29-09-496Z.md:7
+- <VAULT_ROOT>/projects/agentic-coding/context/dossier-2026-05-15T21-29-09-496Z.md:9
+- <VAULT_ROOT>/projects/agentic-coding/context/dossier-2026-05-15T21-29-09-496Z.md:16
+- <VAULT_ROOT>/projects/agentic-coding/context/dossier-2026-05-15T21-29-09-496Z.md:22
+- <VAULT_ROOT>/projects/agentic-coding/context/dossier-2026-05-15T21-29-09-496Z.md:34
+- <VAULT_ROOT>/projects/agentic-coding/context/dossier-2026-05-15T21-29-09-496Z.md:35
+- <VAULT_ROOT>/projects/agentic-coding/context/dossier-2026-05-15T21-29-09-496Z.md:36
 
 ### REQ-003: GSD2 task bridge
 
@@ -71,14 +71,14 @@ Acceptance:
 - Tasks preserve requirement traceability.
 
 Sources:
-- /Users/james/Documents/dev/dev-pipeline/vault/projects/agentic-coding/context/dossier-2026-05-15T21-29-09-496Z.md
-- /Users/james/Documents/dev/dev-pipeline/vault/projects/agentic-coding/context/dossier-2026-05-15T21-29-09-496Z.md:7
-- /Users/james/Documents/dev/dev-pipeline/vault/projects/agentic-coding/context/dossier-2026-05-15T21-29-09-496Z.md:9
-- /Users/james/Documents/dev/dev-pipeline/vault/projects/agentic-coding/context/dossier-2026-05-15T21-29-09-496Z.md:16
-- /Users/james/Documents/dev/dev-pipeline/vault/projects/agentic-coding/context/dossier-2026-05-15T21-29-09-496Z.md:22
-- /Users/james/Documents/dev/dev-pipeline/vault/projects/agentic-coding/context/dossier-2026-05-15T21-29-09-496Z.md:34
-- /Users/james/Documents/dev/dev-pipeline/vault/projects/agentic-coding/context/dossier-2026-05-15T21-29-09-496Z.md:35
-- /Users/james/Documents/dev/dev-pipeline/vault/projects/agentic-coding/context/dossier-2026-05-15T21-29-09-496Z.md:36
+- <VAULT_ROOT>/projects/agentic-coding/context/dossier-2026-05-15T21-29-09-496Z.md
+- <VAULT_ROOT>/projects/agentic-coding/context/dossier-2026-05-15T21-29-09-496Z.md:7
+- <VAULT_ROOT>/projects/agentic-coding/context/dossier-2026-05-15T21-29-09-496Z.md:9
+- <VAULT_ROOT>/projects/agentic-coding/context/dossier-2026-05-15T21-29-09-496Z.md:16
+- <VAULT_ROOT>/projects/agentic-coding/context/dossier-2026-05-15T21-29-09-496Z.md:22
+- <VAULT_ROOT>/projects/agentic-coding/context/dossier-2026-05-15T21-29-09-496Z.md:34
+- <VAULT_ROOT>/projects/agentic-coding/context/dossier-2026-05-15T21-29-09-496Z.md:35
+- <VAULT_ROOT>/projects/agentic-coding/context/dossier-2026-05-15T21-29-09-496Z.md:36
 
 ### REQ-004: Bounded execution loop
 
@@ -92,14 +92,14 @@ Acceptance:
 - External mutations remain blocked unless a later approved adapter is enabled.
 
 Sources:
-- /Users/james/Documents/dev/dev-pipeline/vault/projects/agentic-coding/context/dossier-2026-05-15T21-29-09-496Z.md
-- /Users/james/Documents/dev/dev-pipeline/vault/projects/agentic-coding/context/dossier-2026-05-15T21-29-09-496Z.md:7
-- /Users/james/Documents/dev/dev-pipeline/vault/projects/agentic-coding/context/dossier-2026-05-15T21-29-09-496Z.md:9
-- /Users/james/Documents/dev/dev-pipeline/vault/projects/agentic-coding/context/dossier-2026-05-15T21-29-09-496Z.md:16
-- /Users/james/Documents/dev/dev-pipeline/vault/projects/agentic-coding/context/dossier-2026-05-15T21-29-09-496Z.md:22
-- /Users/james/Documents/dev/dev-pipeline/vault/projects/agentic-coding/context/dossier-2026-05-15T21-29-09-496Z.md:34
-- /Users/james/Documents/dev/dev-pipeline/vault/projects/agentic-coding/context/dossier-2026-05-15T21-29-09-496Z.md:35
-- /Users/james/Documents/dev/dev-pipeline/vault/projects/agentic-coding/context/dossier-2026-05-15T21-29-09-496Z.md:36
+- <VAULT_ROOT>/projects/agentic-coding/context/dossier-2026-05-15T21-29-09-496Z.md
+- <VAULT_ROOT>/projects/agentic-coding/context/dossier-2026-05-15T21-29-09-496Z.md:7
+- <VAULT_ROOT>/projects/agentic-coding/context/dossier-2026-05-15T21-29-09-496Z.md:9
+- <VAULT_ROOT>/projects/agentic-coding/context/dossier-2026-05-15T21-29-09-496Z.md:16
+- <VAULT_ROOT>/projects/agentic-coding/context/dossier-2026-05-15T21-29-09-496Z.md:22
+- <VAULT_ROOT>/projects/agentic-coding/context/dossier-2026-05-15T21-29-09-496Z.md:34
+- <VAULT_ROOT>/projects/agentic-coding/context/dossier-2026-05-15T21-29-09-496Z.md:35
+- <VAULT_ROOT>/projects/agentic-coding/context/dossier-2026-05-15T21-29-09-496Z.md:36
 
 ### REQ-005: Playwright UI verification evidence
 
@@ -113,14 +113,14 @@ Acceptance:
 - Evidence paths are recorded separately from claims.
 
 Sources:
-- /Users/james/Documents/dev/dev-pipeline/vault/projects/agentic-coding/context/dossier-2026-05-15T21-29-09-496Z.md
-- /Users/james/Documents/dev/dev-pipeline/vault/projects/agentic-coding/context/dossier-2026-05-15T21-29-09-496Z.md:7
-- /Users/james/Documents/dev/dev-pipeline/vault/projects/agentic-coding/context/dossier-2026-05-15T21-29-09-496Z.md:9
-- /Users/james/Documents/dev/dev-pipeline/vault/projects/agentic-coding/context/dossier-2026-05-15T21-29-09-496Z.md:16
-- /Users/james/Documents/dev/dev-pipeline/vault/projects/agentic-coding/context/dossier-2026-05-15T21-29-09-496Z.md:22
-- /Users/james/Documents/dev/dev-pipeline/vault/projects/agentic-coding/context/dossier-2026-05-15T21-29-09-496Z.md:34
-- /Users/james/Documents/dev/dev-pipeline/vault/projects/agentic-coding/context/dossier-2026-05-15T21-29-09-496Z.md:35
-- /Users/james/Documents/dev/dev-pipeline/vault/projects/agentic-coding/context/dossier-2026-05-15T21-29-09-496Z.md:36
+- <VAULT_ROOT>/projects/agentic-coding/context/dossier-2026-05-15T21-29-09-496Z.md
+- <VAULT_ROOT>/projects/agentic-coding/context/dossier-2026-05-15T21-29-09-496Z.md:7
+- <VAULT_ROOT>/projects/agentic-coding/context/dossier-2026-05-15T21-29-09-496Z.md:9
+- <VAULT_ROOT>/projects/agentic-coding/context/dossier-2026-05-15T21-29-09-496Z.md:16
+- <VAULT_ROOT>/projects/agentic-coding/context/dossier-2026-05-15T21-29-09-496Z.md:22
+- <VAULT_ROOT>/projects/agentic-coding/context/dossier-2026-05-15T21-29-09-496Z.md:34
+- <VAULT_ROOT>/projects/agentic-coding/context/dossier-2026-05-15T21-29-09-496Z.md:35
+- <VAULT_ROOT>/projects/agentic-coding/context/dossier-2026-05-15T21-29-09-496Z.md:36
 
 ### REQ-006: Review and CI control plane
 
@@ -134,14 +134,14 @@ Acceptance:
 - Blocked states are explicit.
 
 Sources:
-- /Users/james/Documents/dev/dev-pipeline/vault/projects/agentic-coding/context/dossier-2026-05-15T21-29-09-496Z.md
-- /Users/james/Documents/dev/dev-pipeline/vault/projects/agentic-coding/context/dossier-2026-05-15T21-29-09-496Z.md:7
-- /Users/james/Documents/dev/dev-pipeline/vault/projects/agentic-coding/context/dossier-2026-05-15T21-29-09-496Z.md:9
-- /Users/james/Documents/dev/dev-pipeline/vault/projects/agentic-coding/context/dossier-2026-05-15T21-29-09-496Z.md:16
-- /Users/james/Documents/dev/dev-pipeline/vault/projects/agentic-coding/context/dossier-2026-05-15T21-29-09-496Z.md:22
-- /Users/james/Documents/dev/dev-pipeline/vault/projects/agentic-coding/context/dossier-2026-05-15T21-29-09-496Z.md:34
-- /Users/james/Documents/dev/dev-pipeline/vault/projects/agentic-coding/context/dossier-2026-05-15T21-29-09-496Z.md:35
-- /Users/james/Documents/dev/dev-pipeline/vault/projects/agentic-coding/context/dossier-2026-05-15T21-29-09-496Z.md:36
+- <VAULT_ROOT>/projects/agentic-coding/context/dossier-2026-05-15T21-29-09-496Z.md
+- <VAULT_ROOT>/projects/agentic-coding/context/dossier-2026-05-15T21-29-09-496Z.md:7
+- <VAULT_ROOT>/projects/agentic-coding/context/dossier-2026-05-15T21-29-09-496Z.md:9
+- <VAULT_ROOT>/projects/agentic-coding/context/dossier-2026-05-15T21-29-09-496Z.md:16
+- <VAULT_ROOT>/projects/agentic-coding/context/dossier-2026-05-15T21-29-09-496Z.md:22
+- <VAULT_ROOT>/projects/agentic-coding/context/dossier-2026-05-15T21-29-09-496Z.md:34
+- <VAULT_ROOT>/projects/agentic-coding/context/dossier-2026-05-15T21-29-09-496Z.md:35
+- <VAULT_ROOT>/projects/agentic-coding/context/dossier-2026-05-15T21-29-09-496Z.md:36
 
 ### REQ-007: Infrastructure substrate registry
 
@@ -155,14 +155,14 @@ Acceptance:
 - Mutation plans require approval and remain non-executing in this slice.
 
 Sources:
-- /Users/james/Documents/dev/dev-pipeline/vault/projects/agentic-coding/context/dossier-2026-05-15T21-29-09-496Z.md
-- /Users/james/Documents/dev/dev-pipeline/vault/projects/agentic-coding/context/dossier-2026-05-15T21-29-09-496Z.md:7
-- /Users/james/Documents/dev/dev-pipeline/vault/projects/agentic-coding/context/dossier-2026-05-15T21-29-09-496Z.md:9
-- /Users/james/Documents/dev/dev-pipeline/vault/projects/agentic-coding/context/dossier-2026-05-15T21-29-09-496Z.md:16
-- /Users/james/Documents/dev/dev-pipeline/vault/projects/agentic-coding/context/dossier-2026-05-15T21-29-09-496Z.md:22
-- /Users/james/Documents/dev/dev-pipeline/vault/projects/agentic-coding/context/dossier-2026-05-15T21-29-09-496Z.md:34
-- /Users/james/Documents/dev/dev-pipeline/vault/projects/agentic-coding/context/dossier-2026-05-15T21-29-09-496Z.md:35
-- /Users/james/Documents/dev/dev-pipeline/vault/projects/agentic-coding/context/dossier-2026-05-15T21-29-09-496Z.md:36
+- <VAULT_ROOT>/projects/agentic-coding/context/dossier-2026-05-15T21-29-09-496Z.md
+- <VAULT_ROOT>/projects/agentic-coding/context/dossier-2026-05-15T21-29-09-496Z.md:7
+- <VAULT_ROOT>/projects/agentic-coding/context/dossier-2026-05-15T21-29-09-496Z.md:9
+- <VAULT_ROOT>/projects/agentic-coding/context/dossier-2026-05-15T21-29-09-496Z.md:16
+- <VAULT_ROOT>/projects/agentic-coding/context/dossier-2026-05-15T21-29-09-496Z.md:22
+- <VAULT_ROOT>/projects/agentic-coding/context/dossier-2026-05-15T21-29-09-496Z.md:34
+- <VAULT_ROOT>/projects/agentic-coding/context/dossier-2026-05-15T21-29-09-496Z.md:35
+- <VAULT_ROOT>/projects/agentic-coding/context/dossier-2026-05-15T21-29-09-496Z.md:36
 
 ## Ambiguities
 

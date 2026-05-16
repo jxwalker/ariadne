@@ -1,6 +1,6 @@
 # Infrastructure Registry: agentic-coding
 
-Generated: 2026-05-15T21:29:14.026Z
+Generated: 2026-05-16T06:09:25.013Z
 
 ## Hosts
 
