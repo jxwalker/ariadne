@@ -204,6 +204,8 @@ Artifacts:
 
 `mutation-execute` executes the proposed live command only when the plan passes readiness audit, has a passed dry-run record, and the operator supplies `--confirm-plan` matching the exact plan id. It then runs the post-action verification command and records live output, verification output, rollback text, audit reference, dry-run reference, and `execute=true`. Console projections redact command output; the full output remains in the execution artifact.
 
+`target-mutation-execute` adds one more guard before delegating to `mutation-execute`: the operator must name the expected target, and Ariadne refuses to execute if the readiness plan targets anything else.
+
 ```bash
 npm run ariadne -- approval-request --project ariadne --by planner --target github --action "Enable PR mutation adapter" --risk medium --reason "Manual gate before live mutation" --rollback "Disable adapter and return to manual PR flow"
 npm run ariadne -- approval-decision --project ariadne --approval approval-... --status approved --by james --notes "Approved for a bounded test only."
@@ -215,6 +217,7 @@ npm run ariadne -- openscorpion-mutation-plan --project ariadne --activity activ
 npm run ariadne -- deployment-mutation-plan --project ariadne --system proxmox --host beast --scope "Restart Ariadne worker service" --auth-evidence control/approvals/approval-...json --dry-run "ssh beast systemctl status ariadne" --live-command "ssh beast sudo systemctl restart ariadne" --post-verify "ssh beast systemctl is-active ariadne" --rollback "ssh beast sudo systemctl restart ariadne-previous" --approval approval-...
 npm run ariadne -- mutation-readiness-audit --project ariadne
 npm run ariadne -- mutation-dry-run --project ariadne --plan mutation-readiness-github-...
+npm run ariadne -- target-mutation-execute --project ariadne --target github --plan mutation-readiness-github-... --confirm-plan mutation-readiness-github-...
 npm run ariadne -- mutation-execute --project ariadne --plan mutation-readiness-github-... --confirm-plan mutation-readiness-github-...
 ```
 

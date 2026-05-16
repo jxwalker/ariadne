@@ -119,10 +119,11 @@ Implemented:
 - mutation-readiness audit report for blocked live-adapter plans
 - guarded execution records for approved readiness dry-run commands
 - confirmed live-command execution records with post-action verification evidence
+- target-guarded live mutation execution wrapper
 
 Next:
 
-- live target adapters only after target-specific readiness plans pass audit, dry-run, rollback, and post-verification review
+- per-target live adapters should delegate to target-guarded execution after readiness plans pass audit, dry-run, rollback, and post-verification review
 
 ## Milestone 6: Infrastructure Substrate
 
