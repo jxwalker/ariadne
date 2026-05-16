@@ -111,7 +111,7 @@ Implemented:
 - target-specific NotebookLM mutation-readiness plan generation for notebook actions
 - target-specific GSD2 mutation-readiness plan generation for reviewed task execution
 - target-specific Hermes cron mutation-readiness plan generation for scheduler actions and jobs
-- target-specific OpenScorpion mutation-readiness plan generation for governed activity routes
+- target-specific OpenScorpion mutation-readiness plan generation for activity routes
 - target-specific deployment mutation-readiness plan generation for Proxmox, TrueNAS, DGX Spark, and Mac hosts
 - explicit approval workflow records
 - test history through check records
@@ -139,7 +139,7 @@ Implemented:
 - sanitized live read-only SSH remote host inventory collector
 - host-specific read-only SSH deployment collectors for Proxmox, TrueNAS, DGX Spark, and Macs
 - OpenScorpion governed activity drafts
-- target-specific OpenScorpion mutation-readiness plan generation for governed activity routes
+- target-specific OpenScorpion mutation-readiness plan generation for activity routes
 - explicit approval records before mutation-capable adapters
 
 Next:

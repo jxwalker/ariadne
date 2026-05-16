@@ -321,7 +321,7 @@ For GSD2 plans, prefer `gsd2-mutation-plan` because it forces the task id, packa
 
 For NotebookLM plans, prefer `notebooklm-mutation-plan` because it forces the notebook label and supported action into the reviewed scope.
 
-For OpenScorpion plans, prefer `openscorpion-mutation-plan` because it forces the activity id, activity type, action, and governed route into the reviewed scope.
+For OpenScorpion plans, prefer `openscorpion-mutation-plan` because it forces the activity id, activity type, action, and route into the reviewed scope.
 
 ## Request Mutation Approval
 

@@ -62,7 +62,7 @@ npm run build
 - `src/infrastructure.ts` and `src/infraSnapshot.ts`: substrate registry and read-only imports.
 - `src/liveInventory.ts`: sanitized live read-only local and SSH host inventory collection.
 - `src/notebookLmMutation.ts`: target-specific NotebookLM mutation-readiness plan generation for notebook actions.
-- `src/openScorpionMutation.ts`: target-specific OpenScorpion mutation-readiness plan generation for governed activity routes.
+- `src/openScorpionMutation.ts`: target-specific OpenScorpion mutation-readiness plan generation for activity routes.
 - `src/types.ts`: shared record contracts.
 
 ## Adding A New Adapter

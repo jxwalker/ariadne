@@ -353,7 +353,7 @@ Artifacts:
 
 `infra-snapshot` imports a read-only JSON snapshot. `openscorpion-draft` writes a governed activity draft with `submit: false`.
 
-`openscorpion-mutation-plan` is the review gate before any governed activity submission. It records one activity id, activity type, supported action, route, exact dry-run/live/post-verification commands, rollback, approval, and evidence:
+`openscorpion-mutation-plan` is the review gate before any OpenScorpion activity submission. It records one activity id, activity type, supported action, route, exact dry-run/live/post-verification commands, rollback, approval, and evidence:
 
 ```bash
 npm run ariadne -- openscorpion-mutation-plan --project ariadne --activity activity-001 --type ariadne.evidence --action submit-activity --route governed --scope "Submit reviewed evidence package" --auth-evidence control/approvals/approval-...json --dry-run "openscorpion activity validate activity-001 --route governed" --live-command "openscorpion activity submit activity-001 --route governed" --post-verify "openscorpion activity status activity-001 --route governed" --rollback "openscorpion activity withdraw activity-001 --route governed" --approval approval-...
