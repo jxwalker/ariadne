@@ -68,10 +68,11 @@ Implemented:
 - explicit gates
 - stop conditions and human escalation
 - guarded worktree readiness checks
+- read-only GitHub PR/check snapshot records
 
 Next:
 
-- commit/PR/check/review loop
+- mutation-capable commit/PR/check/review loop after explicit approval
 - crash recovery from state files
 
 ## Milestone 4: UI Verification
@@ -102,11 +103,12 @@ Implemented:
 - evidence and missing-gate classification
 - CI status ingestion
 - CodeRabbit feedback ingestion
+- GitHub PR/check snapshot ingestion
 - test history through check records
 
 Next:
 
-- GitHub live check adapter
+- GitHub mutation and check-retry adapter only after approval
 
 ## Milestone 6: Infrastructure Substrate
 

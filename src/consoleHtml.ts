@@ -60,6 +60,11 @@ function renderConsole(data: ConsoleData): string {
       time: snapshot.importedAt,
       label: `Deployment snapshot: ${snapshot.system}`,
       detail: `${snapshot.mode} / ${snapshot.summary.host ?? "unknown host"}`
+    })),
+    ...data.github.snapshots.map((snapshot) => ({
+      time: snapshot.importedAt,
+      label: `GitHub snapshot: ${snapshot.repository ?? "unknown repository"}`,
+      detail: `${snapshot.summary.pullRequests} PRs / ${snapshot.summary.pendingChecks} pending checks`
     }))
   ].sort((left, right) => right.time.localeCompare(left.time));
 
@@ -98,6 +103,7 @@ function renderConsole(data: ConsoleData): string {
     metric("Tasks", data.summary.tasks),
     metric("Runs", data.summary.executionRuns),
     metric("Checks", data.summary.checks, failedChecks > 0 ? `${failedChecks} failed` : "recorded"),
+    metric("GitHub", data.summary.githubSnapshots, "snapshots"),
     metric(
       "Evaluation",
       data.summary.latestEvaluationScore ?? latestEvaluation?.overallScore ?? "none",
@@ -118,6 +124,7 @@ function renderConsole(data: ConsoleData): string {
     section("Memory And Mail", memoryAndMail(data)),
     section("Infrastructure", infrastructure(data)),
     section("Deployment", deployment(data)),
+    section("GitHub", github(data)),
     section("GBrain", gbrain(data)),
     section("Artifacts", artifactList(data)),
     "</aside>",
@@ -246,6 +253,7 @@ function evidenceChain(data: ConsoleData): string {
     ["Checks", data.summary.checks],
     ["Reviews", data.summary.reviews],
     ["Decisions", data.summary.decisions],
+    ["GitHub snapshots", data.summary.githubSnapshots],
     ["GBrain reports", data.gbrain?.reports.length ?? 0]
   ];
   return `<div class="chain">${rows.map(([label, value]) => `<div><span>${escapeHtml(String(label))}</span><strong>${escapeHtml(String(value))}</strong></div>`).join("")}</div>`;
@@ -310,6 +318,18 @@ function deployment(data: ConsoleData): string {
     ...data.deployment.snapshots.slice(-6).map(
       (snapshot) =>
         `<div><strong>${escapeHtml(snapshot.system)}</strong><span>${escapeHtml(snapshot.summary.host ?? "unknown host")}</span><small>${escapeHtml(`${snapshot.summary.services} services / ${snapshot.summary.modelEndpoints} model endpoints / ${snapshot.summary.runnerPools} runner pools`)}</small></div>`
+    ),
+    "</div>"
+  ].join("");
+}
+
+function github(data: ConsoleData): string {
+  if (data.github.snapshots.length === 0) return empty("No GitHub snapshots are available.");
+  return [
+    '<div class="infra">',
+    ...data.github.snapshots.slice(-4).map(
+      (snapshot) =>
+        `<div><strong>${escapeHtml(snapshot.repository ?? "unknown repository")}</strong><span>${escapeHtml(`${snapshot.summary.pullRequests} PRs / ${snapshot.summary.checks} checks`)}</span><small>${escapeHtml(`${snapshot.summary.passingChecks} passing / ${snapshot.summary.failingChecks} failing / ${snapshot.summary.pendingChecks} pending`)}</small></div>`
     ),
     "</div>"
   ].join("");

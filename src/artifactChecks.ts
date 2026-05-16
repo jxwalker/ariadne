@@ -125,6 +125,16 @@ const ARTIFACT_SPECS: ArtifactSpec[] = [
     relativePath: "integrations/gbrain/gbrain-export.json"
   },
   {
+    id: "github-snapshots",
+    label: "GitHub PR and check snapshots",
+    required: false,
+    kind: "matching-files",
+    relativePath: "integrations/github",
+    prefix: "github-snapshot-",
+    suffix: ".json",
+    minimumCount: 1
+  },
+  {
     id: "coordination-records",
     label: "Sleep, memory, or mail records",
     required: false,

@@ -15,6 +15,7 @@ import { generateEvaluationPlan, recordEvaluationRun } from "./evaluation.js";
 import { generateEvaluationTrendReport } from "./evaluationTrends.js";
 import { markRunStatus, planExecution } from "./execution.js";
 import { exportGbrainBundle, importGbrainReport } from "./gbrainAdapter.js";
+import { collectGithubSnapshot, importGithubSnapshot } from "./githubAdapter.js";
 import { generateGsd } from "./gsd.js";
 import { exportGsd2Bundle, importGsd2Bundle } from "./gsdAdapter.js";
 import { generateInfrastructureRegistry } from "./infrastructure.js";
@@ -87,6 +88,7 @@ function usage(): string {
     "  ariadne behavior-checks --project <project> [--approved-fixture <review.json|review.md>]",
     "  ariadne gbrain-export --project <project>",
     "  ariadne gbrain-report-import --project <project> --from <report.json>",
+    "  ariadne github-snapshot --project <project> (--from <snapshot.json> | --repo <owner/name> [--pr <number>] [--limit <number>])",
     "  ariadne sleep-record --project <project> --scope <scope> --summary <text> [--evidence <paths>] [--next <items>]",
     "  ariadne memory-proposal --project <project> --title <title> --proposal <text> [--evidence <paths>]",
     "  ariadne agent-mail --project <project> --from <agent> --to <agent> --subject <text> --body <text> [--task <id>] [--run <id>]",
@@ -386,6 +388,26 @@ async function main(): Promise<void> {
     });
     console.log(`GBrain report: ${result.markdownPath}`);
     console.log(`Results: ${result.report.resultCount}`);
+    return;
+  }
+
+  if (parsed.command === "github-snapshot") {
+    const sourcePath = optionString(parsed.options, "from", "");
+    const repository = optionString(parsed.options, "repo", "");
+    const pullRequest = optionalNumber(parsed.options, "pr");
+    const limit = optionalNumber(parsed.options, "limit");
+    const result = sourcePath
+      ? await importGithubSnapshot({ project, vaultRoot, sourcePath, repository: repository || undefined })
+      : await collectGithubSnapshot({
+          project,
+          vaultRoot,
+          repository: requiredOption(parsed.options, "repo"),
+          pullRequest,
+          limit
+        });
+    console.log(`GitHub snapshot: ${result.markdownPath}`);
+    console.log(`Pull requests: ${result.snapshot.summary.pullRequests}`);
+    console.log(`Checks: ${result.snapshot.summary.checks}`);
     return;
   }
 
@@ -714,6 +736,19 @@ function parseScores(value: string): Array<{ id: string; score: number; notes: s
     }
     return { id: id.trim(), score, notes: "manual evaluation score" };
   });
+}
+
+function optionalNumber(options: Map<string, string | true>, key: string): number | undefined {
+  const value = options.get(key);
+  if (value === undefined) return undefined;
+  if (typeof value !== "string") {
+    throw new Error(`--${key} requires a number.`);
+  }
+  const parsed = Number(value);
+  if (!Number.isInteger(parsed) || parsed <= 0) {
+    throw new Error(`--${key} must be a positive integer.`);
+  }
+  return parsed;
 }
 
 function sensitivityOption(

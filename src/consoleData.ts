@@ -19,6 +19,7 @@ import type {
   ExecutionRun,
   GbrainExportBundle,
   GbrainReportImport,
+  GithubSnapshot,
   GsdRoadmap,
   InfraRegistry,
   InfraSnapshot,
@@ -69,6 +70,7 @@ export async function collectConsoleData(vaultRoot: string, projectInput: string
   const evaluations = await readJsonFiles<EvaluationRun>(path.join(dir, "evaluation"), isEvaluationRun);
   const infraSnapshots = await readJsonFiles<InfraSnapshot>(path.join(dir, "infrastructure"), isInfraSnapshot);
   const gbrainReports = await readJsonFiles<GbrainReportImport>(path.join(dir, "integrations", "gbrain"), isGbrainReport);
+  const githubSnapshots = await readJsonFiles<GithubSnapshot>(path.join(dir, "integrations", "github"), isGithubSnapshot);
   const sleepRoutines = await readJsonFiles<SleepRoutineRecord>(path.join(dir, "coordination"), isSleepRoutine);
   const memoryProposals = await readJsonFiles<MemoryProposalRecord>(path.join(dir, "coordination"), isMemoryProposal);
   const agentMail = await readJsonFiles<AgentMailRecord>(path.join(dir, "coordination", "mail"), isAgentMail);
@@ -118,6 +120,7 @@ export async function collectConsoleData(vaultRoot: string, projectInput: string
       agentMail: agentMail.length,
       agentLeases: agentLeases.length,
       deploymentSnapshots: deploymentSnapshots.length,
+      githubSnapshots: githubSnapshots.length,
       readinessStatus: readiness?.status,
       latestEvaluationScore: evaluations.at(-1)?.overallScore,
       evaluationTrendStatus: evaluationTrends?.status
@@ -151,6 +154,9 @@ export async function collectConsoleData(vaultRoot: string, projectInput: string
     deployment: {
       snapshots: deploymentSnapshots
     },
+    github: {
+      snapshots: githubSnapshots
+    },
     readiness,
     artifacts: {
       hotIndex: await existingPath(vaultRoot, path.join(dir, "HOT_INDEX.md")),
@@ -163,7 +169,8 @@ export async function collectConsoleData(vaultRoot: string, projectInput: string
       usageReport: await existingPath(vaultRoot, path.join(dir, "evaluation", "usage-report.json")),
       behaviorChecks: await existingPath(vaultRoot, path.join(dir, "evaluation", "behavior-checks.json")),
       gbrainExport: await existingPath(vaultRoot, path.join(dir, "integrations", "gbrain", "gbrain-export.json")),
-      consoleVisualChecks: await existingPath(vaultRoot, path.join(dir, "console", "visual-checks.json"))
+      consoleVisualChecks: await existingPath(vaultRoot, path.join(dir, "console", "visual-checks.json")),
+      githubSnapshots: await existingPath(vaultRoot, path.join(dir, "integrations", "github"))
     }
   };
   return makePortable(data, vaultRoot);
@@ -288,6 +295,10 @@ function isInfraSnapshot(value: unknown): value is InfraSnapshot {
 
 function isGbrainReport(value: unknown): value is GbrainReportImport {
   return hasSchema(value) && value.schemaVersion === 1 && "query" in value && "resultCount" in value;
+}
+
+function isGithubSnapshot(value: unknown): value is GithubSnapshot {
+  return hasSchema(value) && value.schemaVersion === 1 && value.mode === "read_only" && "pullRequests" in value;
 }
 
 function isSleepRoutine(value: unknown): value is SleepRoutineRecord {

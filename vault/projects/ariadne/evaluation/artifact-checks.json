@@ -1,12 +1,12 @@
 {
   "schemaVersion": 1,
   "project": "ariadne",
-  "generatedAt": "2026-05-16T12:00:30.826Z",
+  "generatedAt": "2026-05-16T12:25:23.986Z",
   "status": "passed",
   "summary": {
     "required": 13,
-    "optional": 8,
-    "present": 21,
+    "optional": 9,
+    "present": 22,
     "missingRequired": 0
   },
   "checks": [
@@ -156,6 +156,17 @@
       "status": "present"
     },
     {
+      "id": "github-snapshots",
+      "label": "GitHub PR and check snapshots",
+      "required": false,
+      "path": "projects/ariadne/integrations/github/github-snapshot-*.json",
+      "status": "present",
+      "count": 1,
+      "matches": [
+        "projects/ariadne/integrations/github/github-snapshot-2026-05-16T12-25-16-576Z.json"
+      ]
+    },
+    {
       "id": "coordination-records",
       "label": "Sleep, memory, or mail records",
       "required": false,
@@ -177,7 +188,7 @@
       "status": "present",
       "count": 1,
       "matches": [
-        "projects/ariadne/deployment/deployment-proxmox-2026-05-16T11-39-35-290Z.json"
+        "projects/ariadne/deployment/deployment-proxmox-2026-05-16T12-02-50-904Z.json"
       ]
     }
   ]

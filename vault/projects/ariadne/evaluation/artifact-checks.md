@@ -2,13 +2,13 @@
 
 Project: ariadne
 Status: passed
-Generated: 2026-05-16T12:00:30.826Z
+Generated: 2026-05-16T12:25:23.986Z
 
 ## Summary
 
 - Required checks: 13
-- Optional checks: 8
-- Present artifacts: 21
+- Optional checks: 9
+- Present artifacts: 22
 - Missing required artifacts: 0
 
 ## Checks
@@ -34,5 +34,6 @@ Generated: 2026-05-16T12:00:30.826Z
 | usage-report | no | present | - | projects/ariadne/evaluation/usage-report.json |
 | behavior-checks | no | present | - | projects/ariadne/evaluation/behavior-checks.json |
 | gbrain-export | no | present | - | projects/ariadne/integrations/gbrain/gbrain-export.json |
+| github-snapshots | no | present | 1 | projects/ariadne/integrations/github/github-snapshot-*.json |
 | coordination-records | no | present | 4 | projects/ariadne/coordination/**/*.json |
 | deployment-snapshots | no | present | 1 | projects/ariadne/deployment/deployment-*.json |
