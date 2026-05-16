@@ -1,0 +1,17 @@
+[
+  {
+    "name": "typecheck",
+    "conclusion": "success",
+    "command": "npm run check"
+  },
+  {
+    "name": "unit-tests",
+    "conclusion": "success",
+    "command": "npm test"
+  },
+  {
+    "name": "build",
+    "conclusion": "success",
+    "command": "npm run build"
+  }
+]

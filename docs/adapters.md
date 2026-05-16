@@ -49,6 +49,8 @@ Typical fields include status, context, consequences, and source references so l
 
 `artifact-checks` is a deterministic evaluation sensor. It verifies that the required evidence spine exists before an operator records scores or relies on a control report. Optional console artifacts are reported without blocking the status.
 
+`benchmark-pack` materialises repeatable source packs for smoke, realistic, and stress evaluations. The packs are local files only; they do not ingest sources or call live services by themselves.
+
 Artifacts:
 
 - `evaluation/evaluation-plan.json`
@@ -57,6 +59,8 @@ Artifacts:
 - `evaluation/evaluation-<timestamp>.md`
 - `evaluation/artifact-checks.json`
 - `evaluation/artifact-checks.md`
+- `benchmarks/source-packs/<set>/benchmark-pack.json`
+- `benchmarks/source-packs/<set>/README.md`
 
 ## Console Data
 

@@ -1,0 +1,4 @@
+Need an end to end coding harness.
+Inputs can be drawings, white papers, dictated notes, screenshots, and research exports.
+Run until completion only after the plan, tests, UI evidence, review, and state records are clear.
+Show me what happened in a console and keep the machine topology visible.

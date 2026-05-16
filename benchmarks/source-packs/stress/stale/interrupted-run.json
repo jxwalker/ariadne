@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "run-stress-interrupted",
+  "project": "bench-stress-alpha",
+  "createdAt": "2026-01-01T00:00:00.000Z",
+  "taskIds": [
+    "TASK-001"
+  ],
+  "repoPath": "<REPO_ROOT>",
+  "branchPrefix": "jxw/ariadne",
+  "status": "blocked",
+  "gates": [
+    "npm run check",
+    "npm test",
+    "review evidence"
+  ],
+  "worktrees": [
+    {
+      "taskId": "TASK-001",
+      "branch": "jxw/ariadne-task-001",
+      "worktreePath": "<REPO_ROOT>-task-001"
+    }
+  ],
+  "stopConditions": [
+    "Benchmark fixture: interrupted execution run."
+  ]
+}

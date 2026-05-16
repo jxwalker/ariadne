@@ -1,0 +1,13 @@
+{
+  "node": "unknown-lab-host",
+  "services": [
+    {
+      "name": "runner",
+      "status": "degraded"
+    }
+  ],
+  "warnings": [
+    "missing guest inventory",
+    "stale timestamp"
+  ]
+}

@@ -4,6 +4,7 @@ import os from "node:os";
 import path from "node:path";
 import { describe, expect, it } from "vitest";
 import { generateArtifactCheckReport } from "../src/artifactChecks.js";
+import { materializeBenchmarkPack } from "../src/benchmarkPacks.js";
 import { importCiStatus, importCodeRabbitReview } from "../src/ciImport.js";
 import { generateControlReport } from "../src/controlPlane.js";
 import { generateConsoleData } from "../src/consoleData.js";
@@ -140,6 +141,28 @@ describe("roadmap adapters", () => {
 
     const markdown = await fs.readFile(complete.markdownPath, "utf8");
     expect(markdown).toContain("| execution-runs | yes | present | 1 |");
+  });
+
+  it("materialises smoke, realistic, and stress benchmark source packs", async () => {
+    const temp = await fs.mkdtemp(path.join(os.tmpdir(), "ariadne-benchmarks-"));
+    const smoke = await materializeBenchmarkPack({ set: "smoke", outputRoot: temp });
+    const realistic = await materializeBenchmarkPack({ set: "realistic", outputRoot: temp });
+    const stress = await materializeBenchmarkPack({ set: "stress", outputRoot: temp });
+
+    expect(smoke.pack.files.some((file) => file.path === "sources/source.md")).toBe(true);
+    expect(realistic.pack.files.some((file) => file.role === "notebooklm_export")).toBe(true);
+    expect(realistic.pack.files.some((file) => file.role === "ci_status")).toBe(true);
+    expect(stress.pack.files.some((file) => file.role === "execution_seed")).toBe(true);
+
+    const smokeManifest = JSON.parse(await fs.readFile(smoke.manifestPath, "utf8")) as { root: string };
+    expect(smokeManifest.root).toBe("<PACK_ROOT>");
+
+    const realisticSource = path.join(temp, "realistic", "sources", "whitepaper.md");
+    const vaultRoot = path.join(temp, "vault");
+    await ingestFiles([realisticSource], { project: "bench-realistic", vaultRoot });
+    await assembleDossier({ project: "bench-realistic", vaultRoot, maxCharsPerSource: 4000 });
+    const prd = await generatePrd({ project: "bench-realistic", vaultRoot });
+    expect(prd.prd.requirements.length).toBeGreaterThan(0);
   });
 
   it("records CI, CodeRabbit, Playwright, infra, OpenScorpion, and guarded worktree evidence", async () => {

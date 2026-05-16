@@ -33,6 +33,14 @@ vault/projects/<project>/evaluation/artifact-checks.json
 vault/projects/<project>/evaluation/artifact-checks.md
 ```
 
+`benchmark-pack` writes repeatable input packs:
+
+```text
+benchmarks/source-packs/<set>/benchmark-pack.json
+benchmarks/source-packs/<set>/README.md
+benchmarks/source-packs/<set>/...
+```
+
 ## Dimensions
 
 | Id | Dimension | Sensors |
@@ -52,17 +60,24 @@ npm run check
 npm test
 npm run build
 npm run cli -- artifact-checks --project ariadne
+npm run cli -- benchmark-pack --set all
 npm run cli -- control --project ariadne
 npm run cli -- evaluation-record --project ariadne --plan vault/projects/ariadne/evaluation/evaluation-plan.json --scores D1=80,D2=75,D3=70,D4=65,D5=60 --evidence vault/projects/ariadne/control/merge-readiness.md
 ```
 
 ## Benchmark Sets
 
-Use three benchmark sets as the system matures:
+Use three benchmark sets:
 
-- Smoke: one Markdown source, one PRD, one GSD bundle, one control report.
-- Realistic: a mixed source packet with `.docx`, Markdown, images, manual NotebookLM export, CI import, and review import.
-- Stress: multi-project vault, stale artifacts, failed checks, invalid infrastructure snapshot, and interrupted execution run.
+- Smoke: one Markdown source and expected artifact ids for the standard roadmap plus artifact-checks flow.
+- Realistic: a mixed source packet with whitepaper-style prose, dictated notes, sketch handoff, manual NotebookLM export, CI import, CodeRabbit review import, and read-only infra snapshot.
+- Stress: multi-project sources, stale execution seed, failed checks, pending review, and unusual infrastructure snapshot shape.
+
+Generate them with:
+
+```bash
+npm run cli -- benchmark-pack --set all
+```
 
 ## Pass Criteria
 

@@ -1,0 +1,22 @@
+{
+  "host": {
+    "short_name": "beast",
+    "role": "proxmox-dev"
+  },
+  "guests": {
+    "vms": [
+      {
+        "id": 109,
+        "name": "runner",
+        "status": "observed"
+      }
+    ],
+    "lxc": [
+      {
+        "id": 201,
+        "name": "paperless",
+        "status": "observed"
+      }
+    ]
+  }
+}

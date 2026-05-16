@@ -109,6 +109,14 @@ npm run cli -- artifact-checks --project ariadne
 
 The report is written to `vault/projects/ariadne/evaluation/artifact-checks.md` and lists each required or optional artifact path. Required missing artifacts make the report status `missing`.
 
+Generate repeatable benchmark source packs:
+
+```bash
+npm run cli -- benchmark-pack --set all
+```
+
+This writes smoke, realistic, and stress packs under `benchmarks/source-packs/`. Each pack has a `benchmark-pack.json`, a README, source files, and recommended commands for exercising the harness.
+
 After a real run, record scores:
 
 ```bash

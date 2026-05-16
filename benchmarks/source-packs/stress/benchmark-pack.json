@@ -1,0 +1,52 @@
+{
+  "schemaVersion": 1,
+  "set": "stress",
+  "title": "Stress Benchmark Pack",
+  "purpose": "Exercise stale, failed, noisy, and multi-project conditions without including real secrets or live system mutations.",
+  "generatedAt": "2026-05-16T09:45:59.633Z",
+  "root": "<PACK_ROOT>",
+  "files": [
+    {
+      "path": "project-alpha/source.md",
+      "role": "source",
+      "description": "First project source for multi-project vault tests."
+    },
+    {
+      "path": "project-beta/source.md",
+      "role": "source",
+      "description": "Second project source for multi-project vault tests."
+    },
+    {
+      "path": "imports/failed-ci.json",
+      "role": "ci_status",
+      "description": "Failing CI fixture for control-plane regression tests."
+    },
+    {
+      "path": "imports/pending-coderabbit-review.md",
+      "role": "coderabbit_review",
+      "description": "Pending review fixture with no approval signal."
+    },
+    {
+      "path": "imports/odd-infra-snapshot.json",
+      "role": "infra_snapshot",
+      "description": "Valid JSON with unusual shape for snapshot summarisation tests."
+    },
+    {
+      "path": "stale/interrupted-run.json",
+      "role": "execution_seed",
+      "description": "Interrupted execution fixture for future benchmark-run ingestion."
+    }
+  ],
+  "recommendedCommands": [
+    "npm run cli -- ingest --project bench-stress-alpha <PACK_ROOT>/project-alpha/source.md",
+    "npm run cli -- ingest --project bench-stress-beta <PACK_ROOT>/project-beta/source.md",
+    "npm run cli -- import-ci --project bench-stress-beta --from <PACK_ROOT>/imports/failed-ci.json",
+    "npm run cli -- import-coderabbit --project bench-stress-beta --from <PACK_ROOT>/imports/pending-coderabbit-review.md",
+    "npm run cli -- infra-snapshot --project bench-stress-beta --from <PACK_ROOT>/imports/odd-infra-snapshot.json"
+  ],
+  "acceptance": [
+    "The benchmark can create more than one project in a vault.",
+    "Failed checks and pending review evidence remain explicit.",
+    "No fixture contains a real credential or requires a live host."
+  ]
+}

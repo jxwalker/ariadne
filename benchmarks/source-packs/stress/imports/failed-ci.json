@@ -1,0 +1,17 @@
+[
+  {
+    "name": "typecheck",
+    "conclusion": "success",
+    "command": "npm run check"
+  },
+  {
+    "name": "unit-tests",
+    "conclusion": "failure",
+    "command": "npm test"
+  },
+  {
+    "name": "ui-smoke",
+    "conclusion": "timed_out",
+    "command": "npx playwright test"
+  }
+]
