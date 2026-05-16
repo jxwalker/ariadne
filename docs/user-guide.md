@@ -133,6 +133,15 @@ npm run cli -- evaluation-trends --project ariadne
 
 The report is written to `vault/projects/ariadne/evaluation/evaluation-trends.md` and shows latest score, previous score, overall delta, per-dimension deltas, latest regressions, and latest recommendations.
 
+Import token and cost metrics from a JSON export:
+
+```bash
+npm run cli -- usage-import --project ariadne --from usage.json --source hermes
+npm run cli -- usage-report --project ariadne
+```
+
+The importer accepts common fields such as `input_tokens`, `output_tokens`, `prompt_tokens`, `completion_tokens`, `total_tokens`, and `cost_usd`. The report is written to `vault/projects/ariadne/evaluation/usage-report.md`.
+
 ## Check Readiness
 
 ```bash

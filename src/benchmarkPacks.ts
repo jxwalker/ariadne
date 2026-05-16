@@ -151,6 +151,28 @@ const REALISTIC: BenchmarkPackTemplate = {
       content: ["Approved", "", "No issues found in the realistic benchmark fixture.", ""].join("\n")
     },
     {
+      path: "imports/usage-metrics.json",
+      role: "usage_metrics",
+      description: "Token and cost usage fixture for usage-import.",
+      content: json([
+        {
+          source: "hermes",
+          model: "gpt-5.5",
+          operation: "planning",
+          input_tokens: 1800,
+          output_tokens: 900,
+          cost_usd: 0.81
+        },
+        {
+          source: "coderabbit",
+          model: "coderabbit-review",
+          operation: "review",
+          total_tokens: 1200,
+          cost_usd: 0.18
+        }
+      ])
+    },
+    {
       path: "imports/infra-snapshot.json",
       role: "infra_snapshot",
       description: "Read-only infrastructure snapshot fixture.",
@@ -170,12 +192,14 @@ const REALISTIC: BenchmarkPackTemplate = {
     "npm run cli -- notebooklm-import --project bench-realistic --from <PACK_ROOT>/imports/notebooklm-export.md",
     "npm run cli -- import-ci --project bench-realistic --from <PACK_ROOT>/imports/ci-checks.json",
     "npm run cli -- import-coderabbit --project bench-realistic --from <PACK_ROOT>/imports/coderabbit-review.md",
+    "npm run cli -- usage-import --project bench-realistic --from <PACK_ROOT>/imports/usage-metrics.json",
+    "npm run cli -- usage-report --project bench-realistic",
     "npm run cli -- infra-snapshot --project bench-realistic --from <PACK_ROOT>/imports/infra-snapshot.json",
     "npm run cli -- artifact-checks --project bench-realistic"
   ],
   acceptance: [
     "Mixed source intake produces three source records.",
-    "Manual NotebookLM, CI, CodeRabbit, and infrastructure imports create evidence records.",
+    "Manual NotebookLM, CI, CodeRabbit, usage, and infrastructure imports create evidence records.",
     "Control and artifact-check reports are generated without live mutations."
   ]
 };

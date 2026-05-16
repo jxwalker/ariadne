@@ -49,6 +49,8 @@ Typical fields include status, context, consequences, and source references so l
 
 `evaluation-trends` reads timestamped evaluation records and writes overall plus per-dimension deltas for console charting and release review.
 
+`usage-import` appends token and cost metrics from Hermes, CodeRabbit, OpenAI, CI, or manual JSON exports. `usage-report` aggregates those records by source and model so evaluation can track model/review spend without live service calls.
+
 `artifact-checks` is a deterministic evaluation sensor. It verifies that the required evidence spine exists before an operator records scores or relies on a control report. Optional console artifacts are reported without blocking the status.
 
 `benchmark-pack` materialises repeatable source packs for smoke, realistic, and stress evaluations. The packs are local files only; they do not ingest sources or call live services by themselves.
@@ -61,6 +63,9 @@ Artifacts:
 - `evaluation/evaluation-<timestamp>.md`
 - `evaluation/evaluation-trends.json`
 - `evaluation/evaluation-trends.md`
+- `evaluation/usage-metrics.jsonl`
+- `evaluation/usage-report.json`
+- `evaluation/usage-report.md`
 - `evaluation/artifact-checks.json`
 - `evaluation/artifact-checks.md`
 - `benchmarks/source-packs/<set>/benchmark-pack.json`

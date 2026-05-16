@@ -1,0 +1,17 @@
+[
+  {
+    "source": "hermes",
+    "model": "gpt-5.5",
+    "operation": "planning",
+    "input_tokens": 1800,
+    "output_tokens": 900,
+    "cost_usd": 0.81
+  },
+  {
+    "source": "coderabbit",
+    "model": "coderabbit-review",
+    "operation": "review",
+    "total_tokens": 1200,
+    "cost_usd": 0.18
+  }
+]

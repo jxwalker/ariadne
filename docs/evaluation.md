@@ -33,6 +33,14 @@ vault/projects/<project>/evaluation/evaluation-trends.json
 vault/projects/<project>/evaluation/evaluation-trends.md
 ```
 
+`usage-import` appends normalised token/cost records and `usage-report` writes the aggregate report:
+
+```text
+vault/projects/<project>/evaluation/usage-metrics.jsonl
+vault/projects/<project>/evaluation/usage-report.json
+vault/projects/<project>/evaluation/usage-report.md
+```
+
 `artifact-checks` writes the deterministic artifact contract report:
 
 ```text
@@ -69,6 +77,7 @@ npm run build
 npm run cli -- artifact-checks --project ariadne
 npm run cli -- benchmark-pack --set all
 npm run cli -- evaluation-trends --project ariadne
+npm run cli -- usage-report --project ariadne
 npm run cli -- control --project ariadne
 npm run cli -- evaluation-record --project ariadne --plan vault/projects/ariadne/evaluation/evaluation-plan.json --scores D1=80,D2=75,D3=70,D4=65,D5=60 --evidence vault/projects/ariadne/control/merge-readiness.md
 ```
@@ -97,6 +106,7 @@ A run is acceptable when:
 - control report has no unexplained missing gates,
 - evaluation records cite the evidence used for scoring,
 - trend reports show whether scores are stable, improving, or declining,
+- token/cost reports make review and model-spend visible,
 - regressions are listed rather than hidden.
 
 ## Future Automation
@@ -104,5 +114,4 @@ A run is acceptable when:
 Next evaluation work should add:
 
 - Playwright screenshot and trace ingestion,
-- mutation or fixture-based tests for behavior harness confidence,
-- cost and token metrics from Hermes or CodeRabbit.
+- mutation or fixture-based tests for behavior harness confidence.

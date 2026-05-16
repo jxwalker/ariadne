@@ -349,6 +349,7 @@ export interface BenchmarkPack {
       | "notebooklm_export"
       | "ci_status"
       | "coderabbit_review"
+      | "usage_metrics"
       | "infra_snapshot"
       | "execution_seed"
       | "expected";
@@ -386,6 +387,50 @@ export interface EvaluationTrendReport {
   }>;
   openRegressions: string[];
   latestRecommendations: string[];
+}
+
+export interface UsageMetricRecord {
+  schemaVersion: 1;
+  id: string;
+  project: string;
+  recordedAt: string;
+  source: "hermes" | "coderabbit" | "openai" | "ci" | "manual";
+  model?: string;
+  operation?: string;
+  inputTokens?: number;
+  outputTokens?: number;
+  totalTokens?: number;
+  costUsd?: number;
+  durationMs?: number;
+  evidence?: string;
+}
+
+export interface UsageMetricsReport {
+  schemaVersion: 1;
+  project: string;
+  generatedAt: string;
+  recordCount: number;
+  totalInputTokens: number;
+  totalOutputTokens: number;
+  totalTokens: number;
+  totalCostUsd: number;
+  bySource: Array<{
+    name: string;
+    records: number;
+    inputTokens: number;
+    outputTokens: number;
+    totalTokens: number;
+    costUsd: number;
+  }>;
+  byModel: Array<{
+    name: string;
+    records: number;
+    inputTokens: number;
+    outputTokens: number;
+    totalTokens: number;
+    costUsd: number;
+  }>;
+  latest?: UsageMetricRecord;
 }
 
 export interface ConsoleData {
@@ -438,5 +483,6 @@ export interface ConsoleData {
     evaluationPlan?: string;
     artifactChecks?: string;
     evaluationTrends?: string;
+    usageReport?: string;
   };
 }

@@ -112,7 +112,8 @@ export async function collectConsoleData(vaultRoot: string, projectInput: string
       control: await existingPath(vaultRoot, path.join(dir, "control", "merge-readiness.json")),
       evaluationPlan: evaluationPlan ? vaultRelative(vaultRoot, path.join(dir, "evaluation", "evaluation-plan.json")) : undefined,
       artifactChecks: await existingPath(vaultRoot, path.join(dir, "evaluation", "artifact-checks.json")),
-      evaluationTrends: await existingPath(vaultRoot, path.join(dir, "evaluation", "evaluation-trends.json"))
+      evaluationTrends: await existingPath(vaultRoot, path.join(dir, "evaluation", "evaluation-trends.json")),
+      usageReport: await existingPath(vaultRoot, path.join(dir, "evaluation", "usage-report.json"))
     }
   };
   return makePortable(data, vaultRoot);

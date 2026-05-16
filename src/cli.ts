@@ -19,6 +19,7 @@ import { defaultVaultRoot } from "./paths.js";
 import { recordPlaywrightEvidence } from "./playwrightEvidence.js";
 import { generatePlaywrightPlan } from "./playwrightPlan.js";
 import { generatePrd } from "./prd.js";
+import { generateUsageMetricsReport, importUsageMetrics } from "./usageMetrics.js";
 import { assembleDossier, ingestFiles, projectStatus } from "./vault.js";
 import { guardWorktrees } from "./worktreeGuard.js";
 
@@ -76,6 +77,8 @@ function usage(): string {
     "  ariadne evaluation --project <project> [--target <name>]",
     "  ariadne evaluation-record --project <project> --plan <plan.json> --scores <D1=80,D2=75> [--evidence <paths>]",
     "  ariadne evaluation-trends --project <project>",
+    "  ariadne usage-import --project <project> --from <usage.json> [--source <source>]",
+    "  ariadne usage-report --project <project>",
     "  ariadne artifact-checks --project <project>",
     "  ariadne benchmark-pack --set <smoke|realistic|stress|all> [--output <dir>]",
     "  ariadne infra --project <project>",
@@ -317,6 +320,27 @@ async function main(): Promise<void> {
     if (result.report.delta !== undefined) {
       console.log(`Delta: ${result.report.delta}`);
     }
+    return;
+  }
+
+  if (parsed.command === "usage-import") {
+    const source = usageSourceOption(parsed.options);
+    const records = await importUsageMetrics({
+      project,
+      vaultRoot,
+      sourcePath: requiredOption(parsed.options, "from"),
+      source
+    });
+    console.log(`Imported usage metrics: ${records.length}`);
+    return;
+  }
+
+  if (parsed.command === "usage-report") {
+    const result = await generateUsageMetricsReport({ project, vaultRoot });
+    console.log(`Usage report: ${result.markdownPath}`);
+    console.log(`Records: ${result.report.recordCount}`);
+    console.log(`Total tokens: ${result.report.totalTokens}`);
+    console.log(`Cost USD: ${result.report.totalCostUsd.toFixed(4)}`);
     return;
   }
 
@@ -573,6 +597,17 @@ function sensitivityOption(
     return value;
   }
   throw new Error("--sensitivity must be public, internal, confidential, or secret.");
+}
+
+function usageSourceOption(
+  options: Map<string, string | true>
+): "hermes" | "coderabbit" | "openai" | "ci" | "manual" | undefined {
+  const value = options.get("source");
+  if (value === undefined) return undefined;
+  if (value === "hermes" || value === "coderabbit" || value === "openai" || value === "ci" || value === "manual") {
+    return value;
+  }
+  throw new Error("--source must be hermes, coderabbit, openai, ci, or manual.");
 }
 
 main().catch((error: unknown) => {

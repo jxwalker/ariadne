@@ -1,7 +1,7 @@
 # Realistic Benchmark Pack
 
 Set: realistic
-Generated: 2026-05-16T09:45:59.631Z
+Generated: 2026-05-16T11:02:09.297Z
 
 Exercise mixed source intake and manual adapter imports that resemble a real Ariadne project handoff.
 
@@ -15,6 +15,7 @@ Exercise mixed source intake and manual adapter imports that resemble a real Ari
 | imports/notebooklm-export.md | notebooklm_export | Manual NotebookLM-style export for adapter import tests. |
 | imports/ci-checks.json | ci_status | Passing CI fixture for import-ci. |
 | imports/coderabbit-review.md | coderabbit_review | Approved CodeRabbit-style review fixture for import-coderabbit. |
+| imports/usage-metrics.json | usage_metrics | Token and cost usage fixture for usage-import. |
 | imports/infra-snapshot.json | infra_snapshot | Read-only infrastructure snapshot fixture. |
 
 ## Recommended Commands
@@ -26,6 +27,8 @@ npm run cli -- roadmap --project bench-realistic --target-url http://localhost:3
 npm run cli -- notebooklm-import --project bench-realistic --from <PACK_ROOT>/imports/notebooklm-export.md
 npm run cli -- import-ci --project bench-realistic --from <PACK_ROOT>/imports/ci-checks.json
 npm run cli -- import-coderabbit --project bench-realistic --from <PACK_ROOT>/imports/coderabbit-review.md
+npm run cli -- usage-import --project bench-realistic --from <PACK_ROOT>/imports/usage-metrics.json
+npm run cli -- usage-report --project bench-realistic
 npm run cli -- infra-snapshot --project bench-realistic --from <PACK_ROOT>/imports/infra-snapshot.json
 npm run cli -- artifact-checks --project bench-realistic
 ```
@@ -33,5 +36,5 @@ npm run cli -- artifact-checks --project bench-realistic
 ## Acceptance
 
 - Mixed source intake produces three source records.
-- Manual NotebookLM, CI, CodeRabbit, and infrastructure imports create evidence records.
+- Manual NotebookLM, CI, CodeRabbit, usage, and infrastructure imports create evidence records.
 - Control and artifact-check reports are generated without live mutations.
