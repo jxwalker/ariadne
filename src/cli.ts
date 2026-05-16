@@ -2,6 +2,7 @@
 import path from "node:path";
 import { importCiStatus, importCodeRabbitReview } from "./ciImport.js";
 import { generateControlReport, recordCheck, recordReview } from "./controlPlane.js";
+import { generateDashboardData } from "./dashboardData.js";
 import { recordDecision } from "./decisions.js";
 import { generateEvaluationPlan, recordEvaluationRun } from "./evaluation.js";
 import { markRunStatus, planExecution } from "./execution.js";
@@ -78,6 +79,7 @@ function usage(): string {
     "  dev-pipeline record-check --project <project> --name <name> --status <status> --command <cmd>",
     "  dev-pipeline record-review --project <project> --source <source> --status <status> --summary <text>",
     "  dev-pipeline control --project <project>",
+    "  dev-pipeline dashboard-data --project <project>",
     "  dev-pipeline roadmap --project <project> [--target-url <url>] [--repo <path>]",
     "  dev-pipeline status --project <project>",
     "",
@@ -414,6 +416,15 @@ async function main(): Promise<void> {
     if (result.report.missing.length > 0) {
       console.log(`Missing: ${result.report.missing.length}`);
     }
+    return;
+  }
+
+  if (parsed.command === "dashboard-data") {
+    const result = await generateDashboardData({ project, vaultRoot });
+    console.log(`Dashboard data: ${result.jsonPath}`);
+    console.log(`Sources: ${result.data.summary.sources}`);
+    console.log(`Tasks: ${result.data.summary.tasks}`);
+    console.log(`Readiness: ${result.data.summary.readinessStatus ?? "unknown"}`);
     return;
   }
 

@@ -117,6 +117,14 @@ npm run cli -- control --project agentic-coding
 
 The control report is the answer to: what is proven, what is missing, and what gate still blocks the work?
 
+## Publish Dashboard Data
+
+```bash
+npm run cli -- dashboard-data --project agentic-coding
+```
+
+This writes `vault/projects/agentic-coding/dashboard/dashboard-data.json`, a read-only projection for future UI work. It is safe to regenerate.
+
 ## Handling Secrets
 
 Ingest scans text-bearing files for common secret patterns. High-severity findings block ingestion by default. Use `--allow-secret-findings` only when intentionally preserving a sensitive artifact inside an appropriately protected vault.

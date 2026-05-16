@@ -5,9 +5,11 @@ import path from "node:path";
 import { describe, expect, it } from "vitest";
 import { importCiStatus, importCodeRabbitReview } from "../src/ciImport.js";
 import { generateControlReport } from "../src/controlPlane.js";
+import { generateDashboardData } from "../src/dashboardData.js";
 import { planExecution } from "../src/execution.js";
 import { generateGsd } from "../src/gsd.js";
 import { exportGsd2Bundle, importGsd2Bundle } from "../src/gsdAdapter.js";
+import { generateInfrastructureRegistry } from "../src/infrastructure.js";
 import { draftOpenScorpionActivity, importInfraSnapshot } from "../src/infraSnapshot.js";
 import { generateEvaluationPlan, recordEvaluationRun } from "../src/evaluation.js";
 import { importNotebookLmExport } from "../src/notebooklm.js";
@@ -186,6 +188,7 @@ describe("roadmap adapters", () => {
 
     const infra = path.join(temp, "manifest.json");
     await fs.writeFile(infra, JSON.stringify({ host: { short_name: "beast" }, guests: { vms: [], lxc: [] } }));
+    await generateInfrastructureRegistry({ project: "agentic-coding", vaultRoot });
     const snapshot = await importInfraSnapshot({ project: "agentic-coding", vaultRoot, sourcePath: infra });
     expect(snapshot.snapshot.summary.host).toBe("beast");
 
@@ -208,6 +211,15 @@ describe("roadmap adapters", () => {
 
     const control = await generateControlReport({ project: "agentic-coding", vaultRoot });
     expect(control.report.evidence.some((item) => item.includes("Review approved by coderabbit"))).toBe(true);
+
+    const dashboard = await generateDashboardData({ project: "agentic-coding", vaultRoot });
+    expect(dashboard.data.summary.sources).toBe(1);
+    expect(dashboard.data.summary.tasks).toBeGreaterThan(0);
+    expect(dashboard.data.summary.executionRuns).toBeGreaterThan(0);
+    expect(dashboard.data.summary.readinessStatus).toBe(control.report.status);
+    expect(dashboard.data.sources[0]?.hygieneStatus).toBe("clean");
+    expect(dashboard.data.infrastructure.registry?.hosts.length).toBeGreaterThan(0);
+    expect(dashboard.data.artifacts.control).toBeTruthy();
   });
 });
 

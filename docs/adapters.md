@@ -54,6 +54,14 @@ Artifacts:
 - `evaluation/evaluation-<timestamp>.json`
 - `evaluation/evaluation-<timestamp>.md`
 
+## Dashboard Data
+
+`dashboard-data` writes a normalised read-only projection of the vault to:
+
+- `dashboard/dashboard-data.json`
+
+The record includes source summaries, requirements, GSD tasks, execution runs, checks, reviews, decisions, Playwright evidence, evaluation runs, infrastructure registry/snapshots, merge readiness, and key artifact paths. It is intended as the stable data contract for future dashboard UI work.
+
 ## Infrastructure And Governance
 
 `infra-snapshot` imports a read-only JSON snapshot. `openscorpion-draft` writes a governed activity draft with `submit: false`; live submission requires a later approved adapter.
