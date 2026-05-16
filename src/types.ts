@@ -311,6 +311,28 @@ export interface EvaluationRun {
   recommendations: string[];
 }
 
+export interface ArtifactCheckReport {
+  schemaVersion: 1;
+  project: string;
+  generatedAt: string;
+  status: "passed" | "missing";
+  summary: {
+    required: number;
+    optional: number;
+    present: number;
+    missingRequired: number;
+  };
+  checks: Array<{
+    id: string;
+    label: string;
+    required: boolean;
+    path: string;
+    status: "present" | "missing";
+    count?: number;
+    matches?: string[];
+  }>;
+}
+
 export interface ConsoleData {
   schemaVersion: 1;
   project: string;
@@ -359,5 +381,6 @@ export interface ConsoleData {
     roadmap?: string;
     control?: string;
     evaluationPlan?: string;
+    artifactChecks?: string;
   };
 }

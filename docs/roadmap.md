@@ -136,11 +136,11 @@ Implemented:
 - evaluation plan artifacts
 - evaluation run records
 - D1-D5 score model for evidence, planning, execution, verification, and operations
-- CLI support for `evaluation` and `evaluation-record`
+- automatic artifact existence checks
+- CLI support for `evaluation`, `evaluation-record`, and `artifact-checks`
 
 Next:
 
-- automatic artifact existence checks
 - benchmark source packs for smoke, realistic, and stress runs
 - trend report generation
 - token/cost metrics from Hermes and review tools
