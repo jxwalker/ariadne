@@ -23,6 +23,7 @@ import type {
   GbrainExportBundle,
   GbrainReportImport,
   HealerProposalRecord,
+  HermesCronProposal,
   HermesCronSnapshot,
   GithubSnapshot,
   GsdRoadmap,
@@ -98,6 +99,10 @@ export async function collectConsoleData(vaultRoot: string, projectInput: string
     path.join(dir, "coordination", "hermes"),
     isHermesCronSnapshot
   );
+  const hermesCronProposals = await readJsonFiles<HermesCronProposal>(
+    path.join(dir, "coordination", "hermes"),
+    isHermesCronProposal
+  );
   const deploymentSnapshots = await readJsonFiles<DeploymentSnapshot>(path.join(dir, "deployment"), isDeploymentSnapshot);
   const sources = await Promise.all(
     records.map(async (record) => ({
@@ -144,6 +149,7 @@ export async function collectConsoleData(vaultRoot: string, projectInput: string
       agentMail: agentMail.length,
       agentLeases: agentLeases.length,
       hermesCronSnapshots: hermesCronSnapshots.length,
+      hermesCronProposals: hermesCronProposals.length,
       deploymentSnapshots: deploymentSnapshots.length,
       healerProposals: healerProposals.length,
       githubSnapshots: githubSnapshots.length,
@@ -180,7 +186,8 @@ export async function collectConsoleData(vaultRoot: string, projectInput: string
       memoryProposals,
       agentMail,
       agentLeases,
-      hermesCronSnapshots
+      hermesCronSnapshots,
+      hermesCronProposals
     },
     infrastructure: {
       registry,
@@ -212,7 +219,8 @@ export async function collectConsoleData(vaultRoot: string, projectInput: string
       recoveryReport: await existingPath(vaultRoot, path.join(dir, "control", "recovery-report.json")),
       extractionResults: await existingPath(vaultRoot, path.join(dir, "extractions")),
       healerProposals: await existingPath(vaultRoot, path.join(dir, "verification", "healer-proposals")),
-      hermesCronSnapshots: await existingPath(vaultRoot, path.join(dir, "coordination", "hermes"))
+      hermesCronSnapshots: await existingPath(vaultRoot, path.join(dir, "coordination", "hermes")),
+      hermesCronProposals: await existingPath(vaultRoot, path.join(dir, "coordination", "hermes"))
     }
   };
   return makePortable(data, vaultRoot);
@@ -382,6 +390,45 @@ function isHermesCronSnapshot(value: unknown): value is HermesCronSnapshot {
     isHermesCronSummary(summary) &&
     Array.isArray(jobs) &&
     jobs.every(isHermesCronJob)
+  );
+}
+
+function isHermesCronProposal(value: unknown): value is HermesCronProposal {
+  return (
+    hasSchema(value) &&
+    value.schemaVersion === 1 &&
+    value.mode === "proposal_only" &&
+    typeof value.generatedAt === "string" &&
+    isHermesCronProposalSummary(value.summary) &&
+    Array.isArray(value.proposedActions) &&
+    value.proposedActions.every(isHermesCronProposedAction)
+  );
+}
+
+function isHermesCronProposalSummary(value: unknown): value is HermesCronProposal["summary"] {
+  return (
+    hasSchema(value) &&
+    typeof value.snapshots === "number" &&
+    typeof value.jobs === "number" &&
+    typeof value.enabled === "number" &&
+    typeof value.disabled === "number" &&
+    typeof value.proposedActions === "number" &&
+    Array.isArray(value.warnings) &&
+    value.warnings.every((item) => typeof item === "string")
+  );
+}
+
+function isHermesCronProposedAction(value: unknown): value is HermesCronProposal["proposedActions"][number] {
+  return (
+    hasSchema(value) &&
+    typeof value.id === "string" &&
+    (value.kind === "keep" || value.kind === "review" || value.kind === "create-candidate") &&
+    typeof value.title === "string" &&
+    typeof value.rationale === "string" &&
+    optionalString(value.schedule) &&
+    optionalString(value.sourceJob) &&
+    Array.isArray(value.evidenceRefs) &&
+    value.evidenceRefs.every((item) => typeof item === "string")
   );
 }
 

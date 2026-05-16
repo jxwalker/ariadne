@@ -21,7 +21,7 @@ import { importGithubSnapshot } from "../src/githubAdapter.js";
 import { generateGsd } from "../src/gsd.js";
 import { exportGsd2Bundle, importGsd2Bundle } from "../src/gsdAdapter.js";
 import { generateHealerProposal } from "../src/healerProposals.js";
-import { importHermesCronSnapshot } from "../src/hermesCron.js";
+import { generateHermesCronProposal, importHermesCronSnapshot } from "../src/hermesCron.js";
 import { generateInfrastructureRegistry } from "../src/infrastructure.js";
 import { draftOpenScorpionActivity, importInfraSnapshot } from "../src/infraSnapshot.js";
 import { collectLocalInfraSnapshot, collectSshInfraSnapshot, parseSshInventory } from "../src/liveInventory.js";
@@ -514,6 +514,16 @@ describe("roadmap adapters", () => {
     expect(hermesCron.snapshot.sourcePath).toBe("<WORKSPACE_ROOT>/hermes-cron.json");
     expect(JSON.stringify(hermesCron.snapshot.raw)).not.toContain("fixture-token-should-be-redacted");
 
+    const hermesProposal = await generateHermesCronProposal({ project: "ariadne", vaultRoot, scope: "nightly" });
+    expect(hermesProposal.proposal.mode).toBe("proposal_only");
+    expect(hermesProposal.proposal.summary.snapshots).toBe(1);
+    expect(hermesProposal.proposal.summary.proposedActions).toBe(2);
+    expect(hermesProposal.proposal.proposedActions.some((action) => action.kind === "review")).toBe(true);
+    await fs.writeFile(
+      path.join(vaultRoot, "projects", "ariadne", "coordination", "hermes", "hermes-cron-proposal-bad.json"),
+      JSON.stringify({ schemaVersion: 1, mode: "proposal_only", generatedAt: new Date().toISOString(), proposedActions: [] })
+    );
+
     const deploymentPath = path.join(temp, "deployment.json");
     await fs.writeFile(
       deploymentPath,
@@ -540,7 +550,9 @@ describe("roadmap adapters", () => {
     expect(console.data.summary.agentMail).toBe(1);
     expect(console.data.summary.agentLeases).toBe(1);
     expect(console.data.summary.hermesCronSnapshots).toBe(1);
+    expect(console.data.summary.hermesCronProposals).toBe(1);
     expect(console.data.coordination.hermesCronSnapshots[0]?.summary.jobs).toBe(2);
+    expect(console.data.coordination.hermesCronProposals[0]?.summary.proposedActions).toBe(2);
     expect(console.data.summary.deploymentSnapshots).toBe(1);
     expect(console.data.summary.approvals).toBe(1);
     expect(console.data.behaviorChecks?.status).toBe("passed");
@@ -548,8 +560,10 @@ describe("roadmap adapters", () => {
     const artifactChecks = await generateArtifactCheckReport({ project: "ariadne", vaultRoot });
     const coordinationCheck = artifactChecks.report.checks.find((check) => check.id === "coordination-records");
     const hermesCheck = artifactChecks.report.checks.find((check) => check.id === "hermes-cron-snapshots");
+    const hermesProposalCheck = artifactChecks.report.checks.find((check) => check.id === "hermes-cron-proposals");
     expect(coordinationCheck?.matches?.some((match) => match.includes("coordination/hermes"))).toBe(false);
     expect(hermesCheck?.count).toBe(1);
+    expect(hermesProposalCheck?.count).toBe(2);
   });
 
   it("records CI, CodeRabbit, Playwright, infra, OpenScorpion, and guarded worktree evidence", async () => {

@@ -20,6 +20,7 @@ type ArtifactSpec =
       relativePath: string;
       prefix: string;
       suffix: string;
+      excludePrefixes?: string[];
       excludeSuffixes?: string[];
       minimumCount: number;
       recursive?: boolean;
@@ -239,6 +240,17 @@ const ARTIFACT_SPECS: ArtifactSpec[] = [
     relativePath: "coordination/hermes",
     prefix: "hermes-cron-",
     suffix: ".json",
+    excludePrefixes: ["hermes-cron-proposal-"],
+    minimumCount: 1
+  },
+  {
+    id: "hermes-cron-proposals",
+    label: "Hermes cron proposals",
+    required: false,
+    kind: "matching-files",
+    relativePath: "coordination/hermes",
+    prefix: "hermes-cron-proposal-",
+    suffix: ".json",
     minimumCount: 1
   },
   {
@@ -351,6 +363,7 @@ function matchesSpec(name: string, spec: Extract<ArtifactSpec, { kind: "matching
   return (
     name.startsWith(spec.prefix) &&
     name.endsWith(spec.suffix) &&
+    !(spec.excludePrefixes ?? []).some((prefix) => name.startsWith(prefix)) &&
     !(spec.excludeSuffixes ?? []).some((suffix) => name.endsWith(suffix))
   );
 }

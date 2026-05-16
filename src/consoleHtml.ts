@@ -112,7 +112,7 @@ function renderConsole(data: ConsoleData): string {
     metric("Healer", data.summary.healerProposals, "proposals"),
     metric("GitHub", data.summary.githubSnapshots, "snapshots"),
     metric("Approvals", data.summary.pendingApprovals, `${data.summary.approvals} total`),
-    metric("Hermes", data.summary.hermesCronSnapshots, "cron snapshots"),
+    metric("Hermes", data.summary.hermesCronSnapshots, `${data.summary.hermesCronProposals} proposals`),
     metric("Recovery", data.summary.recoveryIssues, "issues"),
     metric("Browser", data.summary.consoleBrowserChecks ?? "none", "console"),
     metric(
@@ -378,13 +378,18 @@ function memoryAndMail(data: ConsoleData): string {
     ["Memory proposals", data.summary.memoryProposals],
     ["Agent mail", data.summary.agentMail],
     ["Agent leases", data.summary.agentLeases],
-    ["Hermes cron snapshots", data.summary.hermesCronSnapshots]
+    ["Hermes cron snapshots", data.summary.hermesCronSnapshots],
+    ["Hermes cron proposals", data.summary.hermesCronProposals]
   ];
   const latest = data.coordination.hermesCronSnapshots.at(-1);
+  const latestProposal = data.coordination.hermesCronProposals.at(-1);
   const summary = latest
     ? `<div class="metadata">Latest Hermes snapshot: ${escapeHtml(`${latest.summary.jobs} jobs / ${latest.summary.enabled} enabled`)}</div>`
     : "";
-  return `<div class="chain">${rows.map(([label, value]) => `<div><span>${escapeHtml(String(label))}</span><strong>${escapeHtml(String(value))}</strong></div>`).join("")}</div>${summary}`;
+  const proposal = latestProposal
+    ? `<div class="metadata">Latest Hermes proposal: ${escapeHtml(`${latestProposal.summary.proposedActions} actions / ${latestProposal.mode}`)}</div>`
+    : "";
+  return `<div class="chain">${rows.map(([label, value]) => `<div><span>${escapeHtml(String(label))}</span><strong>${escapeHtml(String(value))}</strong></div>`).join("")}</div>${summary}${proposal}`;
 }
 
 function infrastructure(data: ConsoleData): string {

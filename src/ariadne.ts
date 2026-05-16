@@ -28,7 +28,7 @@ import { collectGithubSnapshot, importGithubSnapshot } from "./githubAdapter.js"
 import { generateGsd } from "./gsd.js";
 import { exportGsd2Bundle, importGsd2Bundle } from "./gsdAdapter.js";
 import { generateHealerProposal } from "./healerProposals.js";
-import { importHermesCronSnapshot } from "./hermesCron.js";
+import { generateHermesCronProposal, importHermesCronSnapshot } from "./hermesCron.js";
 import { generateInfrastructureRegistry } from "./infrastructure.js";
 import { draftOpenScorpionActivity, importInfraSnapshot } from "./infraSnapshot.js";
 import { collectLocalInfraSnapshot, collectSshInfraSnapshot } from "./liveInventory.js";
@@ -114,6 +114,7 @@ function usage(): string {
     "  ariadne agent-mail --project <project> --from <agent> --to <agent> --subject <text> --body <text> [--task <id>] [--run <id>]",
     "  ariadne agent-lease --project <project> --agent <agent> --resource <name> --status <status> [--task <id>] [--run <id>] [--notes <text>]",
     "  ariadne hermes-cron-import --project <project> --from <snapshot.json> [--host <id>]",
+    "  ariadne hermes-cron-proposal --project <project> [--scope <name>]",
     "  ariadne deployment-snapshot --project <project> --from <snapshot.json> [--system <system>]",
     "  ariadne deployment-live-ssh --project <project> --system <proxmox|truenas|dgx-spark|mac> --host <id> --target <ssh-target> [--ssh-binary <path>] [--notes <text>]",
     "  ariadne artifact-checks --project <project>",
@@ -582,6 +583,19 @@ async function main(): Promise<void> {
     console.log(`Hermes cron snapshot: ${result.markdownPath}`);
     console.log(`Jobs: ${result.snapshot.summary.jobs}`);
     console.log(`Mode: ${result.snapshot.mode}`);
+    return;
+  }
+
+  if (parsed.command === "hermes-cron-proposal") {
+    const result = await generateHermesCronProposal({
+      project,
+      vaultRoot,
+      scope: optionString(parsed.options, "scope", "") || undefined
+    });
+    console.log(`Hermes cron proposal: ${result.markdownPath}`);
+    console.log(`Snapshots: ${result.proposal.summary.snapshots}`);
+    console.log(`Proposed actions: ${result.proposal.summary.proposedActions}`);
+    console.log(`Mode: ${result.proposal.mode}`);
     return;
   }
 

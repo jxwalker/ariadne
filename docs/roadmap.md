@@ -179,10 +179,11 @@ Implemented:
 - interagent lease and ownership records
 - optional GBrain read-only export and report import
 - read-only Hermes cron snapshot import
+- proposal-only Hermes cron recommendations from imported scheduler evidence
 
 Next:
 
-- Hermes cron proposal generation after imported schedules have enough evidence
+- live Hermes cron adapter only after scheduler authentication, rollback, and approval records are explicit
 
 ## Milestone 10: Live Deployment Adapters
 

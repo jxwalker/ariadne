@@ -15,7 +15,7 @@ The first visualisation should be an operations surface over evidence, not a cha
 - Decisions: accepted decisions and source references.
 - Infrastructure: hosts, runner pools, model endpoints, snapshots.
 - Evaluation: dimension scores, regressions, recommendations.
-- Memory and coordination: sleep routines, memory proposals, agent mail, leases, Hermes cron snapshots.
+- Memory and coordination: sleep routines, memory proposals, agent mail, leases, Hermes cron snapshots and proposals.
 - Deployment: read-only snapshots for Macs, DGX Spark, Proxmox, TrueNAS, GitHub, and generic systems.
 - GBrain: export bundles and imported query/eval reports.
 - Control: merge readiness and missing gates.
@@ -59,7 +59,7 @@ Pending review records, missing readiness gates, requested approvals, and mutati
 
 ### Memory And Mail
 
-Sleep routines, proposed durable memories, interagent messages, resource leases, and imported Hermes cron schedules show whether long-running work is coordinated or drifting.
+Sleep routines, proposed durable memories, interagent messages, resource leases, imported Hermes cron schedules, and proposal-only scheduler recommendations show whether long-running work is coordinated or drifting.
 
 ### Evaluation Trends
 
