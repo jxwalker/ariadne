@@ -1,12 +1,12 @@
 {
   "schemaVersion": 1,
   "project": "ariadne",
-  "generatedAt": "2026-05-16T17:37:17.435Z",
+  "generatedAt": "2026-05-16T23:11:52.931Z",
   "status": "passed",
   "summary": {
     "required": 13,
-    "optional": 23,
-    "present": 32,
+    "optional": 29,
+    "present": 35,
     "missingRequired": 0
   },
   "checks": [
@@ -146,6 +146,15 @@
       "status": "present"
     },
     {
+      "id": "benchmark-runs",
+      "label": "Benchmark run reports",
+      "required": false,
+      "path": "projects/ariadne/evaluation/benchmark-run-*.json",
+      "status": "missing",
+      "count": 0,
+      "matches": []
+    },
+    {
       "id": "infra-registry",
       "label": "Infrastructure registry",
       "required": true,
@@ -265,6 +274,45 @@
       "required": false,
       "path": "projects/ariadne/control/mutation-readiness-audit.json",
       "status": "present"
+    },
+    {
+      "id": "live-adapter-readiness",
+      "label": "Live adapter readiness report",
+      "required": false,
+      "path": "projects/ariadne/control/live-adapter-readiness.json",
+      "status": "present"
+    },
+    {
+      "id": "live-adapter-next-actions",
+      "label": "Live adapter next-action report",
+      "required": false,
+      "path": "projects/ariadne/control/live-adapter-next-actions.json",
+      "status": "present"
+    },
+    {
+      "id": "live-adapter-approval-pack",
+      "label": "Live adapter approval pack",
+      "required": false,
+      "path": "projects/ariadne/control/live-adapter-approval-pack.json",
+      "status": "present"
+    },
+    {
+      "id": "mutation-dry-runs",
+      "label": "Mutation dry-run records",
+      "required": false,
+      "path": "projects/ariadne/control/mutation-dry-runs/mutation-dry-run-*.json",
+      "status": "missing",
+      "count": 0,
+      "matches": []
+    },
+    {
+      "id": "mutation-executions",
+      "label": "Mutation execution records",
+      "required": false,
+      "path": "projects/ariadne/control/mutation-executions/mutation-execution-*.json",
+      "status": "missing",
+      "count": 0,
+      "matches": []
     },
     {
       "id": "extraction-results",

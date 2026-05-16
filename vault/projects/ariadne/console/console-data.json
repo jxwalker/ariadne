@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "project": "ariadne",
-  "generatedAt": "2026-05-16T22:29:45.662Z",
+  "generatedAt": "2026-05-16T23:11:53.789Z",
   "projectDir": "projects/ariadne",
   "summary": {
     "sources": 3,
@@ -35,6 +35,7 @@
     "liveAdapterReady": 0,
     "liveAdapterBlocked": 6,
     "liveAdapterActionItems": 28,
+    "liveAdapterApprovalPackets": 6,
     "recoveryIssues": 5,
     "consoleBrowserChecks": "passed",
     "readinessStatus": "ready",
@@ -841,7 +842,7 @@
   "mutationReadinessAudit": {
     "schemaVersion": 1,
     "project": "ariadne",
-    "generatedAt": "2026-05-16T22:15:34.338Z",
+    "generatedAt": "2026-05-16T23:08:21.376Z",
     "status": "blocked",
     "mutationAllowed": false,
     "summary": {
@@ -886,7 +887,7 @@
   "liveAdapterReadiness": {
     "schemaVersion": 1,
     "project": "ariadne",
-    "generatedAt": "2026-05-16T22:15:34.340Z",
+    "generatedAt": "2026-05-16T23:08:21.379Z",
     "status": "blocked",
     "summary": {
       "targets": 6,
@@ -1009,7 +1010,7 @@
   "liveAdapterNextActions": {
     "schemaVersion": 1,
     "project": "ariadne",
-    "generatedAt": "2026-05-16T22:15:34.341Z",
+    "generatedAt": "2026-05-16T23:08:21.383Z",
     "status": "actions_required",
     "summary": {
       "targets": 6,
@@ -1378,6 +1379,240 @@
       }
     ]
   },
+  "liveAdapterApprovalPack": {
+    "schemaVersion": 1,
+    "project": "ariadne",
+    "generatedAt": "2026-05-16T23:08:21.384Z",
+    "status": "ready_for_operator_review",
+    "summary": {
+      "targets": 6,
+      "packets": 6,
+      "blockedTargets": 6,
+      "readyTargets": 0
+    },
+    "nextActionsRef": "projects/ariadne/control/live-adapter-next-actions.json",
+    "packets": [
+      {
+        "target": "github",
+        "readinessStatus": "blocked",
+        "recommendedRisk": "medium",
+        "operatorDecisionRequired": true,
+        "approvalRequestCommand": "npm run ariadne -- approval-request --project ariadne --by <operator> --target github --action \"Enable one reviewed GitHub mutation adapter action\" --risk medium --reason \"Permit a bounded PR or workflow operation after checks, review, and branch policy are verified\" --rollback \"Document how to revert or undo the PR/workflow operation and restore manual review flow.\" --evidence <auth-or-policy-evidence>",
+        "requiredEvidence": [
+          "operator approval request record",
+          "authentication or authorization evidence",
+          "bounded scope statement",
+          "dry-run command output evidence",
+          "post-action verification command",
+          "rollback or disable path",
+          "repository, PR, branch policy, and check-rollup evidence"
+        ],
+        "mutationPlanCommand": "Create or repair the target-specific mutation-readiness plan after operator approval exists. npm run ariadne -- github-mutation-plan --project <project> --repo <owner/name> --action <merge-pr|rerun-failed-run> --auth-evidence <paths> --approval <approval-id>",
+        "dryRunCommand": "After mutation-readiness-github-2026-05-16T16-50-54-241Z passes audit, run npm run ariadne -- mutation-dry-run --project <project> --plan mutation-readiness-github-2026-05-16T16-50-54-241Z",
+        "executionCommand": "Run a passed dry-run for an audit-passed plan first.",
+        "rollbackRequirement": "Document how to revert or undo the PR/workflow operation and restore manual review flow.",
+        "postVerificationRequirement": "Verify PR/workflow status, check rollup, and repository state after execution.",
+        "blockers": [
+          "no readiness plan passes audit",
+          "no passed dry-run evidence exists for an audit-passed plan",
+          "no passed target-guarded execution evidence exists"
+        ],
+        "nextActions": [
+          "pending: Resolve existing readiness plan blockers",
+          "pending: Run the reviewed dry-run command",
+          "blocked: Capture target-guarded execution evidence"
+        ],
+        "evidenceRefs": [
+          "control/mutation-readiness-audit.json"
+        ]
+      },
+      {
+        "target": "deployment",
+        "readinessStatus": "blocked",
+        "recommendedRisk": "high",
+        "operatorDecisionRequired": true,
+        "approvalRequestCommand": "npm run ariadne -- approval-request --project ariadne --by <operator> --target deployment --action \"Enable one reviewed deployment mutation adapter action\" --risk high --reason \"Permit a bounded estate operation after host auth, rollback, and service verification are proven\" --rollback \"Document the exact host-level rollback command or service restore path before execution.\" --evidence <auth-or-policy-evidence>",
+        "requiredEvidence": [
+          "operator approval request record",
+          "authentication or authorization evidence",
+          "bounded scope statement",
+          "dry-run command output evidence",
+          "post-action verification command",
+          "rollback or disable path",
+          "host identity, service state, sudo boundary, and rollback host evidence"
+        ],
+        "mutationPlanCommand": "npm run ariadne -- deployment-mutation-plan --project <project> --system <proxmox|truenas|dgx-spark|mac> --host <host> --scope <scope> --auth-evidence <paths> --dry-run <cmd> --live-command <cmd> --post-verify <cmd> --rollback <text> --approval <approval-id>",
+        "dryRunCommand": "Create and audit-pass a target-specific readiness plan first.",
+        "executionCommand": "Run a passed dry-run for an audit-passed plan first.",
+        "rollbackRequirement": "Document the exact host-level rollback command or service restore path before execution.",
+        "postVerificationRequirement": "Verify service state, host health, and affected endpoint behavior after execution.",
+        "blockers": [
+          "no target-specific readiness plan exists",
+          "no readiness plan passes audit",
+          "no passed dry-run evidence exists for an audit-passed plan",
+          "no passed target-guarded execution evidence exists"
+        ],
+        "nextActions": [
+          "pending: Record an operator approval request",
+          "blocked: Create a target-specific mutation-readiness plan",
+          "pending: Fix readiness audit blockers",
+          "blocked: Run the reviewed dry-run command",
+          "blocked: Capture target-guarded execution evidence"
+        ],
+        "evidenceRefs": [
+          "control/mutation-readiness-audit.json"
+        ]
+      },
+      {
+        "target": "hermes-cron",
+        "readinessStatus": "blocked",
+        "recommendedRisk": "medium",
+        "operatorDecisionRequired": true,
+        "approvalRequestCommand": "npm run ariadne -- approval-request --project ariadne --by <operator> --target hermes-cron --action \"Enable one reviewed Hermes cron mutation adapter action\" --risk medium --reason \"Permit a bounded scheduler change after auth, next-run behavior, and disable path are proven\" --rollback \"Document the exact disable or restore command for the scheduler job.\" --evidence <auth-or-policy-evidence>",
+        "requiredEvidence": [
+          "operator approval request record",
+          "authentication or authorization evidence",
+          "bounded scope statement",
+          "dry-run command output evidence",
+          "post-action verification command",
+          "rollback or disable path",
+          "scheduler auth, existing job snapshot, next-run, and disable-path evidence"
+        ],
+        "mutationPlanCommand": "npm run ariadne -- hermes-cron-mutation-plan --project <project> --action <create|update|enable|disable|delete> --job <id> --scope <scope> --auth-evidence <paths> --dry-run <cmd> --live-command <cmd> --post-verify <cmd> --rollback <text> --approval <approval-id>",
+        "dryRunCommand": "Create and audit-pass a target-specific readiness plan first.",
+        "executionCommand": "Run a passed dry-run for an audit-passed plan first.",
+        "rollbackRequirement": "Document the exact disable or restore command for the scheduler job.",
+        "postVerificationRequirement": "Verify job state, schedule, next run, and expected enabled/disabled state after execution.",
+        "blockers": [
+          "no target-specific readiness plan exists",
+          "no readiness plan passes audit",
+          "no passed dry-run evidence exists for an audit-passed plan",
+          "no passed target-guarded execution evidence exists"
+        ],
+        "nextActions": [
+          "pending: Record an operator approval request",
+          "blocked: Create a target-specific mutation-readiness plan",
+          "pending: Fix readiness audit blockers",
+          "blocked: Run the reviewed dry-run command",
+          "blocked: Capture target-guarded execution evidence"
+        ],
+        "evidenceRefs": [
+          "control/mutation-readiness-audit.json"
+        ]
+      },
+      {
+        "target": "openscorpion",
+        "readinessStatus": "blocked",
+        "recommendedRisk": "medium",
+        "operatorDecisionRequired": true,
+        "approvalRequestCommand": "npm run ariadne -- approval-request --project ariadne --by <operator> --target openscorpion --action \"Enable one reviewed OpenScorpion governed activity action\" --risk medium --reason \"Permit a bounded governed activity submission after route and non-public payload policy are proven\" --rollback \"Document the withdraw/update path and governed audit trail for the activity.\" --evidence <auth-or-policy-evidence>",
+        "requiredEvidence": [
+          "operator approval request record",
+          "authentication or authorization evidence",
+          "bounded scope statement",
+          "dry-run command output evidence",
+          "post-action verification command",
+          "rollback or disable path",
+          "governed route, payload sensitivity, and activity status evidence"
+        ],
+        "mutationPlanCommand": "npm run ariadne -- openscorpion-mutation-plan --project <project> --activity <id> --type <type> --action <submit-activity|update-activity|withdraw-activity> --route <governed|staging> --scope <scope> --auth-evidence <paths> --dry-run <cmd> --live-command <cmd> --post-verify <cmd> --rollback <text> --approval <approval-id>",
+        "dryRunCommand": "Create and audit-pass a target-specific readiness plan first.",
+        "executionCommand": "Run a passed dry-run for an audit-passed plan first.",
+        "rollbackRequirement": "Document the withdraw/update path and governed audit trail for the activity.",
+        "postVerificationRequirement": "Verify governed activity status and audit record after execution.",
+        "blockers": [
+          "no target-specific readiness plan exists",
+          "no readiness plan passes audit",
+          "no passed dry-run evidence exists for an audit-passed plan",
+          "no passed target-guarded execution evidence exists"
+        ],
+        "nextActions": [
+          "pending: Record an operator approval request",
+          "blocked: Create a target-specific mutation-readiness plan",
+          "pending: Fix readiness audit blockers",
+          "blocked: Run the reviewed dry-run command",
+          "blocked: Capture target-guarded execution evidence"
+        ],
+        "evidenceRefs": [
+          "control/mutation-readiness-audit.json"
+        ]
+      },
+      {
+        "target": "gsd2",
+        "readinessStatus": "blocked",
+        "recommendedRisk": "medium",
+        "operatorDecisionRequired": true,
+        "approvalRequestCommand": "npm run ariadne -- approval-request --project ariadne --by <operator> --target gsd2 --action \"Enable one reviewed GSD2 task submission action\" --risk medium --reason \"Permit a bounded GSD2 task operation after process contract and workspace effects are proven\" --rollback \"Document generated worktree cleanup and task-state restoration.\" --evidence <auth-or-policy-evidence>",
+        "requiredEvidence": [
+          "operator approval request record",
+          "authentication or authorization evidence",
+          "bounded scope statement",
+          "dry-run command output evidence",
+          "post-action verification command",
+          "rollback or disable path",
+          "local GSD2 binary/process snapshot and package/task identity evidence"
+        ],
+        "mutationPlanCommand": "npm run ariadne -- gsd2-mutation-plan --project <project> --task <id> --mode <headless|auto|worktree> --scope <scope> --auth-evidence <paths> --dry-run <cmd> --live-command <cmd> --post-verify <cmd> --rollback <text> --approval <approval-id>",
+        "dryRunCommand": "Create and audit-pass a target-specific readiness plan first.",
+        "executionCommand": "Run a passed dry-run for an audit-passed plan first.",
+        "rollbackRequirement": "Document generated worktree cleanup and task-state restoration.",
+        "postVerificationRequirement": "Verify task/package state and generated workspace effects after execution.",
+        "blockers": [
+          "no target-specific readiness plan exists",
+          "no readiness plan passes audit",
+          "no passed dry-run evidence exists for an audit-passed plan",
+          "no passed target-guarded execution evidence exists"
+        ],
+        "nextActions": [
+          "pending: Record an operator approval request",
+          "blocked: Create a target-specific mutation-readiness plan",
+          "pending: Fix readiness audit blockers",
+          "blocked: Run the reviewed dry-run command",
+          "blocked: Capture target-guarded execution evidence"
+        ],
+        "evidenceRefs": [
+          "control/mutation-readiness-audit.json"
+        ]
+      },
+      {
+        "target": "notebooklm",
+        "readinessStatus": "blocked",
+        "recommendedRisk": "medium",
+        "operatorDecisionRequired": true,
+        "approvalRequestCommand": "npm run ariadne -- approval-request --project ariadne --by <operator> --target notebooklm --action \"Enable one reviewed NotebookLM notebook action\" --risk medium --reason \"Permit a bounded NotebookLM operation after account terms, auth, and export stability are proven\" --rollback \"Document how to remove generated exports or revert source changes and return to manual import.\" --evidence <auth-or-policy-evidence>",
+        "requiredEvidence": [
+          "operator approval request record",
+          "authentication or authorization evidence",
+          "bounded scope statement",
+          "dry-run command output evidence",
+          "post-action verification command",
+          "rollback or disable path",
+          "NotebookLM auth, terms, source/export stability, and notebook identity evidence"
+        ],
+        "mutationPlanCommand": "npm run ariadne -- notebooklm-mutation-plan --project <project> --notebook <id> --action <create-source|refresh-source|generate-summary|export-notes> --scope <scope> --auth-evidence <paths> --dry-run <cmd> --live-command <cmd> --post-verify <cmd> --rollback <text> --approval <approval-id>",
+        "dryRunCommand": "Create and audit-pass a target-specific readiness plan first.",
+        "executionCommand": "Run a passed dry-run for an audit-passed plan first.",
+        "rollbackRequirement": "Document how to remove generated exports or revert source changes and return to manual import.",
+        "postVerificationRequirement": "Verify notebook/source/export state and saved artifact digest after execution.",
+        "blockers": [
+          "no target-specific readiness plan exists",
+          "no readiness plan passes audit",
+          "no passed dry-run evidence exists for an audit-passed plan",
+          "no passed target-guarded execution evidence exists"
+        ],
+        "nextActions": [
+          "pending: Record an operator approval request",
+          "blocked: Create a target-specific mutation-readiness plan",
+          "pending: Fix readiness audit blockers",
+          "blocked: Run the reviewed dry-run command",
+          "blocked: Capture target-guarded execution evidence"
+        ],
+        "evidenceRefs": [
+          "control/mutation-readiness-audit.json"
+        ]
+      }
+    ]
+  },
   "decisions": [
     {
       "schemaVersion": 1,
@@ -1571,11 +1806,11 @@
   "consoleVisualChecks": {
     "schemaVersion": 1,
     "project": "ariadne",
-    "generatedAt": "2026-05-16T17:37:16.996Z",
+    "generatedAt": "2026-05-16T23:11:35.111Z",
     "htmlPath": "projects/ariadne/console/index.html",
     "status": "passed",
     "summary": {
-      "passed": 10,
+      "passed": 12,
       "failed": 0
     },
     "checks": [
@@ -1608,6 +1843,18 @@
         "label": "Approval queue section",
         "status": "passed",
         "detail": "Found Approval Queue."
+      },
+      {
+        "id": "approval-pack-metric",
+        "label": "Approval pack metric",
+        "status": "passed",
+        "detail": "Found Approval Packs."
+      },
+      {
+        "id": "live-adapter-approval-pack",
+        "label": "Live adapter approval pack data",
+        "status": "passed",
+        "detail": "Found approval packets."
       },
       {
         "id": "trend-chart",
@@ -1644,9 +1891,9 @@
   "consoleBrowserChecks": {
     "schemaVersion": 1,
     "project": "ariadne",
-    "generatedAt": "2026-05-16T22:29:44.821Z",
+    "generatedAt": "2026-05-16T23:11:52.948Z",
     "htmlPath": "projects/ariadne/console/index.html",
-    "screenshotPath": "projects/ariadne/console/screenshots/console-2026-05-16T22-29-44-821Z.png",
+    "screenshotPath": "projects/ariadne/console/screenshots/console-2026-05-16T23-11-52-948Z.png",
     "status": "passed",
     "viewport": {
       "width": 1440,
@@ -1697,7 +1944,7 @@
         "id": "screenshot",
         "label": "Screenshot captured",
         "status": "passed",
-        "detail": "1028921 bytes captured."
+        "detail": "1067433 bytes captured."
       }
     ]
   },
@@ -2778,6 +3025,7 @@
     "mutationReadinessAudit": "projects/ariadne/control/mutation-readiness-audit.json",
     "liveAdapterReadiness": "projects/ariadne/control/live-adapter-readiness.json",
     "liveAdapterNextActions": "projects/ariadne/control/live-adapter-next-actions.json",
+    "liveAdapterApprovalPack": "projects/ariadne/control/live-adapter-approval-pack.json",
     "recoveryReport": "projects/ariadne/control/recovery-report.json",
     "healerProposals": "projects/ariadne/verification/healer-proposals"
   }

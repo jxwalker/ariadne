@@ -38,6 +38,7 @@ import { hermesCronMutationActionOption, planHermesCronMutation } from "./hermes
 import { generateInfrastructureRegistry } from "./infrastructure.js";
 import { draftOpenScorpionActivity, importInfraSnapshot } from "./infraSnapshot.js";
 import { collectLocalInfraSnapshot, collectSshInfraSnapshot } from "./liveInventory.js";
+import { generateLiveAdapterApprovalPack, liveAdapterApprovalTargetOption } from "./liveAdapterApprovalPack.js";
 import { generateLiveAdapterNextActions } from "./liveAdapterNextActions.js";
 import { generateLiveAdapterReadiness } from "./liveAdapterReadiness.js";
 import { importNotebookLmExport } from "./notebooklm.js";
@@ -161,6 +162,7 @@ function usage(): string {
     "  ariadne mutation-readiness-audit --project <project>",
     "  ariadne live-adapter-readiness --project <project>",
     "  ariadne live-adapter-next-actions --project <project>",
+    "  ariadne live-adapter-approval-pack --project <project> [--target <all|github|deployment|hermes-cron|openscorpion|gsd2|notebooklm>]",
     "  ariadne mutation-dry-run --project <project> --plan <id|json> [--timeout-ms <ms>]",
     "  ariadne mutation-execute --project <project> --plan <id|json> --confirm-plan <id> [--timeout-ms <ms>]",
     "  ariadne target-mutation-execute --project <project> --target <target> --plan <id|json> --confirm-plan <id> [--timeout-ms <ms>]",
@@ -1078,6 +1080,15 @@ async function main(): Promise<void> {
     console.log(`Live adapter next actions: ${result.markdownPath}`);
     console.log(`Status: ${result.report.status}`);
     console.log(`Action items: ${result.report.summary.actionItems}`);
+    return;
+  }
+
+  if (parsed.command === "live-adapter-approval-pack") {
+    const target = liveAdapterApprovalTargetOption(optionString(parsed.options, "target", "all"));
+    const result = await generateLiveAdapterApprovalPack({ project, vaultRoot, target });
+    console.log(`Live adapter approval pack: ${result.markdownPath}`);
+    console.log(`Status: ${result.report.status}`);
+    console.log(`Packets: ${result.report.summary.packets}`);
     return;
   }
 

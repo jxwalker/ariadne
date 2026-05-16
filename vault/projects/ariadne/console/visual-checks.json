@@ -1,11 +1,11 @@
 {
   "schemaVersion": 1,
   "project": "ariadne",
-  "generatedAt": "2026-05-16T17:37:16.996Z",
+  "generatedAt": "2026-05-16T23:11:35.111Z",
   "htmlPath": "projects/ariadne/console/index.html",
   "status": "passed",
   "summary": {
-    "passed": 10,
+    "passed": 12,
     "failed": 0
   },
   "checks": [
@@ -38,6 +38,18 @@
       "label": "Approval queue section",
       "status": "passed",
       "detail": "Found Approval Queue."
+    },
+    {
+      "id": "approval-pack-metric",
+      "label": "Approval pack metric",
+      "status": "passed",
+      "detail": "Found Approval Packs."
+    },
+    {
+      "id": "live-adapter-approval-pack",
+      "label": "Live adapter approval pack data",
+      "status": "passed",
+      "detail": "Found approval packets."
     },
     {
       "id": "trend-chart",

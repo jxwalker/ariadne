@@ -13,6 +13,7 @@ The first visualisation should be an operations surface over evidence, not a cha
 - Recovery: incomplete runs, missing guards, failed checks, pending reviews, and resume actions.
 - Approvals: requested, approved, rejected, or expired mutation gates with risk and rollback notes.
 - Mutation readiness: target-specific live-adapter plans with auth evidence, dry runs, proposed live commands, rollback, and execute=false.
+- Live adapter approval packs: operator-facing packets for target risk, auth evidence, rollback, post-verification, and approval request drafts.
 - Verification: typecheck, tests, build, Playwright evidence, CI, CodeRabbit, GitHub PR/check snapshots.
 - Decisions: accepted decisions and source references.
 - Infrastructure: hosts, runner pools, model endpoints, snapshots.
@@ -57,7 +58,7 @@ Nodes are Macs, DGX Spark, Proxmox, TrueNAS, runners, Hermes instances, and mode
 
 ### Approval Queue
 
-Pending review records, missing readiness gates, requested approvals, mutation-readiness blockers, audit blockers, and mutation blockers are grouped into one queue so the operator sees what requires human action.
+Pending review records, missing readiness gates, requested approvals, mutation-readiness blockers, audit blockers, mutation blockers, and approval-pack packets are grouped into one queue so the operator sees what requires human action.
 
 ### Memory And Mail
 

@@ -474,6 +474,36 @@ export interface LiveAdapterNextActionsReport {
   }>;
 }
 
+export interface LiveAdapterApprovalPack {
+  schemaVersion: 1;
+  project: string;
+  generatedAt: string;
+  status: "ready_for_operator_review" | "complete";
+  summary: {
+    targets: number;
+    packets: number;
+    blockedTargets: number;
+    readyTargets: number;
+  };
+  nextActionsRef: string;
+  packets: Array<{
+    target: Exclude<MutationReadinessPlan["target"], "generic">;
+    readinessStatus: LiveAdapterReadinessReport["targets"][number]["status"];
+    recommendedRisk: ApprovalRecord["risk"];
+    operatorDecisionRequired: true;
+    approvalRequestCommand: string;
+    requiredEvidence: string[];
+    mutationPlanCommand: string;
+    dryRunCommand: string;
+    executionCommand: string;
+    rollbackRequirement: string;
+    postVerificationRequirement: string;
+    blockers: string[];
+    nextActions: string[];
+    evidenceRefs: string[];
+  }>;
+}
+
 export interface InfraRegistry {
   schemaVersion: 1;
   project: string;
@@ -1059,6 +1089,7 @@ export interface ConsoleData {
     liveAdapterReady?: number;
     liveAdapterBlocked?: number;
     liveAdapterActionItems?: number;
+    liveAdapterApprovalPackets?: number;
     recoveryIssues: number;
     consoleBrowserChecks?: ConsoleBrowserCheckReport["status"];
     readinessStatus?: ControlReport["status"];
@@ -1121,6 +1152,7 @@ export interface ConsoleData {
   mutationReadinessAudit?: MutationReadinessAudit;
   liveAdapterReadiness?: LiveAdapterReadinessReport;
   liveAdapterNextActions?: LiveAdapterNextActionsReport;
+  liveAdapterApprovalPack?: LiveAdapterApprovalPack;
   recovery?: RecoveryReport;
   readiness?: ControlReport;
   artifacts: {
@@ -1146,6 +1178,7 @@ export interface ConsoleData {
     mutationReadinessAudit?: string;
     liveAdapterReadiness?: string;
     liveAdapterNextActions?: string;
+    liveAdapterApprovalPack?: string;
     recoveryReport?: string;
     extractionResults?: string;
     healerProposals?: string;

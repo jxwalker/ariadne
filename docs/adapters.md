@@ -212,6 +212,8 @@ Target-specific execute wrappers hard-code that guard for the live adapters: `gi
 
 `live-adapter-next-actions` turns the readiness blockers into an operator packet. It lists the approval request, target-specific mutation plan, dry-run, target-guarded execution, or placeholder-replacement step still needed for each target. It does not decide approvals or run commands; it writes `control/live-adapter-next-actions.json` and `.md`.
 
+`live-adapter-approval-pack` turns those next actions into operator review packets. Each packet gives the recommended risk, approval-request command draft, target-specific evidence checklist, mutation-plan command, dry-run step, execution step, rollback requirement, and post-verification requirement. Ariadne does not approve its own adapters; this command writes `control/live-adapter-approval-pack.json` and `.md` for all targets, or `control/live-adapter-approval-pack-<target>.json` and `.md` when `--target` narrows the report.
+
 ```bash
 npm run ariadne -- approval-request --project ariadne --by planner --target github --action "Enable PR mutation adapter" --risk medium --reason "Manual gate before live mutation" --rollback "Disable adapter and return to manual PR flow"
 npm run ariadne -- approval-decision --project ariadne --approval approval-... --status approved --by james --notes "Approved for a bounded test only."
@@ -225,6 +227,7 @@ npm run ariadne -- mutation-readiness-audit --project ariadne
 npm run ariadne -- mutation-dry-run --project ariadne --plan mutation-readiness-github-...
 npm run ariadne -- live-adapter-readiness --project ariadne
 npm run ariadne -- live-adapter-next-actions --project ariadne
+npm run ariadne -- live-adapter-approval-pack --project ariadne --target all
 npm run ariadne -- github-mutation-execute --project ariadne --plan mutation-readiness-github-... --confirm-plan mutation-readiness-github-...
 npm run ariadne -- target-mutation-execute --project ariadne --target github --plan mutation-readiness-github-... --confirm-plan mutation-readiness-github-...
 npm run ariadne -- mutation-execute --project ariadne --plan mutation-readiness-github-... --confirm-plan mutation-readiness-github-...
@@ -242,6 +245,9 @@ Artifacts:
 - `control/mutation-dry-runs/mutation-dry-run-<timestamp>.md`
 - `control/mutation-executions/mutation-execution-<timestamp>.json`
 - `control/mutation-executions/mutation-execution-<timestamp>.md`
+- `control/live-adapter-readiness.json`
+- `control/live-adapter-next-actions.json`
+- `control/live-adapter-approval-pack.json`
 
 ## Evaluation
 

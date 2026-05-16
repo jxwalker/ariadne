@@ -31,6 +31,7 @@ import { planHermesCronMutation } from "../src/hermesMutation.js";
 import { generateInfrastructureRegistry } from "../src/infrastructure.js";
 import { draftOpenScorpionActivity, importInfraSnapshot } from "../src/infraSnapshot.js";
 import { collectLocalInfraSnapshot, collectSshInfraSnapshot, parseSshInventory } from "../src/liveInventory.js";
+import { generateLiveAdapterApprovalPack } from "../src/liveAdapterApprovalPack.js";
 import { generateLiveAdapterNextActions } from "../src/liveAdapterNextActions.js";
 import { generateLiveAdapterReadiness } from "../src/liveAdapterReadiness.js";
 import { planMutationReadiness } from "../src/mutationReadiness.js";
@@ -739,6 +740,20 @@ describe("roadmap adapters", () => {
     expect(githubActions?.actions.some((action) => action.id === "github-replace-placeholder" && action.status === "ready")).toBe(true);
     expect(deploymentActions?.actions.some((action) => action.id === "deployment-audit-fix")).toBe(true);
     expect(deploymentActions?.actions.some((action) => action.id === "deployment-dry-run" && action.status === "pending")).toBe(true);
+    const approvalPack = await generateLiveAdapterApprovalPack({ project: "ariadne", vaultRoot });
+    expect(approvalPack.report.status).toBe("ready_for_operator_review");
+    expect(approvalPack.report.summary.packets).toBe(5);
+    expect(approvalPack.report.packets.some((packet) => packet.target === "github")).toBe(false);
+    const deploymentPacket = approvalPack.report.packets.find((packet) => packet.target === "deployment");
+    expect(deploymentPacket?.recommendedRisk).toBe("high");
+    expect(deploymentPacket?.operatorDecisionRequired).toBe(true);
+    expect(deploymentPacket?.approvalRequestCommand).toContain("approval-request");
+    expect(deploymentPacket?.approvalRequestCommand).toContain("--target deployment");
+    expect(deploymentPacket?.requiredEvidence).toContain("host identity, service state, sudo boundary, and rollback host evidence");
+    expect(deploymentPacket?.executionCommand).toBe("Run a passed dry-run for an audit-passed plan first.");
+    const githubOnlyPack = await generateLiveAdapterApprovalPack({ project: "ariadne", vaultRoot, target: "github" });
+    expect(githubOnlyPack.report.status).toBe("complete");
+    expect(githubOnlyPack.report.summary.packets).toBe(0);
     await expect(
       runMutationDryRun({
         project: "ariadne",
@@ -849,6 +864,7 @@ describe("roadmap adapters", () => {
     expect(deployment.snapshot.mode).toBe("read_only");
     expect(deployment.snapshot.summary.host).toBe("beast");
 
+    await generateLiveAdapterApprovalPack({ project: "ariadne", vaultRoot });
     const console = await generateConsoleData({ project: "ariadne", vaultRoot });
     expect(console.data.summary.sleepRoutines).toBe(1);
     expect(console.data.summary.memoryProposals).toBe(1);
@@ -867,7 +883,9 @@ describe("roadmap adapters", () => {
     expect(console.data.summary.liveAdapterReady).toBe(1);
     expect(console.data.summary.liveAdapterBlocked).toBe(5);
     expect(console.data.summary.liveAdapterActionItems).toBeGreaterThan(0);
+    expect(console.data.summary.liveAdapterApprovalPackets).toBe(5);
     expect(console.data.liveAdapterNextActions?.targets.some((target) => target.target === "github")).toBe(true);
+    expect(console.data.liveAdapterApprovalPack?.packets.some((packet) => packet.target === "deployment")).toBe(true);
     expect(console.data.behaviorChecks?.status).toBe("passed");
 
     const artifactChecks = await generateArtifactCheckReport({ project: "ariadne", vaultRoot });
@@ -877,6 +895,7 @@ describe("roadmap adapters", () => {
     const readinessCheck = artifactChecks.report.checks.find((check) => check.id === "mutation-readiness-plans");
     const readinessAuditCheck = artifactChecks.report.checks.find((check) => check.id === "mutation-readiness-audit");
     const nextActionsCheck = artifactChecks.report.checks.find((check) => check.id === "live-adapter-next-actions");
+    const approvalPackCheck = artifactChecks.report.checks.find((check) => check.id === "live-adapter-approval-pack");
     const mutationDryRunCheck = artifactChecks.report.checks.find((check) => check.id === "mutation-dry-runs");
     const mutationExecutionCheck = artifactChecks.report.checks.find((check) => check.id === "mutation-executions");
     expect(coordinationCheck?.matches?.some((match) => match.includes("coordination/hermes"))).toBe(false);
@@ -885,6 +904,7 @@ describe("roadmap adapters", () => {
     expect(readinessCheck?.count).toBe(2);
     expect(readinessAuditCheck?.status).toBe("present");
     expect(nextActionsCheck?.status).toBe("present");
+    expect(approvalPackCheck?.status).toBe("present");
     expect(mutationDryRunCheck?.status).toBe("present");
     expect(mutationExecutionCheck?.status).toBe("present");
   });
