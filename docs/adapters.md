@@ -224,4 +224,12 @@ npm run ariadne -- infra-live-local --project ariadne --notes "Mac workstation r
 
 The collector uses local Node.js OS APIs, hashes the hostname, omits network and MAC addresses, and records `snapshotKind: live_read_only`. It does not connect to remote hosts or mutate infrastructure.
 
+`infra-live-ssh` collects the same class of evidence from an approved remote host over SSH:
+
+```bash
+npm run ariadne -- infra-live-ssh --project ariadne --host beast --target james@beast.lan --notes "Approved read-only remote snapshot"
+```
+
+The SSH collector runs a fixed POSIX read-only inventory script, stores the human host label, hashes the SSH target and reported hostname, omits network and MAC addresses, and records capabilities such as Docker, Proxmox, ZFS, and `nvidia-smi`. It does not upload files, edit configuration, restart services, or execute mutation-capable commands.
+
 `deployment-snapshot` imports read-only estate snapshots for Proxmox, TrueNAS, DGX Spark, Macs, GitHub, or generic systems. This is the deployment adapter bridge for visualising where Ariadne can run without granting mutation capability.

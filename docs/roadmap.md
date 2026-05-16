@@ -125,12 +125,13 @@ Implemented:
 - explicit no-mutation rules
 - read-only infrastructure snapshot imports
 - sanitized live read-only local host inventory collector
+- sanitized live read-only SSH remote host inventory collector
 - OpenScorpion governed activity drafts
 - explicit approval records before mutation-capable adapters
 
 Next:
 
-- live read-only remote host inventory from approved hosts
+- host-specific read-only collectors for Proxmox, TrueNAS, and DGX Spark after approval
 - OpenScorpion governed activity submission after approval
 - mutation implementation only after a bounded approval record is accepted
 
@@ -196,10 +197,11 @@ Implemented:
 - DGX Spark model/evaluation endpoint snapshot import
 - Mac workstation capability snapshot import
 - sanitized live read-only local host inventory collector
+- sanitized live read-only SSH remote host inventory collector
 - GitHub deployment/check snapshot import
 - explicit approval workflow before mutation-capable adapters
 
 Next:
 
-- live read-only remote inventory collectors for approved hosts
+- host-specific read-only deployment collectors for approved hosts
 - mutation-capable deployment adapters only after approved rollback plans

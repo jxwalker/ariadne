@@ -19,11 +19,11 @@ Exercise stale, failed, noisy, and multi-project conditions without including re
 ## Recommended Commands
 
 ```bash
-npm run cli -- ingest --project bench-stress-alpha <PACK_ROOT>/project-alpha/source.md
-npm run cli -- ingest --project bench-stress-beta <PACK_ROOT>/project-beta/source.md
-npm run cli -- import-ci --project bench-stress-beta --from <PACK_ROOT>/imports/failed-ci.json
-npm run cli -- import-coderabbit --project bench-stress-beta --from <PACK_ROOT>/imports/pending-coderabbit-review.md
-npm run cli -- infra-snapshot --project bench-stress-beta --from <PACK_ROOT>/imports/odd-infra-snapshot.json
+npm run ariadne -- ingest --project bench-stress-alpha <PACK_ROOT>/project-alpha/source.md
+npm run ariadne -- ingest --project bench-stress-beta <PACK_ROOT>/project-beta/source.md
+npm run ariadne -- import-ci --project bench-stress-beta --from <PACK_ROOT>/imports/failed-ci.json
+npm run ariadne -- import-coderabbit --project bench-stress-beta --from <PACK_ROOT>/imports/pending-coderabbit-review.md
+npm run ariadne -- infra-snapshot --project bench-stress-beta --from <PACK_ROOT>/imports/odd-infra-snapshot.json
 ```
 
 ## Acceptance

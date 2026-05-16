@@ -69,6 +69,7 @@ npm run ariadne -- console-html --project ariadne --refresh-data
 npm run ariadne -- console-visual-checks --project ariadne
 npm run ariadne -- console-browser-checks --project ariadne
 npm run ariadne -- infra-live-local --project ariadne
+npm run ariadne -- infra-live-ssh --project ariadne --host beast --target james@beast.lan
 npm run ariadne -- status --project ariadne
 ```
 
@@ -153,6 +154,7 @@ npm run ariadne -- console-browser-checks --project ariadne
 npm run ariadne -- infra --project ariadne
 npm run ariadne -- infra-snapshot --project ariadne --from manifest.json
 npm run ariadne -- infra-live-local --project ariadne --notes "Mac workstation read-only snapshot"
+npm run ariadne -- infra-live-ssh --project ariadne --host beast --target james@beast.lan --notes "Approved read-only remote snapshot"
 npm run ariadne -- openscorpion-draft --project ariadne --title "Evidence package" --type ariadne.evidence --evidence path-a,path-b
 ```
 
