@@ -126,3 +126,64 @@ Next:
 - live read-only infrastructure inventory from approved hosts
 - OpenScorpion governed activity submission after approval
 - explicit approval before any mutation
+
+## Milestone 7: Evaluation Harness
+
+Goal: measure whether the pipeline is producing better, safer, more verified work.
+
+Implemented:
+
+- evaluation plan artifacts
+- evaluation run records
+- D1-D5 score model for evidence, planning, execution, verification, and operations
+- CLI support for `evaluation` and `evaluation-record`
+
+Next:
+
+- automatic artifact existence checks
+- benchmark source packs for smoke, realistic, and stress runs
+- trend report generation
+- token/cost metrics from Hermes and review tools
+- mutation and approved-fixture checks for behavior confidence
+
+## Milestone 8: Orchestration Visualisation
+
+Goal: make the harness inspectable as a live operations surface.
+
+Implemented:
+
+- documented dashboard object model
+- documented gate matrix and infrastructure map concepts
+
+Next:
+
+- read-only vault dashboard
+- project timeline from artifacts
+- evaluation trend charts
+- infra topology view for Macs, DGX Spark, Proxmox, TrueNAS, runners, Hermes, and model endpoints
+- approval queue backed by decision and control artifacts
+
+## Milestone 9: Sleep, Memory, And Agent Mail
+
+Goal: let long-running agents coordinate without losing state or hiding decisions.
+
+Next:
+
+- file-backed sleep routine records
+- memory consolidation proposals with evidence refs
+- agent mail inbox/outbox records scoped to project, task, and run ids
+- interagent lease and ownership records
+- Hermes cron integration after read-only evidence paths are proven
+
+## Milestone 10: Live Deployment Adapters
+
+Goal: safely deploy across the local estate.
+
+Next:
+
+- read-only Proxmox inventory adapter
+- read-only TrueNAS storage snapshot adapter
+- DGX Spark model/evaluation endpoint registry
+- Mac workstation capability snapshots
+- GitHub live check adapter
+- explicit approval workflow before any mutation-capable adapter

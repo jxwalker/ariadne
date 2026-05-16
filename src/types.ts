@@ -270,3 +270,43 @@ export interface InfraRegistry {
     status: "planned" | "observed" | "active";
   }>;
 }
+
+export interface EvaluationPlan {
+  schemaVersion: 1;
+  project: string;
+  generatedAt: string;
+  target: string;
+  dimensions: Array<{
+    id: string;
+    title: string;
+    weight: number;
+    sensors: string[];
+    successSignals: string[];
+  }>;
+  scenarios: Array<{
+    id: string;
+    title: string;
+    description: string;
+    taskIds: string[];
+    expectedEvidence: string[];
+  }>;
+}
+
+export interface EvaluationRun {
+  schemaVersion: 1;
+  id: string;
+  project: string;
+  recordedAt: string;
+  planPath: string;
+  target: string;
+  operator: string;
+  overallScore: number;
+  dimensionScores: Array<{
+    id: string;
+    score: number;
+    notes: string;
+  }>;
+  evidenceRefs: string[];
+  regressions: string[];
+  recommendations: string[];
+}

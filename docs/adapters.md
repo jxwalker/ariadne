@@ -43,6 +43,17 @@ Typical fields include status, context, consequences, and source references so l
 
 `playwright-evidence`, `import-ci`, and `import-coderabbit` write evidence records into the project control plane. They do not mark the project ready unless the required gates are satisfied.
 
+## Evaluation
+
+`evaluation` creates a project evaluation plan with dimensions for evidence fidelity, planning quality, execution safety, verification strength, and operational fit. `evaluation-record` stores scored run evidence so the pipeline can be compared across machines and over time.
+
+Artifacts:
+
+- `evaluation/evaluation-plan.json`
+- `evaluation/evaluation-plan.md`
+- `evaluation/evaluation-<timestamp>.json`
+- `evaluation/evaluation-<timestamp>.md`
+
 ## Infrastructure And Governance
 
 `infra-snapshot` imports a read-only JSON snapshot. `openscorpion-draft` writes a governed activity draft with `submit: false`; live submission requires a later approved adapter.

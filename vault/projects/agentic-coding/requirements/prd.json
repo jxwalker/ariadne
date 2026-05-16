@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "project": "agentic-coding",
-  "generatedAt": "2026-05-15T21:29:14.020Z",
+  "generatedAt": "2026-05-16T06:09:25.006Z",
   "title": "Agentic Coding PRD",
   "goals": [
     "Turn unstructured source material into a source-grounded, test-driven coding workflow.",
@@ -26,18 +26,18 @@
       "priority": "must",
       "status": "draft",
       "sourceRefs": [
-        "/Users/james/Documents/dev/dev-pipeline/vault/projects/agentic-coding/context/dossier-2026-05-15T21-29-09-496Z.md",
-        "/Users/james/Documents/dev/dev-pipeline/vault/projects/agentic-coding/context/dossier-2026-05-15T21-29-09-496Z.md:7",
-        "/Users/james/Documents/dev/dev-pipeline/vault/projects/agentic-coding/context/dossier-2026-05-15T21-29-09-496Z.md:9",
-        "/Users/james/Documents/dev/dev-pipeline/vault/projects/agentic-coding/context/dossier-2026-05-15T21-29-09-496Z.md:16",
-        "/Users/james/Documents/dev/dev-pipeline/vault/projects/agentic-coding/context/dossier-2026-05-15T21-29-09-496Z.md:22",
-        "/Users/james/Documents/dev/dev-pipeline/vault/projects/agentic-coding/context/dossier-2026-05-15T21-29-09-496Z.md:34",
-        "/Users/james/Documents/dev/dev-pipeline/vault/projects/agentic-coding/context/dossier-2026-05-15T21-29-09-496Z.md:35",
-        "/Users/james/Documents/dev/dev-pipeline/vault/projects/agentic-coding/context/dossier-2026-05-15T21-29-09-496Z.md:36",
-        "/Users/james/Documents/dev/dev-pipeline/vault/projects/agentic-coding/context/dossier-2026-05-15T21-29-09-496Z.md:37",
-        "/Users/james/Documents/dev/dev-pipeline/vault/projects/agentic-coding/context/dossier-2026-05-15T21-29-09-496Z.md:39",
-        "/Users/james/Documents/dev/dev-pipeline/vault/projects/agentic-coding/context/dossier-2026-05-15T21-29-09-496Z.md:41",
-        "/Users/james/Documents/dev/dev-pipeline/vault/projects/agentic-coding/context/dossier-2026-05-15T21-29-09-496Z.md:60"
+        "<VAULT_ROOT>/projects/agentic-coding/context/dossier-2026-05-15T21-29-09-496Z.md",
+        "<VAULT_ROOT>/projects/agentic-coding/context/dossier-2026-05-15T21-29-09-496Z.md:7",
+        "<VAULT_ROOT>/projects/agentic-coding/context/dossier-2026-05-15T21-29-09-496Z.md:9",
+        "<VAULT_ROOT>/projects/agentic-coding/context/dossier-2026-05-15T21-29-09-496Z.md:16",
+        "<VAULT_ROOT>/projects/agentic-coding/context/dossier-2026-05-15T21-29-09-496Z.md:22",
+        "<VAULT_ROOT>/projects/agentic-coding/context/dossier-2026-05-15T21-29-09-496Z.md:34",
+        "<VAULT_ROOT>/projects/agentic-coding/context/dossier-2026-05-15T21-29-09-496Z.md:35",
+        "<VAULT_ROOT>/projects/agentic-coding/context/dossier-2026-05-15T21-29-09-496Z.md:36",
+        "<VAULT_ROOT>/projects/agentic-coding/context/dossier-2026-05-15T21-29-09-496Z.md:37",
+        "<VAULT_ROOT>/projects/agentic-coding/context/dossier-2026-05-15T21-29-09-496Z.md:39",
+        "<VAULT_ROOT>/projects/agentic-coding/context/dossier-2026-05-15T21-29-09-496Z.md:41",
+        "<VAULT_ROOT>/projects/agentic-coding/context/dossier-2026-05-15T21-29-09-496Z.md:60"
       ]
     },
     {
@@ -52,18 +52,18 @@
       "priority": "must",
       "status": "draft",
       "sourceRefs": [
-        "/Users/james/Documents/dev/dev-pipeline/vault/projects/agentic-coding/context/dossier-2026-05-15T21-29-09-496Z.md",
-        "/Users/james/Documents/dev/dev-pipeline/vault/projects/agentic-coding/context/dossier-2026-05-15T21-29-09-496Z.md:7",
-        "/Users/james/Documents/dev/dev-pipeline/vault/projects/agentic-coding/context/dossier-2026-05-15T21-29-09-496Z.md:9",
-        "/Users/james/Documents/dev/dev-pipeline/vault/projects/agentic-coding/context/dossier-2026-05-15T21-29-09-496Z.md:16",
-        "/Users/james/Documents/dev/dev-pipeline/vault/projects/agentic-coding/context/dossier-2026-05-15T21-29-09-496Z.md:22",
-        "/Users/james/Documents/dev/dev-pipeline/vault/projects/agentic-coding/context/dossier-2026-05-15T21-29-09-496Z.md:34",
-        "/Users/james/Documents/dev/dev-pipeline/vault/projects/agentic-coding/context/dossier-2026-05-15T21-29-09-496Z.md:35",
-        "/Users/james/Documents/dev/dev-pipeline/vault/projects/agentic-coding/context/dossier-2026-05-15T21-29-09-496Z.md:36",
-        "/Users/james/Documents/dev/dev-pipeline/vault/projects/agentic-coding/context/dossier-2026-05-15T21-29-09-496Z.md:37",
-        "/Users/james/Documents/dev/dev-pipeline/vault/projects/agentic-coding/context/dossier-2026-05-15T21-29-09-496Z.md:39",
-        "/Users/james/Documents/dev/dev-pipeline/vault/projects/agentic-coding/context/dossier-2026-05-15T21-29-09-496Z.md:41",
-        "/Users/james/Documents/dev/dev-pipeline/vault/projects/agentic-coding/context/dossier-2026-05-15T21-29-09-496Z.md:60"
+        "<VAULT_ROOT>/projects/agentic-coding/context/dossier-2026-05-15T21-29-09-496Z.md",
+        "<VAULT_ROOT>/projects/agentic-coding/context/dossier-2026-05-15T21-29-09-496Z.md:7",
+        "<VAULT_ROOT>/projects/agentic-coding/context/dossier-2026-05-15T21-29-09-496Z.md:9",
+        "<VAULT_ROOT>/projects/agentic-coding/context/dossier-2026-05-15T21-29-09-496Z.md:16",
+        "<VAULT_ROOT>/projects/agentic-coding/context/dossier-2026-05-15T21-29-09-496Z.md:22",
+        "<VAULT_ROOT>/projects/agentic-coding/context/dossier-2026-05-15T21-29-09-496Z.md:34",
+        "<VAULT_ROOT>/projects/agentic-coding/context/dossier-2026-05-15T21-29-09-496Z.md:35",
+        "<VAULT_ROOT>/projects/agentic-coding/context/dossier-2026-05-15T21-29-09-496Z.md:36",
+        "<VAULT_ROOT>/projects/agentic-coding/context/dossier-2026-05-15T21-29-09-496Z.md:37",
+        "<VAULT_ROOT>/projects/agentic-coding/context/dossier-2026-05-15T21-29-09-496Z.md:39",
+        "<VAULT_ROOT>/projects/agentic-coding/context/dossier-2026-05-15T21-29-09-496Z.md:41",
+        "<VAULT_ROOT>/projects/agentic-coding/context/dossier-2026-05-15T21-29-09-496Z.md:60"
       ]
     },
     {
@@ -78,18 +78,18 @@
       "priority": "must",
       "status": "draft",
       "sourceRefs": [
-        "/Users/james/Documents/dev/dev-pipeline/vault/projects/agentic-coding/context/dossier-2026-05-15T21-29-09-496Z.md",
-        "/Users/james/Documents/dev/dev-pipeline/vault/projects/agentic-coding/context/dossier-2026-05-15T21-29-09-496Z.md:7",
-        "/Users/james/Documents/dev/dev-pipeline/vault/projects/agentic-coding/context/dossier-2026-05-15T21-29-09-496Z.md:9",
-        "/Users/james/Documents/dev/dev-pipeline/vault/projects/agentic-coding/context/dossier-2026-05-15T21-29-09-496Z.md:16",
-        "/Users/james/Documents/dev/dev-pipeline/vault/projects/agentic-coding/context/dossier-2026-05-15T21-29-09-496Z.md:22",
-        "/Users/james/Documents/dev/dev-pipeline/vault/projects/agentic-coding/context/dossier-2026-05-15T21-29-09-496Z.md:34",
-        "/Users/james/Documents/dev/dev-pipeline/vault/projects/agentic-coding/context/dossier-2026-05-15T21-29-09-496Z.md:35",
-        "/Users/james/Documents/dev/dev-pipeline/vault/projects/agentic-coding/context/dossier-2026-05-15T21-29-09-496Z.md:36",
-        "/Users/james/Documents/dev/dev-pipeline/vault/projects/agentic-coding/context/dossier-2026-05-15T21-29-09-496Z.md:37",
-        "/Users/james/Documents/dev/dev-pipeline/vault/projects/agentic-coding/context/dossier-2026-05-15T21-29-09-496Z.md:39",
-        "/Users/james/Documents/dev/dev-pipeline/vault/projects/agentic-coding/context/dossier-2026-05-15T21-29-09-496Z.md:41",
-        "/Users/james/Documents/dev/dev-pipeline/vault/projects/agentic-coding/context/dossier-2026-05-15T21-29-09-496Z.md:60"
+        "<VAULT_ROOT>/projects/agentic-coding/context/dossier-2026-05-15T21-29-09-496Z.md",
+        "<VAULT_ROOT>/projects/agentic-coding/context/dossier-2026-05-15T21-29-09-496Z.md:7",
+        "<VAULT_ROOT>/projects/agentic-coding/context/dossier-2026-05-15T21-29-09-496Z.md:9",
+        "<VAULT_ROOT>/projects/agentic-coding/context/dossier-2026-05-15T21-29-09-496Z.md:16",
+        "<VAULT_ROOT>/projects/agentic-coding/context/dossier-2026-05-15T21-29-09-496Z.md:22",
+        "<VAULT_ROOT>/projects/agentic-coding/context/dossier-2026-05-15T21-29-09-496Z.md:34",
+        "<VAULT_ROOT>/projects/agentic-coding/context/dossier-2026-05-15T21-29-09-496Z.md:35",
+        "<VAULT_ROOT>/projects/agentic-coding/context/dossier-2026-05-15T21-29-09-496Z.md:36",
+        "<VAULT_ROOT>/projects/agentic-coding/context/dossier-2026-05-15T21-29-09-496Z.md:37",
+        "<VAULT_ROOT>/projects/agentic-coding/context/dossier-2026-05-15T21-29-09-496Z.md:39",
+        "<VAULT_ROOT>/projects/agentic-coding/context/dossier-2026-05-15T21-29-09-496Z.md:41",
+        "<VAULT_ROOT>/projects/agentic-coding/context/dossier-2026-05-15T21-29-09-496Z.md:60"
       ]
     },
     {
@@ -104,18 +104,18 @@
       "priority": "must",
       "status": "draft",
       "sourceRefs": [
-        "/Users/james/Documents/dev/dev-pipeline/vault/projects/agentic-coding/context/dossier-2026-05-15T21-29-09-496Z.md",
-        "/Users/james/Documents/dev/dev-pipeline/vault/projects/agentic-coding/context/dossier-2026-05-15T21-29-09-496Z.md:7",
-        "/Users/james/Documents/dev/dev-pipeline/vault/projects/agentic-coding/context/dossier-2026-05-15T21-29-09-496Z.md:9",
-        "/Users/james/Documents/dev/dev-pipeline/vault/projects/agentic-coding/context/dossier-2026-05-15T21-29-09-496Z.md:16",
-        "/Users/james/Documents/dev/dev-pipeline/vault/projects/agentic-coding/context/dossier-2026-05-15T21-29-09-496Z.md:22",
-        "/Users/james/Documents/dev/dev-pipeline/vault/projects/agentic-coding/context/dossier-2026-05-15T21-29-09-496Z.md:34",
-        "/Users/james/Documents/dev/dev-pipeline/vault/projects/agentic-coding/context/dossier-2026-05-15T21-29-09-496Z.md:35",
-        "/Users/james/Documents/dev/dev-pipeline/vault/projects/agentic-coding/context/dossier-2026-05-15T21-29-09-496Z.md:36",
-        "/Users/james/Documents/dev/dev-pipeline/vault/projects/agentic-coding/context/dossier-2026-05-15T21-29-09-496Z.md:37",
-        "/Users/james/Documents/dev/dev-pipeline/vault/projects/agentic-coding/context/dossier-2026-05-15T21-29-09-496Z.md:39",
-        "/Users/james/Documents/dev/dev-pipeline/vault/projects/agentic-coding/context/dossier-2026-05-15T21-29-09-496Z.md:41",
-        "/Users/james/Documents/dev/dev-pipeline/vault/projects/agentic-coding/context/dossier-2026-05-15T21-29-09-496Z.md:60"
+        "<VAULT_ROOT>/projects/agentic-coding/context/dossier-2026-05-15T21-29-09-496Z.md",
+        "<VAULT_ROOT>/projects/agentic-coding/context/dossier-2026-05-15T21-29-09-496Z.md:7",
+        "<VAULT_ROOT>/projects/agentic-coding/context/dossier-2026-05-15T21-29-09-496Z.md:9",
+        "<VAULT_ROOT>/projects/agentic-coding/context/dossier-2026-05-15T21-29-09-496Z.md:16",
+        "<VAULT_ROOT>/projects/agentic-coding/context/dossier-2026-05-15T21-29-09-496Z.md:22",
+        "<VAULT_ROOT>/projects/agentic-coding/context/dossier-2026-05-15T21-29-09-496Z.md:34",
+        "<VAULT_ROOT>/projects/agentic-coding/context/dossier-2026-05-15T21-29-09-496Z.md:35",
+        "<VAULT_ROOT>/projects/agentic-coding/context/dossier-2026-05-15T21-29-09-496Z.md:36",
+        "<VAULT_ROOT>/projects/agentic-coding/context/dossier-2026-05-15T21-29-09-496Z.md:37",
+        "<VAULT_ROOT>/projects/agentic-coding/context/dossier-2026-05-15T21-29-09-496Z.md:39",
+        "<VAULT_ROOT>/projects/agentic-coding/context/dossier-2026-05-15T21-29-09-496Z.md:41",
+        "<VAULT_ROOT>/projects/agentic-coding/context/dossier-2026-05-15T21-29-09-496Z.md:60"
       ]
     },
     {
@@ -130,18 +130,18 @@
       "priority": "should",
       "status": "draft",
       "sourceRefs": [
-        "/Users/james/Documents/dev/dev-pipeline/vault/projects/agentic-coding/context/dossier-2026-05-15T21-29-09-496Z.md",
-        "/Users/james/Documents/dev/dev-pipeline/vault/projects/agentic-coding/context/dossier-2026-05-15T21-29-09-496Z.md:7",
-        "/Users/james/Documents/dev/dev-pipeline/vault/projects/agentic-coding/context/dossier-2026-05-15T21-29-09-496Z.md:9",
-        "/Users/james/Documents/dev/dev-pipeline/vault/projects/agentic-coding/context/dossier-2026-05-15T21-29-09-496Z.md:16",
-        "/Users/james/Documents/dev/dev-pipeline/vault/projects/agentic-coding/context/dossier-2026-05-15T21-29-09-496Z.md:22",
-        "/Users/james/Documents/dev/dev-pipeline/vault/projects/agentic-coding/context/dossier-2026-05-15T21-29-09-496Z.md:34",
-        "/Users/james/Documents/dev/dev-pipeline/vault/projects/agentic-coding/context/dossier-2026-05-15T21-29-09-496Z.md:35",
-        "/Users/james/Documents/dev/dev-pipeline/vault/projects/agentic-coding/context/dossier-2026-05-15T21-29-09-496Z.md:36",
-        "/Users/james/Documents/dev/dev-pipeline/vault/projects/agentic-coding/context/dossier-2026-05-15T21-29-09-496Z.md:37",
-        "/Users/james/Documents/dev/dev-pipeline/vault/projects/agentic-coding/context/dossier-2026-05-15T21-29-09-496Z.md:39",
-        "/Users/james/Documents/dev/dev-pipeline/vault/projects/agentic-coding/context/dossier-2026-05-15T21-29-09-496Z.md:41",
-        "/Users/james/Documents/dev/dev-pipeline/vault/projects/agentic-coding/context/dossier-2026-05-15T21-29-09-496Z.md:60"
+        "<VAULT_ROOT>/projects/agentic-coding/context/dossier-2026-05-15T21-29-09-496Z.md",
+        "<VAULT_ROOT>/projects/agentic-coding/context/dossier-2026-05-15T21-29-09-496Z.md:7",
+        "<VAULT_ROOT>/projects/agentic-coding/context/dossier-2026-05-15T21-29-09-496Z.md:9",
+        "<VAULT_ROOT>/projects/agentic-coding/context/dossier-2026-05-15T21-29-09-496Z.md:16",
+        "<VAULT_ROOT>/projects/agentic-coding/context/dossier-2026-05-15T21-29-09-496Z.md:22",
+        "<VAULT_ROOT>/projects/agentic-coding/context/dossier-2026-05-15T21-29-09-496Z.md:34",
+        "<VAULT_ROOT>/projects/agentic-coding/context/dossier-2026-05-15T21-29-09-496Z.md:35",
+        "<VAULT_ROOT>/projects/agentic-coding/context/dossier-2026-05-15T21-29-09-496Z.md:36",
+        "<VAULT_ROOT>/projects/agentic-coding/context/dossier-2026-05-15T21-29-09-496Z.md:37",
+        "<VAULT_ROOT>/projects/agentic-coding/context/dossier-2026-05-15T21-29-09-496Z.md:39",
+        "<VAULT_ROOT>/projects/agentic-coding/context/dossier-2026-05-15T21-29-09-496Z.md:41",
+        "<VAULT_ROOT>/projects/agentic-coding/context/dossier-2026-05-15T21-29-09-496Z.md:60"
       ]
     },
     {
@@ -156,18 +156,18 @@
       "priority": "must",
       "status": "draft",
       "sourceRefs": [
-        "/Users/james/Documents/dev/dev-pipeline/vault/projects/agentic-coding/context/dossier-2026-05-15T21-29-09-496Z.md",
-        "/Users/james/Documents/dev/dev-pipeline/vault/projects/agentic-coding/context/dossier-2026-05-15T21-29-09-496Z.md:7",
-        "/Users/james/Documents/dev/dev-pipeline/vault/projects/agentic-coding/context/dossier-2026-05-15T21-29-09-496Z.md:9",
-        "/Users/james/Documents/dev/dev-pipeline/vault/projects/agentic-coding/context/dossier-2026-05-15T21-29-09-496Z.md:16",
-        "/Users/james/Documents/dev/dev-pipeline/vault/projects/agentic-coding/context/dossier-2026-05-15T21-29-09-496Z.md:22",
-        "/Users/james/Documents/dev/dev-pipeline/vault/projects/agentic-coding/context/dossier-2026-05-15T21-29-09-496Z.md:34",
-        "/Users/james/Documents/dev/dev-pipeline/vault/projects/agentic-coding/context/dossier-2026-05-15T21-29-09-496Z.md:35",
-        "/Users/james/Documents/dev/dev-pipeline/vault/projects/agentic-coding/context/dossier-2026-05-15T21-29-09-496Z.md:36",
-        "/Users/james/Documents/dev/dev-pipeline/vault/projects/agentic-coding/context/dossier-2026-05-15T21-29-09-496Z.md:37",
-        "/Users/james/Documents/dev/dev-pipeline/vault/projects/agentic-coding/context/dossier-2026-05-15T21-29-09-496Z.md:39",
-        "/Users/james/Documents/dev/dev-pipeline/vault/projects/agentic-coding/context/dossier-2026-05-15T21-29-09-496Z.md:41",
-        "/Users/james/Documents/dev/dev-pipeline/vault/projects/agentic-coding/context/dossier-2026-05-15T21-29-09-496Z.md:60"
+        "<VAULT_ROOT>/projects/agentic-coding/context/dossier-2026-05-15T21-29-09-496Z.md",
+        "<VAULT_ROOT>/projects/agentic-coding/context/dossier-2026-05-15T21-29-09-496Z.md:7",
+        "<VAULT_ROOT>/projects/agentic-coding/context/dossier-2026-05-15T21-29-09-496Z.md:9",
+        "<VAULT_ROOT>/projects/agentic-coding/context/dossier-2026-05-15T21-29-09-496Z.md:16",
+        "<VAULT_ROOT>/projects/agentic-coding/context/dossier-2026-05-15T21-29-09-496Z.md:22",
+        "<VAULT_ROOT>/projects/agentic-coding/context/dossier-2026-05-15T21-29-09-496Z.md:34",
+        "<VAULT_ROOT>/projects/agentic-coding/context/dossier-2026-05-15T21-29-09-496Z.md:35",
+        "<VAULT_ROOT>/projects/agentic-coding/context/dossier-2026-05-15T21-29-09-496Z.md:36",
+        "<VAULT_ROOT>/projects/agentic-coding/context/dossier-2026-05-15T21-29-09-496Z.md:37",
+        "<VAULT_ROOT>/projects/agentic-coding/context/dossier-2026-05-15T21-29-09-496Z.md:39",
+        "<VAULT_ROOT>/projects/agentic-coding/context/dossier-2026-05-15T21-29-09-496Z.md:41",
+        "<VAULT_ROOT>/projects/agentic-coding/context/dossier-2026-05-15T21-29-09-496Z.md:60"
       ]
     },
     {
@@ -182,18 +182,18 @@
       "priority": "must",
       "status": "draft",
       "sourceRefs": [
-        "/Users/james/Documents/dev/dev-pipeline/vault/projects/agentic-coding/context/dossier-2026-05-15T21-29-09-496Z.md",
-        "/Users/james/Documents/dev/dev-pipeline/vault/projects/agentic-coding/context/dossier-2026-05-15T21-29-09-496Z.md:7",
-        "/Users/james/Documents/dev/dev-pipeline/vault/projects/agentic-coding/context/dossier-2026-05-15T21-29-09-496Z.md:9",
-        "/Users/james/Documents/dev/dev-pipeline/vault/projects/agentic-coding/context/dossier-2026-05-15T21-29-09-496Z.md:16",
-        "/Users/james/Documents/dev/dev-pipeline/vault/projects/agentic-coding/context/dossier-2026-05-15T21-29-09-496Z.md:22",
-        "/Users/james/Documents/dev/dev-pipeline/vault/projects/agentic-coding/context/dossier-2026-05-15T21-29-09-496Z.md:34",
-        "/Users/james/Documents/dev/dev-pipeline/vault/projects/agentic-coding/context/dossier-2026-05-15T21-29-09-496Z.md:35",
-        "/Users/james/Documents/dev/dev-pipeline/vault/projects/agentic-coding/context/dossier-2026-05-15T21-29-09-496Z.md:36",
-        "/Users/james/Documents/dev/dev-pipeline/vault/projects/agentic-coding/context/dossier-2026-05-15T21-29-09-496Z.md:37",
-        "/Users/james/Documents/dev/dev-pipeline/vault/projects/agentic-coding/context/dossier-2026-05-15T21-29-09-496Z.md:39",
-        "/Users/james/Documents/dev/dev-pipeline/vault/projects/agentic-coding/context/dossier-2026-05-15T21-29-09-496Z.md:41",
-        "/Users/james/Documents/dev/dev-pipeline/vault/projects/agentic-coding/context/dossier-2026-05-15T21-29-09-496Z.md:60"
+        "<VAULT_ROOT>/projects/agentic-coding/context/dossier-2026-05-15T21-29-09-496Z.md",
+        "<VAULT_ROOT>/projects/agentic-coding/context/dossier-2026-05-15T21-29-09-496Z.md:7",
+        "<VAULT_ROOT>/projects/agentic-coding/context/dossier-2026-05-15T21-29-09-496Z.md:9",
+        "<VAULT_ROOT>/projects/agentic-coding/context/dossier-2026-05-15T21-29-09-496Z.md:16",
+        "<VAULT_ROOT>/projects/agentic-coding/context/dossier-2026-05-15T21-29-09-496Z.md:22",
+        "<VAULT_ROOT>/projects/agentic-coding/context/dossier-2026-05-15T21-29-09-496Z.md:34",
+        "<VAULT_ROOT>/projects/agentic-coding/context/dossier-2026-05-15T21-29-09-496Z.md:35",
+        "<VAULT_ROOT>/projects/agentic-coding/context/dossier-2026-05-15T21-29-09-496Z.md:36",
+        "<VAULT_ROOT>/projects/agentic-coding/context/dossier-2026-05-15T21-29-09-496Z.md:37",
+        "<VAULT_ROOT>/projects/agentic-coding/context/dossier-2026-05-15T21-29-09-496Z.md:39",
+        "<VAULT_ROOT>/projects/agentic-coding/context/dossier-2026-05-15T21-29-09-496Z.md:41",
+        "<VAULT_ROOT>/projects/agentic-coding/context/dossier-2026-05-15T21-29-09-496Z.md:60"
       ]
     }
   ],
@@ -205,5 +205,5 @@
     "Infrastructure planning should begin read-only because Proxmox and runner changes have high blast radius.",
     "The source bundle references unofficial APIs; adapter design must tolerate breakage and provide a manual fallback."
   ],
-  "sourceDossier": "/Users/james/Documents/dev/dev-pipeline/vault/projects/agentic-coding/context/dossier-2026-05-15T21-29-09-496Z.md"
+  "sourceDossier": "<VAULT_ROOT>/projects/agentic-coding/context/dossier-2026-05-15T21-29-09-496Z.md"
 }

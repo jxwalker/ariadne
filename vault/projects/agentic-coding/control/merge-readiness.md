@@ -1,6 +1,6 @@
 # Merge Readiness: agentic-coding
 
-Generated: 2026-05-15T21:32:23.649Z
+Generated: 2026-05-16T06:09:25.016Z
 Status: review_required
 
 ## Evidence
@@ -9,7 +9,7 @@ Status: review_required
 - gsd/roadmap.json
 - verification/commands.json
 - Playwright plan: 7 scenarios for http://localhost:3000
-- Execution run run-2026-05-15T21-29-14-025Z: complete
+- Execution run run-2026-05-16T06-09-25-010Z: planned
 - GSD tasks: 7
 - Check typecheck: passed (npm run check)
 - Check unit-tests: passed (npm test)
@@ -17,6 +17,7 @@ Status: review_required
 
 ## Missing
 
+- Execution run run-2026-05-16T06-09-25-010Z is not complete
 - CodeRabbit or human review approval
 
 ## Merge Gates

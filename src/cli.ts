@@ -3,6 +3,7 @@ import path from "node:path";
 import { importCiStatus, importCodeRabbitReview } from "./ciImport.js";
 import { generateControlReport, recordCheck, recordReview } from "./controlPlane.js";
 import { recordDecision } from "./decisions.js";
+import { generateEvaluationPlan, recordEvaluationRun } from "./evaluation.js";
 import { markRunStatus, planExecution } from "./execution.js";
 import { generateGsd } from "./gsd.js";
 import { exportGsd2Bundle, importGsd2Bundle } from "./gsdAdapter.js";
@@ -67,6 +68,8 @@ function usage(): string {
     "  dev-pipeline worktree-guard --project <project> --run <run.json> [--apply]",
     "  dev-pipeline playwright --project <project> [--target-url <url>]",
     "  dev-pipeline playwright-evidence --project <project> --target-url <url> --status <status>",
+    "  dev-pipeline evaluation --project <project> [--target <name>]",
+    "  dev-pipeline evaluation-record --project <project> --plan <plan.json> --scores <D1=80,D2=75> [--evidence <paths>]",
     "  dev-pipeline infra --project <project>",
     "  dev-pipeline infra-snapshot --project <project> --from <manifest.json>",
     "  dev-pipeline openscorpion-draft --project <project> --title <title> --type <type> --evidence <paths>",
@@ -268,6 +271,34 @@ async function main(): Promise<void> {
     return;
   }
 
+  if (parsed.command === "evaluation") {
+    const result = await generateEvaluationPlan({
+      project,
+      vaultRoot,
+      target: optionString(parsed.options, "target", "") || undefined
+    });
+    console.log(`Evaluation plan: ${result.markdownPath}`);
+    console.log(`Scenarios: ${result.plan.scenarios.length}`);
+    return;
+  }
+
+  if (parsed.command === "evaluation-record") {
+    const result = await recordEvaluationRun({
+      project,
+      vaultRoot,
+      planPath: requiredOption(parsed.options, "plan"),
+      target: optionString(parsed.options, "target", "") || undefined,
+      operator: optionString(parsed.options, "operator", "") || undefined,
+      dimensionScores: parseScores(requiredOption(parsed.options, "scores")),
+      evidenceRefs: splitList(optionString(parsed.options, "evidence", "")),
+      regressions: splitList(optionString(parsed.options, "regressions", "")),
+      recommendations: splitList(optionString(parsed.options, "recommendations", ""))
+    });
+    console.log(`Evaluation run: ${result.markdownPath}`);
+    console.log(`Overall score: ${result.run.overallScore}`);
+    return;
+  }
+
   if (parsed.command === "infra") {
     const result = await generateInfrastructureRegistry({ project, vaultRoot });
     console.log(`Infrastructure registry: ${result.jsonPath}`);
@@ -400,6 +431,11 @@ async function main(): Promise<void> {
       vaultRoot,
       targetUrl: optionString(parsed.options, "target-url", "http://localhost:3000")
     });
+    const evaluation = await generateEvaluationPlan({
+      project,
+      vaultRoot,
+      target: optionString(parsed.options, "target", "") || undefined
+    });
     const infra = await generateInfrastructureRegistry({ project, vaultRoot });
     const control = await generateControlReport({ project, vaultRoot });
 
@@ -409,6 +445,7 @@ async function main(): Promise<void> {
     console.log(`  GSD2 bundle: ${gsd2.markdownPath}`);
     console.log(`  Execution: ${execution.markdownPath}`);
     console.log(`  Playwright: ${playwright.markdownPath}`);
+    console.log(`  Evaluation: ${evaluation.markdownPath}`);
     console.log(`  Infrastructure: ${infra.markdownPath}`);
     console.log(`  Control: ${control.markdownPath}`);
     console.log(`  Readiness: ${control.report.status}`);
@@ -443,6 +480,17 @@ function splitList(value: string): string[] {
     .split(/[|,]/)
     .map((item) => item.trim())
     .filter(Boolean);
+}
+
+function parseScores(value: string): Array<{ id: string; score: number; notes: string }> {
+  return splitList(value).map((item) => {
+    const [id, rawScore] = item.split("=");
+    const score = Number(rawScore);
+    if (!id || !Number.isFinite(score)) {
+      throw new Error("--scores must look like D1=80,D2=75.");
+    }
+    return { id: id.trim(), score, notes: "manual evaluation score" };
+  });
 }
 
 function sensitivityOption(

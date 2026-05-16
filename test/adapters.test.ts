@@ -9,6 +9,7 @@ import { planExecution } from "../src/execution.js";
 import { generateGsd } from "../src/gsd.js";
 import { exportGsd2Bundle, importGsd2Bundle } from "../src/gsdAdapter.js";
 import { draftOpenScorpionActivity, importInfraSnapshot } from "../src/infraSnapshot.js";
+import { generateEvaluationPlan, recordEvaluationRun } from "../src/evaluation.js";
 import { importNotebookLmExport } from "../src/notebooklm.js";
 import { recordPlaywrightEvidence } from "../src/playwrightEvidence.js";
 import { generatePrd } from "../src/prd.js";
@@ -75,6 +76,29 @@ describe("roadmap adapters", () => {
       sourcePath: exported.jsonPath
     });
     expect(roundTrip.roadmap.milestones.length).toBeGreaterThan(0);
+
+    const evaluation = await generateEvaluationPlan({
+      project: "agentic-coding",
+      vaultRoot,
+      target: "mac-local"
+    });
+    expect(evaluation.plan.scenarios.length).toBeGreaterThan(0);
+
+    const evaluationRun = await recordEvaluationRun({
+      project: "agentic-coding",
+      vaultRoot,
+      planPath: evaluation.jsonPath,
+      target: "mac-local",
+      operator: "vitest",
+      dimensionScores: [
+        { id: "D1", score: 80, notes: "evidence chain present" },
+        { id: "D2", score: 70, notes: "roadmap generated" }
+      ],
+      evidenceRefs: [exported.jsonPath],
+      regressions: [],
+      recommendations: ["Add live dashboard adapter."]
+    });
+    expect(evaluationRun.run.overallScore).toBe(76);
 
     const invalidBundle = path.join(temp, "invalid-bundle.json");
     await fs.writeFile(

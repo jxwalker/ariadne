@@ -1,6 +1,6 @@
 # Playwright Evidence Plan: agentic-coding
 
-Generated: 2026-05-15T21:29:14.025Z
+Generated: 2026-05-16T06:09:25.011Z
 Target URL: http://localhost:3000
 
 ## PW-001: Source evidence intake
