@@ -310,3 +310,54 @@ export interface EvaluationRun {
   regressions: string[];
   recommendations: string[];
 }
+
+export interface DashboardData {
+  schemaVersion: 1;
+  project: string;
+  generatedAt: string;
+  projectDir: string;
+  summary: {
+    sources: number;
+    requirements: number;
+    tasks: number;
+    executionRuns: number;
+    checks: number;
+    reviews: number;
+    decisions: number;
+    evaluations: number;
+    infraSnapshots: number;
+    readinessStatus?: ControlReport["status"];
+    latestEvaluationScore?: number;
+  };
+  sources: Array<{
+    id: string;
+    fileName: string;
+    kind: SourceKind;
+    sensitivity: IngestRecord["sensitivity"];
+    sha256: string;
+    ingestedAt: string;
+    hasExtractedText: boolean;
+    hasHandoff: boolean;
+    hygieneStatus?: SourceHygieneReport["status"];
+  }>;
+  requirements: Requirement[];
+  tasks: Array<GsdTask & { milestoneId: string; milestoneTitle: string }>;
+  executionRuns: ExecutionRun[];
+  checks: CheckRecord[];
+  reviews: ReviewRecord[];
+  decisions: DecisionRecord[];
+  playwrightEvidence: PlaywrightEvidenceRecord[];
+  evaluations: EvaluationRun[];
+  infrastructure: {
+    registry?: InfraRegistry;
+    snapshots: InfraSnapshot[];
+  };
+  readiness?: ControlReport;
+  artifacts: {
+    hotIndex?: string;
+    prd?: string;
+    roadmap?: string;
+    control?: string;
+    evaluationPlan?: string;
+  };
+}

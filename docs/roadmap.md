@@ -154,6 +154,7 @@ Implemented:
 
 - documented dashboard object model
 - documented gate matrix and infrastructure map concepts
+- read-only dashboard data projection
 
 Next:
 

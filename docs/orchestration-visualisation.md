@@ -50,7 +50,7 @@ Line charts for D1-D5 scores over time, plus regression counts and missing-gate 
 
 ## Implementation Direction
 
-Start with static JSON artifacts and generated Markdown. Then add a local web dashboard that reads the vault. The dashboard should be read-only until the artifact model and access control are stable.
+Start with static JSON artifacts and generated Markdown. `dashboard-data` now creates a normalised read-only projection at `dashboard/dashboard-data.json`; the next local web dashboard should read that file rather than scanning the vault directly. The dashboard should remain read-only until the artifact model and access control are stable.
 
 ## Integration Lessons From Current Tools
 

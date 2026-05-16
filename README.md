@@ -43,6 +43,7 @@ npm run cli -- assemble --project agentic-coding
 npm run cli -- roadmap --project agentic-coding --target-url http://localhost:3000 --repo /path/to/repo
 npm run cli -- evaluation --project agentic-coding --target mac-local
 npm run cli -- control --project agentic-coding
+npm run cli -- dashboard-data --project agentic-coding
 npm run cli -- status --project agentic-coding
 ```
 
@@ -74,6 +75,7 @@ vault/projects/<project>/
 6. Use `worktree-guard` before creating any task worktree.
 7. Record deterministic checks, Playwright evidence, CI, CodeRabbit, and human reviews.
 8. Use `evaluation` and `evaluation-record` to score the pipeline itself.
+9. Use `dashboard-data` to publish a normalised read-only view for dashboard work.
 
 ## Adapter Commands
 
@@ -90,6 +92,7 @@ npm run cli -- evaluation --project agentic-coding --target mac-local
 npm run cli -- evaluation-record --project agentic-coding --plan evaluation-plan.json --scores D1=80,D2=75,D3=60
 npm run cli -- import-ci --project agentic-coding --from checks.json
 npm run cli -- import-coderabbit --project agentic-coding --from coderabbit.md
+npm run cli -- dashboard-data --project agentic-coding
 npm run cli -- infra --project agentic-coding
 npm run cli -- infra-snapshot --project agentic-coding --from manifest.json
 npm run cli -- openscorpion-draft --project agentic-coding --title "Evidence package" --type dev-pipeline.evidence --evidence path-a,path-b
