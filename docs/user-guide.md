@@ -269,6 +269,14 @@ npm run ariadne -- approval-decision --project ariadne --approval approval-... -
 
 Approval records live under `vault/projects/ariadne/control/approvals/`. They are evidence and queue items, not executable authority.
 
+Before implementing or enabling a live mutation adapter, record the bounded readiness plan:
+
+```bash
+npm run ariadne -- mutation-readiness --project ariadne --target github --scope "Single PR merge adapter" --auth-evidence control/approvals/approval-...json --dry-run "gh pr view 1 --json statusCheckRollup" --live-command "gh pr merge 1 --squash" --rollback "Revert merge commit and disable adapter" --approval approval-...
+```
+
+The readiness plan writes `execute=false`. It must cite auth evidence, a dry-run command, the proposed live command, rollback, approval state, and target-specific gates. It is still not permission to execute; it is the artifact reviewers use before a live adapter exists.
+
 ## Check Readiness
 
 ```bash

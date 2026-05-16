@@ -70,6 +70,13 @@ vault/projects/<project>/evaluation/behavior-checks.json
 vault/projects/<project>/evaluation/behavior-checks.md
 ```
 
+`mutation-readiness` writes non-executing live-adapter readiness plans:
+
+```text
+vault/projects/<project>/control/mutation-readiness/mutation-readiness-<target>-<timestamp>.json
+vault/projects/<project>/control/mutation-readiness/mutation-readiness-<target>-<timestamp>.md
+```
+
 `hermes-cron-import` writes read-only scheduler evidence:
 
 ```text

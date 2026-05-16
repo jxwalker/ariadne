@@ -1,12 +1,12 @@
 {
   "schemaVersion": 1,
   "project": "ariadne",
-  "generatedAt": "2026-05-16T16:30:12.312Z",
+  "generatedAt": "2026-05-16T17:01:34.042Z",
   "status": "passed",
   "summary": {
     "required": 13,
-    "optional": 20,
-    "present": 29,
+    "optional": 21,
+    "present": 30,
     "missingRequired": 0
   },
   "checks": [
@@ -235,6 +235,17 @@
       "count": 1,
       "matches": [
         "projects/ariadne/control/approvals/approval-2026-05-16T13-21-33-834Z.json"
+      ]
+    },
+    {
+      "id": "mutation-readiness-plans",
+      "label": "Mutation readiness plans",
+      "required": false,
+      "path": "projects/ariadne/control/mutation-readiness/mutation-readiness-*.json",
+      "status": "present",
+      "count": 1,
+      "matches": [
+        "projects/ariadne/control/mutation-readiness/mutation-readiness-github-2026-05-16T16-50-54-241Z.json"
       ]
     },
     {

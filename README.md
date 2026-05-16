@@ -31,6 +31,7 @@ The system starts with source-grounded intake: drawings, white papers, dictated 
 - Import token and cost metrics from Hermes, CodeRabbit, OpenAI, CI, or manual JSON exports.
 - Export Ariadne evidence into an optional GBrain import bundle and import GBrain query/eval reports back as evidence.
 - Record behavior-confidence checks for approved review fixtures, mutation gates, approval workflow records, read-only infrastructure snapshots, and non-submitting governance drafts.
+- Record mutation-readiness plans that bind approval, auth evidence, dry runs, live commands, rollback, and verification gates before live adapters are considered.
 - Record file-backed sleep routines, memory proposals, agent mail, interagent leases, read-only Hermes cron snapshots/proposals, and read-only deployment snapshots.
 - Render evaluation trend charts in the static console and generate deterministic plus browser-backed console checks.
 - Guard worktree creation without mutating by default.
@@ -152,6 +153,7 @@ npm run ariadne -- deployment-live-ssh --project ariadne --system dgx-spark --ho
 npm run ariadne -- import-ci --project ariadne --from checks.json
 npm run ariadne -- import-coderabbit --project ariadne --from coderabbit.md
 npm run ariadne -- approval-request --project ariadne --by planner --target github --action "Enable PR mutation adapter" --risk medium --reason "Manual gate before live mutation" --rollback "Disable adapter and return to manual PR flow"
+npm run ariadne -- mutation-readiness --project ariadne --target github --scope "Single PR merge adapter" --auth-evidence control/approvals/approval-...json --dry-run "gh pr view 1 --json statusCheckRollup" --live-command "gh pr merge 1 --squash" --rollback "Revert merge commit and disable adapter" --approval approval-...
 npm run ariadne -- recovery-report --project ariadne
 npm run ariadne -- console-data --project ariadne
 npm run ariadne -- console-html --project ariadne --refresh-data

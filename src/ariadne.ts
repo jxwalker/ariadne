@@ -33,6 +33,7 @@ import { generateInfrastructureRegistry } from "./infrastructure.js";
 import { draftOpenScorpionActivity, importInfraSnapshot } from "./infraSnapshot.js";
 import { collectLocalInfraSnapshot, collectSshInfraSnapshot } from "./liveInventory.js";
 import { importNotebookLmExport } from "./notebooklm.js";
+import { mutationTargetOption, planMutationReadiness } from "./mutationReadiness.js";
 import { defaultVaultRoot } from "./paths.js";
 import { recordPlaywrightEvidence } from "./playwrightEvidence.js";
 import { generatePlaywrightPlan } from "./playwrightPlan.js";
@@ -130,6 +131,7 @@ function usage(): string {
     "  ariadne record-review --project <project> --source <source> --status <status> --summary <text>",
     "  ariadne approval-request --project <project> --by <name> --target <system> --action <text> --risk <low|medium|high> --reason <text> --rollback <text> [--evidence <paths>]",
     "  ariadne approval-decision --project <project> --approval <id|json> --status <approved|rejected|expired> --by <name> [--notes <text>]",
+    "  ariadne mutation-readiness --project <project> --target <target> --scope <text> --auth-evidence <paths> --dry-run <cmd> --live-command <cmd> --rollback <text> [--approval <id|json>] [--risk <low|medium|high>] [--evidence <paths>] [--notes <text>]",
     "  ariadne control --project <project>",
     "  ariadne recovery-report --project <project>",
     "  ariadne console-data --project <project>",
@@ -820,6 +822,27 @@ async function main(): Promise<void> {
     return;
   }
 
+  if (parsed.command === "mutation-readiness") {
+    const result = await planMutationReadiness({
+      project,
+      vaultRoot,
+      target: mutationTargetOption(requiredOption(parsed.options, "target")),
+      risk: approvalRiskOption(parsed.options, "medium"),
+      scope: requiredOption(parsed.options, "scope"),
+      authEvidenceRefs: splitList(requiredOption(parsed.options, "auth-evidence")),
+      evidenceRefs: splitList(optionString(parsed.options, "evidence", "")),
+      dryRunCommand: requiredOption(parsed.options, "dry-run"),
+      proposedLiveCommand: requiredOption(parsed.options, "live-command"),
+      rollback: requiredOption(parsed.options, "rollback"),
+      approvalRef: optionString(parsed.options, "approval", "") || undefined,
+      notes: optionString(parsed.options, "notes", "") || undefined
+    });
+    console.log(`Mutation readiness: ${result.markdownPath}`);
+    console.log(`Status: ${result.plan.status}`);
+    console.log(`Execute: ${result.plan.execute}`);
+    return;
+  }
+
 
   if (parsed.command === "control") {
     const result = await generateControlReport({ project, vaultRoot });
@@ -1043,8 +1066,8 @@ function agentLeaseStatusOption(options: Map<string, string | true>): "acquired"
   throw new Error("--status must be acquired, released, or expired.");
 }
 
-function approvalRiskOption(options: Map<string, string | true>): "low" | "medium" | "high" {
-  const value = options.get("risk");
+function approvalRiskOption(options: Map<string, string | true>, fallback?: "low" | "medium" | "high"): "low" | "medium" | "high" {
+  const value = options.get("risk") ?? fallback;
   if (value === "low" || value === "medium" || value === "high") {
     return value;
   }
