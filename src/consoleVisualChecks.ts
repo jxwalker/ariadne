@@ -23,6 +23,8 @@ export async function generateConsoleVisualCheckReport(input: {
     checkContains(html, "gate-matrix", "Gate matrix section", "Gate Matrix"),
     checkContains(html, "timeline", "Timeline section", "Timeline"),
     checkContains(html, "approval-queue", "Approval queue section", "Approval Queue"),
+    approvalPackMetricCheck(html, embeddedData),
+    approvalPackDataCheck(html, embeddedData),
     trendChartCheck(html, embeddedData),
     checkContains(html, "visual-check-panel", "Visual check panel", "Visual Checks"),
     checkContains(html, "embedded-data", "Embedded console data", 'id="console-data"'),
@@ -103,6 +105,28 @@ function trendChartCheck(html: string, data: ConsoleData | undefined): ConsoleVi
   return {
     id: "trend-chart",
     label: hasTrendRuns ? "Evaluation trend chart hook" : "Evaluation trend empty state",
+    status: present ? "passed" : "failed",
+    detail: detailSentence(present ? "Found" : "Missing", expected)
+  };
+}
+
+function approvalPackMetricCheck(html: string, data: ConsoleData | undefined): ConsoleVisualCheckReport["checks"][number] {
+  const expected = (data?.summary.liveAdapterApprovalPackets ?? 0) > 0 ? "Approval Packs" : "No approval-pack data required.";
+  const present = expected === "No approval-pack data required." || html.includes(expected);
+  return {
+    id: "approval-pack-metric",
+    label: "Approval pack metric",
+    status: present ? "passed" : "failed",
+    detail: detailSentence(present ? "Found" : "Missing", expected)
+  };
+}
+
+function approvalPackDataCheck(html: string, data: ConsoleData | undefined): ConsoleVisualCheckReport["checks"][number] {
+  const expected = data?.liveAdapterApprovalPack ? "approval packets" : "No live adapter approval pack required.";
+  const present = expected === "No live adapter approval pack required." || html.includes(expected);
+  return {
+    id: "live-adapter-approval-pack",
+    label: "Live adapter approval pack data",
     status: present ? "passed" : "failed",
     detail: detailSentence(present ? "Found" : "Missing", expected)
   };

@@ -36,6 +36,7 @@ The system starts with source-grounded intake: drawings, white papers, dictated 
 - Audit mutation-readiness plans before any live adapter is implemented or enabled.
 - Report per-target live adapter readiness from approved plans, passed dry-runs, and target-guarded execution evidence.
 - Generate live-adapter next-action packets from the current blockers.
+- Generate live-adapter approval packs that draft target-specific operator checklists without approving or executing anything.
 - Record file-backed sleep routines, memory proposals, agent mail, interagent leases, read-only Hermes cron snapshots/proposals, and read-only deployment snapshots.
 - Render evaluation trend charts in the static console and generate deterministic plus browser-backed console checks.
 - Guard worktree creation without mutating by default.
@@ -77,6 +78,7 @@ npm run ariadne -- deployment-mutation-plan --project ariadne --system proxmox -
 npm run ariadne -- mutation-dry-run --project ariadne --plan mutation-readiness-github-...
 npm run ariadne -- live-adapter-readiness --project ariadne
 npm run ariadne -- live-adapter-next-actions --project ariadne
+npm run ariadne -- live-adapter-approval-pack --project ariadne
 npm run ariadne -- github-mutation-execute --project ariadne --plan mutation-readiness-github-... --confirm-plan mutation-readiness-github-...
 npm run ariadne -- target-mutation-execute --project ariadne --target github --plan mutation-readiness-github-... --confirm-plan mutation-readiness-github-...
 npm run ariadne -- mutation-execute --project ariadne --plan mutation-readiness-github-... --confirm-plan mutation-readiness-github-...
@@ -131,6 +133,7 @@ vault/projects/<project>/
 11. Use `gbrain-export` when Ariadne evidence should be indexed by GBrain.
 12. Use `console-data` to publish a normalised read-only view for console work.
 13. Use `console-html` to generate a static local console at `console/index.html`.
+14. Use `live-adapter-approval-pack` to prepare operator review packets before any live adapter approval decision.
 
 ## Adapter Commands
 
@@ -177,6 +180,7 @@ npm run ariadne -- import-coderabbit --project ariadne --from coderabbit.md
 npm run ariadne -- approval-request --project ariadne --by planner --target github --action "Enable PR mutation adapter" --risk medium --reason "Manual gate before live mutation" --rollback "Disable adapter and return to manual PR flow"
 npm run ariadne -- mutation-readiness --project ariadne --target github --scope "Single PR merge adapter" --auth-evidence control/approvals/approval-...json --dry-run "gh pr view 1 --json statusCheckRollup" --live-command "gh pr merge 1 --squash" --post-verify "gh pr view 1 --json mergeStateStatus,statusCheckRollup" --rollback "Revert merge commit and disable adapter" --approval approval-...
 npm run ariadne -- mutation-readiness-audit --project ariadne
+npm run ariadne -- live-adapter-approval-pack --project ariadne --target all
 npm run ariadne -- recovery-report --project ariadne
 npm run ariadne -- console-data --project ariadne
 npm run ariadne -- console-html --project ariadne --refresh-data

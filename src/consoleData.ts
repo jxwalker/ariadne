@@ -31,6 +31,7 @@ import type {
   GsdRoadmap,
   InfraRegistry,
   InfraSnapshot,
+  LiveAdapterApprovalPack,
   LiveAdapterNextActionsReport,
   LiveAdapterReadinessReport,
   MemoryProposalRecord,
@@ -96,6 +97,12 @@ export async function collectConsoleData(vaultRoot: string, projectInput: string
     project,
     "control",
     "live-adapter-next-actions.json"
+  );
+  const liveAdapterApprovalPack = await readProjectJson<LiveAdapterApprovalPack>(
+    vaultRoot,
+    project,
+    "control",
+    "live-adapter-approval-pack.json"
   );
   const recovery = await readProjectJson<RecoveryReport>(vaultRoot, project, "control", "recovery-report.json");
   const gbrainExport = await readProjectJson<GbrainExportBundle>(vaultRoot, project, "integrations/gbrain", "gbrain-export.json");
@@ -207,6 +214,7 @@ export async function collectConsoleData(vaultRoot: string, projectInput: string
       liveAdapterReady: liveAdapterReadiness?.summary.ready,
       liveAdapterBlocked: liveAdapterReadiness?.summary.blocked,
       liveAdapterActionItems: liveAdapterNextActions?.summary.actionItems,
+      liveAdapterApprovalPackets: liveAdapterApprovalPack?.summary.packets,
       recoveryIssues: recovery?.issues.length ?? 0,
       consoleBrowserChecks: consoleBrowserChecks?.status,
       readinessStatus: readiness?.status,
@@ -227,6 +235,7 @@ export async function collectConsoleData(vaultRoot: string, projectInput: string
     mutationReadinessAudit,
     liveAdapterReadiness,
     liveAdapterNextActions,
+    liveAdapterApprovalPack,
     decisions,
     playwrightEvidence,
     healerProposals,
@@ -284,6 +293,7 @@ export async function collectConsoleData(vaultRoot: string, projectInput: string
       mutationReadinessAudit: await existingPath(vaultRoot, path.join(dir, "control", "mutation-readiness-audit.json")),
       liveAdapterReadiness: await existingPath(vaultRoot, path.join(dir, "control", "live-adapter-readiness.json")),
       liveAdapterNextActions: await existingPath(vaultRoot, path.join(dir, "control", "live-adapter-next-actions.json")),
+      liveAdapterApprovalPack: await existingPath(vaultRoot, path.join(dir, "control", "live-adapter-approval-pack.json")),
       recoveryReport: await existingPath(vaultRoot, path.join(dir, "control", "recovery-report.json")),
       extractionResults: await existingPath(vaultRoot, path.join(dir, "extractions")),
       healerProposals: await existingPath(vaultRoot, path.join(dir, "verification", "healer-proposals")),

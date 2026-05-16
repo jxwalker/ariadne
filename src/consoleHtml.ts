@@ -102,6 +102,15 @@ function renderConsole(data: ConsoleData): string {
             detail: `${data.liveAdapterNextActions.summary.actionItems} action items`
           }
         ]
+      : []),
+    ...(data.liveAdapterApprovalPack
+      ? [
+          {
+            time: data.liveAdapterApprovalPack.generatedAt,
+            label: `Live adapter approval pack: ${data.liveAdapterApprovalPack.status}`,
+            detail: `${data.liveAdapterApprovalPack.summary.packets} operator packets`
+          }
+        ]
       : [])
   ].sort((left, right) => right.time.localeCompare(left.time));
 
@@ -151,6 +160,7 @@ function renderConsole(data: ConsoleData): string {
     metric("Audit", data.summary.mutationReadinessAuditStatus ?? "none", "mutation"),
     metric("Live Adapters", data.summary.liveAdapterBlocked ?? "none", `${data.summary.liveAdapterReady ?? 0} ready`),
     metric("Adapter Actions", data.summary.liveAdapterActionItems ?? "none", "operator"),
+    metric("Approval Packs", data.summary.liveAdapterApprovalPackets ?? "none", "operator"),
     metric("Hermes", data.summary.hermesCronSnapshots, `${data.summary.hermesCronProposals} proposals`),
     metric("Recovery", data.summary.recoveryIssues, "issues"),
     metric("Browser", data.summary.consoleBrowserChecks ?? "none", "console"),
@@ -444,22 +454,25 @@ function mutationReadinessAudit(data: ConsoleData): string {
 function liveAdapters(data: ConsoleData): string {
   const readiness = data.liveAdapterReadiness;
   const nextActions = data.liveAdapterNextActions;
-  if (!readiness && !nextActions) return empty("No live-adapter readiness evidence is available.");
+  const approvalPack = data.liveAdapterApprovalPack;
+  if (!readiness && !nextActions && !approvalPack) return empty("No live-adapter readiness evidence is available.");
   const actionsByTarget = new Map(nextActions?.targets.map((target) => [target.target, target.actions]) ?? []);
+  const approvalTargets = new Set(approvalPack?.packets.map((packet) => packet.target) ?? []);
   const rows =
     readiness?.targets.map((target) => ({
       target: target.target,
       status: target.status,
       blockers: target.blockers,
       actionCount: actionsByTarget.get(target.target)?.length ?? 0,
-      nextAction: actionsByTarget.get(target.target)?.[0]?.title ?? "none"
+      nextAction: actionsByTarget.get(target.target)?.[0]?.title ?? "none",
+      approvalPacket: approvalTargets.has(target.target) ? "yes" : "no"
     })) ?? [];
   return [
-    `<div class="visual-status"><strong class="${statusClass(readiness?.status)}">${escapeHtml(readiness?.status ?? "unknown")}</strong><span>${escapeHtml(`${readiness?.summary.ready ?? 0} ready / ${readiness?.summary.blocked ?? 0} blocked / ${nextActions?.summary.actionItems ?? 0} actions`)}</span></div>`,
-    '<div class="table-wrap"><table><thead><tr><th>Target</th><th>Status</th><th>Actions</th><th>Next</th><th>Blockers</th></tr></thead><tbody>',
+    `<div class="visual-status"><strong class="${statusClass(readiness?.status)}">${escapeHtml(readiness?.status ?? "unknown")}</strong><span>${escapeHtml(`${readiness?.summary.ready ?? 0} ready / ${readiness?.summary.blocked ?? 0} blocked / ${nextActions?.summary.actionItems ?? 0} actions / ${approvalPack?.summary.packets ?? 0} approval packets`)}</span></div>`,
+    '<div class="table-wrap"><table><thead><tr><th>Target</th><th>Status</th><th>Actions</th><th>Approval Pack</th><th>Next</th><th>Blockers</th></tr></thead><tbody>',
     ...rows.map(
       (row) =>
-        `<tr><td>${escapeHtml(row.target)}</td><td class="${statusClass(row.status)}">${escapeHtml(row.status)}</td><td>${escapeHtml(String(row.actionCount))}</td><td>${escapeHtml(row.nextAction)}</td><td>${escapeHtml(row.blockers.length === 0 ? "none" : row.blockers.join("; "))}</td></tr>`
+        `<tr><td>${escapeHtml(row.target)}</td><td class="${statusClass(row.status)}">${escapeHtml(row.status)}</td><td>${escapeHtml(String(row.actionCount))}</td><td>${escapeHtml(row.approvalPacket)}</td><td>${escapeHtml(row.nextAction)}</td><td>${escapeHtml(row.blockers.length === 0 ? "none" : row.blockers.join("; "))}</td></tr>`
     ),
     "</tbody></table></div>"
   ].join("");
@@ -566,6 +579,7 @@ function statusClass(value: string | undefined): string {
     value === "passed" ||
     value === "ready" ||
     value === "ready_for_bounded_review" ||
+    value === "ready_for_operator_review" ||
     value === "approved" ||
     value === "complete" ||
     value === "ready_for_adapter" ||

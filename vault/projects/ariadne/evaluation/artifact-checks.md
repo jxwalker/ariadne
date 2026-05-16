@@ -2,13 +2,13 @@
 
 Project: ariadne
 Status: passed
-Generated: 2026-05-16T17:37:17.435Z
+Generated: 2026-05-16T23:11:52.931Z
 
 ## Summary
 
 - Required checks: 13
-- Optional checks: 23
-- Present artifacts: 32
+- Optional checks: 29
+- Present artifacts: 35
 - Missing required artifacts: 0
 
 ## Checks
@@ -30,6 +30,7 @@ Generated: 2026-05-16T17:37:17.435Z
 | playwright-traces | no | present | 2 | projects/ariadne/verification/playwright-captures/target-*.zip |
 | healer-proposals | no | present | 1 | projects/ariadne/verification/healer-proposals/healer-*.json |
 | evaluation-plan | yes | present | - | projects/ariadne/evaluation/evaluation-plan.json |
+| benchmark-runs | no | missing | 0 | projects/ariadne/evaluation/benchmark-run-*.json |
 | infra-registry | yes | present | - | projects/ariadne/infrastructure/registry.json |
 | infra-snapshots | no | present | 1 | projects/ariadne/infrastructure/infra-snapshot-*.json |
 | control-report | yes | present | - | projects/ariadne/control/merge-readiness.json |
@@ -45,6 +46,11 @@ Generated: 2026-05-16T17:37:17.435Z
 | approval-records | no | present | 1 | projects/ariadne/control/approvals/approval-*.json |
 | mutation-readiness-plans | no | present | 1 | projects/ariadne/control/mutation-readiness/mutation-readiness-*.json |
 | mutation-readiness-audit | no | present | - | projects/ariadne/control/mutation-readiness-audit.json |
+| live-adapter-readiness | no | present | - | projects/ariadne/control/live-adapter-readiness.json |
+| live-adapter-next-actions | no | present | - | projects/ariadne/control/live-adapter-next-actions.json |
+| live-adapter-approval-pack | no | present | - | projects/ariadne/control/live-adapter-approval-pack.json |
+| mutation-dry-runs | no | missing | 0 | projects/ariadne/control/mutation-dry-runs/mutation-dry-run-*.json |
+| mutation-executions | no | missing | 0 | projects/ariadne/control/mutation-executions/mutation-execution-*.json |
 | extraction-results | no | missing | 0 | projects/ariadne/extractions/extraction-*.json |
 | extraction-runner-plans | no | missing | 0 | projects/ariadne/extractions/plans/extraction-plan-*.json |
 | coordination-records | no | present | 4 | projects/ariadne/coordination/**/*.json |
