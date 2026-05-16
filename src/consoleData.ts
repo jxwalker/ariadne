@@ -33,6 +33,7 @@ import type {
   InfraSnapshot,
   MemoryProposalRecord,
   MutationDryRunRecord,
+  MutationExecutionRecord,
   MutationReadinessAudit,
   MutationReadinessPlan,
   PlaywrightEvidenceRecord,
@@ -96,6 +97,11 @@ export async function collectConsoleData(vaultRoot: string, projectInput: string
     isMutationDryRun
   );
   const mutationDryRunsForConsole = mutationDryRuns.map(redactMutationDryRunForConsole);
+  const mutationExecutions = await readJsonFiles<MutationExecutionRecord>(
+    path.join(dir, "control", "mutation-executions"),
+    isMutationExecution
+  );
+  const mutationExecutionsForConsole = mutationExecutions.map(redactMutationExecutionForConsole);
   const extractionResults = await readJsonFiles<ExtractionResultRecord>(path.join(dir, "extractions"), isExtractionResult);
   const executionRuns = await readJsonFiles<ExecutionRun>(path.join(dir, "execution"), isExecutionRun);
   const decisions = await readJsonFiles<DecisionRecord>(path.join(dir, "decisions"), isDecisionRecord);
@@ -181,6 +187,7 @@ export async function collectConsoleData(vaultRoot: string, projectInput: string
       pendingApprovals: approvals.filter((approval) => approval.status === "requested").length,
       mutationReadinessPlans: mutationReadinessPlans.length,
       mutationDryRuns: mutationDryRuns.length,
+      mutationExecutions: mutationExecutions.length,
       mutationReadinessAuditStatus: mutationReadinessAudit?.status,
       recoveryIssues: recovery?.issues.length ?? 0,
       consoleBrowserChecks: consoleBrowserChecks?.status,
@@ -198,6 +205,7 @@ export async function collectConsoleData(vaultRoot: string, projectInput: string
     approvals,
     mutationReadinessPlans,
     mutationDryRuns: mutationDryRunsForConsole,
+    mutationExecutions: mutationExecutionsForConsole,
     mutationReadinessAudit,
     decisions,
     playwrightEvidence,
@@ -252,6 +260,7 @@ export async function collectConsoleData(vaultRoot: string, projectInput: string
       approvals: await existingPath(vaultRoot, path.join(dir, "control", "approvals")),
       mutationReadinessPlans: await existingPath(vaultRoot, path.join(dir, "control", "mutation-readiness")),
       mutationDryRuns: await existingPath(vaultRoot, path.join(dir, "control", "mutation-dry-runs")),
+      mutationExecutions: await existingPath(vaultRoot, path.join(dir, "control", "mutation-executions")),
       mutationReadinessAudit: await existingPath(vaultRoot, path.join(dir, "control", "mutation-readiness-audit.json")),
       recoveryReport: await existingPath(vaultRoot, path.join(dir, "control", "recovery-report.json")),
       extractionResults: await existingPath(vaultRoot, path.join(dir, "extractions")),
@@ -487,6 +496,38 @@ function redactMutationDryRunForConsole(record: MutationDryRunRecord): MutationD
     ...record,
     stdout: `<REDACTED: ${Buffer.byteLength(record.stdout, "utf8")} bytes; see mutation dry-run artifact>`,
     stderr: `<REDACTED: ${Buffer.byteLength(record.stderr, "utf8")} bytes; see mutation dry-run artifact>`
+  };
+}
+
+function isMutationExecution(value: unknown): value is MutationExecutionRecord {
+  return (
+    hasSchema(value) &&
+    value.schemaVersion === 1 &&
+    typeof value.id === "string" &&
+    value.id.startsWith("mutation-execution-") &&
+    typeof value.planId === "string" &&
+    typeof value.liveCommand === "string" &&
+    typeof value.liveStdout === "string" &&
+    typeof value.liveStderr === "string" &&
+    typeof value.postVerificationCommand === "string" &&
+    typeof value.postVerificationStdout === "string" &&
+    typeof value.postVerificationStderr === "string" &&
+    (value.status === "passed" ||
+      value.status === "failed" ||
+      value.status === "timed_out" ||
+      value.status === "post_verify_failed" ||
+      value.status === "post_verify_skipped") &&
+    value.execute === true
+  );
+}
+
+function redactMutationExecutionForConsole(record: MutationExecutionRecord): MutationExecutionRecord {
+  return {
+    ...record,
+    liveStdout: `<REDACTED: ${Buffer.byteLength(record.liveStdout, "utf8")} bytes; see mutation execution artifact>`,
+    liveStderr: `<REDACTED: ${Buffer.byteLength(record.liveStderr, "utf8")} bytes; see mutation execution artifact>`,
+    postVerificationStdout: `<REDACTED: ${Buffer.byteLength(record.postVerificationStdout, "utf8")} bytes; see mutation execution artifact>`,
+    postVerificationStderr: `<REDACTED: ${Buffer.byteLength(record.postVerificationStderr, "utf8")} bytes; see mutation execution artifact>`
   };
 }
 

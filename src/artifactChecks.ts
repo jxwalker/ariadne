@@ -248,6 +248,16 @@ const ARTIFACT_SPECS: ArtifactSpec[] = [
     minimumCount: 1
   },
   {
+    id: "mutation-executions",
+    label: "Mutation execution records",
+    required: false,
+    kind: "matching-files",
+    relativePath: "control/mutation-executions",
+    prefix: "mutation-execution-",
+    suffix: ".json",
+    minimumCount: 1
+  },
+  {
     id: "extraction-results",
     label: "OCR/transcription extraction results",
     required: false,

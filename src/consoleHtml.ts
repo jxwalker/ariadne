@@ -129,6 +129,7 @@ function renderConsole(data: ConsoleData): string {
     metric("Approvals", data.summary.pendingApprovals, `${data.summary.approvals} total`),
     metric("Mutation", data.summary.mutationReadinessPlans, "readiness"),
     metric("Dry Runs", data.summary.mutationDryRuns, "mutation"),
+    metric("Exec", data.summary.mutationExecutions, "mutation"),
     metric("Audit", data.summary.mutationReadinessAuditStatus ?? "none", "mutation"),
     metric("Hermes", data.summary.hermesCronSnapshots, `${data.summary.hermesCronProposals} proposals`),
     metric("Recovery", data.summary.recoveryIssues, "issues"),
