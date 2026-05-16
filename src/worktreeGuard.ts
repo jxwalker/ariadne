@@ -53,8 +53,9 @@ export async function guardWorktrees(input: {
 
   const blocked = checks.some((check) => check.status === "failed");
   if (input.apply && !blocked && run.repoPath) {
+    const baseRef = resolveBaseRef(run.repoPath);
     for (const worktree of run.worktrees) {
-      git(run.repoPath, ["worktree", "add", "-b", worktree.branch, worktree.worktreePath, "HEAD"]);
+      git(run.repoPath, ["worktree", "add", "-b", worktree.branch, worktree.worktreePath, baseRef]);
     }
   }
 
@@ -81,6 +82,28 @@ export async function guardWorktrees(input: {
 
 function git(repoPath: string, args: string[]): string {
   return execFileSync("git", args, { cwd: repoPath, encoding: "utf8" });
+}
+
+function resolveBaseRef(repoPath: string): string {
+  try {
+    const originHead = git(repoPath, ["symbolic-ref", "--quiet", "--short", "refs/remotes/origin/HEAD"]).trim();
+    if (originHead.startsWith("origin/")) {
+      return originHead.slice("origin/".length);
+    }
+  } catch {
+    // Fall through to local default branch names.
+  }
+
+  for (const candidate of ["main", "master"]) {
+    try {
+      git(repoPath, ["rev-parse", "--verify", candidate]);
+      return candidate;
+    } catch {
+      // Try the next conventional base branch.
+    }
+  }
+
+  return "main";
 }
 
 function renderGuard(report: WorktreeGuardReport): string {
