@@ -12,7 +12,12 @@ import { generateConsoleHtml } from "./consoleHtml.js";
 import { generateConsoleVisualCheckReport } from "./consoleVisualChecks.js";
 import { recordAgentLease, recordAgentMail, recordMemoryProposal, recordSleepRoutine } from "./coordination.js";
 import { recordDecision } from "./decisions.js";
-import { deploymentSystemOption, importDeploymentSnapshot } from "./deploymentAdapters.js";
+import {
+  collectSshDeploymentSnapshot,
+  deploymentSystemOption,
+  importDeploymentSnapshot,
+  liveDeploymentSystemOption
+} from "./deploymentAdapters.js";
 import { generateEvaluationPlan, recordEvaluationRun } from "./evaluation.js";
 import { generateEvaluationTrendReport } from "./evaluationTrends.js";
 import { markRunStatus, planExecution } from "./execution.js";
@@ -43,21 +48,23 @@ interface ParsedArgs {
 }
 
 function parseArgs(argv: string[]): ParsedArgs {
-  const [command, ...rest] = argv;
+  let command: string | undefined;
   const positionals: string[] = [];
   const options = new Map<string, string | true>();
 
-  for (let index = 0; index < rest.length; index += 1) {
-    const value = rest[index];
+  for (let index = 0; index < argv.length; index += 1) {
+    const value = argv[index];
     if (value?.startsWith("--")) {
       const key = value.slice(2);
-      const next = rest[index + 1];
+      const next = argv[index + 1];
       if (next && !next.startsWith("--")) {
         options.set(key, next);
         index += 1;
       } else {
         options.set(key, true);
       }
+    } else if (value && !command) {
+      command = value;
     } else if (value) {
       positionals.push(value);
     }
@@ -104,6 +111,7 @@ function usage(): string {
     "  ariadne agent-mail --project <project> --from <agent> --to <agent> --subject <text> --body <text> [--task <id>] [--run <id>]",
     "  ariadne agent-lease --project <project> --agent <agent> --resource <name> --status <status> [--task <id>] [--run <id>] [--notes <text>]",
     "  ariadne deployment-snapshot --project <project> --from <snapshot.json> [--system <system>]",
+    "  ariadne deployment-live-ssh --project <project> --system <proxmox|truenas|dgx-spark|mac> --host <id> --target <ssh-target> [--ssh-binary <path>] [--notes <text>]",
     "  ariadne artifact-checks --project <project>",
     "  ariadne benchmark-pack --set <smoke|realistic|stress|all> [--output <dir>]",
     "  ariadne infra --project <project>",
@@ -546,6 +554,24 @@ async function main(): Promise<void> {
     });
     console.log(`Deployment snapshot: ${result.markdownPath}`);
     console.log(`System: ${result.snapshot.system}`);
+    return;
+  }
+
+  if (parsed.command === "deployment-live-ssh") {
+    const result = await collectSshDeploymentSnapshot({
+      project,
+      vaultRoot,
+      system: liveDeploymentSystemOption(requiredOption(parsed.options, "system")),
+      hostId: requiredOption(parsed.options, "host"),
+      target: requiredOption(parsed.options, "target"),
+      sshBinary: optionString(parsed.options, "ssh-binary", "") || undefined,
+      notes: optionString(parsed.options, "notes", "") || undefined
+    });
+    console.log(`Live SSH deployment snapshot: ${result.markdownPath}`);
+    console.log(`Source infrastructure snapshot: ${result.infraSnapshotPath}`);
+    console.log(`System: ${result.snapshot.system}`);
+    console.log(`Host: ${String(result.snapshot.summary.host ?? "unknown")}`);
+    console.log(`Mode: ${result.snapshot.mode}`);
     return;
   }
 

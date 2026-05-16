@@ -208,6 +208,14 @@ npm run ariadne -- deployment-snapshot --project ariadne --system proxmox --from
 
 Snapshots are read-only evidence. They are used by the console and evaluation system to make deployment posture visible without granting mutation capability.
 
+For an approved remote host, collect a host-specific live deployment profile over SSH:
+
+```bash
+npm run ariadne -- deployment-live-ssh --project ariadne --system dgx-spark --host "DGX Spark" --target james@dgx-spark.lan --notes "Approved read-only deployment profile"
+```
+
+This writes both a sanitized infrastructure snapshot and a deployment snapshot. Supported live deployment systems are `proxmox`, `truenas`, `dgx-spark`, and `mac`; the collector remains read-only and derives confidence from observed capabilities such as Proxmox tooling, ZFS, Docker, and `nvidia-smi`.
+
 For the current machine, collect a sanitized live read-only local inventory:
 
 ```bash

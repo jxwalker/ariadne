@@ -33,6 +33,7 @@ Deployment should follow the same rule as the rest of the project: observe first
 - Keep snapshots manual or read-only.
 - Use `infra-live-local` for the current Mac or Linux host.
 - Use `infra-live-ssh` only for approved remote hosts where a read-only SSH probe is acceptable.
+- Use `deployment-live-ssh` when Ariadne should turn an approved SSH probe into a Proxmox, TrueNAS, DGX Spark, or Mac deployment profile.
 - Use `deployment-snapshot` for estate-specific views:
 
 ```bash
@@ -42,6 +43,7 @@ npm run ariadne -- deployment-snapshot --project ariadne --system dgx-spark --fr
 npm run ariadne -- deployment-snapshot --project ariadne --system mac --from mac.json
 npm run ariadne -- infra-live-local --project ariadne --notes "current host read-only inventory"
 npm run ariadne -- infra-live-ssh --project ariadne --host beast --target james@beast.lan --notes "approved read-only remote inventory"
+npm run ariadne -- deployment-live-ssh --project ariadne --system dgx-spark --host "DGX Spark" --target james@dgx-spark.lan --notes "approved read-only deployment profile"
 ```
 
 ### Stage 3: Always-On Orchestration

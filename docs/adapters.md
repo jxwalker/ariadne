@@ -233,3 +233,11 @@ npm run ariadne -- infra-live-ssh --project ariadne --host beast --target james@
 The SSH collector runs a fixed POSIX read-only inventory script, stores the human host label, hashes the SSH target and reported hostname, omits network and MAC addresses, and records capabilities such as Docker, Proxmox, ZFS, and `nvidia-smi`. It does not upload files, edit configuration, restart services, or execute mutation-capable commands.
 
 `deployment-snapshot` imports read-only estate snapshots for Proxmox, TrueNAS, DGX Spark, Macs, GitHub, or generic systems. This is the deployment adapter bridge for visualising where Ariadne can run without granting mutation capability.
+
+`deployment-live-ssh` collects a host-specific deployment profile from an approved SSH target:
+
+```bash
+npm run ariadne -- deployment-live-ssh --project ariadne --system proxmox --host beast --target james@beast.lan --notes "Approved read-only deployment profile"
+```
+
+It first records the sanitized SSH infrastructure snapshot, then writes a deployment snapshot for `proxmox`, `truenas`, `dgx-spark`, or `mac`. The profile includes capability evidence, a confidence level, and counts for model endpoints, runner pools, storage pools, and services. It never mutates the host.

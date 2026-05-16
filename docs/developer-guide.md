@@ -47,7 +47,7 @@ npm run build
 - `src/gbrainAdapter.ts`: optional read-only GBrain export and report import.
 - `src/githubAdapter.ts`: read-only GitHub PR and check snapshot import or `gh` collection.
 - `src/coordination.ts`: sleep routine, memory proposal, agent mail, and lease records.
-- `src/deploymentAdapters.ts`: read-only deployment evidence imports for the local estate.
+- `src/deploymentAdapters.ts`: read-only deployment evidence imports and SSH-derived host profiles for the local estate.
 - `src/infrastructure.ts` and `src/infraSnapshot.ts`: substrate registry and read-only imports.
 - `src/liveInventory.ts`: sanitized live read-only local and SSH host inventory collection.
 - `src/types.ts`: shared record contracts.
