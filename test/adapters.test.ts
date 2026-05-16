@@ -20,6 +20,7 @@ import { generateEvaluationTrendReport } from "../src/evaluationTrends.js";
 import { importNotebookLmExport } from "../src/notebooklm.js";
 import { recordPlaywrightEvidence } from "../src/playwrightEvidence.js";
 import { generatePrd } from "../src/prd.js";
+import { generateUsageMetricsReport, importUsageMetrics } from "../src/usageMetrics.js";
 import { guardWorktrees } from "../src/worktreeGuard.js";
 import { assembleDossier, ingestFiles } from "../src/vault.js";
 
@@ -153,6 +154,7 @@ describe("roadmap adapters", () => {
     expect(smoke.pack.files.some((file) => file.path === "sources/source.md")).toBe(true);
     expect(realistic.pack.files.some((file) => file.role === "notebooklm_export")).toBe(true);
     expect(realistic.pack.files.some((file) => file.role === "ci_status")).toBe(true);
+    expect(realistic.pack.files.some((file) => file.role === "usage_metrics")).toBe(true);
     expect(stress.pack.files.some((file) => file.role === "execution_seed")).toBe(true);
 
     const smokeManifest = JSON.parse(await fs.readFile(smoke.manifestPath, "utf8")) as { root: string };
@@ -208,6 +210,55 @@ describe("roadmap adapters", () => {
     const markdown = await fs.readFile(trends.markdownPath, "utf8");
     expect(markdown).toContain("# Evaluation Trends");
     expect(markdown).toContain("Start trend charts.");
+  });
+
+  it("imports and reports token and cost metrics", async () => {
+    const { temp, vaultRoot } = await preparedProject();
+    const usage = path.join(temp, "usage.json");
+    await fs.writeFile(
+      usage,
+      JSON.stringify([
+        {
+          source: "hermes",
+          model: "gpt-5.5",
+          operation: "plan",
+          input_tokens: 1000,
+          output_tokens: 500,
+          cost_usd: 0.45
+        },
+        {
+          source: "coderabbit",
+          model: "coderabbit-review",
+          operation: "review",
+          total_tokens: 750,
+          cost_usd: "0.12"
+        }
+      ])
+    );
+
+    const records = await importUsageMetrics({ project: "ariadne", vaultRoot, sourcePath: usage });
+    expect(records).toHaveLength(2);
+    expect(records[0]?.totalTokens).toBe(1500);
+
+    const report = await generateUsageMetricsReport({ project: "ariadne", vaultRoot });
+    expect(report.report.recordCount).toBe(2);
+    expect(report.report.totalTokens).toBe(2250);
+    expect(report.report.totalCostUsd).toBe(0.57);
+    expect(report.report.bySource.find((row) => row.name === "hermes")?.inputTokens).toBe(1000);
+
+    await fs.appendFile(path.join(vaultRoot, "projects", "ariadne", "evaluation", "usage-metrics.jsonl"), "{bad json\n");
+    const resilientReport = await generateUsageMetricsReport({ project: "ariadne", vaultRoot });
+    expect(resilientReport.report.recordCount).toBe(2);
+
+    const invalidUsage = path.join(temp, "invalid-usage.json");
+    await fs.writeFile(invalidUsage, "{bad json\n");
+    await expect(importUsageMetrics({ project: "ariadne", vaultRoot, sourcePath: invalidUsage })).rejects.toThrow(
+      /Failed to parse JSON/
+    );
+
+    const markdown = await fs.readFile(report.markdownPath, "utf8");
+    expect(markdown).toContain("# Usage Metrics Report");
+    expect(markdown).toContain("| coderabbit | 1 | 0 | 0 | 750 | 0.1200 |");
   });
 
   it("records CI, CodeRabbit, Playwright, infra, OpenScorpion, and guarded worktree evidence", async () => {

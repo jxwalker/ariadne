@@ -94,6 +94,13 @@ const ARTIFACT_SPECS: ArtifactSpec[] = [
     required: false,
     kind: "file",
     relativePath: "console/index.html"
+  },
+  {
+    id: "usage-report",
+    label: "Usage metrics report",
+    required: false,
+    kind: "file",
+    relativePath: "evaluation/usage-report.json"
   }
 ];
 

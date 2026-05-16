@@ -23,6 +23,7 @@ The system starts with source-grounded intake: drawings, white papers, dictated 
 - Extract safe text from Markdown, text, and macOS `.docx` files.
 - Write manifests, hot indexes, context dossiers, PRDs, GSD roadmaps, GSD2 bundles, execution plans, decision records, Playwright plans, infrastructure registries, evaluation plans, and merge-readiness reports.
 - Import manual NotebookLM exports, CI status, CodeRabbit review text, read-only infrastructure snapshots, and Playwright evidence.
+- Import token and cost metrics from Hermes, CodeRabbit, OpenAI, CI, or manual JSON exports.
 - Guard worktree creation without mutating by default.
 - Check whether the expected pipeline artifacts exist before scoring or release decisions.
 - Generate smoke, realistic, and stress benchmark source packs for repeatable harness evaluation.
@@ -52,6 +53,7 @@ npm run cli -- evaluation --project ariadne --target mac-local
 npm run cli -- artifact-checks --project ariadne
 npm run cli -- benchmark-pack --set all
 npm run cli -- evaluation-trends --project ariadne
+npm run cli -- usage-report --project ariadne
 npm run cli -- control --project ariadne
 npm run cli -- console-data --project ariadne
 npm run cli -- console-html --project ariadne --refresh-data
@@ -107,6 +109,8 @@ npm run cli -- evaluation-record --project ariadne --plan evaluation-plan.json -
 npm run cli -- artifact-checks --project ariadne
 npm run cli -- benchmark-pack --set all
 npm run cli -- evaluation-trends --project ariadne
+npm run cli -- usage-import --project ariadne --from usage.json --source hermes
+npm run cli -- usage-report --project ariadne
 npm run cli -- import-ci --project ariadne --from checks.json
 npm run cli -- import-coderabbit --project ariadne --from coderabbit.md
 npm run cli -- console-data --project ariadne

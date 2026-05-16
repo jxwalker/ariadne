@@ -139,11 +139,11 @@ Implemented:
 - automatic artifact existence checks
 - benchmark source packs for smoke, realistic, and stress runs
 - trend report generation
-- CLI support for `evaluation`, `evaluation-record`, `evaluation-trends`, `artifact-checks`, and `benchmark-pack`
+- token/cost metrics from Hermes and review tools
+- CLI support for `evaluation`, `evaluation-record`, `evaluation-trends`, `usage-import`, `usage-report`, `artifact-checks`, and `benchmark-pack`
 
 Next:
 
-- token/cost metrics from Hermes and review tools
 - mutation and approved-fixture checks for behavior confidence
 
 ## Milestone 8: Orchestration Visualisation

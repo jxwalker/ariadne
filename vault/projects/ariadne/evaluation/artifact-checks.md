@@ -2,13 +2,13 @@
 
 Project: ariadne
 Status: passed
-Generated: 2026-05-16T09:23:35.325Z
+Generated: 2026-05-16T11:02:09.346Z
 
 ## Summary
 
 - Required checks: 13
-- Optional checks: 2
-- Present artifacts: 15
+- Optional checks: 3
+- Present artifacts: 16
 - Missing required artifacts: 0
 
 ## Checks
@@ -30,3 +30,4 @@ Generated: 2026-05-16T09:23:35.325Z
 | control-report | yes | present | - | projects/ariadne/control/merge-readiness.json |
 | console-data | no | present | - | projects/ariadne/console/console-data.json |
 | console-html | no | present | - | projects/ariadne/console/index.html |
+| usage-report | no | present | - | projects/ariadne/evaluation/usage-report.json |
