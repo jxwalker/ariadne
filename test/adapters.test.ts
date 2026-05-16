@@ -16,6 +16,7 @@ import { generateConsoleHtml } from "../src/consoleHtml.js";
 import { generateConsoleVisualCheckReport } from "../src/consoleVisualChecks.js";
 import { recordAgentLease, recordAgentMail, recordMemoryProposal, recordSleepRoutine } from "../src/coordination.js";
 import { collectSshDeploymentSnapshot, importDeploymentSnapshot } from "../src/deploymentAdapters.js";
+import { planDeploymentMutation } from "../src/deploymentMutation.js";
 import { planExecution } from "../src/execution.js";
 import { exportGbrainBundle, importGbrainReport } from "../src/gbrainAdapter.js";
 import { importGithubSnapshot } from "../src/githubAdapter.js";
@@ -1158,6 +1159,106 @@ describe("roadmap adapters", () => {
         risk: "medium"
       })
     ).rejects.toThrow(/--repo/);
+  });
+
+  it("builds deployment-specific mutation readiness plans", async () => {
+    const { temp, vaultRoot } = await preparedProject();
+    const authEvidence = path.join(temp, "deployment-auth.json");
+    await fs.writeFile(authEvidence, JSON.stringify({ ssh: "approved", sudo: "recorded" }));
+    const approval = await requestApproval({
+      project: "ariadne",
+      vaultRoot,
+      requestedBy: "planner",
+      target: "deployment",
+      action: "Enable bounded deployment mutation planning for one Proxmox host.",
+      risk: "high",
+      reason: "Exercise target-specific deployment mutation command capture.",
+      rollback: "Restart the previous Ariadne service unit on the same host.",
+      evidenceRefs: [authEvidence]
+    });
+    const approved = await decideApproval({
+      project: "ariadne",
+      vaultRoot,
+      approval: approval.record.id,
+      status: "approved",
+      decisionBy: "james",
+      decisionNotes: "Fixture deployment approval."
+    });
+    const relativeAuthEvidence = path.join("control", "approvals", `${approval.record.id}.json`);
+
+    const plan = await planDeploymentMutation({
+      project: "ariadne",
+      vaultRoot,
+      system: "proxmox",
+      host: "beast",
+      scope: "Restart Ariadne worker service after reviewed config update.",
+      authEvidenceRefs: [relativeAuthEvidence],
+      evidenceRefs: [approved.jsonPath],
+      dryRunCommand: "ssh beast systemctl status ariadne",
+      liveCommand: "ssh beast sudo systemctl restart ariadne",
+      postVerificationCommand: "ssh beast systemctl is-active ariadne",
+      rollback: "ssh beast sudo systemctl restart ariadne-previous",
+      approvalRef: approval.record.id,
+      risk: "high",
+      notes: "Fixture plan only; no command is executed."
+    });
+    expect(plan.plan.status).toBe("ready_for_bounded_review");
+    expect(plan.plan.target).toBe("deployment");
+    expect(plan.plan.scope).toContain("proxmox/beast");
+    expect(plan.plan.proposedLiveCommand).toBe("ssh beast sudo systemctl restart ariadne");
+    expect(plan.plan.rollback).toContain("proxmox/beast");
+    expect(plan.plan.requiredGates).toContain("deployment target and rollback host verified");
+    expect(plan.plan.execute).toBe(false);
+
+    const spacedHostPlan = await planDeploymentMutation({
+      project: "ariadne",
+      vaultRoot,
+      system: "dgx-spark",
+      host: "DGX Spark",
+      scope: "Restart model service after reviewed deployment.",
+      authEvidenceRefs: [relativeAuthEvidence],
+      evidenceRefs: [],
+      dryRunCommand: "ssh dgx-spark systemctl status ariadne-models",
+      liveCommand: "ssh dgx-spark sudo systemctl restart ariadne-models",
+      postVerificationCommand: "ssh dgx-spark systemctl is-active ariadne-models",
+      rollback: "ssh dgx-spark sudo systemctl restart ariadne-models-previous",
+      approvalRef: approval.record.id,
+      risk: "medium"
+    });
+    expect(spacedHostPlan.plan.scope).toContain("dgx-spark/DGX Spark");
+
+    await expect(
+      planDeploymentMutation({
+        project: "ariadne",
+        vaultRoot,
+        system: "github" as "proxmox",
+        host: "beast",
+        scope: "Invalid deployment system.",
+        authEvidenceRefs: [authEvidence],
+        evidenceRefs: [],
+        dryRunCommand: "ssh beast true",
+        liveCommand: "ssh beast true",
+        postVerificationCommand: "ssh beast true",
+        rollback: "ssh beast false",
+        risk: "medium"
+      })
+    ).rejects.toThrow(/--system/);
+    await expect(
+      planDeploymentMutation({
+        project: "ariadne",
+        vaultRoot,
+        system: "proxmox",
+        host: "../beast",
+        scope: "Invalid deployment host.",
+        authEvidenceRefs: [authEvidence],
+        evidenceRefs: [],
+        dryRunCommand: "ssh beast true",
+        liveCommand: "ssh beast true",
+        postVerificationCommand: "ssh beast true",
+        rollback: "ssh beast false",
+        risk: "medium"
+      })
+    ).rejects.toThrow(/--host/);
   });
 });
 

@@ -56,6 +56,7 @@ npm run build
 - `src/hermesCron.ts`: read-only Hermes cron/job snapshot import and proposal-only scheduler recommendations for sleep and memory automation evidence.
 - `src/coordination.ts`: sleep routine, memory proposal, agent mail, and lease records.
 - `src/deploymentAdapters.ts`: read-only deployment evidence imports and SSH-derived host profiles for the local estate.
+- `src/deploymentMutation.ts`: target-specific deployment mutation-readiness plan generation for one estate system and host.
 - `src/infrastructure.ts` and `src/infraSnapshot.ts`: substrate registry and read-only imports.
 - `src/liveInventory.ts`: sanitized live read-only local and SSH host inventory collection.
 - `src/types.ts`: shared record contracts.
@@ -108,4 +109,4 @@ A live adapter must start read-only. Mutation requires a separate approved plan 
 
 Use `approval-request` and `approval-decision` to capture that checkpoint before adding a mutation-capable command. The approval record does not grant execution by itself; the adapter still needs its own narrow implementation, tests, rollback notes, and review.
 
-Use `mutation-readiness` to bind those pieces into one reviewable artifact before adding a live adapter. The plan must keep `execute=false`, include a post-action verification command, and pass `mutation-readiness-audit`; live commands belong in later adapters only after the readiness plan has been reviewed.
+Use `mutation-readiness` to bind those pieces into one reviewable artifact before adding a live adapter. Prefer target-specific wrappers such as `github-mutation-plan` and `deployment-mutation-plan` when they exist, because they force the target's required identifiers into the reviewed scope. The plan must keep `execute=false`, include a post-action verification command, and pass `mutation-readiness-audit`; live commands belong in later adapters only after the readiness plan has been reviewed.
