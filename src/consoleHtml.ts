@@ -84,6 +84,24 @@ function renderConsole(data: ConsoleData): string {
             detail: `${data.mutationReadinessAudit.summary.ready} ready / ${data.mutationReadinessAudit.summary.blocked} blocked`
           }
         ]
+      : []),
+    ...(data.liveAdapterReadiness
+      ? [
+          {
+            time: data.liveAdapterReadiness.generatedAt,
+            label: `Live adapters: ${data.liveAdapterReadiness.status}`,
+            detail: `${data.liveAdapterReadiness.summary.ready} ready / ${data.liveAdapterReadiness.summary.blocked} blocked`
+          }
+        ]
+      : []),
+    ...(data.liveAdapterNextActions
+      ? [
+          {
+            time: data.liveAdapterNextActions.generatedAt,
+            label: `Live adapter actions: ${data.liveAdapterNextActions.status}`,
+            detail: `${data.liveAdapterNextActions.summary.actionItems} action items`
+          }
+        ]
       : [])
   ].sort((left, right) => right.time.localeCompare(left.time));
 
@@ -131,6 +149,8 @@ function renderConsole(data: ConsoleData): string {
     metric("Dry Runs", data.summary.mutationDryRuns, "mutation"),
     metric("Exec", data.summary.mutationExecutions, "mutation"),
     metric("Audit", data.summary.mutationReadinessAuditStatus ?? "none", "mutation"),
+    metric("Live Adapters", data.summary.liveAdapterBlocked ?? "none", `${data.summary.liveAdapterReady ?? 0} ready`),
+    metric("Adapter Actions", data.summary.liveAdapterActionItems ?? "none", "operator"),
     metric("Hermes", data.summary.hermesCronSnapshots, `${data.summary.hermesCronProposals} proposals`),
     metric("Recovery", data.summary.recoveryIssues, "issues"),
     metric("Browser", data.summary.consoleBrowserChecks ?? "none", "console"),
@@ -149,6 +169,7 @@ function renderConsole(data: ConsoleData): string {
     section("Task Flow", taskTable(data)),
     section("Approval Queue", approvalQueue(data)),
     section("Mutation Audit", mutationReadinessAudit(data)),
+    section("Live Adapters", liveAdapters(data)),
     section("Timeline", timelineList(timeline.slice(0, 12))),
     "</div>",
     '<aside class="side-column">',
@@ -420,6 +441,30 @@ function mutationReadinessAudit(data: ConsoleData): string {
   ].join("");
 }
 
+function liveAdapters(data: ConsoleData): string {
+  const readiness = data.liveAdapterReadiness;
+  const nextActions = data.liveAdapterNextActions;
+  if (!readiness && !nextActions) return empty("No live-adapter readiness evidence is available.");
+  const actionsByTarget = new Map(nextActions?.targets.map((target) => [target.target, target.actions]) ?? []);
+  const rows =
+    readiness?.targets.map((target) => ({
+      target: target.target,
+      status: target.status,
+      blockers: target.blockers,
+      actionCount: actionsByTarget.get(target.target)?.length ?? 0,
+      nextAction: actionsByTarget.get(target.target)?.[0]?.title ?? "none"
+    })) ?? [];
+  return [
+    `<div class="visual-status"><strong class="${statusClass(readiness?.status)}">${escapeHtml(readiness?.status ?? "unknown")}</strong><span>${escapeHtml(`${readiness?.summary.ready ?? 0} ready / ${readiness?.summary.blocked ?? 0} blocked / ${nextActions?.summary.actionItems ?? 0} actions`)}</span></div>`,
+    '<div class="table-wrap"><table><thead><tr><th>Target</th><th>Status</th><th>Actions</th><th>Next</th><th>Blockers</th></tr></thead><tbody>',
+    ...rows.map(
+      (row) =>
+        `<tr><td>${escapeHtml(row.target)}</td><td class="${statusClass(row.status)}">${escapeHtml(row.status)}</td><td>${escapeHtml(String(row.actionCount))}</td><td>${escapeHtml(row.nextAction)}</td><td>${escapeHtml(row.blockers.length === 0 ? "none" : row.blockers.join("; "))}</td></tr>`
+    ),
+    "</tbody></table></div>"
+  ].join("");
+}
+
 function recovery(data: ConsoleData): string {
   const report = data.recovery;
   if (!report) return empty("No recovery report is available.");
@@ -523,12 +568,20 @@ function statusClass(value: string | undefined): string {
     value === "ready_for_bounded_review" ||
     value === "approved" ||
     value === "complete" ||
+    value === "ready_for_adapter" ||
     value === "info"
   ) {
     return "ok";
   }
   if (value === "failed" || value === "blocked" || value === "changes_requested" || value === "blocking") return "bad";
-  if (value === "review_required" || value === "pending" || value === "skipped" || value === "warning" || value === "attention_required") {
+  if (
+    value === "review_required" ||
+    value === "pending" ||
+    value === "skipped" ||
+    value === "warning" ||
+    value === "attention_required" ||
+    value === "actions_required"
+  ) {
     return "warn";
   }
   return "muted";

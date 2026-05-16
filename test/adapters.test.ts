@@ -863,6 +863,11 @@ describe("roadmap adapters", () => {
     expect(console.data.summary.mutationReadinessPlans).toBe(2);
     expect(console.data.summary.mutationReadinessAuditStatus).toBe("blocked");
     expect(console.data.mutationReadinessAudit?.summary.ready).toBe(1);
+    expect(console.data.summary.liveAdapterReadinessStatus).toBe("blocked");
+    expect(console.data.summary.liveAdapterReady).toBe(1);
+    expect(console.data.summary.liveAdapterBlocked).toBe(5);
+    expect(console.data.summary.liveAdapterActionItems).toBeGreaterThan(0);
+    expect(console.data.liveAdapterNextActions?.targets.some((target) => target.target === "github")).toBe(true);
     expect(console.data.behaviorChecks?.status).toBe("passed");
 
     const artifactChecks = await generateArtifactCheckReport({ project: "ariadne", vaultRoot });
@@ -1167,6 +1172,7 @@ describe("roadmap adapters", () => {
     const html = await fs.readFile(consoleHtml.htmlPath, "utf8");
     expect(html).toContain("<!doctype html>");
     expect(html).toContain("Gate Matrix");
+    expect(html).toContain("Live Adapters");
     expect(html).toContain("Visual Checks");
     expect(html).toContain("Recovery");
     expect(html).toContain("GitHub");

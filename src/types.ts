@@ -1055,6 +1055,10 @@ export interface ConsoleData {
     mutationDryRuns: number;
     mutationExecutions: number;
     mutationReadinessAuditStatus?: MutationReadinessAudit["status"];
+    liveAdapterReadinessStatus?: LiveAdapterReadinessReport["status"];
+    liveAdapterReady?: number;
+    liveAdapterBlocked?: number;
+    liveAdapterActionItems?: number;
     recoveryIssues: number;
     consoleBrowserChecks?: ConsoleBrowserCheckReport["status"];
     readinessStatus?: ControlReport["status"];
@@ -1115,6 +1119,8 @@ export interface ConsoleData {
   mutationDryRuns: MutationDryRunRecord[];
   mutationExecutions: MutationExecutionRecord[];
   mutationReadinessAudit?: MutationReadinessAudit;
+  liveAdapterReadiness?: LiveAdapterReadinessReport;
+  liveAdapterNextActions?: LiveAdapterNextActionsReport;
   recovery?: RecoveryReport;
   readiness?: ControlReport;
   artifacts: {
@@ -1138,6 +1144,8 @@ export interface ConsoleData {
     mutationDryRuns?: string;
     mutationExecutions?: string;
     mutationReadinessAudit?: string;
+    liveAdapterReadiness?: string;
+    liveAdapterNextActions?: string;
     recoveryReport?: string;
     extractionResults?: string;
     healerProposals?: string;
