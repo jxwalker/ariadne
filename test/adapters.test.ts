@@ -19,6 +19,7 @@ import { collectSshDeploymentSnapshot, importDeploymentSnapshot } from "../src/d
 import { planExecution } from "../src/execution.js";
 import { exportGbrainBundle, importGbrainReport } from "../src/gbrainAdapter.js";
 import { importGithubSnapshot } from "../src/githubAdapter.js";
+import { planGithubMutation } from "../src/githubMutation.js";
 import { generateGsd } from "../src/gsd.js";
 import { exportGsd2Bundle, importGsd2Bundle } from "../src/gsdAdapter.js";
 import { collectGsd2ProcessSnapshot } from "../src/gsdProcess.js";
@@ -1077,6 +1078,86 @@ describe("roadmap adapters", () => {
     expect(visual.report.status).toBe("passed");
     expect(browser.report.status).toBe("passed");
     await expect(fs.stat(path.join(vaultRoot, browser.report.screenshotPath))).resolves.toBeTruthy();
+  });
+
+  it("builds GitHub-specific mutation readiness plans", async () => {
+    const { temp, vaultRoot } = await preparedProject();
+    const authEvidence = path.join(temp, "github-auth.json");
+    await fs.writeFile(authEvidence, JSON.stringify({ gh: "authenticated" }));
+    const approval = await requestApproval({
+      project: "ariadne",
+      vaultRoot,
+      requestedBy: "planner",
+      target: "github",
+      action: "Enable bounded GitHub PR mutation planning.",
+      risk: "medium",
+      reason: "Exercise target-specific GitHub mutation command generation.",
+      rollback: "Use manual GitHub commands instead.",
+      evidenceRefs: [authEvidence]
+    });
+    const approved = await decideApproval({
+      project: "ariadne",
+      vaultRoot,
+      approval: approval.record.id,
+      status: "approved",
+      decisionBy: "james",
+      decisionNotes: "Fixture approval."
+    });
+    const relativeAuthEvidence = path.join("control", "approvals", `${approval.record.id}.json`);
+
+    const mergePlan = await planGithubMutation({
+      project: "ariadne",
+      vaultRoot,
+      repository: "jxwalker/ariadne",
+      action: "merge-pr",
+      pullRequest: 29,
+      authEvidenceRefs: [relativeAuthEvidence],
+      evidenceRefs: [approved.jsonPath],
+      approvalRef: approval.record.id,
+      risk: "medium"
+    });
+    expect(mergePlan.plan.status).toBe("ready_for_bounded_review");
+    expect(mergePlan.plan.dryRunCommand).toContain("gh pr view 29");
+    expect(mergePlan.plan.proposedLiveCommand).toBe("gh pr merge 29 --repo 'jxwalker/ariadne' --squash --delete-branch");
+    expect(mergePlan.plan.postVerificationCommand).toContain("mergedAt");
+    expect(mergePlan.plan.execute).toBe(false);
+
+    const rerunPlan = await planGithubMutation({
+      project: "ariadne",
+      vaultRoot,
+      repository: "jxwalker/ariadne",
+      action: "rerun-failed-run",
+      runId: "123456789",
+      authEvidenceRefs: [relativeAuthEvidence],
+      evidenceRefs: [approved.jsonPath],
+      approvalRef: approval.record.id,
+      risk: "low"
+    });
+    expect(rerunPlan.plan.proposedLiveCommand).toBe("gh run rerun '123456789' --repo 'jxwalker/ariadne' --failed");
+
+    await expect(
+      planGithubMutation({
+        project: "ariadne",
+        vaultRoot,
+        repository: "jxwalker/ariadne",
+        action: "merge-pr",
+        authEvidenceRefs: [authEvidence],
+        evidenceRefs: [],
+        risk: "medium"
+      })
+    ).rejects.toThrow(/--pr is required/);
+    await expect(
+      planGithubMutation({
+        project: "ariadne",
+        vaultRoot,
+        repository: "https://github.com/jxwalker/ariadne",
+        action: "rerun-failed-run",
+        runId: "123",
+        authEvidenceRefs: [authEvidence],
+        evidenceRefs: [],
+        risk: "medium"
+      })
+    ).rejects.toThrow(/--repo/);
   });
 });
 

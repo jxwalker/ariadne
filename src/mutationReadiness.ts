@@ -23,7 +23,7 @@ export async function planMutationReadiness(input: {
   const generatedAt = new Date();
   const approval = input.approvalRef ? await readApproval(input.vaultRoot, project, input.approvalRef) : undefined;
   const matchingApproval = approval?.target === input.target ? approval : undefined;
-  await assertEvidenceFilesExist(input.authEvidenceRefs, "auth evidence");
+  await assertEvidenceFilesExist(input.vaultRoot, project, input.authEvidenceRefs, "auth evidence");
   const plan: MutationReadinessPlan = {
     schemaVersion: 1,
     id: `mutation-readiness-${input.target}-${timestampFile(generatedAt)}`,
@@ -138,17 +138,22 @@ function validatePlan(plan: MutationReadinessPlan): void {
   }
 }
 
-async function assertEvidenceFilesExist(refs: string[], label: string): Promise<void> {
+async function assertEvidenceFilesExist(vaultRoot: string, project: string, refs: string[], label: string): Promise<void> {
   for (const ref of refs) {
-    const resolved = path.resolve(ref);
-    try {
-      await fs.access(resolved);
-    } catch (error) {
-      if ((error as NodeJS.ErrnoException).code === "ENOENT") {
-        throw new Error(`Missing ${label}: ${ref}`);
+    const candidates = path.isAbsolute(ref)
+      ? [ref]
+      : [path.resolve(ref), path.join(vaultRoot, ref), path.join(projectDir(vaultRoot, project), ref)];
+    let found = false;
+    for (const candidate of candidates) {
+      try {
+        await fs.access(candidate);
+        found = true;
+        break;
+      } catch {
+        // try next candidate
       }
-      throw error;
     }
+    if (!found) throw new Error(`Missing ${label}: ${ref}`);
   }
 }
 
