@@ -26,6 +26,7 @@ import { exportGsd2Bundle, importGsd2Bundle } from "../src/gsdAdapter.js";
 import { collectGsd2ProcessSnapshot } from "../src/gsdProcess.js";
 import { generateHealerProposal } from "../src/healerProposals.js";
 import { generateHermesCronProposal, importHermesCronSnapshot } from "../src/hermesCron.js";
+import { planHermesCronMutation } from "../src/hermesMutation.js";
 import { generateInfrastructureRegistry } from "../src/infrastructure.js";
 import { draftOpenScorpionActivity, importInfraSnapshot } from "../src/infraSnapshot.js";
 import { collectLocalInfraSnapshot, collectSshInfraSnapshot, parseSshInventory } from "../src/liveInventory.js";
@@ -1159,6 +1160,106 @@ describe("roadmap adapters", () => {
         risk: "medium"
       })
     ).rejects.toThrow(/--repo/);
+  });
+
+  it("builds Hermes cron-specific mutation readiness plans", async () => {
+    const { temp, vaultRoot } = await preparedProject();
+    const authEvidence = path.join(temp, "hermes-auth.json");
+    await fs.writeFile(authEvidence, JSON.stringify({ hermes: "authenticated", scheduler: "reviewed" }));
+    const approval = await requestApproval({
+      project: "ariadne",
+      vaultRoot,
+      requestedBy: "planner",
+      target: "hermes-cron",
+      action: "Enable bounded Hermes cron mutation planning.",
+      risk: "medium",
+      reason: "Exercise target-specific Hermes cron mutation command capture.",
+      rollback: "Restore the previous scheduler definition.",
+      evidenceRefs: [authEvidence]
+    });
+    const approved = await decideApproval({
+      project: "ariadne",
+      vaultRoot,
+      approval: approval.record.id,
+      status: "approved",
+      decisionBy: "james",
+      decisionNotes: "Fixture Hermes approval."
+    });
+    const relativeAuthEvidence = path.join("control", "approvals", `${approval.record.id}.json`);
+
+    const plan = await planHermesCronMutation({
+      project: "ariadne",
+      vaultRoot,
+      action: "update",
+      job: "nightly-memory-review",
+      host: "beast",
+      scope: "Update the nightly memory review schedule after a reviewed proposal.",
+      authEvidenceRefs: [relativeAuthEvidence],
+      evidenceRefs: [approved.jsonPath],
+      dryRunCommand: "hermes cron get nightly-memory-review --host beast",
+      liveCommand: "hermes cron update nightly-memory-review --host beast --from reviewed-job.json",
+      postVerificationCommand: "hermes cron get nightly-memory-review --host beast",
+      rollback: "hermes cron update nightly-memory-review --host beast --from previous-job.json",
+      approvalRef: approval.record.id,
+      risk: "medium",
+      notes: "Fixture plan only; no scheduler command is executed."
+    });
+    expect(plan.plan.status).toBe("ready_for_bounded_review");
+    expect(plan.plan.target).toBe("hermes-cron");
+    expect(plan.plan.scope).toContain("hermes-cron/beast/update/nightly-memory-review");
+    expect(plan.plan.proposedLiveCommand).toContain("hermes cron update nightly-memory-review");
+    expect(plan.plan.requiredGates).toContain("scheduler auth, disable path, and next-run behavior verified");
+    expect(plan.plan.execute).toBe(false);
+
+    const defaultHostPlan = await planHermesCronMutation({
+      project: "ariadne",
+      vaultRoot,
+      action: "disable",
+      job: "stale sleep routine",
+      scope: "Disable stale scheduler entry after review.",
+      authEvidenceRefs: [relativeAuthEvidence],
+      evidenceRefs: [],
+      dryRunCommand: "hermes cron get 'stale sleep routine'",
+      liveCommand: "hermes cron disable 'stale sleep routine'",
+      postVerificationCommand: "hermes cron get 'stale sleep routine'",
+      rollback: "hermes cron enable 'stale sleep routine'",
+      approvalRef: approval.record.id,
+      risk: "low"
+    });
+    expect(defaultHostPlan.plan.scope).toContain("hermes-cron/default/disable/stale sleep routine");
+
+    await expect(
+      planHermesCronMutation({
+        project: "ariadne",
+        vaultRoot,
+        action: "run-now" as "create",
+        job: "nightly-memory-review",
+        scope: "Invalid scheduler action.",
+        authEvidenceRefs: [authEvidence],
+        evidenceRefs: [],
+        dryRunCommand: "hermes cron get nightly-memory-review",
+        liveCommand: "hermes cron run nightly-memory-review",
+        postVerificationCommand: "hermes cron get nightly-memory-review",
+        rollback: "hermes cron disable nightly-memory-review",
+        risk: "medium"
+      })
+    ).rejects.toThrow(/--action/);
+    await expect(
+      planHermesCronMutation({
+        project: "ariadne",
+        vaultRoot,
+        action: "enable",
+        job: "../nightly-memory-review",
+        scope: "Invalid scheduler job label.",
+        authEvidenceRefs: [authEvidence],
+        evidenceRefs: [],
+        dryRunCommand: "hermes cron get nightly-memory-review",
+        liveCommand: "hermes cron enable nightly-memory-review",
+        postVerificationCommand: "hermes cron get nightly-memory-review",
+        rollback: "hermes cron disable nightly-memory-review",
+        risk: "medium"
+      })
+    ).rejects.toThrow(/--job/);
   });
 
   it("builds deployment-specific mutation readiness plans", async () => {

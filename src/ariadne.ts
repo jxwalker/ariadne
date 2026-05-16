@@ -33,6 +33,7 @@ import { exportGsd2Bundle, importGsd2Bundle } from "./gsdAdapter.js";
 import { collectGsd2ProcessSnapshot } from "./gsdProcess.js";
 import { generateHealerProposal } from "./healerProposals.js";
 import { generateHermesCronProposal, importHermesCronSnapshot } from "./hermesCron.js";
+import { hermesCronMutationActionOption, planHermesCronMutation } from "./hermesMutation.js";
 import { generateInfrastructureRegistry } from "./infrastructure.js";
 import { draftOpenScorpionActivity, importInfraSnapshot } from "./infraSnapshot.js";
 import { collectLocalInfraSnapshot, collectSshInfraSnapshot } from "./liveInventory.js";
@@ -125,6 +126,7 @@ function usage(): string {
     "  ariadne agent-lease --project <project> --agent <agent> --resource <name> --status <status> [--task <id>] [--run <id>] [--notes <text>]",
     "  ariadne hermes-cron-import --project <project> --from <snapshot.json> [--host <id>]",
     "  ariadne hermes-cron-proposal --project <project> [--scope <name>]",
+    "  ariadne hermes-cron-mutation-plan --project <project> --action <create|update|enable|disable|delete> --job <id> --scope <text> --auth-evidence <paths> --dry-run <cmd> --live-command <cmd> --post-verify <cmd> --rollback <text> [--host <id>] [--approval <id|json>] [--risk <low|medium|high>] [--evidence <paths>] [--notes <text>]",
     "  ariadne deployment-snapshot --project <project> --from <snapshot.json> [--system <system>]",
     "  ariadne deployment-live-ssh --project <project> --system <proxmox|truenas|dgx-spark|mac> --host <id> --target <ssh-target> [--ssh-binary <path>] [--notes <text>]",
     "  ariadne deployment-mutation-plan --project <project> --system <proxmox|truenas|dgx-spark|mac> --host <id> --scope <text> --auth-evidence <paths> --dry-run <cmd> --live-command <cmd> --post-verify <cmd> --rollback <text> [--approval <id|json>] [--risk <low|medium|high>] [--evidence <paths>] [--notes <text>]",
@@ -648,6 +650,30 @@ async function main(): Promise<void> {
     console.log(`Snapshots: ${result.proposal.summary.snapshots}`);
     console.log(`Proposed actions: ${result.proposal.summary.proposedActions}`);
     console.log(`Mode: ${result.proposal.mode}`);
+    return;
+  }
+
+  if (parsed.command === "hermes-cron-mutation-plan") {
+    const result = await planHermesCronMutation({
+      project,
+      vaultRoot,
+      action: hermesCronMutationActionOption(requiredOption(parsed.options, "action")),
+      job: requiredOption(parsed.options, "job"),
+      host: optionString(parsed.options, "host", "") || undefined,
+      scope: requiredOption(parsed.options, "scope"),
+      authEvidenceRefs: splitList(requiredOption(parsed.options, "auth-evidence")),
+      evidenceRefs: splitList(optionString(parsed.options, "evidence", "")),
+      dryRunCommand: requiredOption(parsed.options, "dry-run"),
+      liveCommand: requiredOption(parsed.options, "live-command"),
+      postVerificationCommand: requiredOption(parsed.options, "post-verify"),
+      rollback: requiredOption(parsed.options, "rollback"),
+      approvalRef: optionString(parsed.options, "approval", "") || undefined,
+      risk: approvalRiskOption(parsed.options, "medium"),
+      notes: optionString(parsed.options, "notes", "") || undefined
+    });
+    console.log(`Hermes cron mutation plan: ${result.markdownPath}`);
+    console.log(`Status: ${result.plan.status}`);
+    console.log(`Execute: ${result.plan.execute}`);
     return;
   }
 

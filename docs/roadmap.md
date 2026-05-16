@@ -106,6 +106,7 @@ Implemented:
 - CodeRabbit feedback ingestion
 - GitHub PR/check snapshot ingestion
 - target-specific GitHub mutation-readiness plan generation for PR merges and workflow reruns
+- target-specific Hermes cron mutation-readiness plan generation for scheduler actions and jobs
 - target-specific deployment mutation-readiness plan generation for Proxmox, TrueNAS, DGX Spark, and Mac hosts
 - explicit approval workflow records
 - test history through check records
@@ -116,7 +117,7 @@ Implemented:
 
 Next:
 
-- target-specific Hermes, GSD2, NotebookLM, and OpenScorpion adapters on top of the generic audited execution substrate
+- target-specific GSD2, NotebookLM, and OpenScorpion adapters on top of the generic audited execution substrate
 
 ## Milestone 6: Infrastructure Substrate
 
@@ -189,10 +190,11 @@ Implemented:
 - optional GBrain read-only export and report import
 - read-only Hermes cron snapshot import
 - proposal-only Hermes cron recommendations from imported scheduler evidence
+- target-specific Hermes cron mutation-readiness plan generation
 
 Next:
 
-- live Hermes cron adapter only after scheduler authentication, rollback, and approval records are explicit
+- live Hermes cron adapter only after scheduler authentication, dry-run, rollback, post-verification, and approval records are explicit
 
 ## Milestone 10: Live Deployment Adapters
 

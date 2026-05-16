@@ -219,6 +219,14 @@ npm run ariadne -- hermes-cron-proposal --project ariadne --scope nightly
 
 These records are intentionally append-only and live under `vault/projects/ariadne/coordination/`. Hermes cron imports are read-only snapshots and proposals are review-only recommendations: Ariadne records what Hermes says is scheduled, but does not create, enable, disable, or run jobs.
 
+Plan a target-specific Hermes cron mutation without executing it:
+
+```bash
+npm run ariadne -- hermes-cron-mutation-plan --project ariadne --action update --job nightly-memory-review --host beast --scope "Update nightly memory review schedule" --auth-evidence control/approvals/approval-...json --dry-run "hermes cron get nightly-memory-review --host beast" --live-command "hermes cron update nightly-memory-review --host beast --from reviewed-job.json" --post-verify "hermes cron get nightly-memory-review --host beast" --rollback "hermes cron update nightly-memory-review --host beast --from previous-job.json" --approval approval-...
+```
+
+This writes a Hermes cron mutation-readiness plan for one scheduler action and job label. Supported actions are `create`, `update`, `enable`, `disable`, and `delete`; the command still writes `execute=false`.
+
 ## Import Deployment Evidence
 
 For Macs, DGX Spark, Proxmox, TrueNAS, GitHub, and generic estate snapshots:
@@ -282,6 +290,8 @@ npm run ariadne -- github-mutation-plan --project ariadne --repo jxwalker/ariadn
 This writes a GitHub mutation-readiness plan with the dry-run, live command, post-verification command, and rollback text already scoped to the requested PR or workflow run. It still does not execute; use `mutation-dry-run` and `mutation-execute` after audit approval.
 
 For deployment plans, prefer `deployment-mutation-plan` over the generic `mutation-readiness` command because it forces a supported estate system and host label into the reviewed scope.
+
+For Hermes scheduler plans, prefer `hermes-cron-mutation-plan` because it forces a supported scheduler action and job label into the reviewed scope.
 
 ## Request Mutation Approval
 
