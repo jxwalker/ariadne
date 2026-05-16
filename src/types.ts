@@ -336,10 +336,38 @@ export interface MutationReadinessPlan {
   evidenceRefs: string[];
   dryRunCommand: string;
   proposedLiveCommand: string;
+  postVerificationCommand?: string;
   rollback: string;
   requiredGates: string[];
   notes?: string;
   execute: false;
+}
+
+export interface MutationReadinessAudit {
+  schemaVersion: 1;
+  project: string;
+  generatedAt: string;
+  status: "empty" | "blocked" | "ready_for_bounded_review";
+  mutationAllowed: false;
+  summary: {
+    plans: number;
+    ready: number;
+    blocked: number;
+    approvalRequired: number;
+    approvalRejected: number;
+    missingEvidence: number;
+    unsafeDryRuns: number;
+    executablePlans: number;
+  };
+  checks: Array<{
+    planId: string;
+    target: MutationReadinessPlan["target"];
+    status: "passed" | "blocked";
+    blockers: string[];
+    warnings: string[];
+    evidenceRefs: string[];
+    requiredGates: string[];
+  }>;
 }
 
 export interface InfraRegistry {
@@ -873,6 +901,7 @@ export interface ConsoleData {
     approvals: number;
     pendingApprovals: number;
     mutationReadinessPlans: number;
+    mutationReadinessAuditStatus?: MutationReadinessAudit["status"];
     recoveryIssues: number;
     consoleBrowserChecks?: ConsoleBrowserCheckReport["status"];
     readinessStatus?: ControlReport["status"];
@@ -929,6 +958,7 @@ export interface ConsoleData {
   };
   approvals: ApprovalRecord[];
   mutationReadinessPlans: MutationReadinessPlan[];
+  mutationReadinessAudit?: MutationReadinessAudit;
   recovery?: RecoveryReport;
   readiness?: ControlReport;
   artifacts: {
@@ -948,6 +978,7 @@ export interface ConsoleData {
     githubSnapshots?: string;
     approvals?: string;
     mutationReadinessPlans?: string;
+    mutationReadinessAudit?: string;
     recoveryReport?: string;
     extractionResults?: string;
     healerProposals?: string;

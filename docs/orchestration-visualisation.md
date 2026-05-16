@@ -57,7 +57,7 @@ Nodes are Macs, DGX Spark, Proxmox, TrueNAS, runners, Hermes instances, and mode
 
 ### Approval Queue
 
-Pending review records, missing readiness gates, requested approvals, mutation-readiness blockers, and mutation blockers are grouped into one queue so the operator sees what requires human action.
+Pending review records, missing readiness gates, requested approvals, mutation-readiness blockers, audit blockers, and mutation blockers are grouped into one queue so the operator sees what requires human action.
 
 ### Memory And Mail
 

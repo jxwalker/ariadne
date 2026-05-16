@@ -221,6 +221,13 @@ const ARTIFACT_SPECS: ArtifactSpec[] = [
     minimumCount: 1
   },
   {
+    id: "mutation-readiness-audit",
+    label: "Mutation readiness audit",
+    required: false,
+    kind: "file",
+    relativePath: "control/mutation-readiness-audit.json"
+  },
+  {
     id: "extraction-results",
     label: "OCR/transcription extraction results",
     required: false,

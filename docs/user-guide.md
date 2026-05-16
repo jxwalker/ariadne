@@ -275,10 +275,18 @@ Approval records live under `vault/projects/ariadne/control/approvals/`. They ar
 Before implementing or enabling a live mutation adapter, record the bounded readiness plan:
 
 ```bash
-npm run ariadne -- mutation-readiness --project ariadne --target github --scope "Single PR merge adapter" --auth-evidence control/approvals/approval-...json --dry-run "gh pr view 1 --json statusCheckRollup" --live-command "gh pr merge 1 --squash" --rollback "Revert merge commit and disable adapter" --approval approval-...
+npm run ariadne -- mutation-readiness --project ariadne --target github --scope "Single PR merge adapter" --auth-evidence control/approvals/approval-...json --dry-run "gh pr view 1 --json statusCheckRollup" --live-command "gh pr merge 1 --squash" --post-verify "gh pr view 1 --json mergeStateStatus,statusCheckRollup" --rollback "Revert merge commit and disable adapter" --approval approval-...
 ```
 
-The readiness plan writes `execute=false`. It must cite auth evidence, a dry-run command, the proposed live command, rollback, approval state, and target-specific gates. It is still not permission to execute; it is the artifact reviewers use before a live adapter exists.
+The readiness plan writes `execute=false`. It must cite auth evidence, a dry-run command, the proposed live command, post-action verification, rollback, approval state, and target-specific gates. It is still not permission to execute; it is the artifact reviewers use before a live adapter exists.
+
+Audit the readiness queue before implementing a live adapter:
+
+```bash
+npm run ariadne -- mutation-readiness-audit --project ariadne
+```
+
+The audit reports blocked plans, missing evidence, unsafe dry-run commands, missing post-action verification, and accidental executable plans. It never runs the dry-run or live command.
 
 ## Check Readiness
 
