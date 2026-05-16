@@ -418,6 +418,33 @@ export interface MutationExecutionRecord {
   execute: true;
 }
 
+export interface LiveAdapterReadinessReport {
+  schemaVersion: 1;
+  project: string;
+  generatedAt: string;
+  status: "ready" | "blocked";
+  summary: {
+    targets: number;
+    ready: number;
+    blocked: number;
+    passedPlans: number;
+    passedDryRuns: number;
+    passedExecutions: number;
+  };
+  targets: Array<{
+    target: Exclude<MutationReadinessPlan["target"], "generic">;
+    status: "ready_for_adapter" | "blocked";
+    planCount: number;
+    passedPlanCount: number;
+    passedDryRunCount: number;
+    passedExecutionCount: number;
+    latestReadyPlanId?: string;
+    executeCommand: string;
+    blockers: string[];
+    evidenceRefs: string[];
+  }>;
+}
+
 export interface InfraRegistry {
   schemaVersion: 1;
   project: string;

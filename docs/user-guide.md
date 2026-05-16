@@ -379,6 +379,14 @@ npm run ariadne -- target-mutation-execute --project ariadne --target github --p
 
 This runs the same audited execution path, but first refuses target mismatches.
 
+Check whether each target is ready for a real live adapter:
+
+```bash
+npm run ariadne -- live-adapter-readiness --project ariadne
+```
+
+This report does not execute anything. It compares audit-passed plans with passed dry-run and target-guarded execution evidence, then lists the remaining blockers for GitHub, deployment, Hermes cron, OpenScorpion, GSD2, and NotebookLM.
+
 For live adapters, prefer the target-specific wrappers so the expected target is fixed by the command name:
 
 ```bash

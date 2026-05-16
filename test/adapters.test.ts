@@ -31,6 +31,7 @@ import { planHermesCronMutation } from "../src/hermesMutation.js";
 import { generateInfrastructureRegistry } from "../src/infrastructure.js";
 import { draftOpenScorpionActivity, importInfraSnapshot } from "../src/infraSnapshot.js";
 import { collectLocalInfraSnapshot, collectSshInfraSnapshot, parseSshInventory } from "../src/liveInventory.js";
+import { generateLiveAdapterReadiness } from "../src/liveAdapterReadiness.js";
 import { planMutationReadiness } from "../src/mutationReadiness.js";
 import { generateMutationReadinessAudit } from "../src/mutationReadinessAudit.js";
 import { runMutationDryRun } from "../src/mutationDryRun.js";
@@ -720,6 +721,16 @@ describe("roadmap adapters", () => {
         { cwd: process.cwd(), encoding: "utf8", stdio: ["ignore", "pipe", "pipe"] }
       )
     ).toThrow(/targets github, not deployment/);
+    const liveAdapterReadiness = await generateLiveAdapterReadiness({ project: "ariadne", vaultRoot });
+    expect(liveAdapterReadiness.report.status).toBe("blocked");
+    const githubReadiness = liveAdapterReadiness.report.targets.find((target) => target.target === "github");
+    const deploymentReadiness = liveAdapterReadiness.report.targets.find((target) => target.target === "deployment");
+    expect(githubReadiness?.status).toBe("ready_for_adapter");
+    expect(githubReadiness?.executeCommand).toBe("github-mutation-execute");
+    expect(githubReadiness?.passedDryRunCount).toBeGreaterThan(0);
+    expect(githubReadiness?.passedExecutionCount).toBeGreaterThan(0);
+    expect(deploymentReadiness?.status).toBe("blocked");
+    expect(deploymentReadiness?.blockers).toContain("no readiness plan passes audit");
     await expect(
       runMutationDryRun({
         project: "ariadne",
