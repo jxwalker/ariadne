@@ -3,6 +3,7 @@ import fs from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
 import { describe, expect, it } from "vitest";
+import { decideApproval, requestApproval } from "../src/approvals.js";
 import { generateArtifactCheckReport } from "../src/artifactChecks.js";
 import { generateBehaviorCheckReport } from "../src/behaviorChecks.js";
 import { materializeBenchmarkPack } from "../src/benchmarkPacks.js";
@@ -315,6 +316,35 @@ describe("roadmap adapters", () => {
     const coderabbit = path.join(temp, "coderabbit-approved.md");
     await fs.writeFile(coderabbit, "Approved\n\nNo issues found.\n");
     await importCodeRabbitReview({ project: "ariadne", vaultRoot, sourcePath: coderabbit });
+    const approval = await requestApproval({
+      project: "ariadne",
+      vaultRoot,
+      requestedBy: "planner",
+      target: "github",
+      action: "Enable mutation-capable PR adapter after review gates pass.",
+      risk: "medium",
+      reason: "Exercise the approval workflow without mutating GitHub.",
+      rollback: "Keep the adapter disabled and use manual PR commands.",
+      evidenceRefs: [coderabbit]
+    });
+    const decidedApproval = await decideApproval({
+      project: "ariadne",
+      vaultRoot,
+      approval: approval.record.id,
+      status: "approved",
+      decisionBy: "human",
+      decisionNotes: "Approved only as a recorded fixture; no live mutation is executed."
+    });
+    expect(decidedApproval.record.status).toBe("approved");
+    await expect(
+      decideApproval({
+        project: "ariadne",
+        vaultRoot,
+        approval: approval.record.id,
+        status: "rejected",
+        decisionBy: "human"
+      })
+    ).rejects.toThrow(/Only requested approvals can be decided/);
     const behavior = await generateBehaviorCheckReport({
       project: "ariadne",
       vaultRoot,
@@ -383,6 +413,7 @@ describe("roadmap adapters", () => {
     expect(console.data.summary.agentMail).toBe(1);
     expect(console.data.summary.agentLeases).toBe(1);
     expect(console.data.summary.deploymentSnapshots).toBe(1);
+    expect(console.data.summary.approvals).toBe(1);
     expect(console.data.behaviorChecks?.status).toBe("passed");
   });
 

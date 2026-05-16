@@ -29,6 +29,7 @@ npm run build
 - `src/worktreeGuard.ts`: git readiness checks and optional guarded worktree creation.
 - `src/playwrightPlan.ts` and `src/playwrightEvidence.ts`: UI verification planning and evidence.
 - `src/controlPlane.ts`: checks, reviews, merge readiness.
+- `src/approvals.ts`: explicit approval requests and decisions for mutation-capable adapters.
 - `src/recovery.ts`: crash recovery reports from recorded vault state.
 - `src/consoleData.ts`: normalised read-only console projection.
 - `src/consoleHtml.ts`: static console renderer over console data.
@@ -92,3 +93,5 @@ A live adapter must start read-only. Mutation requires a separate approved plan 
 - rollback path
 - evidence to capture before and after
 - human approval checkpoint
+
+Use `approval-request` and `approval-decision` to capture that checkpoint before adding a mutation-capable command. The approval record does not grant execution by itself; the adapter still needs its own narrow implementation, tests, rollback notes, and review.

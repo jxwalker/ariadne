@@ -154,6 +154,24 @@ export interface ReviewRecord {
   evidence?: string;
 }
 
+export interface ApprovalRecord {
+  schemaVersion: 1;
+  id: string;
+  project: string;
+  requestedAt: string;
+  decidedAt?: string;
+  requestedBy: string;
+  target: string;
+  action: string;
+  risk: "low" | "medium" | "high";
+  status: "requested" | "approved" | "rejected" | "expired";
+  reason: string;
+  rollback: string;
+  evidenceRefs: string[];
+  decisionBy?: string;
+  decisionNotes?: string;
+}
+
 export interface SecretFinding {
   kind: string;
   severity: "low" | "medium" | "high";
@@ -689,6 +707,8 @@ export interface ConsoleData {
     agentLeases: number;
     deploymentSnapshots: number;
     githubSnapshots: number;
+    approvals: number;
+    pendingApprovals: number;
     recoveryIssues: number;
     consoleBrowserChecks?: ConsoleBrowserCheckReport["status"];
     readinessStatus?: ControlReport["status"];
@@ -738,6 +758,7 @@ export interface ConsoleData {
   github: {
     snapshots: GithubSnapshot[];
   };
+  approvals: ApprovalRecord[];
   recovery?: RecoveryReport;
   readiness?: ControlReport;
   artifacts: {
@@ -754,6 +775,7 @@ export interface ConsoleData {
     consoleVisualChecks?: string;
     consoleBrowserChecks?: string;
     githubSnapshots?: string;
+    approvals?: string;
     recoveryReport?: string;
   };
 }

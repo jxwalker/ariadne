@@ -70,10 +70,11 @@ Implemented:
 - guarded worktree readiness checks
 - read-only GitHub PR/check snapshot records
 - crash recovery reports from recorded state files
+- explicit approval request and decision records before mutation-capable adapters
 
 Next:
 
-- mutation-capable commit/PR/check/review loop after explicit approval
+- mutation-capable commit/PR/check/review loop after an approval record is reviewed and accepted
 
 ## Milestone 4: UI Verification
 
@@ -104,6 +105,7 @@ Implemented:
 - CI status ingestion
 - CodeRabbit feedback ingestion
 - GitHub PR/check snapshot ingestion
+- explicit approval workflow records
 - test history through check records
 
 Next:
@@ -122,12 +124,13 @@ Implemented:
 - explicit no-mutation rules
 - read-only infrastructure snapshot imports
 - OpenScorpion governed activity drafts
+- explicit approval records before mutation-capable adapters
 
 Next:
 
 - live read-only infrastructure inventory from approved hosts
 - OpenScorpion governed activity submission after approval
-- explicit approval before any mutation
+- mutation implementation only after a bounded approval record is accepted
 
 ## Milestone 7: Evaluation Harness
 
@@ -191,8 +194,9 @@ Implemented:
 - DGX Spark model/evaluation endpoint snapshot import
 - Mac workstation capability snapshot import
 - GitHub deployment/check snapshot import
+- explicit approval workflow before mutation-capable adapters
 
 Next:
 
 - live read-only inventory collectors for approved hosts
-- explicit approval workflow before any mutation-capable adapter
+- mutation-capable deployment adapters only after approved rollback plans

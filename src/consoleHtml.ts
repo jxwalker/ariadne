@@ -104,6 +104,7 @@ function renderConsole(data: ConsoleData): string {
     metric("Runs", data.summary.executionRuns),
     metric("Checks", data.summary.checks, failedChecks > 0 ? `${failedChecks} failed` : "recorded"),
     metric("GitHub", data.summary.githubSnapshots, "snapshots"),
+    metric("Approvals", data.summary.pendingApprovals, `${data.summary.approvals} total`),
     metric("Recovery", data.summary.recoveryIssues, "issues"),
     metric("Browser", data.summary.consoleBrowserChecks ?? "none", "console"),
     metric(
@@ -258,6 +259,7 @@ function evidenceChain(data: ConsoleData): string {
     ["Reviews", data.summary.reviews],
     ["Decisions", data.summary.decisions],
     ["GitHub snapshots", data.summary.githubSnapshots],
+    ["Pending approvals", data.summary.pendingApprovals],
     ["Recovery issues", data.summary.recoveryIssues],
     ["Browser checks", data.summary.consoleBrowserChecks ?? "none"],
     ["GBrain reports", data.gbrain?.reports.length ?? 0]
@@ -297,9 +299,14 @@ function browserChecks(data: ConsoleData): string {
 function approvalQueue(data: ConsoleData): string {
   const missing = data.readiness?.missing ?? [];
   const pendingReviews = data.reviews.filter((review) => review.status === "pending" || review.status === "changes_requested");
+  const pendingApprovals = data.approvals.filter((approval) => approval.status === "requested");
   const rows = [
     ...missing.map((item) => ({ kind: "missing gate", detail: item })),
-    ...pendingReviews.map((review) => ({ kind: review.status, detail: `${review.source}: ${review.summary}` }))
+    ...pendingReviews.map((review) => ({ kind: review.status, detail: `${review.source}: ${review.summary}` })),
+    ...pendingApprovals.map((approval) => ({
+      kind: `approval ${approval.risk}`,
+      detail: `${approval.target}: ${approval.action}`
+    }))
   ];
   if (rows.length === 0) return empty("No approval queue items are available.");
   return [

@@ -149,6 +149,16 @@ const ARTIFACT_SPECS: ArtifactSpec[] = [
     minimumCount: 1
   },
   {
+    id: "approval-records",
+    label: "Mutation approval records",
+    required: false,
+    kind: "matching-files",
+    relativePath: "control/approvals",
+    prefix: "approval-",
+    suffix: ".json",
+    minimumCount: 1
+  },
+  {
     id: "coordination-records",
     label: "Sleep, memory, or mail records",
     required: false,

@@ -1,10 +1,10 @@
 {
   "schemaVersion": 1,
   "project": "ariadne",
-  "generatedAt": "2026-05-16T11:45:58.842Z",
+  "generatedAt": "2026-05-16T13:21:46.264Z",
   "status": "passed",
   "summary": {
-    "passed": 5,
+    "passed": 6,
     "warnings": 0,
     "failed": 0
   },
@@ -29,6 +29,15 @@
         "run-2026-05-16T11-30-01-596Z"
       ],
       "notes": "Execution runs include explicit human approval gates before external mutation."
+    },
+    {
+      "id": "approval-workflow-records",
+      "label": "Mutation approval workflow records",
+      "status": "passed",
+      "evidence": [
+        "approval-2026-05-16T13-21-33-834Z"
+      ],
+      "notes": "1 approval workflow record(s) are present."
     },
     {
       "id": "infra-read-only",

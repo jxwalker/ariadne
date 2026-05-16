@@ -7,6 +7,7 @@ import type {
   CheckRecord,
   AgentLeaseRecord,
   AgentMailRecord,
+  ApprovalRecord,
   BehaviorCheckReport,
   ConsoleVisualCheckReport,
   ControlReport,
@@ -70,6 +71,7 @@ export async function collectConsoleData(vaultRoot: string, projectInput: string
   const gbrainExport = await readProjectJson<GbrainExportBundle>(vaultRoot, project, "integrations/gbrain", "gbrain-export.json");
   const checks = await readJsonl<CheckRecord>(path.join(dir, "control", "check-history.jsonl"));
   const reviews = await readJsonl<ReviewRecord>(path.join(dir, "control", "reviews.jsonl"));
+  const approvals = await readJsonFiles<ApprovalRecord>(path.join(dir, "control", "approvals"), isApprovalRecord);
   const executionRuns = await readJsonFiles<ExecutionRun>(path.join(dir, "execution"), isExecutionRun);
   const decisions = await readJsonFiles<DecisionRecord>(path.join(dir, "decisions"), isDecisionRecord);
   const playwrightEvidence = await readJsonFiles<PlaywrightEvidenceRecord>(
@@ -130,6 +132,8 @@ export async function collectConsoleData(vaultRoot: string, projectInput: string
       agentLeases: agentLeases.length,
       deploymentSnapshots: deploymentSnapshots.length,
       githubSnapshots: githubSnapshots.length,
+      approvals: approvals.length,
+      pendingApprovals: approvals.filter((approval) => approval.status === "requested").length,
       recoveryIssues: recovery?.issues.length ?? 0,
       consoleBrowserChecks: consoleBrowserChecks?.status,
       readinessStatus: readiness?.status,
@@ -142,6 +146,7 @@ export async function collectConsoleData(vaultRoot: string, projectInput: string
     executionRuns,
     checks,
     reviews,
+    approvals,
     decisions,
     playwrightEvidence,
     evaluations,
@@ -185,6 +190,7 @@ export async function collectConsoleData(vaultRoot: string, projectInput: string
       consoleVisualChecks: await existingPath(vaultRoot, path.join(dir, "console", "visual-checks.json")),
       consoleBrowserChecks: await existingPath(vaultRoot, path.join(dir, "console", "browser-checks.json")),
       githubSnapshots: await existingPath(vaultRoot, path.join(dir, "integrations", "github")),
+      approvals: await existingPath(vaultRoot, path.join(dir, "control", "approvals")),
       recoveryReport: await existingPath(vaultRoot, path.join(dir, "control", "recovery-report.json"))
     }
   };
@@ -314,6 +320,10 @@ function isGbrainReport(value: unknown): value is GbrainReportImport {
 
 function isGithubSnapshot(value: unknown): value is GithubSnapshot {
   return hasSchema(value) && value.schemaVersion === 1 && value.mode === "read_only" && "pullRequests" in value;
+}
+
+function isApprovalRecord(value: unknown): value is ApprovalRecord {
+  return hasSchema(value) && value.schemaVersion === 1 && typeof value.id === "string" && value.id.startsWith("approval-");
 }
 
 function isSleepRoutine(value: unknown): value is SleepRoutineRecord {

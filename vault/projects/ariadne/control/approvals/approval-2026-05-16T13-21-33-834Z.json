@@ -1,0 +1,17 @@
+{
+  "schemaVersion": 1,
+  "id": "approval-2026-05-16T13-21-33-834Z",
+  "project": "ariadne",
+  "requestedAt": "2026-05-16T13:21:33.834Z",
+  "requestedBy": "planner",
+  "target": "github",
+  "action": "Enable mutation-capable PR adapter for a bounded test only after review gates pass.",
+  "risk": "medium",
+  "status": "requested",
+  "reason": "Roadmap requires an explicit approval workflow before any mutation-capable adapter is enabled.",
+  "rollback": "Keep live mutation disabled and continue using manual gh commands plus read-only snapshots.",
+  "evidenceRefs": [
+    "docs/roadmap.md",
+    "docs/developer-guide.md"
+  ]
+}

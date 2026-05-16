@@ -2,7 +2,14 @@ import fs from "node:fs/promises";
 import path from "node:path";
 import { writeJsonArtifact, writeTextArtifact } from "./artifacts.js";
 import { projectDir, slugifyProject } from "./paths.js";
-import type { BehaviorCheckReport, ExecutionRun, InfraSnapshot, OpenScorpionActivityDraft, ReviewRecord } from "./types.js";
+import type {
+  ApprovalRecord,
+  BehaviorCheckReport,
+  ExecutionRun,
+  InfraSnapshot,
+  OpenScorpionActivityDraft,
+  ReviewRecord
+} from "./types.js";
 
 type CheckStatus = BehaviorCheckReport["checks"][number]["status"];
 
@@ -14,6 +21,7 @@ export async function generateBehaviorCheckReport(input: {
   const project = slugifyProject(input.project);
   const dir = projectDir(input.vaultRoot, project);
   const reviews = await readJsonl<ReviewRecord>(path.join(dir, "control", "reviews.jsonl"));
+  const approvals = await readJsonFiles<ApprovalRecord>(path.join(dir, "control", "approvals"), isApprovalRecord);
   const executionRuns = await readJsonFiles<ExecutionRun>(path.join(dir, "execution"), isExecutionRun);
   const infraSnapshots = await readJsonFiles<InfraSnapshot>(path.join(dir, "infrastructure"), isInfraSnapshot);
   const activityDrafts = await readJsonFiles<OpenScorpionActivityDraft>(
@@ -26,6 +34,7 @@ export async function generateBehaviorCheckReport(input: {
   const checks: BehaviorCheckReport["checks"] = [
     approvedFixtureCheck(reviews, approvedFixture),
     executionGateCheck(executionRuns),
+    approvalWorkflowCheck(approvals),
     infraReadOnlyCheck(infraSnapshots),
     openScorpionDraftCheck(activityDrafts),
     worktreeGuard
@@ -95,6 +104,19 @@ function executionGateCheck(executionRuns: ExecutionRun[]): BehaviorCheckReport[
       missing.length === 0
         ? "Execution runs include explicit human approval gates before external mutation."
         : `${missing.length} execution run(s) lack an explicit human approval gate.`
+  };
+}
+
+function approvalWorkflowCheck(approvals: ApprovalRecord[]): BehaviorCheckReport["checks"][number] {
+  return {
+    id: "approval-workflow-records",
+    label: "Mutation approval workflow records",
+    status: approvals.length > 0 ? "passed" : "warning",
+    evidence: approvals.map((approval) => approval.id),
+    notes:
+      approvals.length > 0
+        ? `${approvals.length} approval workflow record(s) are present.`
+        : "No explicit approval request records exist yet for mutation-capable adapters."
   };
 }
 
@@ -212,6 +234,10 @@ function hasSchema(value: unknown): value is Record<string, unknown> {
 
 function isExecutionRun(value: unknown): value is ExecutionRun {
   return hasSchema(value) && value.schemaVersion === 1 && Array.isArray(value.taskIds);
+}
+
+function isApprovalRecord(value: unknown): value is ApprovalRecord {
+  return hasSchema(value) && value.schemaVersion === 1 && typeof value.id === "string" && value.id.startsWith("approval-");
 }
 
 function isInfraSnapshot(value: unknown): value is InfraSnapshot {

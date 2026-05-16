@@ -66,6 +66,20 @@ Artifacts:
 - `control/recovery-report.json`
 - `control/recovery-report.md`
 
+## Approval Workflow
+
+`approval-request` records an explicit human approval request before any mutation-capable adapter can be enabled. `approval-decision` records the decision. These commands only write evidence; they do not execute the requested action.
+
+```bash
+npm run cli -- approval-request --project ariadne --by planner --target github --action "Enable PR mutation adapter" --risk medium --reason "Manual gate before live mutation" --rollback "Disable adapter and return to manual PR flow"
+npm run cli -- approval-decision --project ariadne --approval approval-... --status approved --by james --notes "Approved for a bounded test only."
+```
+
+Artifacts:
+
+- `control/approvals/approval-<timestamp>.json`
+- `control/approvals/approval-<timestamp>.md`
+
 ## Evaluation
 
 `evaluation` creates a project evaluation plan with dimensions for evidence fidelity, planning quality, execution safety, verification strength, and operational fit. `evaluation-record` stores scored run evidence so the pipeline can be compared across machines and over time.
@@ -80,6 +94,7 @@ Artifacts:
 
 - approved review fixtures,
 - explicit human-approval gates before mutation,
+- approval workflow records for mutation-capable adapters,
 - read-only infrastructure snapshot modes,
 - non-submitting OpenScorpion activity drafts,
 - worktree guard records.
