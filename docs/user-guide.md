@@ -371,6 +371,14 @@ npm run ariadne -- mutation-execute --project ariadne --plan mutation-readiness-
 
 The confirmation value must exactly match the plan id. The command refuses plans without a passing audit or a passed dry-run record. It runs the proposed live command, then the post-action verification command, and writes the full evidence under `control/mutation-executions/`.
 
+When the operator wants an explicit target guard, use:
+
+```bash
+npm run ariadne -- target-mutation-execute --project ariadne --target github --plan mutation-readiness-github-... --confirm-plan mutation-readiness-github-...
+```
+
+This runs the same audited execution path, but first refuses target mismatches.
+
 ## Check Readiness
 
 ```bash

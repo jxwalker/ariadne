@@ -50,6 +50,7 @@ npm run build
 - `src/mutationCommand.ts`: shared shell-command execution helper for audited mutation flows.
 - `src/mutationDryRun.ts`: guarded execution of approved mutation-readiness dry-run commands.
 - `src/mutationExecute.ts`: guarded execution of confirmed live commands plus post-action verification.
+- `src/targetMutationExecute.ts`: target guard around mutation execution for live adapter entrypoints.
 - `src/gbrainAdapter.ts`: optional read-only GBrain export and report import.
 - `src/githubAdapter.ts`: read-only GitHub PR and check snapshot import or `gh` collection.
 - `src/githubMutation.ts`: target-specific GitHub mutation-readiness plan generation for PR merges and workflow reruns.

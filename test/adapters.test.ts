@@ -45,6 +45,7 @@ import { recordPlaywrightEvidence } from "../src/playwrightEvidence.js";
 import { generatePrd } from "../src/prd.js";
 import { generateRecoveryReport } from "../src/recovery.js";
 import { captureTargetAppEvidence } from "../src/targetAppCapture.js";
+import { runTargetMutationExecution } from "../src/targetMutationExecute.js";
 import { generateUsageMetricsReport, importUsageMetrics } from "../src/usageMetrics.js";
 import { guardWorktrees } from "../src/worktreeGuard.js";
 import { assembleDossier, ingestFiles } from "../src/vault.js";
@@ -649,6 +650,27 @@ describe("roadmap adapters", () => {
     expect(mutationExecution.record.execute).toBe(true);
     expect(mutationExecution.record.liveStdout).toContain("live command ok");
     expect(mutationExecution.record.postVerificationStdout).toContain("post verify ok");
+    await expect(
+      runTargetMutationExecution({
+        project: "ariadne",
+        vaultRoot,
+        target: "github",
+        plan: mismatchedMutationReadiness.plan.id,
+        confirmPlan: mismatchedMutationReadiness.plan.id,
+        timeoutMs: 10_000
+      })
+    ).rejects.toThrow(/targets deployment, not github/);
+    const targetMutationExecution = await runTargetMutationExecution({
+      project: "ariadne",
+      vaultRoot,
+      target: "github",
+      plan: mutationReadiness.plan.id,
+      confirmPlan: mutationReadiness.plan.id,
+      timeoutMs: 10_000
+    });
+    expect(targetMutationExecution.record.status).toBe("passed");
+    expect(targetMutationExecution.record.target).toBe("github");
+    expect(targetMutationExecution.record.execute).toBe(true);
     await expect(
       runMutationDryRun({
         project: "ariadne",
