@@ -31,10 +31,11 @@ Implemented:
 - source reference map
 - ambiguity log
 - NotebookLM manual export normaliser
+- target-specific NotebookLM mutation-readiness plan generation for notebook actions
 
 Next:
 
-- NotebookLM automation adapter only after authentication and safety are explicit
+- live NotebookLM automation adapter only after authentication, terms, export stability, dry-run, rollback, and approval records are explicit
 
 ## Milestone 2: GSD2 Bridge
 
@@ -107,6 +108,7 @@ Implemented:
 - CodeRabbit feedback ingestion
 - GitHub PR/check snapshot ingestion
 - target-specific GitHub mutation-readiness plan generation for PR merges and workflow reruns
+- target-specific NotebookLM mutation-readiness plan generation for notebook actions
 - target-specific GSD2 mutation-readiness plan generation for reviewed task execution
 - target-specific Hermes cron mutation-readiness plan generation for scheduler actions and jobs
 - target-specific deployment mutation-readiness plan generation for Proxmox, TrueNAS, DGX Spark, and Mac hosts
@@ -119,7 +121,7 @@ Implemented:
 
 Next:
 
-- target-specific NotebookLM and OpenScorpion adapters on top of the generic audited execution substrate
+- target-specific OpenScorpion adapter on top of the generic audited execution substrate
 
 ## Milestone 6: Infrastructure Substrate
 

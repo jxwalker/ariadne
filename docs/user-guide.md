@@ -64,6 +64,14 @@ npm run ariadne -- notebooklm-import --project ariadne --from notebooklm-export.
 
 Do not paste untracked conclusions into the plan. Preserve the source export and let the vault reference it.
 
+Plan a target-specific NotebookLM mutation without calling NotebookLM:
+
+```bash
+npm run ariadne -- notebooklm-mutation-plan --project ariadne --notebook "Ariadne Sources" --action export-notes --scope "Export reviewed NotebookLM notes" --auth-evidence control/approvals/approval-...json --dry-run "notebooklmctl notebook show 'Ariadne Sources'" --live-command "notebooklmctl notebook export-notes 'Ariadne Sources' --output notebooklm-export.md" --post-verify "test -s notebooklm-export.md" --rollback "Remove generated export and return to manual import" --approval approval-...
+```
+
+This writes a NotebookLM mutation-readiness plan for one notebook and action. Supported actions are `create-source`, `refresh-source`, `generate-summary`, and `export-notes`; the command still writes `execute=false`.
+
 ## Import OCR, Transcription, Or Drawing Descriptions
 
 When `ingest` creates a handoff for an image, audio file, or PDF, first record the selected tool and host placement:
@@ -302,6 +310,8 @@ For deployment plans, prefer `deployment-mutation-plan` over the generic `mutati
 For Hermes scheduler plans, prefer `hermes-cron-mutation-plan` because it forces a supported scheduler action and job label into the reviewed scope.
 
 For GSD2 plans, prefer `gsd2-mutation-plan` because it forces the task id, package, and execution mode into the reviewed scope.
+
+For NotebookLM plans, prefer `notebooklm-mutation-plan` because it forces the notebook label and supported action into the reviewed scope.
 
 ## Request Mutation Approval
 

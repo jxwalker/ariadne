@@ -39,6 +39,7 @@ import { generatePlaywrightPlan } from "../src/playwrightPlan.js";
 import { generateEvaluationPlan, recordEvaluationRun } from "../src/evaluation.js";
 import { generateEvaluationTrendReport } from "../src/evaluationTrends.js";
 import { importNotebookLmExport } from "../src/notebooklm.js";
+import { planNotebookLmMutation } from "../src/notebookLmMutation.js";
 import { recordPlaywrightEvidence } from "../src/playwrightEvidence.js";
 import { generatePrd } from "../src/prd.js";
 import { generateRecoveryReport } from "../src/recovery.js";
@@ -1361,6 +1362,88 @@ describe("roadmap adapters", () => {
         risk: "medium"
       })
     ).rejects.toThrow(/--task/);
+  });
+
+  it("builds NotebookLM-specific mutation readiness plans", async () => {
+    const { temp, vaultRoot } = await preparedProject();
+    const authEvidence = path.join(temp, "notebooklm-auth.json");
+    await fs.writeFile(authEvidence, JSON.stringify({ notebooklm: "browser session reviewed", terms: "accepted" }));
+    const approval = await requestApproval({
+      project: "ariadne",
+      vaultRoot,
+      requestedBy: "planner",
+      target: "notebooklm",
+      action: "Enable bounded NotebookLM export planning.",
+      risk: "medium",
+      reason: "Exercise target-specific NotebookLM mutation command capture.",
+      rollback: "Remove generated export and return to manual import.",
+      evidenceRefs: [authEvidence]
+    });
+    const approved = await decideApproval({
+      project: "ariadne",
+      vaultRoot,
+      approval: approval.record.id,
+      status: "approved",
+      decisionBy: "james",
+      decisionNotes: "Fixture NotebookLM approval."
+    });
+    const relativeAuthEvidence = path.join("control", "approvals", `${approval.record.id}.json`);
+
+    const plan = await planNotebookLmMutation({
+      project: "ariadne",
+      vaultRoot,
+      notebook: "Ariadne Sources",
+      action: "export-notes",
+      scope: "Export reviewed NotebookLM notes for Ariadne source grounding.",
+      authEvidenceRefs: [relativeAuthEvidence],
+      evidenceRefs: [approved.jsonPath],
+      dryRunCommand: "notebooklmctl notebook show 'Ariadne Sources'",
+      liveCommand: "notebooklmctl notebook export-notes 'Ariadne Sources' --output notebooklm-export.md",
+      postVerificationCommand: "test -s notebooklm-export.md",
+      rollback: "rm -f notebooklm-export.md and keep manual export flow.",
+      approvalRef: approval.record.id,
+      risk: "medium",
+      notes: "Fixture plan only; NotebookLM is not called."
+    });
+    expect(plan.plan.status).toBe("ready_for_bounded_review");
+    expect(plan.plan.target).toBe("notebooklm");
+    expect(plan.plan.scope).toContain("notebooklm/export-notes/Ariadne Sources");
+    expect(plan.plan.proposedLiveCommand).toContain("notebooklmctl notebook export-notes");
+    expect(plan.plan.requiredGates).toContain("NotebookLM auth, terms, and export stability verified");
+    expect(plan.plan.execute).toBe(false);
+
+    await expect(
+      planNotebookLmMutation({
+        project: "ariadne",
+        vaultRoot,
+        notebook: "Ariadne Sources",
+        action: "share-public" as "export-notes",
+        scope: "Invalid NotebookLM action.",
+        authEvidenceRefs: [authEvidence],
+        evidenceRefs: [],
+        dryRunCommand: "notebooklmctl notebook show 'Ariadne Sources'",
+        liveCommand: "notebooklmctl notebook share-public 'Ariadne Sources'",
+        postVerificationCommand: "notebooklmctl notebook show 'Ariadne Sources'",
+        rollback: "Disable public share.",
+        risk: "medium"
+      })
+    ).rejects.toThrow(/--action/);
+    await expect(
+      planNotebookLmMutation({
+        project: "ariadne",
+        vaultRoot,
+        notebook: "../Ariadne Sources",
+        action: "refresh-source",
+        scope: "Invalid NotebookLM notebook label.",
+        authEvidenceRefs: [authEvidence],
+        evidenceRefs: [],
+        dryRunCommand: "notebooklmctl notebook show 'Ariadne Sources'",
+        liveCommand: "notebooklmctl notebook refresh-source 'Ariadne Sources'",
+        postVerificationCommand: "notebooklmctl notebook show 'Ariadne Sources'",
+        rollback: "Restore previous source export.",
+        risk: "medium"
+      })
+    ).rejects.toThrow(/--notebook/);
   });
 
   it("builds deployment-specific mutation readiness plans", async () => {
