@@ -105,6 +105,7 @@ Implemented:
 - CI status ingestion
 - CodeRabbit feedback ingestion
 - GitHub PR/check snapshot ingestion
+- target-specific GitHub mutation-readiness plan generation for PR merges and workflow reruns
 - explicit approval workflow records
 - test history through check records
 - mutation-readiness artifacts for future live adapters
@@ -114,7 +115,7 @@ Implemented:
 
 Next:
 
-- target-specific GitHub, deployment, Hermes, GSD2, NotebookLM, and OpenScorpion adapters on top of the generic audited execution substrate
+- target-specific deployment, Hermes, GSD2, NotebookLM, and OpenScorpion adapters on top of the generic audited execution substrate
 
 ## Milestone 6: Infrastructure Substrate
 

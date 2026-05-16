@@ -26,6 +26,7 @@ import { importExtractionResult } from "./extractionResults.js";
 import { extractionRunnerOption, planExtractionRunner } from "./extractionRunnerPlan.js";
 import { exportGbrainBundle, importGbrainReport } from "./gbrainAdapter.js";
 import { collectGithubSnapshot, importGithubSnapshot } from "./githubAdapter.js";
+import { githubMutationActionOption, planGithubMutation } from "./githubMutation.js";
 import { generateGsd } from "./gsd.js";
 import { exportGsd2Bundle, importGsd2Bundle } from "./gsdAdapter.js";
 import { collectGsd2ProcessSnapshot } from "./gsdProcess.js";
@@ -116,6 +117,7 @@ function usage(): string {
     "  ariadne gbrain-export --project <project>",
     "  ariadne gbrain-report-import --project <project> --from <report.json>",
     "  ariadne github-snapshot --project <project> (--from <snapshot.json> | --repo <owner/name> [--pr <number>] [--limit <number>])",
+    "  ariadne github-mutation-plan --project <project> --repo <owner/name> --action <merge-pr|rerun-failed-run> [--pr <number>] [--run-id <id>] --auth-evidence <paths> [--approval <id|json>] [--risk <low|medium|high>] [--evidence <paths>] [--notes <text>]",
     "  ariadne sleep-record --project <project> --scope <scope> --summary <text> [--evidence <paths>] [--next <items>]",
     "  ariadne memory-proposal --project <project> --title <title> --proposal <text> [--evidence <paths>]",
     "  ariadne agent-mail --project <project> --from <agent> --to <agent> --subject <text> --body <text> [--task <id>] [--run <id>]",
@@ -542,6 +544,26 @@ async function main(): Promise<void> {
     console.log(`GitHub snapshot: ${result.markdownPath}`);
     console.log(`Pull requests: ${result.snapshot.summary.pullRequests}`);
     console.log(`Checks: ${result.snapshot.summary.checks}`);
+    return;
+  }
+
+  if (parsed.command === "github-mutation-plan") {
+    const result = await planGithubMutation({
+      project,
+      vaultRoot,
+      repository: requiredOption(parsed.options, "repo"),
+      action: githubMutationActionOption(requiredOption(parsed.options, "action")),
+      pullRequest: optionalNumber(parsed.options, "pr"),
+      runId: optionString(parsed.options, "run-id", "") || undefined,
+      authEvidenceRefs: splitList(requiredOption(parsed.options, "auth-evidence")),
+      evidenceRefs: splitList(optionString(parsed.options, "evidence", "")),
+      approvalRef: optionString(parsed.options, "approval", "") || undefined,
+      risk: approvalRiskOption(parsed.options, "medium"),
+      notes: optionString(parsed.options, "notes", "") || undefined
+    });
+    console.log(`GitHub mutation plan: ${result.markdownPath}`);
+    console.log(`Status: ${result.plan.status}`);
+    console.log(`Execute: ${result.plan.execute}`);
     return;
   }
 

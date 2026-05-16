@@ -117,10 +117,24 @@ npm run ariadne -- github-snapshot --project ariadne --repo jxwalker/ariadne --p
 
 The live mode only runs read operations through `gh pr view` or `gh pr list`. It does not create branches, update PRs, approve reviews, retry checks, or merge.
 
-Artifacts:
+`github-mutation-plan` is the target-specific GitHub bridge on top of the generic mutation readiness substrate. It does not run GitHub mutations. It creates a reviewed readiness plan for either a squash PR merge or a failed workflow-run rerun, with dry-run, live, post-verification, and rollback commands prefilled:
+
+```bash
+npm run ariadne -- github-mutation-plan --project ariadne --repo jxwalker/ariadne --action merge-pr --pr 29 --auth-evidence control/approvals/approval-...json --approval approval-...
+npm run ariadne -- github-mutation-plan --project ariadne --repo jxwalker/ariadne --action rerun-failed-run --run-id 123456789 --auth-evidence control/approvals/approval-...json --approval approval-...
+```
+
+Execution still goes through `mutation-dry-run` and `mutation-execute`.
+
+`github-snapshot` artifacts:
 
 - `integrations/github/github-snapshot-<timestamp>.json`
 - `integrations/github/github-snapshot-<timestamp>.md`
+
+`github-mutation-plan` artifacts:
+
+- `control/mutation-readiness/mutation-readiness-github-<timestamp>.json`
+- `control/mutation-readiness/mutation-readiness-github-<timestamp>.md`
 
 ## Recovery
 

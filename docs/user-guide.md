@@ -264,6 +264,15 @@ npm run ariadne -- github-snapshot --project ariadne --repo jxwalker/ariadne --p
 
 The `--from` path is deterministic and works with saved fixtures. The `--repo` path uses the local `gh` CLI in read-only mode. The adapter records PR state, draft status, review decision, and check rollup summaries under `vault/projects/ariadne/integrations/github/`.
 
+Plan a target-specific GitHub mutation without executing it:
+
+```bash
+npm run ariadne -- github-mutation-plan --project ariadne --repo jxwalker/ariadne --action merge-pr --pr 29 --auth-evidence control/approvals/approval-...json --approval approval-...
+npm run ariadne -- github-mutation-plan --project ariadne --repo jxwalker/ariadne --action rerun-failed-run --run-id 123456789 --auth-evidence control/approvals/approval-...json --approval approval-...
+```
+
+This writes a GitHub mutation-readiness plan with the dry-run, live command, post-verification command, and rollback text already scoped to the requested PR or workflow run. It still does not execute; use `mutation-dry-run` and `mutation-execute` after audit approval.
+
 ## Request Mutation Approval
 
 Before enabling any mutation-capable adapter, record the request:

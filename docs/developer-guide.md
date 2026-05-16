@@ -52,6 +52,7 @@ npm run build
 - `src/mutationExecute.ts`: guarded execution of confirmed live commands plus post-action verification.
 - `src/gbrainAdapter.ts`: optional read-only GBrain export and report import.
 - `src/githubAdapter.ts`: read-only GitHub PR and check snapshot import or `gh` collection.
+- `src/githubMutation.ts`: target-specific GitHub mutation-readiness plan generation for PR merges and workflow reruns.
 - `src/hermesCron.ts`: read-only Hermes cron/job snapshot import and proposal-only scheduler recommendations for sleep and memory automation evidence.
 - `src/coordination.ts`: sleep routine, memory proposal, agent mail, and lease records.
 - `src/deploymentAdapters.ts`: read-only deployment evidence imports and SSH-derived host profiles for the local estate.
