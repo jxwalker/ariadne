@@ -257,6 +257,29 @@ export interface PlaywrightEvidenceRecord {
   notes?: string;
 }
 
+export interface HealerProposalRecord {
+  schemaVersion: 1;
+  id: string;
+  project: string;
+  generatedAt: string;
+  status: "review_required";
+  evidenceRecordId: string;
+  targetUrl: string;
+  evidenceRefs: string[];
+  observations: string[];
+  proposedActions: Array<{
+    id: string;
+    title: string;
+    rationale: string;
+    suggestedFiles: string[];
+    verificationCommands: string[];
+    reviewGate: string;
+  }>;
+  reviewGates: string[];
+  apply: false;
+  notes?: string;
+}
+
 export interface InfraSnapshot {
   schemaVersion: 1;
   project: string;
@@ -722,6 +745,7 @@ export interface ConsoleData {
     agentMail: number;
     agentLeases: number;
     deploymentSnapshots: number;
+    healerProposals: number;
     githubSnapshots: number;
     approvals: number;
     pendingApprovals: number;
@@ -750,6 +774,7 @@ export interface ConsoleData {
   reviews: ReviewRecord[];
   decisions: DecisionRecord[];
   playwrightEvidence: PlaywrightEvidenceRecord[];
+  healerProposals: HealerProposalRecord[];
   evaluations: EvaluationRun[];
   evaluationTrends?: EvaluationTrendReport;
   consoleVisualChecks?: ConsoleVisualCheckReport;
@@ -795,5 +820,6 @@ export interface ConsoleData {
     approvals?: string;
     recoveryReport?: string;
     extractionResults?: string;
+    healerProposals?: string;
   };
 }

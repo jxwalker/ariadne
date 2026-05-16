@@ -1,0 +1,11 @@
+{
+  "schemaVersion": 1,
+  "id": "playwright-2026-05-16T14-29-04-701Z",
+  "project": "ariadne",
+  "recordedAt": "2026-05-16T14:29:04.701Z",
+  "targetUrl": "file://<VAULT_ROOT>/projects/ariadne/console/index.html",
+  "status": "failed",
+  "tracePath": "projects/ariadne/verification/playwright-captures/target-2026-05-16T14-29-04-399Z.zip",
+  "screenshotPath": "projects/ariadne/verification/playwright-captures/target-2026-05-16T14-29-04-399Z.png",
+  "notes": "Deliberate healer proposal fixture for missing selector.\nViewport: 1280x900\nWait until: domcontentloaded\nCapture error: Selector was not visible: text=Definitely Missing Ariadne Healer Fixture"
+}

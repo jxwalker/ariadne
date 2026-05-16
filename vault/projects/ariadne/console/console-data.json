@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "project": "ariadne",
-  "generatedAt": "2026-05-16T14:17:37.433Z",
+  "generatedAt": "2026-05-16T14:29:24.107Z",
   "projectDir": "projects/ariadne",
   "summary": {
     "sources": 3,
@@ -19,6 +19,7 @@
     "agentMail": 1,
     "agentLeases": 1,
     "deploymentSnapshots": 1,
+    "healerProposals": 1,
     "githubSnapshots": 1,
     "approvals": 1,
     "pendingApprovals": 1,
@@ -819,6 +820,62 @@
       "tracePath": "projects/ariadne/verification/playwright-captures/target-2026-05-16T14-04-35-649Z.zip",
       "screenshotPath": "projects/ariadne/verification/playwright-captures/target-2026-05-16T14-04-35-649Z.png",
       "notes": "Captured target app screenshot and Playwright trace.\nViewport: 1280x900\nWait until: domcontentloaded\nSelector visible: text=Ariadne Console"
+    },
+    {
+      "schemaVersion": 1,
+      "id": "playwright-2026-05-16T14-29-04-701Z",
+      "project": "ariadne",
+      "recordedAt": "2026-05-16T14:29:04.701Z",
+      "targetUrl": "file://<VAULT_ROOT>/projects/ariadne/console/index.html",
+      "status": "failed",
+      "tracePath": "projects/ariadne/verification/playwright-captures/target-2026-05-16T14-29-04-399Z.zip",
+      "screenshotPath": "projects/ariadne/verification/playwright-captures/target-2026-05-16T14-29-04-399Z.png",
+      "notes": "Deliberate healer proposal fixture for missing selector.\nViewport: 1280x900\nWait until: domcontentloaded\nCapture error: Selector was not visible: text=Definitely Missing Ariadne Healer Fixture"
+    }
+  ],
+  "healerProposals": [
+    {
+      "schemaVersion": 1,
+      "id": "healer-2026-05-16T14-29-13-490Z",
+      "project": "ariadne",
+      "generatedAt": "2026-05-16T14:29:13.490Z",
+      "status": "review_required",
+      "evidenceRecordId": "playwright-2026-05-16T14-29-04-701Z",
+      "targetUrl": "file://<VAULT_ROOT>/projects/ariadne/console/index.html",
+      "evidenceRefs": [
+        "projects/ariadne/verification/playwright-2026-05-16T14-29-04-701Z.json",
+        "projects/ariadne/verification/playwright-captures/target-2026-05-16T14-29-04-399Z.png",
+        "projects/ariadne/verification/playwright-captures/target-2026-05-16T14-29-04-399Z.zip"
+      ],
+      "observations": [
+        "Playwright evidence playwright-2026-05-16T14-29-04-701Z failed for file://<VAULT_ROOT>/projects/ariadne/console/index.html.",
+        "Screenshot evidence is available at projects/ariadne/verification/playwright-captures/target-2026-05-16T14-29-04-399Z.png.",
+        "Trace evidence is available at projects/ariadne/verification/playwright-captures/target-2026-05-16T14-29-04-399Z.zip.",
+        "The failure indicates a visibility or locator mismatch.",
+        "Captured notes: Deliberate healer proposal fixture for missing selector.\nViewport: 1280x900\nWait until: domcontentloaded\nCapture error: Selector was not visible: text=Definitely Missing Ariadne Healer Fixture"
+      ],
+      "proposedActions": [
+        {
+          "id": "HP-A1",
+          "title": "Repair locator or accessibility contract",
+          "rationale": "The captured evidence reports that the expected selector was not visible.",
+          "suggestedFiles": [
+            "playwright spec or UI component owning the missing text/role"
+          ],
+          "verificationCommands": [
+            "npm run ariadne -- playwright-capture --project <project> --target-url <url> --selector <selector>"
+          ],
+          "reviewGate": "A reviewer must confirm the selector matches user-visible behavior rather than hiding the failure."
+        }
+      ],
+      "reviewGates": [
+        "Inspect the screenshot and trace before editing application code.",
+        "Keep generated repairs in a bounded branch and review the diff.",
+        "Rerun the failing Playwright capture or test before accepting the repair.",
+        "Record new Playwright evidence and CodeRabbit or human review before merge."
+      ],
+      "apply": false,
+      "notes": "Review-only proposal generated from deliberate missing-selector evidence."
     }
   ],
   "evaluations": [
@@ -923,7 +980,7 @@
   "consoleVisualChecks": {
     "schemaVersion": 1,
     "project": "ariadne",
-    "generatedAt": "2026-05-16T14:17:36.121Z",
+    "generatedAt": "2026-05-16T14:29:22.849Z",
     "htmlPath": "projects/ariadne/console/index.html",
     "status": "passed",
     "summary": {
@@ -996,9 +1053,9 @@
   "consoleBrowserChecks": {
     "schemaVersion": 1,
     "project": "ariadne",
-    "generatedAt": "2026-05-16T14:17:36.623Z",
+    "generatedAt": "2026-05-16T14:29:23.307Z",
     "htmlPath": "projects/ariadne/console/index.html",
-    "screenshotPath": "projects/ariadne/console/screenshots/console-2026-05-16T14-17-36-623Z.png",
+    "screenshotPath": "projects/ariadne/console/screenshots/console-2026-05-16T14-29-23-307Z.png",
     "status": "passed",
     "viewport": {
       "width": 1440,
@@ -1049,7 +1106,7 @@
         "id": "screenshot",
         "label": "Screenshot captured",
         "status": "passed",
-        "detail": "729001 bytes captured."
+        "detail": "759924 bytes captured."
       }
     ]
   },
@@ -1865,7 +1922,7 @@
   "readiness": {
     "schemaVersion": 1,
     "project": "ariadne",
-    "generatedAt": "2026-05-16T14:17:35.142Z",
+    "generatedAt": "2026-05-16T14:29:21.968Z",
     "status": "ready",
     "evidence": [
       "requirements/prd.json",
@@ -1904,6 +1961,7 @@
     "consoleBrowserChecks": "projects/ariadne/console/browser-checks.json",
     "githubSnapshots": "projects/ariadne/integrations/github",
     "approvals": "projects/ariadne/control/approvals",
-    "recoveryReport": "projects/ariadne/control/recovery-report.json"
+    "recoveryReport": "projects/ariadne/control/recovery-report.json",
+    "healerProposals": "projects/ariadne/verification/healer-proposals"
   }
 }

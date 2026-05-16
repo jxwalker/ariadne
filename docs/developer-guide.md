@@ -30,6 +30,7 @@ npm run build
 - `src/worktreeGuard.ts`: git readiness checks and optional guarded worktree creation.
 - `src/playwrightPlan.ts` and `src/playwrightEvidence.ts`: UI verification planning and evidence.
 - `src/targetAppCapture.ts`: Playwright-backed target URL screenshot and trace capture.
+- `src/healerProposals.ts`: review-gated repair proposals from failed Playwright evidence.
 - `src/controlPlane.ts`: checks, reviews, merge readiness.
 - `src/approvals.ts`: explicit approval requests and decisions for mutation-capable adapters.
 - `src/recovery.ts`: crash recovery reports from recorded vault state.

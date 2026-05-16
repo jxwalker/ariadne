@@ -25,6 +25,7 @@ The system starts with source-grounded intake: drawings, white papers, dictated 
 - Write manifests, hot indexes, context dossiers, PRDs, GSD roadmaps, GSD2 bundles, execution plans, decision records, Playwright plans, infrastructure registries, evaluation plans, merge-readiness reports, and crash-recovery reports.
 - Import manual NotebookLM exports, CI status, CodeRabbit review text, read-only GitHub PR/check snapshots, read-only infrastructure snapshots, and Playwright evidence.
 - Capture target-app screenshots and Playwright traces from a URL before recording the evidence.
+- Generate review-gated healer proposals from failed Playwright evidence without applying repairs automatically.
 - Import token and cost metrics from Hermes, CodeRabbit, OpenAI, CI, or manual JSON exports.
 - Export Ariadne evidence into an optional GBrain import bundle and import GBrain query/eval reports back as evidence.
 - Record behavior-confidence checks for approved review fixtures, mutation gates, approval workflow records, read-only infrastructure snapshots, and non-submitting governance drafts.
@@ -121,6 +122,7 @@ npm run ariadne -- worktree-guard --project ariadne --run run.json
 npm run ariadne -- playwright --project ariadne --target-url http://localhost:3000
 npm run ariadne -- playwright-capture --project ariadne --target-url http://localhost:3000 --selector "text=Dashboard"
 npm run ariadne -- playwright-evidence --project ariadne --target-url http://localhost:3000 --status skipped
+npm run ariadne -- healer-proposal --project ariadne --evidence verification/playwright-failed.json
 npm run ariadne -- evaluation --project ariadne --target mac-local
 npm run ariadne -- evaluation-record --project ariadne --plan evaluation-plan.json --scores D1=80,D2=75,D3=60
 npm run ariadne -- artifact-checks --project ariadne

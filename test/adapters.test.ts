@@ -20,6 +20,7 @@ import { exportGbrainBundle, importGbrainReport } from "../src/gbrainAdapter.js"
 import { importGithubSnapshot } from "../src/githubAdapter.js";
 import { generateGsd } from "../src/gsd.js";
 import { exportGsd2Bundle, importGsd2Bundle } from "../src/gsdAdapter.js";
+import { generateHealerProposal } from "../src/healerProposals.js";
 import { generateInfrastructureRegistry } from "../src/infrastructure.js";
 import { draftOpenScorpionActivity, importInfraSnapshot } from "../src/infraSnapshot.js";
 import { generatePlaywrightPlan } from "../src/playwrightPlan.js";
@@ -270,6 +271,52 @@ describe("roadmap adapters", () => {
     const browser = await generateConsoleBrowserCheckReport({ project: "ariadne", vaultRoot, width: 640, height: 480 });
     expect(browser.report.status).toBe("passed");
     await expect(fs.stat(htmlPath)).resolves.toBeTruthy();
+  });
+
+  it("creates review-gated healer proposals from failed Playwright evidence", async () => {
+    const { vaultRoot } = await preparedProject();
+    const evidence = await recordPlaywrightEvidence({
+      project: "ariadne",
+      vaultRoot,
+      targetUrl: "http://localhost:3000",
+      status: "failed",
+      screenshotPath: "projects/ariadne/verification/playwright-captures/target-failed.png",
+      tracePath: "projects/ariadne/verification/playwright-captures/target-failed.zip",
+      notes: "Capture error: Selector was not visible: text=Dashboard"
+    });
+
+    const proposal = await generateHealerProposal({
+      project: "ariadne",
+      vaultRoot,
+      evidencePath: evidence.jsonPath,
+      notes: "Fixture healer proposal."
+    });
+
+    expect(proposal.proposal.status).toBe("review_required");
+    expect(proposal.proposal.apply).toBe(false);
+    expect(proposal.proposal.evidenceRecordId).toBe(evidence.record.id);
+    expect(proposal.proposal.proposedActions[0]?.title).toContain("Repair locator");
+    expect(proposal.proposal.reviewGates.some((gate) => gate.includes("review"))).toBe(true);
+
+    const markdown = await fs.readFile(proposal.markdownPath, "utf8");
+    expect(markdown).toContain("Apply automatically: false");
+    expect(markdown).toContain("Review gate:");
+
+    const artifactChecks = await generateArtifactCheckReport({ project: "ariadne", vaultRoot });
+    expect(artifactChecks.report.checks.find((check) => check.id === "healer-proposals")?.status).toBe("present");
+
+    const console = await generateConsoleData({ project: "ariadne", vaultRoot });
+    expect(console.data.summary.healerProposals).toBe(1);
+    expect(console.data.healerProposals[0]?.evidenceRecordId).toBe(evidence.record.id);
+
+    const invalidEvidence = path.join(path.dirname(evidence.jsonPath), "playwright-invalid.json");
+    await fs.writeFile(
+      invalidEvidence,
+      JSON.stringify({ schemaVersion: 1, id: "playwright-invalid", status: "failed", recordedAt: "not-a-date" })
+    );
+    await expect(
+      generateHealerProposal({ project: "ariadne", vaultRoot, evidencePath: invalidEvidence })
+    ).rejects.toThrow(/invalid targetUrl|invalid recordedAt/);
   });
 
   it("imports and reports token and cost metrics", async () => {

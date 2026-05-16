@@ -21,6 +21,7 @@ import { exportGbrainBundle, importGbrainReport } from "./gbrainAdapter.js";
 import { collectGithubSnapshot, importGithubSnapshot } from "./githubAdapter.js";
 import { generateGsd } from "./gsd.js";
 import { exportGsd2Bundle, importGsd2Bundle } from "./gsdAdapter.js";
+import { generateHealerProposal } from "./healerProposals.js";
 import { generateInfrastructureRegistry } from "./infrastructure.js";
 import { draftOpenScorpionActivity, importInfraSnapshot } from "./infraSnapshot.js";
 import { importNotebookLmExport } from "./notebooklm.js";
@@ -87,6 +88,7 @@ function usage(): string {
     "  ariadne playwright --project <project> [--target-url <url>]",
     "  ariadne playwright-capture --project <project> --target-url <url> [--selector <css-or-text>] [--width <number>] [--height <number>] [--wait-until <load|domcontentloaded|networkidle>] [--wait-ms <number>]",
     "  ariadne playwright-evidence --project <project> --target-url <url> --status <status>",
+    "  ariadne healer-proposal --project <project> [--evidence <playwright.json>] [--notes <text>]",
     "  ariadne evaluation --project <project> [--target <name>]",
     "  ariadne evaluation-record --project <project> --plan <plan.json> --scores <D1=80,D2=75> [--evidence <paths>]",
     "  ariadne evaluation-trends --project <project>",
@@ -350,6 +352,20 @@ async function main(): Promise<void> {
     if (result.evidence.tracePath) {
       console.log(`Trace: ${result.evidence.tracePath}`);
     }
+    return;
+  }
+
+  if (parsed.command === "healer-proposal") {
+    const result = await generateHealerProposal({
+      project,
+      vaultRoot,
+      evidencePath: optionString(parsed.options, "evidence", "") || undefined,
+      notes: optionString(parsed.options, "notes", "") || undefined
+    });
+    console.log(`Healer proposal: ${result.markdownPath}`);
+    console.log(`Evidence: ${result.proposal.evidenceRecordId}`);
+    console.log(`Actions: ${result.proposal.proposedActions.length}`);
+    console.log(`Status: ${result.proposal.status}`);
     return;
   }
 
