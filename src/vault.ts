@@ -105,9 +105,9 @@ export async function ingestFiles(files: string[], options: IngestOptions): Prom
     const kind = sourceKind(sourcePath);
     const extracted = await extractText(sourcePath);
     const scanText = extracted ?? (kind === "unknown" ? await tryReadUtf8(sourcePath) : undefined);
-    const hygieneReport = scanText ? scanTextForSecrets(sourcePath, scanText) : undefined;
+    const hygieneReport = scanText !== undefined ? scanTextForSecrets(sourcePath, scanText) : undefined;
 
-    if (hygieneReport && shouldBlockHygiene(hygieneReport) && !options.allowSecretFindings) {
+    if (hygieneReport !== undefined && shouldBlockHygiene(hygieneReport) && !options.allowSecretFindings) {
       const details = hygieneReport.findings
         .filter((finding) => finding.severity === "high")
         .map((finding) => `${finding.kind} at line ${finding.line}`)
@@ -142,7 +142,7 @@ export async function ingestFiles(files: string[], options: IngestOptions): Prom
       await fs.writeFile(handoffPath, renderHandoff({ sourcePath, storedPath, kind, sha256 }));
     }
 
-    if (hygieneReport) {
+    if (hygieneReport !== undefined) {
       hygieneReportPath = path.join(recordDir, "hygiene.json");
       await fs.writeFile(hygieneReportPath, `${JSON.stringify(hygieneReport, null, 2)}\n`);
     }

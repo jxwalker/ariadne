@@ -143,7 +143,7 @@
       ],
       "canRunInParallel": true,
       "writes": [
-        "src/infrastructure.ts",
+        "src/infraSnapshot.ts",
         "vault/projects/<project>/infrastructure/"
       ],
       "milestoneId": "M1",
@@ -168,7 +168,7 @@
       ],
       "canRunInParallel": true,
       "writes": [
-        "src/playwrightPlan.ts",
+        "src/playwrightEvidence.ts",
         "vault/projects/<project>/verification/"
       ],
       "milestoneId": "M2",

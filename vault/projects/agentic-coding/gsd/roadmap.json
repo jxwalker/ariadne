@@ -136,7 +136,7 @@
           ],
           "canRunInParallel": true,
           "writes": [
-            "src/infrastructure.ts",
+            "src/infraSnapshot.ts",
             "vault/projects/<project>/infrastructure/"
           ]
         }
@@ -165,7 +165,7 @@
           ],
           "canRunInParallel": true,
           "writes": [
-            "src/playwrightPlan.ts",
+            "src/playwrightEvidence.ts",
             "vault/projects/<project>/verification/"
           ]
         }

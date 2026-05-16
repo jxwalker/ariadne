@@ -55,7 +55,8 @@ export async function importGsd2Bundle(options: {
   sourcePath: string;
 }): Promise<{ jsonPath: string; markdownPath: string; roadmap: GsdRoadmap }> {
   const project = slugifyProject(options.project);
-  const raw = JSON.parse(await fs.readFile(path.resolve(options.sourcePath), "utf8")) as Gsd2Bundle;
+  const sourcePath = path.resolve(options.sourcePath);
+  const raw = parseGsd2Bundle(sourcePath, await fs.readFile(sourcePath, "utf8"));
   const milestones = new Map<string, { id: string; title: string; tasks: GsdTask[] }>();
 
   for (const task of raw.tasks) {
@@ -79,4 +80,54 @@ export async function importGsd2Bundle(options: {
   const jsonPath = await writeJsonArtifact(options.vaultRoot, project, "gsd", "roadmap.imported.json", roadmap);
   const markdownPath = await writeTextArtifact(options.vaultRoot, project, "gsd", "TASKS.imported.md", renderTasks(roadmap));
   return { jsonPath, markdownPath, roadmap };
+}
+
+function parseGsd2Bundle(sourcePath: string, text: string): Gsd2Bundle {
+  const parsed = JSON.parse(text) as unknown;
+
+  if (!isObject(parsed)) {
+    throw new Error(`Invalid GSD2 bundle ${sourcePath}: expected object.`);
+  }
+
+  if (
+    parsed.schemaVersion !== 1 ||
+    parsed.format !== "dev-pipeline-gsd2-bundle" ||
+    !Array.isArray(parsed.tasks)
+  ) {
+    throw new Error(
+      `Invalid GSD2 bundle ${sourcePath}: expected schemaVersion=1, format=dev-pipeline-gsd2-bundle, and tasks[].`
+    );
+  }
+
+  parsed.tasks.forEach((task, index) => {
+    if (!isGsd2Task(task)) {
+      throw new Error(`Invalid GSD2 bundle ${sourcePath}: task ${index} is missing required fields.`);
+    }
+  });
+
+  return parsed as unknown as Gsd2Bundle;
+}
+
+function isGsd2Task(value: unknown): value is Gsd2Bundle["tasks"][number] {
+  if (!isObject(value)) return false;
+  return (
+    typeof value.id === "string" &&
+    typeof value.title === "string" &&
+    isStringArray(value.requirementIds) &&
+    typeof value.slice === "string" &&
+    isStringArray(value.successCriteria) &&
+    isStringArray(value.verificationCommands) &&
+    typeof value.canRunInParallel === "boolean" &&
+    isStringArray(value.writes) &&
+    typeof value.milestoneId === "string" &&
+    typeof value.milestoneTitle === "string"
+  );
+}
+
+function isStringArray(value: unknown): value is string[] {
+  return Array.isArray(value) && value.every((item) => typeof item === "string");
+}
+
+function isObject(value: unknown): value is Record<string, unknown> {
+  return Boolean(value) && typeof value === "object" && !Array.isArray(value);
 }

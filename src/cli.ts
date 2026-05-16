@@ -54,7 +54,7 @@ function optionString(options: Map<string, string | true>, key: string, fallback
 function usage(): string {
   return [
     "Usage:",
-    "  dev-pipeline ingest --project <project> [--notes <text>] <files...>",
+    "  dev-pipeline ingest --project <project> [--notes <text>] [--allow-secret-findings] <files...>",
     "  dev-pipeline assemble --project <project> [--max-chars <number>]",
     "  dev-pipeline prd --project <project> [--from <dossier.md>]",
     "  dev-pipeline notebooklm-import --project <project> --from <export.md>",
@@ -82,6 +82,7 @@ function usage(): string {
     "  --vault <path>       Override the vault root. Defaults to ./vault.",
     "  --project <name>     Project slug or name. Defaults to default.",
     "  --sensitivity <val>  public, internal, confidential, or secret for ingested sources.",
+    "  --allow-secret-findings  Allow ingest to continue when high-severity hygiene findings are detected.",
     ""
   ].join("\n");
 }

@@ -116,7 +116,7 @@ Verification:
 - `npm test`
 
 Write scope:
-- `src/infrastructure.ts`
+- `src/infraSnapshot.ts`
 - `vault/projects/<project>/infrastructure/`
 
 ## M2: Verification Surface
@@ -138,6 +138,5 @@ Verification:
 - `npx playwright test --reporter=list`
 
 Write scope:
-- `src/playwrightPlan.ts`
+- `src/playwrightEvidence.ts`
 - `vault/projects/<project>/verification/`
-

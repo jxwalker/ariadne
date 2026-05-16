@@ -56,5 +56,5 @@ function redactLine(line: string): string {
     .replace(/sk-[A-Za-z0-9_-]{8,}/g, "sk-[redacted]")
     .replace(/gh[pousr]_[A-Za-z0-9_]{8,}/g, "gh_[redacted]")
     .replace(/AKIA[0-9A-Z]{8,}/g, "AKIA[redacted]")
-    .replace(/([:=]\s*["']?)[^"'\s]{8,}/g, "$1[redacted]");
+    .replace(/\b(password|passwd|pwd|secret|token|api[_-]?key)(\s*[:=]\s*["']?)[^"'\s]{8,}/gi, "$1$2[redacted]");
 }

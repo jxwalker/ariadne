@@ -1,3 +1,4 @@
+import { randomUUID } from "node:crypto";
 import fs from "node:fs/promises";
 import path from "node:path";
 import { timestampFile, writeJsonArtifact, writeTextArtifact } from "./artifacts.js";
@@ -51,12 +52,13 @@ export async function draftOpenScorpionActivity(input: {
     },
     submit: false
   };
-  const jsonPath = await writeJsonArtifact(input.vaultRoot, project, "infrastructure", "openscorpion-activity-draft.json", draft);
+  const name = `openscorpion-activity-draft-${timestampFile()}-${randomUUID().slice(0, 8)}`;
+  const jsonPath = await writeJsonArtifact(input.vaultRoot, project, "infrastructure", `${name}.json`, draft);
   const markdownPath = await writeTextArtifact(
     input.vaultRoot,
     project,
     "infrastructure",
-    "openscorpion-activity-draft.md",
+    `${name}.md`,
     renderActivity(draft)
   );
   return { jsonPath, markdownPath, draft };

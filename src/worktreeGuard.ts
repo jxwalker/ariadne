@@ -19,12 +19,21 @@ export async function guardWorktrees(input: {
     checks.push({ name: "repoPath", status: "failed", detail: "Execution run has no repository path." });
   } else {
     checks.push({ name: "repoPath", status: "passed", detail: run.repoPath });
-    const status = git(run.repoPath, ["status", "--porcelain"]);
-    checks.push({
-      name: "working-tree-clean",
-      status: status.trim() === "" ? "passed" : "failed",
-      detail: status.trim() === "" ? "clean" : status.trim()
-    });
+    const statusResult = tryGit(run.repoPath, ["status", "--porcelain"]);
+    if (statusResult.ok) {
+      const status = statusResult.output;
+      checks.push({
+        name: "working-tree-clean",
+        status: status.trim() === "" ? "passed" : "failed",
+        detail: status.trim() === "" ? "clean" : status.trim()
+      });
+    } else {
+      checks.push({
+        name: "working-tree-clean",
+        status: "failed",
+        detail: statusResult.error
+      });
+    }
 
     for (const worktree of run.worktrees) {
       try {
@@ -42,21 +51,32 @@ export async function guardWorktrees(input: {
         });
       }
 
-      const branchExists = git(run.repoPath, ["branch", "--list", worktree.branch]).trim().length > 0;
+      const branchResult = tryGit(run.repoPath, ["branch", "--list", worktree.branch]);
+      const branchExists = branchResult.ok && branchResult.output.trim().length > 0;
       checks.push({
         name: `branch-${worktree.taskId}`,
-        status: branchExists ? "failed" : "passed",
-        detail: branchExists ? `${worktree.branch} already exists` : `${worktree.branch} is available`
+        status: !branchResult.ok || branchExists ? "failed" : "passed",
+        detail: !branchResult.ok
+          ? branchResult.error
+          : branchExists
+            ? `${worktree.branch} already exists`
+            : `${worktree.branch} is available`
       });
     }
   }
 
-  const blocked = checks.some((check) => check.status === "failed");
+  let blocked = checks.some((check) => check.status === "failed");
   if (input.apply && !blocked && run.repoPath) {
     const baseRef = resolveBaseRef(run.repoPath);
     for (const worktree of run.worktrees) {
-      git(run.repoPath, ["worktree", "add", "-b", worktree.branch, worktree.worktreePath, baseRef]);
+      const createResult = tryGit(run.repoPath, ["worktree", "add", "-b", worktree.branch, worktree.worktreePath, baseRef]);
+      checks.push({
+        name: `create-worktree-${worktree.taskId}`,
+        status: createResult.ok ? "passed" : "failed",
+        detail: createResult.ok ? `${worktree.worktreePath} created from ${baseRef}` : createResult.error
+      });
     }
+    blocked = checks.some((check) => check.status === "failed");
   }
 
   const report: WorktreeGuardReport = {
@@ -82,6 +102,15 @@ export async function guardWorktrees(input: {
 
 function git(repoPath: string, args: string[]): string {
   return execFileSync("git", args, { cwd: repoPath, encoding: "utf8" });
+}
+
+function tryGit(repoPath: string, args: string[]): { ok: true; output: string } | { ok: false; error: string } {
+  try {
+    return { ok: true, output: git(repoPath, args) };
+  } catch (error) {
+    const message = error instanceof Error ? error.message : String(error);
+    return { ok: false, error: `git ${args.join(" ")} failed in ${repoPath}: ${message}` };
+  }
 }
 
 function resolveBaseRef(repoPath: string): string {

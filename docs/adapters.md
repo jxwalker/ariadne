@@ -19,6 +19,15 @@ Automation is intentionally not implemented yet. Manual import remains the fallb
 
 `gsd2-export` writes `gsd/gsd2-bundle.json`, a flattened task bundle with milestone metadata. `gsd2-import` can rebuild a roadmap from that bundle.
 
+## Decision Logging
+
+`decision` records timestamped architectural decisions in the project decisions directory. It builds a `DecisionRecord` through `recordDecision`, renders the companion Markdown with `renderDecision`, and writes both:
+
+- `decisions/<decision-id>.json`
+- `decisions/<decision-id>.md`
+
+Typical fields include status, context, consequences, and source references so later control reports can point back to the evidence behind a decision.
+
 ## Execution
 
 `worktree-guard` checks the execution run before any worktree creation:

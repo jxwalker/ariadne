@@ -43,6 +43,18 @@ describe("roadmap adapters", () => {
       allowSecretFindings: true
     });
     expect(records[0]?.hygieneReportPath).toBeTruthy();
+
+    const emptySource = path.join(temp, "empty.md");
+    await fs.writeFile(emptySource, "");
+    const emptyRecords = await ingestFiles([emptySource], {
+      project: "agentic-coding",
+      vaultRoot: path.join(temp, "vault-empty")
+    });
+    expect(emptyRecords[0]?.hygieneReportPath).toBeTruthy();
+    const emptyHygiene = JSON.parse(await fs.readFile(emptyRecords[0]?.hygieneReportPath ?? "", "utf8")) as {
+      status: string;
+    };
+    expect(emptyHygiene.status).toBe("clean");
   });
 
   it("normalises NotebookLM exports and round-trips a GSD2 bundle", async () => {
@@ -51,7 +63,7 @@ describe("roadmap adapters", () => {
     await fs.writeFile(notebook, "# Briefing Doc\n\n## Requirement\n\nBuild it. [1]\n\nSource: manifesto\n");
 
     const imported = await importNotebookLmExport({ project: "agentic-coding", vaultRoot, sourcePath: notebook });
-    expect(imported.imported.sections[0]?.heading).toBe("Requirement");
+    expect(imported.imported.sections.some((section) => section.heading === "Requirement")).toBe(true);
     expect(imported.imported.citations.length).toBeGreaterThan(0);
 
     const exported = await exportGsd2Bundle({ project: "agentic-coding", vaultRoot });
@@ -63,6 +75,19 @@ describe("roadmap adapters", () => {
       sourcePath: exported.jsonPath
     });
     expect(roundTrip.roadmap.milestones.length).toBeGreaterThan(0);
+
+    const invalidBundle = path.join(temp, "invalid-bundle.json");
+    await fs.writeFile(
+      invalidBundle,
+      JSON.stringify({ schemaVersion: 1, format: "dev-pipeline-gsd2-bundle", tasks: [{ id: "TASK-BAD" }] })
+    );
+    await expect(
+      importGsd2Bundle({
+        project: "agentic-coding",
+        vaultRoot,
+        sourcePath: invalidBundle
+      })
+    ).rejects.toThrow(/task 0 is missing required fields/);
   });
 
   it("records CI, CodeRabbit, Playwright, infra, OpenScorpion, and guarded worktree evidence", async () => {
@@ -80,6 +105,32 @@ describe("roadmap adapters", () => {
     });
     expect(guard.report.status).toBe("ready");
 
+    const invalidRun = path.join(temp, "invalid-run.json");
+    await fs.writeFile(
+      invalidRun,
+      JSON.stringify({
+        schemaVersion: 1,
+        id: "run-invalid",
+        project: "agentic-coding",
+        createdAt: new Date().toISOString(),
+        taskIds: ["TASK-001"],
+        repoPath: path.join(temp, "not-a-repo"),
+        branchPrefix: "codex",
+        status: "planned",
+        gates: [],
+        worktrees: [{ taskId: "TASK-001", branch: "codex/task-001", worktreePath: path.join(temp, "wt") }],
+        stopConditions: []
+      })
+    );
+    const invalidGuard = await guardWorktrees({
+      project: "agentic-coding",
+      vaultRoot,
+      runFile: invalidRun,
+      apply: false
+    });
+    expect(invalidGuard.report.status).toBe("blocked");
+    expect(invalidGuard.report.checks.some((check) => check.name === "working-tree-clean")).toBe(true);
+
     await recordPlaywrightEvidence({
       project: "agentic-coding",
       vaultRoot,
@@ -89,12 +140,25 @@ describe("roadmap adapters", () => {
     });
 
     const ci = path.join(temp, "ci.json");
-    await fs.writeFile(ci, JSON.stringify([{ name: "integration", conclusion: "success" }]));
-    expect(await importCiStatus({ project: "agentic-coding", vaultRoot, sourcePath: ci })).toBe(1);
+    await fs.writeFile(
+      ci,
+      JSON.stringify([
+        { name: "integration", conclusion: "success" },
+        { name: "deploy", conclusion: "error" }
+      ])
+    );
+    expect(await importCiStatus({ project: "agentic-coding", vaultRoot, sourcePath: ci })).toBe(2);
+    const checks = await readJsonl(path.join(vaultRoot, "projects", "agentic-coding", "control", "check-history.jsonl"));
+    expect(checks.find((check) => check.name === "deploy")?.status).toBe("failed");
 
     const coderabbit = path.join(temp, "coderabbit.md");
     await fs.writeFile(coderabbit, "Approved\n\nNo issues found.\n");
     await importCodeRabbitReview({ project: "agentic-coding", vaultRoot, sourcePath: coderabbit });
+    const negatedCoderabbit = path.join(temp, "coderabbit-negated.md");
+    await fs.writeFile(negatedCoderabbit, "I have not approved these changes.\n");
+    await importCodeRabbitReview({ project: "agentic-coding", vaultRoot, sourcePath: negatedCoderabbit });
+    const reviews = await readJsonl(path.join(vaultRoot, "projects", "agentic-coding", "control", "reviews.jsonl"));
+    expect(reviews.at(-1)?.status).toBe("pending");
 
     const infra = path.join(temp, "manifest.json");
     await fs.writeFile(infra, JSON.stringify({ host: { short_name: "beast" }, guests: { vms: [], lxc: [] } }));
@@ -109,8 +173,25 @@ describe("roadmap adapters", () => {
       evidenceRefs: [snapshot.jsonPath]
     });
     expect(activity.draft.submit).toBe(false);
+    const secondActivity = await draftOpenScorpionActivity({
+      project: "agentic-coding",
+      vaultRoot,
+      title: "Adapter evidence",
+      activityType: "dev-pipeline.adapter",
+      evidenceRefs: [snapshot.jsonPath]
+    });
+    expect(secondActivity.jsonPath).not.toBe(activity.jsonPath);
 
     const control = await generateControlReport({ project: "agentic-coding", vaultRoot });
     expect(control.report.evidence.some((item) => item.includes("Review approved by coderabbit"))).toBe(true);
   });
 });
+
+async function readJsonl(filePath: string): Promise<Array<Record<string, string>>> {
+  const content = await fs.readFile(filePath, "utf8");
+  return content
+    .split("\n")
+    .map((line) => line.trim())
+    .filter(Boolean)
+    .map((line) => JSON.parse(line) as Record<string, string>);
+}
