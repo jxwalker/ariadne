@@ -45,7 +45,7 @@ import { recordPlaywrightEvidence } from "../src/playwrightEvidence.js";
 import { generatePrd } from "../src/prd.js";
 import { generateRecoveryReport } from "../src/recovery.js";
 import { captureTargetAppEvidence } from "../src/targetAppCapture.js";
-import { runTargetMutationExecution } from "../src/targetMutationExecute.js";
+import { runTargetMutationExecution, targetForMutationExecutionCommand } from "../src/targetMutationExecute.js";
 import { generateUsageMetricsReport, importUsageMetrics } from "../src/usageMetrics.js";
 import { guardWorktrees } from "../src/worktreeGuard.js";
 import { assembleDossier, ingestFiles } from "../src/vault.js";
@@ -671,6 +671,55 @@ describe("roadmap adapters", () => {
     expect(targetMutationExecution.record.status).toBe("passed");
     expect(targetMutationExecution.record.target).toBe("github");
     expect(targetMutationExecution.record.execute).toBe(true);
+    expect(targetForMutationExecutionCommand("github-mutation-execute")).toBe("github");
+    expect(targetForMutationExecutionCommand("deployment-mutation-execute")).toBe("deployment");
+    expect(targetForMutationExecutionCommand("hermes-cron-mutation-execute")).toBe("hermes-cron");
+    expect(targetForMutationExecutionCommand("openscorpion-mutation-execute")).toBe("openscorpion");
+    expect(targetForMutationExecutionCommand("gsd2-mutation-execute")).toBe("gsd2");
+    expect(targetForMutationExecutionCommand("notebooklm-mutation-execute")).toBe("notebooklm");
+    expect(targetForMutationExecutionCommand("mutation-execute")).toBeUndefined();
+    expect(targetForMutationExecutionCommand("toString")).toBeUndefined();
+    const tsx = path.join(process.cwd(), "node_modules", ".bin", "tsx");
+    const githubWrapperOutput = execFileSync(
+      tsx,
+      [
+        "src/ariadne.ts",
+        "github-mutation-execute",
+        "--project",
+        "ariadne",
+        "--vault",
+        vaultRoot,
+        "--plan",
+        mutationReadiness.plan.id,
+        "--confirm-plan",
+        mutationReadiness.plan.id,
+        "--timeout-ms",
+        "10000"
+      ],
+      { cwd: process.cwd(), encoding: "utf8" }
+    );
+    expect(githubWrapperOutput).toContain("github mutation execution:");
+    expect(githubWrapperOutput).toContain("Target: github");
+    expect(() =>
+      execFileSync(
+        tsx,
+        [
+          "src/ariadne.ts",
+          "deployment-mutation-execute",
+          "--project",
+          "ariadne",
+          "--vault",
+          vaultRoot,
+          "--plan",
+          mutationReadiness.plan.id,
+          "--confirm-plan",
+          mutationReadiness.plan.id,
+          "--timeout-ms",
+          "10000"
+        ],
+        { cwd: process.cwd(), encoding: "utf8", stdio: ["ignore", "pipe", "pipe"] }
+      )
+    ).toThrow(/targets github, not deployment/);
     await expect(
       runMutationDryRun({
         project: "ariadne",

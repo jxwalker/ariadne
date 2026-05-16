@@ -3,6 +3,22 @@ import { runMutationExecution } from "./mutationExecute.js";
 import { slugifyProject } from "./paths.js";
 import type { MutationExecutionRecord, MutationReadinessPlan } from "./types.js";
 
+const targetExecutionCommands = {
+  "github-mutation-execute": "github",
+  "deployment-mutation-execute": "deployment",
+  "hermes-cron-mutation-execute": "hermes-cron",
+  "openscorpion-mutation-execute": "openscorpion",
+  "gsd2-mutation-execute": "gsd2",
+  "notebooklm-mutation-execute": "notebooklm"
+} as const satisfies Record<string, MutationReadinessPlan["target"]>;
+
+export function targetForMutationExecutionCommand(command: string): MutationReadinessPlan["target"] | undefined {
+  if (!Object.prototype.hasOwnProperty.call(targetExecutionCommands, command)) {
+    return undefined;
+  }
+  return targetExecutionCommands[command as keyof typeof targetExecutionCommands];
+}
+
 export async function runTargetMutationExecution(input: {
   project: string;
   vaultRoot: string;

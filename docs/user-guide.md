@@ -379,6 +379,19 @@ npm run ariadne -- target-mutation-execute --project ariadne --target github --p
 
 This runs the same audited execution path, but first refuses target mismatches.
 
+For live adapters, prefer the target-specific wrappers so the expected target is fixed by the command name:
+
+```bash
+npm run ariadne -- github-mutation-execute --project ariadne --plan mutation-readiness-github-... --confirm-plan mutation-readiness-github-...
+npm run ariadne -- deployment-mutation-execute --project ariadne --plan mutation-readiness-deployment-... --confirm-plan mutation-readiness-deployment-...
+npm run ariadne -- hermes-cron-mutation-execute --project ariadne --plan mutation-readiness-hermes-cron-... --confirm-plan mutation-readiness-hermes-cron-...
+npm run ariadne -- openscorpion-mutation-execute --project ariadne --plan mutation-readiness-openscorpion-... --confirm-plan mutation-readiness-openscorpion-...
+npm run ariadne -- gsd2-mutation-execute --project ariadne --plan mutation-readiness-gsd2-... --confirm-plan mutation-readiness-gsd2-...
+npm run ariadne -- notebooklm-mutation-execute --project ariadne --plan mutation-readiness-notebooklm-... --confirm-plan mutation-readiness-notebooklm-...
+```
+
+Each wrapper still requires a passing readiness audit, a passed dry-run record, and an exact `--confirm-plan` match.
+
 ## Check Readiness
 
 ```bash

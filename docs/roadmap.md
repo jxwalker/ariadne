@@ -120,10 +120,11 @@ Implemented:
 - guarded execution records for approved readiness dry-run commands
 - confirmed live-command execution records with post-action verification evidence
 - target-guarded live mutation execution wrapper
+- per-target execute wrappers that delegate to target-guarded execution after readiness plans pass audit, dry-run, rollback, and post-verification review
 
 Next:
 
-- per-target live adapters should delegate to target-guarded execution after readiness plans pass audit, dry-run, rollback, and post-verification review
+- target-specific live adapters should replace placeholder shell commands only after external credentials, rollback, and post-verification contracts are proven per target
 
 ## Milestone 6: Infrastructure Substrate
 
