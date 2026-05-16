@@ -104,6 +104,7 @@ function renderConsole(data: ConsoleData): string {
     metric("Tasks", data.summary.tasks),
     metric("Runs", data.summary.executionRuns),
     metric("Checks", data.summary.checks, failedChecks > 0 ? `${failedChecks} failed` : "recorded"),
+    metric("Healer", data.summary.healerProposals, "proposals"),
     metric("GitHub", data.summary.githubSnapshots, "snapshots"),
     metric("Approvals", data.summary.pendingApprovals, `${data.summary.approvals} total`),
     metric("Recovery", data.summary.recoveryIssues, "issues"),
@@ -125,6 +126,7 @@ function renderConsole(data: ConsoleData): string {
     '<aside class="side-column">',
     section("Evidence Chain", evidenceChain(data)),
     section("Extraction Results", extractionResults(data)),
+    section("Healer Proposals", healerProposals(data)),
     section("Visual Checks", visualChecks(data)),
     section("Browser Checks", browserChecks(data)),
     section("Recovery", recovery(data)),
@@ -261,6 +263,7 @@ function evidenceChain(data: ConsoleData): string {
     ["Checks", data.summary.checks],
     ["Reviews", data.summary.reviews],
     ["Decisions", data.summary.decisions],
+    ["Healer proposals", data.summary.healerProposals],
     ["GitHub snapshots", data.summary.githubSnapshots],
     ["Pending approvals", data.summary.pendingApprovals],
     ["Recovery issues", data.summary.recoveryIssues],
@@ -296,6 +299,18 @@ function extractionResults(data: ConsoleData): string {
   ].join("");
 }
 
+function healerProposals(data: ConsoleData): string {
+  if (data.healerProposals.length === 0) return empty("No review-gated healer proposals are available.");
+  return [
+    '<div class="infra">',
+    ...data.healerProposals.slice(-5).map(
+      (proposal) =>
+        `<div><strong>${escapeHtml(proposal.status)}</strong><span>${escapeHtml(proposal.evidenceRecordId)}</span><small>${escapeHtml(`${proposal.proposedActions.length} actions / apply=${proposal.apply}`)}</small></div>`
+    ),
+    "</div>"
+  ].join("");
+}
+
 function browserChecks(data: ConsoleData): string {
   const checks = data.consoleBrowserChecks;
   if (!checks) return empty("No browser-backed console check report is available.");
@@ -315,9 +330,14 @@ function approvalQueue(data: ConsoleData): string {
   const missing = data.readiness?.missing ?? [];
   const pendingReviews = data.reviews.filter((review) => review.status === "pending" || review.status === "changes_requested");
   const pendingApprovals = data.approvals.filter((approval) => approval.status === "requested");
+  const healerReviews = data.healerProposals.filter((proposal) => proposal.status === "review_required");
   const rows = [
     ...missing.map((item) => ({ kind: "missing gate", detail: item })),
     ...pendingReviews.map((review) => ({ kind: review.status, detail: `${review.source}: ${review.summary}` })),
+    ...healerReviews.map((proposal) => ({
+      kind: "healer review",
+      detail: `${proposal.evidenceRecordId}: ${proposal.proposedActions.length} proposed actions`
+    })),
     ...pendingApprovals.map((approval) => ({
       kind: `approval ${approval.risk}`,
       detail: `${approval.target}: ${approval.action}`

@@ -106,6 +106,14 @@ npm run ariadne -- playwright-evidence --project ariadne --target-url http://loc
 
 Use `playwright-capture` when Ariadne should create the screenshot and trace itself. It writes artifacts under `vault/projects/ariadne/verification/playwright-captures/` and records a standard Playwright evidence file under `verification/`. Use `playwright-evidence` when the screenshot and trace already came from another test runner.
 
+When a Playwright evidence record fails, create a review-gated repair proposal:
+
+```bash
+npm run ariadne -- healer-proposal --project ariadne --evidence vault/projects/ariadne/verification/playwright-...json
+```
+
+The proposal cites the failed evidence, screenshot, and trace; suggests bounded repair actions; and keeps `apply: false` so no test or app code changes without review.
+
 ## Evaluate The Pipeline
 
 Create an evaluation plan:

@@ -22,6 +22,7 @@ import type {
   ExtractionResultRecord,
   GbrainExportBundle,
   GbrainReportImport,
+  HealerProposalRecord,
   GithubSnapshot,
   GsdRoadmap,
   InfraRegistry,
@@ -80,6 +81,10 @@ export async function collectConsoleData(vaultRoot: string, projectInput: string
     path.join(dir, "verification"),
     isPlaywrightEvidence
   );
+  const healerProposals = await readJsonFiles<HealerProposalRecord>(
+    path.join(dir, "verification", "healer-proposals"),
+    isHealerProposal
+  );
   const evaluations = await readJsonFiles<EvaluationRun>(path.join(dir, "evaluation"), isEvaluationRun);
   const infraSnapshots = await readJsonFiles<InfraSnapshot>(path.join(dir, "infrastructure"), isInfraSnapshot);
   const gbrainReports = await readJsonFiles<GbrainReportImport>(path.join(dir, "integrations", "gbrain"), isGbrainReport);
@@ -134,6 +139,7 @@ export async function collectConsoleData(vaultRoot: string, projectInput: string
       agentMail: agentMail.length,
       agentLeases: agentLeases.length,
       deploymentSnapshots: deploymentSnapshots.length,
+      healerProposals: healerProposals.length,
       githubSnapshots: githubSnapshots.length,
       approvals: approvals.length,
       pendingApprovals: approvals.filter((approval) => approval.status === "requested").length,
@@ -153,6 +159,7 @@ export async function collectConsoleData(vaultRoot: string, projectInput: string
     approvals,
     decisions,
     playwrightEvidence,
+    healerProposals,
     evaluations,
     evaluationTrends,
     consoleVisualChecks,
@@ -196,7 +203,8 @@ export async function collectConsoleData(vaultRoot: string, projectInput: string
       githubSnapshots: await existingPath(vaultRoot, path.join(dir, "integrations", "github")),
       approvals: await existingPath(vaultRoot, path.join(dir, "control", "approvals")),
       recoveryReport: await existingPath(vaultRoot, path.join(dir, "control", "recovery-report.json")),
-      extractionResults: await existingPath(vaultRoot, path.join(dir, "extractions"))
+      extractionResults: await existingPath(vaultRoot, path.join(dir, "extractions")),
+      healerProposals: await existingPath(vaultRoot, path.join(dir, "verification", "healer-proposals"))
     }
   };
   return makePortable(data, vaultRoot);
@@ -307,6 +315,10 @@ function isDecisionRecord(value: unknown): value is DecisionRecord {
 
 function isPlaywrightEvidence(value: unknown): value is PlaywrightEvidenceRecord {
   return hasSchema(value) && value.schemaVersion === 1 && typeof value.id === "string" && value.id.startsWith("playwright-");
+}
+
+function isHealerProposal(value: unknown): value is HealerProposalRecord {
+  return hasSchema(value) && value.schemaVersion === 1 && typeof value.id === "string" && value.id.startsWith("healer-");
 }
 
 function isEvaluationRun(value: unknown): value is EvaluationRun {

@@ -88,10 +88,11 @@ Implemented:
 - Playwright evidence records
 - target-app screenshot and trace evidence capture
 - browser-backed console screenshot checks with Playwright Chromium
+- healer proposals tied to failed Playwright evidence and review gates
 
 Next:
 
-- healer loop that proposes repairs, with review gates
+- optional automatic repair execution only after review gates and mutation approvals are explicit
 
 ## Milestone 5: Control Plane
 

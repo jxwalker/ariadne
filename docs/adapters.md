@@ -72,6 +72,19 @@ Artifacts:
 
 `playwright-evidence`, `import-ci`, and `import-coderabbit` write evidence records into the project control plane. They do not mark the project ready unless the required gates are satisfied.
 
+`healer-proposal` reads failed Playwright evidence and writes a repair proposal that must be reviewed before any code or test change is accepted:
+
+```bash
+npm run ariadne -- healer-proposal --project ariadne --evidence vault/projects/ariadne/verification/playwright-...json
+```
+
+Artifacts:
+
+- `verification/healer-proposals/healer-<timestamp>.json`
+- `verification/healer-proposals/healer-<timestamp>.md`
+
+The proposal records observations, suggested files, verification commands, and review gates. It always writes `apply: false`.
+
 `github-snapshot` records read-only pull request and check state from either a saved GitHub JSON export or the `gh` CLI:
 
 ```bash

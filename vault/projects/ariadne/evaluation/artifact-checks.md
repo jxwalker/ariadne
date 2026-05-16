@@ -2,13 +2,13 @@
 
 Project: ariadne
 Status: passed
-Generated: 2026-05-16T14:17:34.653Z
+Generated: 2026-05-16T14:29:21.522Z
 
 ## Summary
 
 - Required checks: 13
-- Optional checks: 15
-- Present artifacts: 27
+- Optional checks: 16
+- Present artifacts: 28
 - Missing required artifacts: 0
 
 ## Checks
@@ -25,8 +25,9 @@ Generated: 2026-05-16T14:17:34.653Z
 | gsd2-bundle | yes | present | - | projects/ariadne/gsd/gsd2-bundle.json |
 | execution-runs | yes | present | 4 | projects/ariadne/execution/run-*.json |
 | playwright-plan | yes | present | - | projects/ariadne/verification/playwright-plan.json |
-| playwright-captures | no | present | 1 | projects/ariadne/verification/playwright-captures/target-*.png |
-| playwright-traces | no | present | 1 | projects/ariadne/verification/playwright-captures/target-*.zip |
+| playwright-captures | no | present | 2 | projects/ariadne/verification/playwright-captures/target-*.png |
+| playwright-traces | no | present | 2 | projects/ariadne/verification/playwright-captures/target-*.zip |
+| healer-proposals | no | present | 1 | projects/ariadne/verification/healer-proposals/healer-*.json |
 | evaluation-plan | yes | present | - | projects/ariadne/evaluation/evaluation-plan.json |
 | infra-registry | yes | present | - | projects/ariadne/infrastructure/registry.json |
 | control-report | yes | present | - | projects/ariadne/control/merge-readiness.json |

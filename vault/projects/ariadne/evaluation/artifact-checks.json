@@ -1,12 +1,12 @@
 {
   "schemaVersion": 1,
   "project": "ariadne",
-  "generatedAt": "2026-05-16T14:17:34.653Z",
+  "generatedAt": "2026-05-16T14:29:21.522Z",
   "status": "passed",
   "summary": {
     "required": 13,
-    "optional": 15,
-    "present": 27,
+    "optional": 16,
+    "present": 28,
     "missingRequired": 0
   },
   "checks": [
@@ -98,9 +98,10 @@
       "required": false,
       "path": "projects/ariadne/verification/playwright-captures/target-*.png",
       "status": "present",
-      "count": 1,
+      "count": 2,
       "matches": [
-        "projects/ariadne/verification/playwright-captures/target-2026-05-16T14-04-35-649Z.png"
+        "projects/ariadne/verification/playwright-captures/target-2026-05-16T14-04-35-649Z.png",
+        "projects/ariadne/verification/playwright-captures/target-2026-05-16T14-29-04-399Z.png"
       ]
     },
     {
@@ -109,9 +110,21 @@
       "required": false,
       "path": "projects/ariadne/verification/playwright-captures/target-*.zip",
       "status": "present",
+      "count": 2,
+      "matches": [
+        "projects/ariadne/verification/playwright-captures/target-2026-05-16T14-04-35-649Z.zip",
+        "projects/ariadne/verification/playwright-captures/target-2026-05-16T14-29-04-399Z.zip"
+      ]
+    },
+    {
+      "id": "healer-proposals",
+      "label": "Review-gated healer proposals",
+      "required": false,
+      "path": "projects/ariadne/verification/healer-proposals/healer-*.json",
+      "status": "present",
       "count": 1,
       "matches": [
-        "projects/ariadne/verification/playwright-captures/target-2026-05-16T14-04-35-649Z.zip"
+        "projects/ariadne/verification/healer-proposals/healer-2026-05-16T14-29-13-490Z.json"
       ]
     },
     {

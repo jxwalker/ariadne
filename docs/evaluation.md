@@ -87,6 +87,13 @@ vault/projects/<project>/verification/playwright-<timestamp>.json
 vault/projects/<project>/verification/playwright-<timestamp>.md
 ```
 
+`healer-proposal` writes review-gated repair proposals for failed Playwright evidence:
+
+```text
+vault/projects/<project>/verification/healer-proposals/healer-<timestamp>.json
+vault/projects/<project>/verification/healer-proposals/healer-<timestamp>.md
+```
+
 ## Dimensions
 
 | Id | Dimension | Sensors |
@@ -110,6 +117,7 @@ npm run ariadne -- benchmark-pack --set all
 npm run ariadne -- evaluation-trends --project ariadne
 npm run ariadne -- usage-report --project ariadne
 npm run ariadne -- playwright-capture --project ariadne --target-url http://localhost:3000 --selector "text=Dashboard"
+npm run ariadne -- healer-proposal --project ariadne --evidence vault/projects/ariadne/verification/playwright-...json
 npm run ariadne -- behavior-checks --project ariadne --approved-fixture coderabbit.md
 npm run ariadne -- console-html --project ariadne --refresh-data
 npm run ariadne -- console-visual-checks --project ariadne
@@ -153,4 +161,4 @@ A run is acceptable when:
 Next evaluation work should add:
 
 - browser-backed screenshot comparison for target apps,
-- healer proposals tied to captured failure traces.
+- optional automatic repair execution only after review gates and mutation approvals are explicit.

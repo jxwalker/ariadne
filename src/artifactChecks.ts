@@ -82,6 +82,16 @@ const ARTIFACT_SPECS: ArtifactSpec[] = [
     minimumCount: 1
   },
   {
+    id: "healer-proposals",
+    label: "Review-gated healer proposals",
+    required: false,
+    kind: "matching-files",
+    relativePath: "verification/healer-proposals",
+    prefix: "healer-",
+    suffix: ".json",
+    minimumCount: 1
+  },
+  {
     id: "evaluation-plan",
     label: "Evaluation plan",
     required: true,
