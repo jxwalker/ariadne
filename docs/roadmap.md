@@ -178,10 +178,11 @@ Implemented:
 - agent mail inbox/outbox records scoped to project, task, and run ids
 - interagent lease and ownership records
 - optional GBrain read-only export and report import
+- read-only Hermes cron snapshot import
 
 Next:
 
-- Hermes cron integration after read-only evidence paths are proven
+- Hermes cron proposal generation after imported schedules have enough evidence
 
 ## Milestone 10: Live Deployment Adapters
 

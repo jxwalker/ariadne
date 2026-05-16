@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "project": "ariadne",
-  "generatedAt": "2026-05-16T14:47:50.730Z",
+  "generatedAt": "2026-05-16T16:20:46.335Z",
   "projectDir": "projects/ariadne",
   "summary": {
     "sources": 3,
@@ -18,6 +18,7 @@
     "memoryProposals": 1,
     "agentMail": 1,
     "agentLeases": 1,
+    "hermesCronSnapshots": 0,
     "deploymentSnapshots": 1,
     "healerProposals": 1,
     "githubSnapshots": 1,
@@ -651,37 +652,37 @@
         {
           "taskId": "TASK-001",
           "branch": "jxw/ariadne-task-001",
-          "worktreePath": "<WORKSPACE_ROOT>-task-001"
+          "worktreePath": "<WORKTREE_ROOT>/ariadne-task-001"
         },
         {
           "taskId": "TASK-002",
           "branch": "jxw/ariadne-task-002",
-          "worktreePath": "<WORKSPACE_ROOT>-task-002"
+          "worktreePath": "<WORKTREE_ROOT>/ariadne-task-002"
         },
         {
           "taskId": "TASK-003",
           "branch": "jxw/ariadne-task-003",
-          "worktreePath": "<WORKSPACE_ROOT>-task-003"
+          "worktreePath": "<WORKTREE_ROOT>/ariadne-task-003"
         },
         {
           "taskId": "TASK-004",
           "branch": "jxw/ariadne-task-004",
-          "worktreePath": "<WORKSPACE_ROOT>-task-004"
+          "worktreePath": "<WORKTREE_ROOT>/ariadne-task-004"
         },
         {
           "taskId": "TASK-006",
           "branch": "jxw/ariadne-task-006",
-          "worktreePath": "<WORKSPACE_ROOT>-task-006"
+          "worktreePath": "<WORKTREE_ROOT>/ariadne-task-006"
         },
         {
           "taskId": "TASK-007",
           "branch": "jxw/ariadne-task-007",
-          "worktreePath": "<WORKSPACE_ROOT>-task-007"
+          "worktreePath": "<WORKTREE_ROOT>/ariadne-task-007"
         },
         {
           "taskId": "TASK-005",
           "branch": "jxw/ariadne-task-005",
-          "worktreePath": "<WORKSPACE_ROOT>-task-005"
+          "worktreePath": "<WORKTREE_ROOT>/ariadne-task-005"
         }
       ],
       "stopConditions": [
@@ -980,7 +981,7 @@
   "consoleVisualChecks": {
     "schemaVersion": 1,
     "project": "ariadne",
-    "generatedAt": "2026-05-16T14:47:49.470Z",
+    "generatedAt": "2026-05-16T16:20:46.332Z",
     "htmlPath": "projects/ariadne/console/index.html",
     "status": "passed",
     "summary": {
@@ -1053,9 +1054,9 @@
   "consoleBrowserChecks": {
     "schemaVersion": 1,
     "project": "ariadne",
-    "generatedAt": "2026-05-16T14:47:49.935Z",
+    "generatedAt": "2026-05-16T16:12:46.400Z",
     "htmlPath": "projects/ariadne/console/index.html",
-    "screenshotPath": "projects/ariadne/console/screenshots/console-2026-05-16T14-47-49-935Z.png",
+    "screenshotPath": "projects/ariadne/console/screenshots/console-2026-05-16T16-12-46-400Z.png",
     "status": "passed",
     "viewport": {
       "width": 1440,
@@ -1106,7 +1107,7 @@
         "id": "screenshot",
         "label": "Screenshot captured",
         "status": "passed",
-        "detail": "759958 bytes captured."
+        "detail": "770938 bytes captured."
       }
     ]
   },
@@ -1634,7 +1635,8 @@
         "runId": "run-2026-05-16T11-30-01-596Z",
         "notes": "Lease recorded for roadmap completion tranche."
       }
-    ]
+    ],
+    "hermesCronSnapshots": []
   },
   "infrastructure": {
     "registry": {

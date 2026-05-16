@@ -23,6 +23,7 @@ type ArtifactSpec =
       excludeSuffixes?: string[];
       minimumCount: number;
       recursive?: boolean;
+      excludeDirs?: string[];
     };
 
 const ARTIFACT_SPECS: ArtifactSpec[] = [
@@ -227,7 +228,18 @@ const ARTIFACT_SPECS: ArtifactSpec[] = [
     prefix: "",
     suffix: ".json",
     minimumCount: 1,
-    recursive: true
+    recursive: true,
+    excludeDirs: ["hermes"]
+  },
+  {
+    id: "hermes-cron-snapshots",
+    label: "Hermes cron snapshots",
+    required: false,
+    kind: "matching-files",
+    relativePath: "coordination/hermes",
+    prefix: "hermes-cron-",
+    suffix: ".json",
+    minimumCount: 1
   },
   {
     id: "deployment-snapshots",
@@ -318,6 +330,9 @@ async function matchingFiles(dir: string, spec: Extract<ArtifactSpec, { kind: "m
     for (const entry of entries as import("node:fs").Dirent[]) {
       const filePath = path.join(dir, entry.name);
       if (entry.isDirectory()) {
+        if ((spec.excludeDirs ?? []).includes(entry.name)) {
+          continue;
+        }
         files.push(...(await matchingFiles(filePath, spec)));
       } else if (matchesSpec(entry.name, spec)) {
         files.push(filePath);

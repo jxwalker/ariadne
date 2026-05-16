@@ -1,11 +1,11 @@
 {
   "schemaVersion": 1,
   "project": "ariadne",
-  "generatedAt": "2026-05-16T14:47:48.112Z",
+  "generatedAt": "2026-05-16T16:20:46.800Z",
   "status": "passed",
   "summary": {
     "required": 13,
-    "optional": 17,
+    "optional": 19,
     "present": 29,
     "missingRequired": 0
   },
@@ -247,6 +247,15 @@
       "matches": []
     },
     {
+      "id": "extraction-runner-plans",
+      "label": "OCR/transcription runner plans",
+      "required": false,
+      "path": "projects/ariadne/extractions/plans/extraction-plan-*.json",
+      "status": "missing",
+      "count": 0,
+      "matches": []
+    },
+    {
       "id": "coordination-records",
       "label": "Sleep, memory, or mail records",
       "required": false,
@@ -259,6 +268,15 @@
         "projects/ariadne/coordination/memory-2026-05-16T11-39-24-249Z-1dd70b46.json",
         "projects/ariadne/coordination/sleep-2026-05-16T11-39-24-249Z-0f6ad8b1.json"
       ]
+    },
+    {
+      "id": "hermes-cron-snapshots",
+      "label": "Hermes cron snapshots",
+      "required": false,
+      "path": "projects/ariadne/coordination/hermes/hermes-cron-*.json",
+      "status": "missing",
+      "count": 0,
+      "matches": []
     },
     {
       "id": "deployment-snapshots",

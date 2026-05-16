@@ -70,6 +70,13 @@ vault/projects/<project>/evaluation/behavior-checks.json
 vault/projects/<project>/evaluation/behavior-checks.md
 ```
 
+`hermes-cron-import` writes read-only scheduler evidence:
+
+```text
+vault/projects/<project>/coordination/hermes/hermes-cron-<timestamp>.json
+vault/projects/<project>/coordination/hermes/hermes-cron-<timestamp>.md
+```
+
 `benchmark-pack` writes repeatable input packs:
 
 ```text

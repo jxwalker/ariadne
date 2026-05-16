@@ -31,7 +31,7 @@ The system starts with source-grounded intake: drawings, white papers, dictated 
 - Import token and cost metrics from Hermes, CodeRabbit, OpenAI, CI, or manual JSON exports.
 - Export Ariadne evidence into an optional GBrain import bundle and import GBrain query/eval reports back as evidence.
 - Record behavior-confidence checks for approved review fixtures, mutation gates, approval workflow records, read-only infrastructure snapshots, and non-submitting governance drafts.
-- Record file-backed sleep routines, memory proposals, agent mail, interagent leases, and read-only deployment snapshots.
+- Record file-backed sleep routines, memory proposals, agent mail, interagent leases, read-only Hermes cron snapshots, and read-only deployment snapshots.
 - Render evaluation trend charts in the static console and generate deterministic plus browser-backed console checks.
 - Guard worktree creation without mutating by default.
 - Check whether the expected pipeline artifacts exist before scoring or release decisions.
@@ -44,6 +44,7 @@ The system starts with source-grounded intake: drawings, white papers, dictated 
 - It does not call model APIs.
 - It does not call NotebookLM.
 - It does not mutate Proxmox, TrueNAS, GitHub, runners, or external repos.
+- It does not create, enable, disable, or run Hermes cron jobs.
 - It does not execute generated plans automatically.
 - It does not submit governed OpenScorpion activity.
 
@@ -144,6 +145,7 @@ npm run ariadne -- sleep-record --project ariadne --scope nightly --summary "Rev
 npm run ariadne -- memory-proposal --project ariadne --title "Lesson" --proposal "Keep GBrain as a derived index" --evidence docs/adapters.md
 npm run ariadne -- agent-mail --project ariadne --from planner --to executor --subject "Next slice" --body "Run checks before editing"
 npm run ariadne -- agent-lease --project ariadne --agent executor --resource repo:/ariadne --status acquired
+npm run ariadne -- hermes-cron-import --project ariadne --from hermes-cron.json --host beast
 npm run ariadne -- deployment-snapshot --project ariadne --system proxmox --from deployment.json
 npm run ariadne -- deployment-live-ssh --project ariadne --system dgx-spark --host "DGX Spark" --target james@dgx-spark.lan
 npm run ariadne -- import-ci --project ariadne --from checks.json
