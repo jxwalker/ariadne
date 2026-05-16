@@ -203,9 +203,10 @@ npm run ariadne -- memory-proposal --project ariadne --title "Adapter lesson" --
 npm run ariadne -- agent-mail --project ariadne --from planner --to executor --subject "Next slice" --body "Run checks before editing."
 npm run ariadne -- agent-lease --project ariadne --agent executor --resource repo:/ariadne --status acquired
 npm run ariadne -- hermes-cron-import --project ariadne --from hermes-cron.json --host beast
+npm run ariadne -- hermes-cron-proposal --project ariadne --scope nightly
 ```
 
-These records are intentionally append-only and live under `vault/projects/ariadne/coordination/`. Hermes cron imports are read-only snapshots: Ariadne records what Hermes says is scheduled, but does not create, enable, disable, or run jobs.
+These records are intentionally append-only and live under `vault/projects/ariadne/coordination/`. Hermes cron imports are read-only snapshots and proposals are review-only recommendations: Ariadne records what Hermes says is scheduled, but does not create, enable, disable, or run jobs.
 
 ## Import Deployment Evidence
 

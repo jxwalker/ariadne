@@ -77,6 +77,13 @@ vault/projects/<project>/coordination/hermes/hermes-cron-<timestamp>.json
 vault/projects/<project>/coordination/hermes/hermes-cron-<timestamp>.md
 ```
 
+`hermes-cron-proposal` writes review-only scheduler recommendations:
+
+```text
+vault/projects/<project>/coordination/hermes/hermes-cron-proposal-<timestamp>.json
+vault/projects/<project>/coordination/hermes/hermes-cron-proposal-<timestamp>.md
+```
+
 `benchmark-pack` writes repeatable input packs:
 
 ```text

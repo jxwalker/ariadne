@@ -682,6 +682,32 @@ export interface HermesCronSnapshot {
   raw: unknown;
 }
 
+export interface HermesCronProposal {
+  schemaVersion: 1;
+  id: string;
+  project: string;
+  generatedAt: string;
+  mode: "proposal_only";
+  snapshotRefs: string[];
+  summary: {
+    snapshots: number;
+    jobs: number;
+    enabled: number;
+    disabled: number;
+    proposedActions: number;
+    warnings: string[];
+  };
+  proposedActions: Array<{
+    id: string;
+    kind: "keep" | "review" | "create-candidate";
+    title: string;
+    rationale: string;
+    schedule?: string;
+    sourceJob?: string;
+    evidenceRefs: string[];
+  }>;
+}
+
 export interface DeploymentSnapshot {
   schemaVersion: 1;
   project: string;
@@ -799,6 +825,7 @@ export interface ConsoleData {
     agentMail: number;
     agentLeases: number;
     hermesCronSnapshots: number;
+    hermesCronProposals: number;
     deploymentSnapshots: number;
     healerProposals: number;
     githubSnapshots: number;
@@ -845,6 +872,7 @@ export interface ConsoleData {
     agentMail: AgentMailRecord[];
     agentLeases: AgentLeaseRecord[];
     hermesCronSnapshots: HermesCronSnapshot[];
+    hermesCronProposals: HermesCronProposal[];
   };
   infrastructure: {
     registry?: InfraRegistry;
@@ -878,5 +906,6 @@ export interface ConsoleData {
     extractionResults?: string;
     healerProposals?: string;
     hermesCronSnapshots?: string;
+    hermesCronProposals?: string;
   };
 }

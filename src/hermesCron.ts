@@ -1,10 +1,11 @@
 import fs from "node:fs/promises";
 import path from "node:path";
 import { timestampFile, writeJsonArtifact, writeTextArtifact } from "./artifacts.js";
-import { slugifyProject } from "./paths.js";
-import type { HermesCronSnapshot } from "./types.js";
+import { projectDir, slugifyProject } from "./paths.js";
+import type { HermesCronProposal, HermesCronSnapshot } from "./types.js";
 
 type JsonObject = Record<string, unknown>;
+type SnapshotEvidence = { snapshot: HermesCronSnapshot; artifactRef: string };
 
 export async function importHermesCronSnapshot(input: {
   project: string;
@@ -47,6 +48,46 @@ export async function importHermesCronSnapshot(input: {
   return { jsonPath, markdownPath, snapshot };
 }
 
+export async function generateHermesCronProposal(input: {
+  project: string;
+  vaultRoot: string;
+  scope?: string;
+}): Promise<{ jsonPath: string; markdownPath: string; proposal: HermesCronProposal }> {
+  const project = slugifyProject(input.project);
+  const generatedAt = new Date();
+  const snapshots = await readHermesCronSnapshots(input.vaultRoot, project);
+  const snapshotRefs = snapshots.map((item) => item.artifactRef);
+  const actions = proposedActions(snapshots, input.scope);
+  const warnings = proposalWarnings(snapshots);
+  const jobs = snapshots.flatMap((item) => item.snapshot.jobs);
+  const proposal: HermesCronProposal = {
+    schemaVersion: 1,
+    id: `hermes-cron-proposal-${timestampFile(generatedAt)}`,
+    project,
+    generatedAt: generatedAt.toISOString(),
+    mode: "proposal_only",
+    snapshotRefs,
+    summary: {
+      snapshots: snapshots.length,
+      jobs: jobs.length,
+      enabled: jobs.filter((job) => job.enabled === true).length,
+      disabled: jobs.filter((job) => job.enabled === false).length,
+      proposedActions: actions.length,
+      warnings
+    },
+    proposedActions: actions
+  };
+  const jsonPath = await writeJsonArtifact(input.vaultRoot, project, "coordination/hermes", `${proposal.id}.json`, proposal);
+  const markdownPath = await writeTextArtifact(
+    input.vaultRoot,
+    project,
+    "coordination/hermes",
+    `${proposal.id}.md`,
+    renderProposal(proposal)
+  );
+  return { jsonPath, markdownPath, proposal };
+}
+
 async function readJson(sourcePath: string): Promise<unknown> {
   try {
     return JSON.parse(await fs.readFile(sourcePath, "utf8")) as unknown;
@@ -61,6 +102,81 @@ async function readJson(sourcePath: string): Promise<unknown> {
 function extractJobs(raw: unknown): HermesCronSnapshot["jobs"] {
   const values = candidateJobArrays(raw).flatMap((items) => items);
   return values.map(normaliseJob).filter((job): job is HermesCronSnapshot["jobs"][number] => Boolean(job));
+}
+
+async function readHermesCronSnapshots(vaultRoot: string, project: string): Promise<SnapshotEvidence[]> {
+  const dir = path.join(projectDir(vaultRoot, project), "coordination", "hermes");
+  let names: string[];
+  try {
+    names = await fs.readdir(dir);
+  } catch (error) {
+    if ((error as NodeJS.ErrnoException).code === "ENOENT") return [];
+    throw error;
+  }
+  const snapshots: SnapshotEvidence[] = [];
+  for (const name of names.filter((item) => item.startsWith("hermes-cron-") && item.endsWith(".json")).sort()) {
+    const artifactPath = path.join(dir, name);
+    const value = await readJson(artifactPath);
+    if (isHermesCronSnapshot(value)) {
+      snapshots.push({ snapshot: value, artifactRef: path.relative(vaultRoot, artifactPath) });
+    }
+  }
+  return snapshots;
+}
+
+function proposedActions(snapshots: SnapshotEvidence[], scope?: string): HermesCronProposal["proposedActions"] {
+  const actions: HermesCronProposal["proposedActions"] = [];
+  const jobs = snapshots.flatMap((item) =>
+    item.snapshot.jobs.map((job) => ({
+      artifactRef: item.artifactRef,
+      job
+    }))
+  );
+
+  for (const { artifactRef, job } of jobs.slice(-20)) {
+    const evidenceRefs = [artifactRef];
+    if (job.enabled === false) {
+      actions.push({
+        id: `review-${slugFor(job.name)}`,
+        kind: "review",
+        title: `Review disabled Hermes job: ${job.name}`,
+        rationale: "Disabled scheduler evidence should be reviewed before Ariadne relies on it for sleep or memory routines.",
+        schedule: job.schedule,
+        sourceJob: job.id ?? job.name,
+        evidenceRefs
+      });
+    } else {
+      actions.push({
+        id: `keep-${slugFor(job.name)}`,
+        kind: "keep",
+        title: `Keep Hermes job visible: ${job.name}`,
+        rationale: "Track this existing schedule as evidence before adding mutation-capable cron automation.",
+        schedule: job.schedule,
+        sourceJob: job.id ?? job.name,
+        evidenceRefs
+      });
+    }
+  }
+
+  if (jobs.length === 0) {
+    actions.push({
+      id: "create-candidate-sleep-review",
+      kind: "create-candidate",
+      title: `Draft ${scope ?? "nightly"} Ariadne sleep review job`,
+      rationale: "No imported Hermes scheduler evidence exists yet; create only a proposal until a real Hermes export is imported.",
+      schedule: "0 2 * * *",
+      evidenceRefs: []
+    });
+  }
+
+  return dedupeActions(actions);
+}
+
+function proposalWarnings(snapshots: SnapshotEvidence[]): string[] {
+  if (snapshots.length === 0) {
+    return ["No Hermes cron snapshots were available; proposal is a candidate only."];
+  }
+  return snapshots.flatMap((item) => item.snapshot.summary.warnings).slice(0, 12);
 }
 
 function candidateJobArrays(raw: unknown): unknown[][] {
@@ -184,6 +300,35 @@ function renderSnapshot(snapshot: HermesCronSnapshot): string {
     .join("\n");
 }
 
+function renderProposal(proposal: HermesCronProposal): string {
+  return [
+    "# Hermes Cron Proposal",
+    "",
+    `Generated: ${proposal.generatedAt}`,
+    `Mode: ${proposal.mode}`,
+    "",
+    "## Summary",
+    "",
+    `- Snapshots: ${proposal.summary.snapshots}`,
+    `- Jobs: ${proposal.summary.jobs}`,
+    `- Enabled: ${proposal.summary.enabled}`,
+    `- Disabled: ${proposal.summary.disabled}`,
+    `- Proposed actions: ${proposal.summary.proposedActions}`,
+    "",
+    "## Warnings",
+    "",
+    ...list(proposal.summary.warnings),
+    "",
+    "## Proposed Actions",
+    "",
+    ...proposal.proposedActions.map(
+      (action) =>
+        `- ${action.kind}: ${action.title}${action.schedule ? ` (${action.schedule})` : ""}. ${action.rationale}`
+    ),
+    ""
+  ].join("\n");
+}
+
 function jobLines(jobs: HermesCronSnapshot["jobs"]): string[] {
   if (jobs.length === 0) return ["- none"];
   return jobs.map((job) => {
@@ -200,6 +345,27 @@ function list(items: string[]): string[] {
 
 function unique(values: string[]): string[] {
   return Array.from(new Set(values));
+}
+
+function dedupeActions(actions: HermesCronProposal["proposedActions"]): HermesCronProposal["proposedActions"] {
+  const seen = new Set<string>();
+  return actions.filter((action) => {
+    if (seen.has(action.id)) return false;
+    seen.add(action.id);
+    return true;
+  });
+}
+
+function slugFor(value: string): string {
+  return value
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "")
+    .slice(0, 48);
+}
+
+function isHermesCronSnapshot(value: unknown): value is HermesCronSnapshot {
+  return isObject(value) && value.schemaVersion === 1 && value.mode === "read_only" && Array.isArray(value.jobs);
 }
 
 function portablePath(vaultRoot: string, value: string): string {

@@ -1,11 +1,11 @@
 {
   "schemaVersion": 1,
   "project": "ariadne",
-  "generatedAt": "2026-05-16T16:20:46.800Z",
+  "generatedAt": "2026-05-16T16:30:12.312Z",
   "status": "passed",
   "summary": {
     "required": 13,
-    "optional": 19,
+    "optional": 20,
     "present": 29,
     "missingRequired": 0
   },
@@ -274,6 +274,15 @@
       "label": "Hermes cron snapshots",
       "required": false,
       "path": "projects/ariadne/coordination/hermes/hermes-cron-*.json",
+      "status": "missing",
+      "count": 0,
+      "matches": []
+    },
+    {
+      "id": "hermes-cron-proposals",
+      "label": "Hermes cron proposals",
+      "required": false,
+      "path": "projects/ariadne/coordination/hermes/hermes-cron-proposal-*.json",
       "status": "missing",
       "count": 0,
       "matches": []
