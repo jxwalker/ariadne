@@ -39,6 +39,7 @@ import { generateInfrastructureRegistry } from "./infrastructure.js";
 import { draftOpenScorpionActivity, importInfraSnapshot } from "./infraSnapshot.js";
 import { collectLocalInfraSnapshot, collectSshInfraSnapshot } from "./liveInventory.js";
 import { importNotebookLmExport } from "./notebooklm.js";
+import { notebookLmMutationActionOption, planNotebookLmMutation } from "./notebookLmMutation.js";
 import { mutationTargetOption, planMutationReadiness } from "./mutationReadiness.js";
 import { generateMutationReadinessAudit } from "./mutationReadinessAudit.js";
 import { runMutationDryRun } from "./mutationDryRun.js";
@@ -99,6 +100,7 @@ function usage(): string {
     "  ariadne assemble --project <project> [--max-chars <number>]",
     "  ariadne prd --project <project> [--from <dossier.md>]",
     "  ariadne notebooklm-import --project <project> --from <export.md>",
+    "  ariadne notebooklm-mutation-plan --project <project> --notebook <id> --action <create-source|refresh-source|generate-summary|export-notes> --scope <text> --auth-evidence <paths> --dry-run <cmd> --live-command <cmd> --post-verify <cmd> --rollback <text> [--approval <id|json>] [--risk <low|medium|high>] [--evidence <paths>] [--notes <text>]",
     "  ariadne gsd --project <project>",
     "  ariadne gsd2-export --project <project>",
     "  ariadne gsd2-import --project <project> --from <bundle.json>",
@@ -280,6 +282,29 @@ async function main(): Promise<void> {
     console.log(`NotebookLM Markdown: ${result.markdownPath}`);
     console.log(`Sections: ${result.imported.sections.length}`);
     console.log(`Citations: ${result.imported.citations.length}`);
+    return;
+  }
+
+  if (parsed.command === "notebooklm-mutation-plan") {
+    const result = await planNotebookLmMutation({
+      project,
+      vaultRoot,
+      notebook: requiredOption(parsed.options, "notebook"),
+      action: notebookLmMutationActionOption(requiredOption(parsed.options, "action")),
+      scope: requiredOption(parsed.options, "scope"),
+      authEvidenceRefs: splitList(requiredOption(parsed.options, "auth-evidence")),
+      evidenceRefs: splitList(optionString(parsed.options, "evidence", "")),
+      dryRunCommand: requiredOption(parsed.options, "dry-run"),
+      liveCommand: requiredOption(parsed.options, "live-command"),
+      postVerificationCommand: requiredOption(parsed.options, "post-verify"),
+      rollback: requiredOption(parsed.options, "rollback"),
+      approvalRef: optionString(parsed.options, "approval", "") || undefined,
+      risk: approvalRiskOption(parsed.options, "medium"),
+      notes: optionString(parsed.options, "notes", "") || undefined
+    });
+    console.log(`NotebookLM mutation plan: ${result.markdownPath}`);
+    console.log(`Status: ${result.plan.status}`);
+    console.log(`Execute: ${result.plan.execute}`);
     return;
   }
 
