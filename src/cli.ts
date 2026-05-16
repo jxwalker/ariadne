@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 import path from "node:path";
+import { generateArtifactCheckReport } from "./artifactChecks.js";
 import { importCiStatus, importCodeRabbitReview } from "./ciImport.js";
 import { generateControlReport, recordCheck, recordReview } from "./controlPlane.js";
 import { generateConsoleData } from "./consoleData.js";
@@ -72,6 +73,7 @@ function usage(): string {
     "  ariadne playwright-evidence --project <project> --target-url <url> --status <status>",
     "  ariadne evaluation --project <project> [--target <name>]",
     "  ariadne evaluation-record --project <project> --plan <plan.json> --scores <D1=80,D2=75> [--evidence <paths>]",
+    "  ariadne artifact-checks --project <project>",
     "  ariadne infra --project <project>",
     "  ariadne infra-snapshot --project <project> --from <manifest.json>",
     "  ariadne openscorpion-draft --project <project> --title <title> --type <type> --evidence <paths>",
@@ -303,6 +305,16 @@ async function main(): Promise<void> {
     return;
   }
 
+  if (parsed.command === "artifact-checks") {
+    const result = await generateArtifactCheckReport({ project, vaultRoot });
+    console.log(`Artifact checks: ${result.markdownPath}`);
+    console.log(`Status: ${result.report.status}`);
+    if (result.report.summary.missingRequired > 0) {
+      console.log(`Missing required: ${result.report.summary.missingRequired}`);
+    }
+    return;
+  }
+
   if (parsed.command === "infra") {
     const result = await generateInfrastructureRegistry({ project, vaultRoot });
     console.log(`Infrastructure registry: ${result.jsonPath}`);
@@ -465,6 +477,7 @@ async function main(): Promise<void> {
     });
     const infra = await generateInfrastructureRegistry({ project, vaultRoot });
     const control = await generateControlReport({ project, vaultRoot });
+    const artifactChecks = await generateArtifactCheckReport({ project, vaultRoot });
 
     console.log("Roadmap artifacts generated");
     console.log(`  PRD: ${prd.markdownPath}`);
@@ -475,7 +488,9 @@ async function main(): Promise<void> {
     console.log(`  Evaluation: ${evaluation.markdownPath}`);
     console.log(`  Infrastructure: ${infra.markdownPath}`);
     console.log(`  Control: ${control.markdownPath}`);
+    console.log(`  Artifact checks: ${artifactChecks.markdownPath}`);
     console.log(`  Readiness: ${control.report.status}`);
+    console.log(`  Artifact status: ${artifactChecks.report.status}`);
     return;
   }
 

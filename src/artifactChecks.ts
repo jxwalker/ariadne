@@ -1,0 +1,219 @@
+import fs from "node:fs/promises";
+import path from "node:path";
+import { writeJsonArtifact, writeTextArtifact } from "./artifacts.js";
+import { projectDir, slugifyProject } from "./paths.js";
+import type { ArtifactCheckReport } from "./types.js";
+
+type ArtifactSpec =
+  | {
+      id: string;
+      label: string;
+      required: boolean;
+      kind: "file";
+      relativePath: string;
+    }
+  | {
+      id: string;
+      label: string;
+      required: boolean;
+      kind: "matching-files";
+      relativePath: string;
+      prefix: string;
+      suffix: string;
+      excludeSuffixes?: string[];
+      minimumCount: number;
+    };
+
+const ARTIFACT_SPECS: ArtifactSpec[] = [
+  { id: "manifest", label: "Source manifest", required: true, kind: "file", relativePath: "manifest.jsonl" },
+  { id: "hot-index", label: "Hot index", required: true, kind: "file", relativePath: "HOT_INDEX.md" },
+  {
+    id: "dossier",
+    label: "Context dossier",
+    required: true,
+    kind: "matching-files",
+    relativePath: "context",
+    prefix: "dossier-",
+    suffix: ".md",
+    minimumCount: 1
+  },
+  { id: "prd-json", label: "PRD JSON", required: true, kind: "file", relativePath: "requirements/prd.json" },
+  { id: "prd-markdown", label: "PRD Markdown", required: true, kind: "file", relativePath: "requirements/PRD.md" },
+  { id: "gsd-roadmap", label: "GSD roadmap", required: true, kind: "file", relativePath: "gsd/roadmap.json" },
+  { id: "gsd-tasks", label: "GSD task list", required: true, kind: "file", relativePath: "gsd/TASKS.md" },
+  { id: "gsd2-bundle", label: "GSD2 bundle", required: true, kind: "file", relativePath: "gsd/gsd2-bundle.json" },
+  {
+    id: "execution-runs",
+    label: "Execution run JSON",
+    required: true,
+    kind: "matching-files",
+    relativePath: "execution",
+    prefix: "run-",
+    suffix: ".json",
+    excludeSuffixes: ["-worktree-guard.json"],
+    minimumCount: 1
+  },
+  {
+    id: "playwright-plan",
+    label: "Playwright plan",
+    required: true,
+    kind: "file",
+    relativePath: "verification/playwright-plan.json"
+  },
+  {
+    id: "evaluation-plan",
+    label: "Evaluation plan",
+    required: true,
+    kind: "file",
+    relativePath: "evaluation/evaluation-plan.json"
+  },
+  {
+    id: "infra-registry",
+    label: "Infrastructure registry",
+    required: true,
+    kind: "file",
+    relativePath: "infrastructure/registry.json"
+  },
+  {
+    id: "control-report",
+    label: "Merge-readiness report",
+    required: true,
+    kind: "file",
+    relativePath: "control/merge-readiness.json"
+  },
+  {
+    id: "console-data",
+    label: "Console data projection",
+    required: false,
+    kind: "file",
+    relativePath: "console/console-data.json"
+  },
+  {
+    id: "console-html",
+    label: "Static console",
+    required: false,
+    kind: "file",
+    relativePath: "console/index.html"
+  }
+];
+
+export async function generateArtifactCheckReport(input: {
+  project: string;
+  vaultRoot: string;
+}): Promise<{ jsonPath: string; markdownPath: string; report: ArtifactCheckReport }> {
+  const project = slugifyProject(input.project);
+  const root = projectDir(input.vaultRoot, project);
+  const checks = await Promise.all(ARTIFACT_SPECS.map((spec) => evaluateSpec(input.vaultRoot, root, spec)));
+  const missingRequired = checks.filter((check) => check.required && check.status === "missing").length;
+  const report: ArtifactCheckReport = {
+    schemaVersion: 1,
+    project,
+    generatedAt: new Date().toISOString(),
+    status: missingRequired === 0 ? "passed" : "missing",
+    summary: {
+      required: checks.filter((check) => check.required).length,
+      optional: checks.filter((check) => !check.required).length,
+      present: checks.filter((check) => check.status === "present").length,
+      missingRequired
+    },
+    checks
+  };
+
+  const jsonPath = await writeJsonArtifact(input.vaultRoot, project, "evaluation", "artifact-checks.json", report);
+  const markdownPath = await writeTextArtifact(
+    input.vaultRoot,
+    project,
+    "evaluation",
+    "artifact-checks.md",
+    renderReport(report)
+  );
+  return { jsonPath, markdownPath, report };
+}
+
+async function evaluateSpec(
+  vaultRoot: string,
+  root: string,
+  spec: ArtifactSpec
+): Promise<ArtifactCheckReport["checks"][number]> {
+  if (spec.kind === "file") {
+    const absolutePath = path.join(root, spec.relativePath);
+    const present = await pathExists(absolutePath);
+    return {
+      id: spec.id,
+      label: spec.label,
+      required: spec.required,
+      path: vaultRelative(vaultRoot, absolutePath),
+      status: present ? "present" : "missing"
+    };
+  }
+
+  const absoluteDir = path.join(root, spec.relativePath);
+  const matches = await matchingFiles(absoluteDir, spec);
+  return {
+    id: spec.id,
+    label: spec.label,
+    required: spec.required,
+    path: vaultRelative(vaultRoot, path.join(absoluteDir, `${spec.prefix}*${spec.suffix}`)),
+    status: matches.length >= spec.minimumCount ? "present" : "missing",
+    count: matches.length,
+    matches: matches.map((filePath) => vaultRelative(vaultRoot, filePath))
+  };
+}
+
+async function matchingFiles(dir: string, spec: Extract<ArtifactSpec, { kind: "matching-files" }>): Promise<string[]> {
+  let names: string[];
+  try {
+    names = await fs.readdir(dir);
+  } catch (error) {
+    if ((error as NodeJS.ErrnoException).code === "ENOENT") return [];
+    throw error;
+  }
+
+  return names
+    .filter((name) => name.startsWith(spec.prefix))
+    .filter((name) => name.endsWith(spec.suffix))
+    .filter((name) => !(spec.excludeSuffixes ?? []).some((suffix) => name.endsWith(suffix)))
+    .sort()
+    .map((name) => path.join(dir, name));
+}
+
+async function pathExists(filePath: string): Promise<boolean> {
+  try {
+    await fs.access(filePath);
+    return true;
+  } catch (error) {
+    if ((error as NodeJS.ErrnoException).code === "ENOENT") return false;
+    throw error;
+  }
+}
+
+function renderReport(report: ArtifactCheckReport): string {
+  return [
+    "# Artifact Checks",
+    "",
+    `Project: ${report.project}`,
+    `Status: ${report.status}`,
+    `Generated: ${report.generatedAt}`,
+    "",
+    "## Summary",
+    "",
+    `- Required checks: ${report.summary.required}`,
+    `- Optional checks: ${report.summary.optional}`,
+    `- Present artifacts: ${report.summary.present}`,
+    `- Missing required artifacts: ${report.summary.missingRequired}`,
+    "",
+    "## Checks",
+    "",
+    "| Id | Required | Status | Count | Path |",
+    "| --- | --- | --- | --- | --- |",
+    ...report.checks.map(
+      (check) =>
+        `| ${check.id} | ${check.required ? "yes" : "no"} | ${check.status} | ${check.count ?? "-"} | ${check.path} |`
+    ),
+    ""
+  ].join("\n");
+}
+
+function vaultRelative(vaultRoot: string, filePath: string): string {
+  return path.relative(vaultRoot, filePath);
+}

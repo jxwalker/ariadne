@@ -24,6 +24,7 @@ The system starts with source-grounded intake: drawings, white papers, dictated 
 - Write manifests, hot indexes, context dossiers, PRDs, GSD roadmaps, GSD2 bundles, execution plans, decision records, Playwright plans, infrastructure registries, evaluation plans, and merge-readiness reports.
 - Import manual NotebookLM exports, CI status, CodeRabbit review text, read-only infrastructure snapshots, and Playwright evidence.
 - Guard worktree creation without mutating by default.
+- Check whether the expected pipeline artifacts exist before scoring or release decisions.
 - Record pipeline evaluation scores so we can measure whether the harness is improving.
 
 ## What It Does Not Do Yet
@@ -46,6 +47,7 @@ npm run cli -- ingest --project ariadne /path/to/source.md /path/to/source.docx
 npm run cli -- assemble --project ariadne
 npm run cli -- roadmap --project ariadne --target-url http://localhost:3000 --repo /path/to/repo
 npm run cli -- evaluation --project ariadne --target mac-local
+npm run cli -- artifact-checks --project ariadne
 npm run cli -- control --project ariadne
 npm run cli -- console-data --project ariadne
 npm run cli -- console-html --project ariadne --refresh-data
@@ -66,6 +68,7 @@ vault/projects/<project>/
   decisions/
   infrastructure/
   evaluation/
+  console/
   manifest.jsonl
   HOT_INDEX.md
 ```
@@ -79,9 +82,10 @@ vault/projects/<project>/
 5. Generate execution, Playwright, infrastructure, evaluation, and control artifacts with `roadmap`.
 6. Use `worktree-guard` before creating any task worktree.
 7. Record deterministic checks, Playwright evidence, CI, CodeRabbit, and human reviews.
-8. Use `evaluation` and `evaluation-record` to score the pipeline itself.
-9. Use `console-data` to publish a normalised read-only view for console work.
-10. Use `console-html` to generate a static local console at `console/index.html`.
+8. Use `artifact-checks` to verify the expected evidence spine exists.
+9. Use `evaluation` and `evaluation-record` to score the pipeline itself.
+10. Use `console-data` to publish a normalised read-only view for console work.
+11. Use `console-html` to generate a static local console at `console/index.html`.
 
 ## Adapter Commands
 
@@ -96,6 +100,7 @@ npm run cli -- playwright --project ariadne --target-url http://localhost:3000
 npm run cli -- playwright-evidence --project ariadne --target-url http://localhost:3000 --status skipped
 npm run cli -- evaluation --project ariadne --target mac-local
 npm run cli -- evaluation-record --project ariadne --plan evaluation-plan.json --scores D1=80,D2=75,D3=60
+npm run cli -- artifact-checks --project ariadne
 npm run cli -- import-ci --project ariadne --from checks.json
 npm run cli -- import-coderabbit --project ariadne --from coderabbit.md
 npm run cli -- console-data --project ariadne

@@ -101,6 +101,14 @@ Create an evaluation plan:
 npm run cli -- evaluation --project ariadne --target mac-local
 ```
 
+Check that the expected artifact spine exists:
+
+```bash
+npm run cli -- artifact-checks --project ariadne
+```
+
+The report is written to `vault/projects/ariadne/evaluation/artifact-checks.md` and lists each required or optional artifact path. Required missing artifacts make the report status `missing`.
+
 After a real run, record scores:
 
 ```bash

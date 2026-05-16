@@ -3,6 +3,7 @@ import fs from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
 import { describe, expect, it } from "vitest";
+import { generateArtifactCheckReport } from "../src/artifactChecks.js";
 import { importCiStatus, importCodeRabbitReview } from "../src/ciImport.js";
 import { generateControlReport } from "../src/controlPlane.js";
 import { generateConsoleData } from "../src/consoleData.js";
@@ -12,6 +13,7 @@ import { generateGsd } from "../src/gsd.js";
 import { exportGsd2Bundle, importGsd2Bundle } from "../src/gsdAdapter.js";
 import { generateInfrastructureRegistry } from "../src/infrastructure.js";
 import { draftOpenScorpionActivity, importInfraSnapshot } from "../src/infraSnapshot.js";
+import { generatePlaywrightPlan } from "../src/playwrightPlan.js";
 import { generateEvaluationPlan, recordEvaluationRun } from "../src/evaluation.js";
 import { importNotebookLmExport } from "../src/notebooklm.js";
 import { recordPlaywrightEvidence } from "../src/playwrightEvidence.js";
@@ -115,6 +117,29 @@ describe("roadmap adapters", () => {
         sourcePath: invalidBundle
       })
     ).rejects.toThrow(/task 0 is missing required fields/);
+  });
+
+  it("reports missing and complete pipeline artifact contracts", async () => {
+    const { vaultRoot } = await preparedProject();
+
+    const incomplete = await generateArtifactCheckReport({ project: "ariadne", vaultRoot });
+    expect(incomplete.report.status).toBe("missing");
+    expect(incomplete.report.checks.find((check) => check.id === "evaluation-plan")?.status).toBe("missing");
+
+    await exportGsd2Bundle({ project: "ariadne", vaultRoot });
+    await planExecution({ project: "ariadne", vaultRoot });
+    await generatePlaywrightPlan({ project: "ariadne", vaultRoot, targetUrl: "http://localhost:3000" });
+    await generateEvaluationPlan({ project: "ariadne", vaultRoot, target: "mac-local" });
+    await generateInfrastructureRegistry({ project: "ariadne", vaultRoot });
+    await generateControlReport({ project: "ariadne", vaultRoot });
+
+    const complete = await generateArtifactCheckReport({ project: "ariadne", vaultRoot });
+    expect(complete.report.status).toBe("passed");
+    expect(complete.report.summary.missingRequired).toBe(0);
+    expect(complete.report.checks.find((check) => check.id === "execution-runs")?.count).toBe(1);
+
+    const markdown = await fs.readFile(complete.markdownPath, "utf8");
+    expect(markdown).toContain("| execution-runs | yes | present | 1 |");
   });
 
   it("records CI, CodeRabbit, Playwright, infra, OpenScorpion, and guarded worktree evidence", async () => {

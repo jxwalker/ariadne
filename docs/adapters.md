@@ -47,12 +47,16 @@ Typical fields include status, context, consequences, and source references so l
 
 `evaluation` creates a project evaluation plan with dimensions for evidence fidelity, planning quality, execution safety, verification strength, and operational fit. `evaluation-record` stores scored run evidence so the pipeline can be compared across machines and over time.
 
+`artifact-checks` is a deterministic evaluation sensor. It verifies that the required evidence spine exists before an operator records scores or relies on a control report. Optional console artifacts are reported without blocking the status.
+
 Artifacts:
 
 - `evaluation/evaluation-plan.json`
 - `evaluation/evaluation-plan.md`
 - `evaluation/evaluation-<timestamp>.json`
 - `evaluation/evaluation-<timestamp>.md`
+- `evaluation/artifact-checks.json`
+- `evaluation/artifact-checks.md`
 
 ## Console Data
 

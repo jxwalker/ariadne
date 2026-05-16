@@ -1,0 +1,130 @@
+{
+  "schemaVersion": 1,
+  "project": "ariadne",
+  "generatedAt": "2026-05-16T09:23:35.325Z",
+  "status": "passed",
+  "summary": {
+    "required": 13,
+    "optional": 2,
+    "present": 15,
+    "missingRequired": 0
+  },
+  "checks": [
+    {
+      "id": "manifest",
+      "label": "Source manifest",
+      "required": true,
+      "path": "projects/ariadne/manifest.jsonl",
+      "status": "present"
+    },
+    {
+      "id": "hot-index",
+      "label": "Hot index",
+      "required": true,
+      "path": "projects/ariadne/HOT_INDEX.md",
+      "status": "present"
+    },
+    {
+      "id": "dossier",
+      "label": "Context dossier",
+      "required": true,
+      "path": "projects/ariadne/context/dossier-*.md",
+      "status": "present",
+      "count": 2,
+      "matches": [
+        "projects/ariadne/context/dossier-2026-05-15T21-07-30-662Z.md",
+        "projects/ariadne/context/dossier-2026-05-15T21-29-09-496Z.md"
+      ]
+    },
+    {
+      "id": "prd-json",
+      "label": "PRD JSON",
+      "required": true,
+      "path": "projects/ariadne/requirements/prd.json",
+      "status": "present"
+    },
+    {
+      "id": "prd-markdown",
+      "label": "PRD Markdown",
+      "required": true,
+      "path": "projects/ariadne/requirements/PRD.md",
+      "status": "present"
+    },
+    {
+      "id": "gsd-roadmap",
+      "label": "GSD roadmap",
+      "required": true,
+      "path": "projects/ariadne/gsd/roadmap.json",
+      "status": "present"
+    },
+    {
+      "id": "gsd-tasks",
+      "label": "GSD task list",
+      "required": true,
+      "path": "projects/ariadne/gsd/TASKS.md",
+      "status": "present"
+    },
+    {
+      "id": "gsd2-bundle",
+      "label": "GSD2 bundle",
+      "required": true,
+      "path": "projects/ariadne/gsd/gsd2-bundle.json",
+      "status": "present"
+    },
+    {
+      "id": "execution-runs",
+      "label": "Execution run JSON",
+      "required": true,
+      "path": "projects/ariadne/execution/run-*.json",
+      "status": "present",
+      "count": 3,
+      "matches": [
+        "projects/ariadne/execution/run-2026-05-15T21-29-14-025Z.json",
+        "projects/ariadne/execution/run-2026-05-16T06-09-25-010Z.json",
+        "projects/ariadne/execution/run-2026-05-16T07-16-41-868Z.json"
+      ]
+    },
+    {
+      "id": "playwright-plan",
+      "label": "Playwright plan",
+      "required": true,
+      "path": "projects/ariadne/verification/playwright-plan.json",
+      "status": "present"
+    },
+    {
+      "id": "evaluation-plan",
+      "label": "Evaluation plan",
+      "required": true,
+      "path": "projects/ariadne/evaluation/evaluation-plan.json",
+      "status": "present"
+    },
+    {
+      "id": "infra-registry",
+      "label": "Infrastructure registry",
+      "required": true,
+      "path": "projects/ariadne/infrastructure/registry.json",
+      "status": "present"
+    },
+    {
+      "id": "control-report",
+      "label": "Merge-readiness report",
+      "required": true,
+      "path": "projects/ariadne/control/merge-readiness.json",
+      "status": "present"
+    },
+    {
+      "id": "console-data",
+      "label": "Console data projection",
+      "required": false,
+      "path": "projects/ariadne/console/console-data.json",
+      "status": "present"
+    },
+    {
+      "id": "console-html",
+      "label": "Static console",
+      "required": false,
+      "path": "projects/ariadne/console/index.html",
+      "status": "present"
+    }
+  ]
+}
