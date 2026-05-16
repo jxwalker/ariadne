@@ -1,8 +1,8 @@
 # Deployment Snapshot: proxmox
 
 Mode: read_only
-Imported: 2026-05-16T11:39:35.290Z
-Source: /tmp/ariadne-deployment.json
+Imported: 2026-05-16T12:02:50.904Z
+Source: <EXTERNAL_SOURCE>/ariadne-deployment.json
 
 ## Summary
 

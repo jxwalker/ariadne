@@ -1,11 +1,51 @@
 {
   "schemaVersion": 1,
   "project": "ariadne",
-  "generatedAt": "2026-05-16T11:30:41.552Z",
-  "status": "empty",
-  "runCount": 0,
-  "runs": [],
-  "dimensions": [],
+  "generatedAt": "2026-05-16T12:00:29.828Z",
+  "status": "stable",
+  "runCount": 1,
+  "latestScore": 86,
+  "runs": [
+    {
+      "id": "evaluation-2026-05-16T12-00-29-610Z",
+      "recordedAt": "2026-05-16T12:00:29.611Z",
+      "target": "mac-local",
+      "operator": "codex",
+      "overallScore": 86,
+      "evidenceCount": 3,
+      "regressionCount": 0,
+      "recommendationCount": 1
+    }
+  ],
+  "dimensions": [
+    {
+      "id": "D1",
+      "samples": 1,
+      "latestScore": 88
+    },
+    {
+      "id": "D2",
+      "samples": 1,
+      "latestScore": 86
+    },
+    {
+      "id": "D3",
+      "samples": 1,
+      "latestScore": 84
+    },
+    {
+      "id": "D4",
+      "samples": 1,
+      "latestScore": 86
+    },
+    {
+      "id": "D5",
+      "samples": 1,
+      "latestScore": 82
+    }
+  ],
   "openRegressions": [],
-  "latestRecommendations": []
+  "latestRecommendations": [
+    "Add browser-backed screenshot diffing when Playwright is installed for the console target."
+  ]
 }

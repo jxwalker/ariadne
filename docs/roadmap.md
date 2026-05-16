@@ -158,11 +158,12 @@ Implemented:
 - infra topology view for Macs, DGX Spark, Proxmox, TrueNAS, runners, Hermes, and model endpoints
 - approval queue backed by review, decision, and control artifacts
 - memory, agent-mail, deployment, and GBrain summary panels
+- console visual regression checks
+- evaluation trend charts
 
 Next:
 
-- console visual regression checks
-- evaluation trend charts
+- browser-backed screenshot comparison once Playwright is installed for the console target
 
 ## Milestone 9: Sleep, Memory, And Agent Mail
 

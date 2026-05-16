@@ -10,6 +10,7 @@ import { importCiStatus, importCodeRabbitReview } from "../src/ciImport.js";
 import { generateControlReport } from "../src/controlPlane.js";
 import { generateConsoleData } from "../src/consoleData.js";
 import { generateConsoleHtml } from "../src/consoleHtml.js";
+import { generateConsoleVisualCheckReport } from "../src/consoleVisualChecks.js";
 import { recordAgentLease, recordAgentMail, recordMemoryProposal, recordSleepRoutine } from "../src/coordination.js";
 import { importDeploymentSnapshot } from "../src/deploymentAdapters.js";
 import { planExecution } from "../src/execution.js";
@@ -214,6 +215,15 @@ describe("roadmap adapters", () => {
     const markdown = await fs.readFile(trends.markdownPath, "utf8");
     expect(markdown).toContain("# Evaluation Trends");
     expect(markdown).toContain("Start trend charts.");
+
+    const consoleHtml = await generateConsoleHtml({ project: "ariadne", vaultRoot, refreshData: true });
+    const html = await fs.readFile(consoleHtml.htmlPath, "utf8");
+    expect(html).toContain('data-visual-role="evaluation-trend-chart"');
+    expect(html).toContain("Evaluation Trends");
+
+    const visual = await generateConsoleVisualCheckReport({ project: "ariadne", vaultRoot });
+    expect(visual.report.status).toBe("passed");
+    expect(visual.report.checks.find((check) => check.id === "trend-chart")?.status).toBe("passed");
   });
 
   it("imports and reports token and cost metrics", async () => {
@@ -509,11 +519,14 @@ describe("roadmap adapters", () => {
       vaultRoot,
       refreshData: true
     });
+    const visual = await generateConsoleVisualCheckReport({ project: "ariadne", vaultRoot });
     const html = await fs.readFile(consoleHtml.htmlPath, "utf8");
     expect(html).toContain("<!doctype html>");
     expect(html).toContain("Gate Matrix");
+    expect(html).toContain("Visual Checks");
     expect(html).toContain("console-data");
     expect(html).not.toContain(temp);
+    expect(visual.report.status).toBe("passed");
   });
 });
 

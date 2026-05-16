@@ -1,7 +1,7 @@
 import fs from "node:fs/promises";
 import path from "node:path";
 import { timestampFile, writeJsonArtifact, writeTextArtifact } from "./artifacts.js";
-import { slugifyProject } from "./paths.js";
+import { projectDir, slugifyProject } from "./paths.js";
 import type { DeploymentSnapshot } from "./types.js";
 
 export async function importDeploymentSnapshot(input: {
@@ -18,7 +18,7 @@ export async function importDeploymentSnapshot(input: {
     schemaVersion: 1,
     project,
     importedAt: importedAt.toISOString(),
-    sourcePath,
+    sourcePath: portablePath(input.vaultRoot, project, sourcePath),
     system: input.system,
     mode: "read_only",
     summary: summarise(raw),
@@ -28,6 +28,15 @@ export async function importDeploymentSnapshot(input: {
   const jsonPath = await writeJsonArtifact(input.vaultRoot, project, "deployment", `${name}.json`, snapshot);
   const markdownPath = await writeTextArtifact(input.vaultRoot, project, "deployment", `${name}.md`, renderSnapshot(snapshot));
   return { jsonPath, markdownPath, snapshot };
+}
+
+function portablePath(vaultRoot: string, project: string, filePath: string): string {
+  const workspaceRoot = path.dirname(vaultRoot);
+  const root = projectDir(vaultRoot, project);
+  if (filePath.startsWith(root)) return filePath.split(root).join("<PROJECT_ROOT>");
+  if (filePath.startsWith(vaultRoot)) return filePath.split(vaultRoot).join("<VAULT_ROOT>");
+  if (filePath.startsWith(workspaceRoot)) return filePath.split(workspaceRoot).join("<WORKSPACE_ROOT>");
+  return `<EXTERNAL_SOURCE>/${path.basename(filePath)}`;
 }
 
 export function deploymentSystemOption(value: string): DeploymentSnapshot["system"] {
