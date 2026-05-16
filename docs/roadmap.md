@@ -109,10 +109,11 @@ Implemented:
 - test history through check records
 - mutation-readiness artifacts for future live adapters
 - mutation-readiness audit report for blocked live-adapter plans
+- guarded execution records for approved readiness dry-run commands
 
 Next:
 
-- GitHub mutation and check-retry adapter only after an approved readiness plan passes audit
+- GitHub mutation and check-retry adapter only after an approved readiness plan passes audit and dry-run evidence is recorded
 
 ## Milestone 6: Infrastructure Substrate
 

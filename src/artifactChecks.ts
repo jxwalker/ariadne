@@ -238,6 +238,16 @@ const ARTIFACT_SPECS: ArtifactSpec[] = [
     relativePath: "control/mutation-readiness-audit.json"
   },
   {
+    id: "mutation-dry-runs",
+    label: "Mutation dry-run records",
+    required: false,
+    kind: "matching-files",
+    relativePath: "control/mutation-dry-runs",
+    prefix: "mutation-dry-run-",
+    suffix: ".json",
+    minimumCount: 1
+  },
+  {
     id: "extraction-results",
     label: "OCR/transcription extraction results",
     required: false,

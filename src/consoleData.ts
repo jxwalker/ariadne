@@ -32,6 +32,7 @@ import type {
   InfraRegistry,
   InfraSnapshot,
   MemoryProposalRecord,
+  MutationDryRunRecord,
   MutationReadinessAudit,
   MutationReadinessPlan,
   PlaywrightEvidenceRecord,
@@ -90,6 +91,11 @@ export async function collectConsoleData(vaultRoot: string, projectInput: string
     path.join(dir, "control", "mutation-readiness"),
     isMutationReadinessPlan
   );
+  const mutationDryRuns = await readJsonFiles<MutationDryRunRecord>(
+    path.join(dir, "control", "mutation-dry-runs"),
+    isMutationDryRun
+  );
+  const mutationDryRunsForConsole = mutationDryRuns.map(redactMutationDryRunForConsole);
   const extractionResults = await readJsonFiles<ExtractionResultRecord>(path.join(dir, "extractions"), isExtractionResult);
   const executionRuns = await readJsonFiles<ExecutionRun>(path.join(dir, "execution"), isExecutionRun);
   const decisions = await readJsonFiles<DecisionRecord>(path.join(dir, "decisions"), isDecisionRecord);
@@ -174,6 +180,7 @@ export async function collectConsoleData(vaultRoot: string, projectInput: string
       approvals: approvals.length,
       pendingApprovals: approvals.filter((approval) => approval.status === "requested").length,
       mutationReadinessPlans: mutationReadinessPlans.length,
+      mutationDryRuns: mutationDryRuns.length,
       mutationReadinessAuditStatus: mutationReadinessAudit?.status,
       recoveryIssues: recovery?.issues.length ?? 0,
       consoleBrowserChecks: consoleBrowserChecks?.status,
@@ -190,6 +197,7 @@ export async function collectConsoleData(vaultRoot: string, projectInput: string
     reviews,
     approvals,
     mutationReadinessPlans,
+    mutationDryRuns: mutationDryRunsForConsole,
     mutationReadinessAudit,
     decisions,
     playwrightEvidence,
@@ -243,6 +251,7 @@ export async function collectConsoleData(vaultRoot: string, projectInput: string
       githubSnapshots: await existingPath(vaultRoot, path.join(dir, "integrations", "github")),
       approvals: await existingPath(vaultRoot, path.join(dir, "control", "approvals")),
       mutationReadinessPlans: await existingPath(vaultRoot, path.join(dir, "control", "mutation-readiness")),
+      mutationDryRuns: await existingPath(vaultRoot, path.join(dir, "control", "mutation-dry-runs")),
       mutationReadinessAudit: await existingPath(vaultRoot, path.join(dir, "control", "mutation-readiness-audit.json")),
       recoveryReport: await existingPath(vaultRoot, path.join(dir, "control", "recovery-report.json")),
       extractionResults: await existingPath(vaultRoot, path.join(dir, "extractions")),
@@ -459,6 +468,26 @@ function isMutationReadinessPlan(value: unknown): value is MutationReadinessPlan
     Array.isArray(value.requiredGates) &&
     value.requiredGates.every((item) => typeof item === "string")
   );
+}
+
+function isMutationDryRun(value: unknown): value is MutationDryRunRecord {
+  return (
+    hasSchema(value) &&
+    value.schemaVersion === 1 &&
+    typeof value.id === "string" &&
+    value.id.startsWith("mutation-dry-run-") &&
+    typeof value.planId === "string" &&
+    (value.status === "passed" || value.status === "failed" || value.status === "timed_out") &&
+    value.execute === false
+  );
+}
+
+function redactMutationDryRunForConsole(record: MutationDryRunRecord): MutationDryRunRecord {
+  return {
+    ...record,
+    stdout: `<REDACTED: ${Buffer.byteLength(record.stdout, "utf8")} bytes; see mutation dry-run artifact>`,
+    stderr: `<REDACTED: ${Buffer.byteLength(record.stderr, "utf8")} bytes; see mutation dry-run artifact>`
+  };
 }
 
 function isApprovalStatus(value: unknown): value is ApprovalRecord["status"] | undefined {

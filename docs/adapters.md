@@ -139,11 +139,14 @@ Artifacts:
 
 `mutation-readiness-audit` aggregates all readiness plans and reports whether each plan has approved human authorization, existing evidence refs, a non-mutating dry-run command, a post-action verification command, rollback text, and `execute=false`. It never runs dry-run or live commands.
 
+`mutation-dry-run` executes only the reviewed dry-run command for one readiness plan, and only when that exact plan passes the readiness audit. It captures stdout, stderr, exit code, duration, audit reference, and `execute=false` as evidence. It never runs the proposed live command or post-action verification command.
+
 ```bash
 npm run ariadne -- approval-request --project ariadne --by planner --target github --action "Enable PR mutation adapter" --risk medium --reason "Manual gate before live mutation" --rollback "Disable adapter and return to manual PR flow"
 npm run ariadne -- approval-decision --project ariadne --approval approval-... --status approved --by james --notes "Approved for a bounded test only."
 npm run ariadne -- mutation-readiness --project ariadne --target github --scope "Single PR merge adapter" --auth-evidence control/approvals/approval-...json --dry-run "gh pr view 1 --json statusCheckRollup" --live-command "gh pr merge 1 --squash" --post-verify "gh pr view 1 --json mergeStateStatus,statusCheckRollup" --rollback "Revert merge commit and disable adapter" --approval approval-...
 npm run ariadne -- mutation-readiness-audit --project ariadne
+npm run ariadne -- mutation-dry-run --project ariadne --plan mutation-readiness-github-...
 ```
 
 Artifacts:
@@ -154,6 +157,8 @@ Artifacts:
 - `control/mutation-readiness/mutation-readiness-<target>-<timestamp>.md`
 - `control/mutation-readiness-audit.json`
 - `control/mutation-readiness-audit.md`
+- `control/mutation-dry-runs/mutation-dry-run-<timestamp>.json`
+- `control/mutation-dry-runs/mutation-dry-run-<timestamp>.md`
 
 ## Evaluation
 
