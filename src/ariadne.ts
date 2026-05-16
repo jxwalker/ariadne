@@ -55,7 +55,7 @@ import { generatePlaywrightPlan } from "./playwrightPlan.js";
 import { generatePrd } from "./prd.js";
 import { generateRecoveryReport } from "./recovery.js";
 import { captureTargetAppEvidence, waitUntilOption } from "./targetAppCapture.js";
-import { runTargetMutationExecution } from "./targetMutationExecute.js";
+import { runTargetMutationExecution, targetForMutationExecutionCommand } from "./targetMutationExecute.js";
 import { generateUsageMetricsReport, importUsageMetrics } from "./usageMetrics.js";
 import { assembleDossier, ingestFiles, projectStatus } from "./vault.js";
 import { guardWorktrees } from "./worktreeGuard.js";
@@ -160,6 +160,12 @@ function usage(): string {
     "  ariadne mutation-dry-run --project <project> --plan <id|json> [--timeout-ms <ms>]",
     "  ariadne mutation-execute --project <project> --plan <id|json> --confirm-plan <id> [--timeout-ms <ms>]",
     "  ariadne target-mutation-execute --project <project> --target <target> --plan <id|json> --confirm-plan <id> [--timeout-ms <ms>]",
+    "  ariadne github-mutation-execute --project <project> --plan <id|json> --confirm-plan <id> [--timeout-ms <ms>]",
+    "  ariadne deployment-mutation-execute --project <project> --plan <id|json> --confirm-plan <id> [--timeout-ms <ms>]",
+    "  ariadne hermes-cron-mutation-execute --project <project> --plan <id|json> --confirm-plan <id> [--timeout-ms <ms>]",
+    "  ariadne openscorpion-mutation-execute --project <project> --plan <id|json> --confirm-plan <id> [--timeout-ms <ms>]",
+    "  ariadne gsd2-mutation-execute --project <project> --plan <id|json> --confirm-plan <id> [--timeout-ms <ms>]",
+    "  ariadne notebooklm-mutation-execute --project <project> --plan <id|json> --confirm-plan <id> [--timeout-ms <ms>]",
     "  ariadne control --project <project>",
     "  ariadne recovery-report --project <project>",
     "  ariadne console-data --project <project>",
@@ -1092,6 +1098,23 @@ async function main(): Promise<void> {
       timeoutMs: optionalNumber(parsed.options, "timeout-ms")
     });
     console.log(`Target mutation execution: ${result.markdownPath}`);
+    console.log(`Target: ${result.record.target}`);
+    console.log(`Status: ${result.record.status}`);
+    console.log(`Execute: ${result.record.execute}`);
+    return;
+  }
+
+  const commandTarget = targetForMutationExecutionCommand(parsed.command);
+  if (commandTarget) {
+    const result = await runTargetMutationExecution({
+      project,
+      vaultRoot,
+      target: commandTarget,
+      plan: requiredOption(parsed.options, "plan"),
+      confirmPlan: requiredOption(parsed.options, "confirm-plan"),
+      timeoutMs: optionalNumber(parsed.options, "timeout-ms")
+    });
+    console.log(`${commandTarget} mutation execution: ${result.markdownPath}`);
     console.log(`Target: ${result.record.target}`);
     console.log(`Status: ${result.record.status}`);
     console.log(`Execute: ${result.record.execute}`);
