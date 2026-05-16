@@ -98,17 +98,23 @@ function renderConsole(data: ConsoleData): string {
     metric("Tasks", data.summary.tasks),
     metric("Runs", data.summary.executionRuns),
     metric("Checks", data.summary.checks, failedChecks > 0 ? `${failedChecks} failed` : "recorded"),
-    metric("Evaluation", data.summary.latestEvaluationScore ?? latestEvaluation?.overallScore ?? "none"),
+    metric(
+      "Evaluation",
+      data.summary.latestEvaluationScore ?? latestEvaluation?.overallScore ?? "none",
+      data.summary.evaluationTrendStatus ?? "latest"
+    ),
     "</section>",
     '<section class="layout">',
     '<div class="main-column">',
     section("Gate Matrix", gateMatrix(data)),
+    section("Evaluation Trends", evaluationTrendChart(data)),
     section("Task Flow", taskTable(data)),
     section("Approval Queue", approvalQueue(data)),
     section("Timeline", timelineList(timeline.slice(0, 12))),
     "</div>",
     '<aside class="side-column">',
     section("Evidence Chain", evidenceChain(data)),
+    section("Visual Checks", visualChecks(data)),
     section("Memory And Mail", memoryAndMail(data)),
     section("Infrastructure", infrastructure(data)),
     section("Deployment", deployment(data)),
@@ -182,6 +188,44 @@ function taskTable(data: ConsoleData): string {
   ].join("");
 }
 
+function evaluationTrendChart(data: ConsoleData): string {
+  const trends = data.evaluationTrends;
+  if (!trends || trends.runs.length === 0) return empty("No evaluation trend data is available.");
+
+  const points = trends.runs.map((run, index) => ({
+    label: run.recordedAt,
+    score: run.overallScore,
+    x: trends.runs.length === 1 ? 50 : 8 + (index * 84) / (trends.runs.length - 1),
+    y: 92 - Math.max(0, Math.min(100, run.overallScore)) * 0.82
+  }));
+  const pathData = points
+    .map((point, index) => `${index === 0 ? "M" : "L"} ${point.x.toFixed(2)} ${point.y.toFixed(2)}`)
+    .join(" ");
+  const dimensions = trends.dimensions.slice(0, 5).map((dimension) => {
+    const value = dimension.latestScore ?? 0;
+    return `<div class="trend-row"><span>${escapeHtml(dimension.id)}</span><meter min="0" max="100" value="${escapeHtml(String(value))}"></meter><strong>${escapeHtml(String(value))}</strong></div>`;
+  });
+
+  return [
+    '<div class="trend-card" data-visual-role="evaluation-trend-chart">',
+    '<svg viewBox="0 0 100 100" role="img" aria-label="Evaluation score trend">',
+    '<line x1="8" y1="92" x2="94" y2="92" class="axis"></line>',
+    '<line x1="8" y1="10" x2="8" y2="92" class="axis"></line>',
+    `<path d="${escapeHtml(pathData)}" class="trend-line"></path>`,
+    ...points.map(
+      (point) =>
+        `<circle cx="${point.x.toFixed(2)}" cy="${point.y.toFixed(2)}" r="2.7"><title>${escapeHtml(`${point.label}: ${point.score}`)}</title></circle>`
+    ),
+    "</svg>",
+    '<div class="trend-meta">',
+    `<strong>${escapeHtml(trends.status)}</strong>`,
+    `<span>${escapeHtml(`${trends.runCount} runs / delta ${trends.delta ?? "none"}`)}</span>`,
+    ...dimensions,
+    "</div>",
+    "</div>"
+  ].join("");
+}
+
 function timelineList(items: Array<{ time: string; label: string; detail: string }>): string {
   if (items.length === 0) return empty("No timeline events are available.");
   return [
@@ -205,6 +249,20 @@ function evidenceChain(data: ConsoleData): string {
     ["GBrain reports", data.gbrain?.reports.length ?? 0]
   ];
   return `<div class="chain">${rows.map(([label, value]) => `<div><span>${escapeHtml(String(label))}</span><strong>${escapeHtml(String(value))}</strong></div>`).join("")}</div>`;
+}
+
+function visualChecks(data: ConsoleData): string {
+  const checks = data.consoleVisualChecks;
+  if (!checks) return empty("No console visual check report is available.");
+  return [
+    `<div class="visual-status"><strong class="${statusClass(checks.status)}">${escapeHtml(checks.status)}</strong><span>${escapeHtml(`${checks.summary.passed} passed / ${checks.summary.failed} failed`)}</span></div>`,
+    '<ul class="compact-list">',
+    ...checks.checks.map(
+      (check) =>
+        `<li><strong class="${statusClass(check.status)}">${escapeHtml(check.status)}</strong><span>${escapeHtml(check.label)}</span></li>`
+    ),
+    "</ul>"
+  ].join("");
 }
 
 function approvalQueue(data: ConsoleData): string {
@@ -518,7 +576,7 @@ time {
   display: grid;
   gap: 10px;
 }
-.chain div, .infra div, .artifacts div {
+.chain div, .infra div, .artifacts div, .trend-card {
   border: 1px solid var(--line);
   background: var(--panel);
   padding: 13px;
@@ -548,6 +606,71 @@ time {
   padding: 18px;
   color: var(--muted);
 }
+.trend-card {
+  display: grid;
+  grid-template-columns: minmax(220px, .9fr) minmax(220px, 1fr);
+  gap: 18px;
+  align-items: center;
+}
+.trend-card svg {
+  width: 100%;
+  min-height: 220px;
+}
+.trend-line {
+  fill: none;
+  stroke: var(--accent);
+  stroke-width: 3;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.axis {
+  stroke: var(--line);
+  stroke-width: 1;
+}
+circle {
+  fill: var(--panel);
+  stroke: var(--accent);
+  stroke-width: 2;
+}
+.trend-meta {
+  display: grid;
+  gap: 10px;
+}
+.trend-meta strong {
+  font-family: var(--mono);
+  font-size: 18px;
+}
+.trend-row {
+  display: grid;
+  grid-template-columns: 42px minmax(0, 1fr) 42px;
+  gap: 10px;
+  align-items: center;
+}
+meter {
+  width: 100%;
+}
+.visual-status {
+  border: 1px solid var(--line);
+  background: var(--panel);
+  padding: 13px;
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+}
+.compact-list {
+  list-style: none;
+  margin: 10px 0 0;
+  padding: 0;
+  display: grid;
+  gap: 8px;
+}
+.compact-list li {
+  border-bottom: 1px solid var(--line);
+  padding-bottom: 8px;
+  display: flex;
+  gap: 10px;
+  justify-content: space-between;
+}
 @media (max-width: 980px) {
   .shell { width: min(calc(100vw - 28px), 760px); }
   .hero, .layout { grid-template-columns: 1fr; }
@@ -556,6 +679,7 @@ time {
   .gate-grid { grid-template-columns: 1fr; }
   .gate, .gate:nth-child(3n) { border-right: 0; }
   .timeline li { grid-template-columns: 1fr; gap: 6px; }
+  .trend-card { grid-template-columns: 1fr; }
 }
 `;
 }

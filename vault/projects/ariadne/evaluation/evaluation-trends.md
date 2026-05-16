@@ -1,20 +1,28 @@
 # Evaluation Trends
 
 Project: ariadne
-Status: empty
-Generated: 2026-05-16T11:30:41.552Z
-Runs: 0
-Latest score: none
+Status: stable
+Generated: 2026-05-16T12:00:29.828Z
+Runs: 1
+Latest score: 86
 Previous score: none
 Delta: none
 
 ## Runs
 
-- none
+| Recorded | Target | Operator | Score | Evidence | Regressions | Recommendations |
+| --- | --- | --- | --- | --- | --- | --- |
+| 2026-05-16T12:00:29.611Z | mac-local | codex | 86 | 3 | 0 | 1 |
 
 ## Dimensions
 
-- none
+| Dimension | Samples | Latest | Previous | Delta |
+| --- | --- | --- | --- | --- |
+| D1 | 1 | 88 | - | - |
+| D2 | 1 | 86 | - | - |
+| D3 | 1 | 84 | - | - |
+| D4 | 1 | 86 | - | - |
+| D5 | 1 | 82 | - | - |
 
 ## Latest Regressions
 
@@ -22,4 +30,4 @@ Delta: none
 
 ## Latest Recommendations
 
-- none
+- Add browser-backed screenshot diffing when Playwright is installed for the console target.

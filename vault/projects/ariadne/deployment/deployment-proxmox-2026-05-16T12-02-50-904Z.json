@@ -1,8 +1,8 @@
 {
   "schemaVersion": 1,
   "project": "ariadne",
-  "importedAt": "2026-05-16T11:39:35.290Z",
-  "sourcePath": "/tmp/ariadne-deployment.json",
+  "importedAt": "2026-05-16T12:02:50.904Z",
+  "sourcePath": "<EXTERNAL_SOURCE>/ariadne-deployment.json",
   "system": "proxmox",
   "mode": "read_only",
   "summary": {

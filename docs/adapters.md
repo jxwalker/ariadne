@@ -120,6 +120,13 @@ The record includes source summaries, requirements, GSD tasks, execution runs, c
 
 Use `--refresh-data` to regenerate `console/console-data.json` before rendering the HTML.
 
+`console-visual-checks` performs deterministic checks against the generated console HTML. It verifies the expected visual sections, embedded data, evaluation trend chart or empty state, and absence of local absolute-path leaks.
+
+Artifacts:
+
+- `console/visual-checks.json`
+- `console/visual-checks.md`
+
 ## Infrastructure And Governance
 
 `infra-snapshot` imports a read-only JSON snapshot. `openscorpion-draft` writes a governed activity draft with `submit: false`; live submission requires a later approved adapter.

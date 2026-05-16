@@ -1,0 +1,73 @@
+{
+  "schemaVersion": 1,
+  "project": "ariadne",
+  "generatedAt": "2026-05-16T12:10:58.382Z",
+  "htmlPath": "projects/ariadne/console/index.html",
+  "status": "passed",
+  "summary": {
+    "passed": 10,
+    "failed": 0
+  },
+  "checks": [
+    {
+      "id": "doctype",
+      "label": "HTML document shell",
+      "status": "passed",
+      "detail": "Found <!doctype html>."
+    },
+    {
+      "id": "brand",
+      "label": "Ariadne brand lockup",
+      "status": "passed",
+      "detail": "Found Ariadne Console."
+    },
+    {
+      "id": "gate-matrix",
+      "label": "Gate matrix section",
+      "status": "passed",
+      "detail": "Found Gate Matrix."
+    },
+    {
+      "id": "timeline",
+      "label": "Timeline section",
+      "status": "passed",
+      "detail": "Found Timeline."
+    },
+    {
+      "id": "approval-queue",
+      "label": "Approval queue section",
+      "status": "passed",
+      "detail": "Found Approval Queue."
+    },
+    {
+      "id": "trend-chart",
+      "label": "Evaluation trend chart hook",
+      "status": "passed",
+      "detail": "Found data-visual-role=\"evaluation-trend-chart\"."
+    },
+    {
+      "id": "visual-check-panel",
+      "label": "Visual check panel",
+      "status": "passed",
+      "detail": "Found Visual Checks."
+    },
+    {
+      "id": "embedded-data",
+      "label": "Embedded console data",
+      "status": "passed",
+      "detail": "Found id=\"console-data\"."
+    },
+    {
+      "id": "embedded-data-parse",
+      "label": "Embedded console data parses",
+      "status": "passed",
+      "detail": "Project ariadne summary is present."
+    },
+    {
+      "id": "absolute-path-leaks",
+      "label": "No local absolute path leaks",
+      "status": "passed",
+      "detail": "No local absolute paths found."
+    }
+  ]
+}

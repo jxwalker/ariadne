@@ -31,6 +31,7 @@ npm run build
 - `src/controlPlane.ts`: checks, reviews, merge readiness.
 - `src/consoleData.ts`: normalised read-only console projection.
 - `src/consoleHtml.ts`: static console renderer over console data.
+- `src/consoleVisualChecks.ts`: deterministic visual contract checks for the generated console.
 - `src/evaluation.ts`: pipeline evaluation plans and run scores.
 - `src/evaluationTrends.ts`: longitudinal evaluation report generation.
 - `src/usageMetrics.ts`: token/cost metric import and aggregation.

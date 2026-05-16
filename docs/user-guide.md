@@ -200,9 +200,12 @@ The control report is the answer to: what is proven, what is missing, and what g
 ```bash
 npm run cli -- console-data --project ariadne
 npm run cli -- console-html --project ariadne --refresh-data
+npm run cli -- console-visual-checks --project ariadne
 ```
 
 This writes `vault/projects/ariadne/console/console-data.json`, a read-only projection for future UI work, and `vault/projects/ariadne/console/index.html`, a static console you can open locally. Both are safe to regenerate.
+
+`console-visual-checks` writes `vault/projects/ariadne/console/visual-checks.md`. It verifies the generated console has the expected visual sections, parseable embedded data, a trend chart or empty-state hook, and no local absolute path leaks.
 
 ## Handling Secrets
 

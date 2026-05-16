@@ -147,7 +147,7 @@ export async function importGbrainReport(input: {
     schemaVersion: 1,
     project,
     importedAt: importedAt.toISOString(),
-    sourcePath,
+    sourcePath: portablePath(input.vaultRoot, sourcePath),
     query: stringField(raw, ["query", "question", "prompt"], "unknown query"),
     mode: stringField(raw, ["mode", "searchMode", "search_mode"], "unknown"),
     resultCount: arrayField(raw, ["results", "matches", "documents"]).length,
@@ -287,5 +287,7 @@ function renderReport(report: GbrainReportImport): string {
 
 function portablePath(vaultRoot: string, filePath: string): string {
   const workspaceRoot = path.dirname(vaultRoot);
-  return filePath.split(vaultRoot).join("<VAULT_ROOT>").split(workspaceRoot).join("<WORKSPACE_ROOT>");
+  if (filePath.startsWith(vaultRoot)) return filePath.split(vaultRoot).join("<VAULT_ROOT>");
+  if (filePath.startsWith(workspaceRoot)) return filePath.split(workspaceRoot).join("<WORKSPACE_ROOT>");
+  return `<EXTERNAL_SOURCE>/${path.basename(filePath)}`;
 }

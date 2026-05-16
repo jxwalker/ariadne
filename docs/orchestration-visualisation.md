@@ -59,6 +59,12 @@ Sleep routines, proposed durable memories, interagent messages, and resource lea
 
 Line charts for D1-D5 scores over time, plus regression counts and missing-gate counts.
 
+The static console renders an SVG trend chart from `evaluation/evaluation-trends.json` when scored runs exist. When no scored runs exist, the same section renders an explicit empty state.
+
+### Visual Checks
+
+`console-visual-checks` validates the generated HTML contract before a browser-backed screenshot pass exists. It checks section presence, embedded data parsing, trend chart hooks or empty state, and local absolute-path leaks.
+
 ## Implementation Direction
 
 Start with static JSON artifacts and generated Markdown. `console-data` creates a normalised read-only projection at `console/console-data.json`, and `console-html` renders the first static local console at `console/index.html`. A future live console should read the same JSON contract rather than scanning the vault directly. The console should remain read-only until the artifact model and access control are stable.

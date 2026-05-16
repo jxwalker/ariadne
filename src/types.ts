@@ -433,6 +433,24 @@ export interface UsageMetricsReport {
   latest?: UsageMetricRecord;
 }
 
+export interface ConsoleVisualCheckReport {
+  schemaVersion: 1;
+  project: string;
+  generatedAt: string;
+  htmlPath: string;
+  status: "passed" | "failed";
+  summary: {
+    passed: number;
+    failed: number;
+  };
+  checks: Array<{
+    id: string;
+    label: string;
+    status: "passed" | "failed";
+    detail: string;
+  }>;
+}
+
 export interface BehaviorCheckReport {
   schemaVersion: 1;
   project: string;
@@ -577,6 +595,7 @@ export interface ConsoleData {
     deploymentSnapshots: number;
     readinessStatus?: ControlReport["status"];
     latestEvaluationScore?: number;
+    evaluationTrendStatus?: EvaluationTrendReport["status"];
   };
   sources: Array<{
     id: string;
@@ -597,6 +616,8 @@ export interface ConsoleData {
   decisions: DecisionRecord[];
   playwrightEvidence: PlaywrightEvidenceRecord[];
   evaluations: EvaluationRun[];
+  evaluationTrends?: EvaluationTrendReport;
+  consoleVisualChecks?: ConsoleVisualCheckReport;
   behaviorChecks?: BehaviorCheckReport;
   gbrain?: {
     exportBundle?: GbrainExportBundle;
@@ -627,5 +648,6 @@ export interface ConsoleData {
     usageReport?: string;
     behaviorChecks?: string;
     gbrainExport?: string;
+    consoleVisualChecks?: string;
   };
 }

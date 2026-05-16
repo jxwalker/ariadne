@@ -8,12 +8,14 @@ import type {
   AgentLeaseRecord,
   AgentMailRecord,
   BehaviorCheckReport,
+  ConsoleVisualCheckReport,
   ControlReport,
   ConsoleData,
   DecisionRecord,
   DeploymentSnapshot,
   EvaluationPlan,
   EvaluationRun,
+  EvaluationTrendReport,
   ExecutionRun,
   GbrainExportBundle,
   GbrainReportImport,
@@ -46,7 +48,14 @@ export async function collectConsoleData(vaultRoot: string, projectInput: string
   const roadmap = await readProjectJson<GsdRoadmap>(vaultRoot, project, "gsd", "roadmap.json");
   const readiness = await readProjectJson<ControlReport>(vaultRoot, project, "control", "merge-readiness.json");
   const evaluationPlan = await readProjectJson<EvaluationPlan>(vaultRoot, project, "evaluation", "evaluation-plan.json");
+  const evaluationTrends = await readProjectJson<EvaluationTrendReport>(vaultRoot, project, "evaluation", "evaluation-trends.json");
   const registry = await readProjectJson<InfraRegistry>(vaultRoot, project, "infrastructure", "registry.json");
+  const consoleVisualChecks = await readProjectJson<ConsoleVisualCheckReport>(
+    vaultRoot,
+    project,
+    "console",
+    "visual-checks.json"
+  );
   const behaviorChecks = await readProjectJson<BehaviorCheckReport>(vaultRoot, project, "evaluation", "behavior-checks.json");
   const gbrainExport = await readProjectJson<GbrainExportBundle>(vaultRoot, project, "integrations/gbrain", "gbrain-export.json");
   const checks = await readJsonl<CheckRecord>(path.join(dir, "control", "check-history.jsonl"));
@@ -110,7 +119,8 @@ export async function collectConsoleData(vaultRoot: string, projectInput: string
       agentLeases: agentLeases.length,
       deploymentSnapshots: deploymentSnapshots.length,
       readinessStatus: readiness?.status,
-      latestEvaluationScore: evaluations.at(-1)?.overallScore
+      latestEvaluationScore: evaluations.at(-1)?.overallScore,
+      evaluationTrendStatus: evaluationTrends?.status
     },
     sources,
     requirements: prd?.requirements ?? [],
@@ -121,6 +131,8 @@ export async function collectConsoleData(vaultRoot: string, projectInput: string
     decisions,
     playwrightEvidence,
     evaluations,
+    evaluationTrends,
+    consoleVisualChecks,
     behaviorChecks,
     gbrain: {
       exportBundle: gbrainExport,
@@ -150,7 +162,8 @@ export async function collectConsoleData(vaultRoot: string, projectInput: string
       evaluationTrends: await existingPath(vaultRoot, path.join(dir, "evaluation", "evaluation-trends.json")),
       usageReport: await existingPath(vaultRoot, path.join(dir, "evaluation", "usage-report.json")),
       behaviorChecks: await existingPath(vaultRoot, path.join(dir, "evaluation", "behavior-checks.json")),
-      gbrainExport: await existingPath(vaultRoot, path.join(dir, "integrations", "gbrain", "gbrain-export.json"))
+      gbrainExport: await existingPath(vaultRoot, path.join(dir, "integrations", "gbrain", "gbrain-export.json")),
+      consoleVisualChecks: await existingPath(vaultRoot, path.join(dir, "console", "visual-checks.json"))
     }
   };
   return makePortable(data, vaultRoot);
