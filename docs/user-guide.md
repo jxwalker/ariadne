@@ -198,6 +198,22 @@ npm run cli -- github-snapshot --project ariadne --repo jxwalker/ariadne --pr 10
 
 The `--from` path is deterministic and works with saved fixtures. The `--repo` path uses the local `gh` CLI in read-only mode. The adapter records PR state, draft status, review decision, and check rollup summaries under `vault/projects/ariadne/integrations/github/`.
 
+## Request Mutation Approval
+
+Before enabling any mutation-capable adapter, record the request:
+
+```bash
+npm run cli -- approval-request --project ariadne --by planner --target github --action "Enable PR mutation adapter" --risk medium --reason "Manual gate before live mutation" --rollback "Disable adapter and return to manual PR flow"
+```
+
+After review, record the decision:
+
+```bash
+npm run cli -- approval-decision --project ariadne --approval approval-... --status approved --by james --notes "Approved for a bounded test only."
+```
+
+Approval records live under `vault/projects/ariadne/control/approvals/`. They are evidence and queue items, not executable authority.
+
 ## Check Readiness
 
 ```bash

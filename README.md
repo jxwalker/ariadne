@@ -25,7 +25,7 @@ The system starts with source-grounded intake: drawings, white papers, dictated 
 - Import manual NotebookLM exports, CI status, CodeRabbit review text, read-only GitHub PR/check snapshots, read-only infrastructure snapshots, and Playwright evidence.
 - Import token and cost metrics from Hermes, CodeRabbit, OpenAI, CI, or manual JSON exports.
 - Export Ariadne evidence into an optional GBrain import bundle and import GBrain query/eval reports back as evidence.
-- Record behavior-confidence checks for approved review fixtures, mutation gates, read-only infrastructure snapshots, and non-submitting governance drafts.
+- Record behavior-confidence checks for approved review fixtures, mutation gates, approval workflow records, read-only infrastructure snapshots, and non-submitting governance drafts.
 - Record file-backed sleep routines, memory proposals, agent mail, interagent leases, and read-only deployment snapshots.
 - Render evaluation trend charts in the static console and generate deterministic plus browser-backed console checks.
 - Guard worktree creation without mutating by default.
@@ -127,6 +127,7 @@ npm run cli -- behavior-checks --project ariadne --approved-fixture coderabbit.m
 npm run cli -- gbrain-export --project ariadne
 npm run cli -- gbrain-report-import --project ariadne --from gbrain-report.json
 npm run cli -- github-snapshot --project ariadne --repo jxwalker/ariadne --pr 10
+npm run cli -- approval-request --project ariadne --by planner --target github --action "Enable PR mutation adapter" --risk medium --reason "Manual gate before live mutation" --rollback "Disable adapter and return to manual PR flow"
 npm run cli -- sleep-record --project ariadne --scope nightly --summary "Review stale gates" --evidence control/merge-readiness.md --next "Refresh console data"
 npm run cli -- memory-proposal --project ariadne --title "Lesson" --proposal "Keep GBrain as a derived index" --evidence docs/adapters.md
 npm run cli -- agent-mail --project ariadne --from planner --to executor --subject "Next slice" --body "Run checks before editing"
@@ -134,6 +135,7 @@ npm run cli -- agent-lease --project ariadne --agent executor --resource repo:/a
 npm run cli -- deployment-snapshot --project ariadne --system proxmox --from deployment.json
 npm run cli -- import-ci --project ariadne --from checks.json
 npm run cli -- import-coderabbit --project ariadne --from coderabbit.md
+npm run cli -- approval-request --project ariadne --by planner --target github --action "Enable PR mutation adapter" --risk medium --reason "Manual gate before live mutation" --rollback "Disable adapter and return to manual PR flow"
 npm run cli -- recovery-report --project ariadne
 npm run cli -- console-data --project ariadne
 npm run cli -- console-html --project ariadne --refresh-data

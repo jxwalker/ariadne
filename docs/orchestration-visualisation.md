@@ -10,6 +10,7 @@ The first visualisation should be an operations surface over evidence, not a cha
 - Tasks: GSD tasks, write scopes, verification commands.
 - Execution: run status, worktree guard checks, stop conditions.
 - Recovery: incomplete runs, missing guards, failed checks, pending reviews, and resume actions.
+- Approvals: requested, approved, rejected, or expired mutation gates with risk and rollback notes.
 - Verification: typecheck, tests, build, Playwright evidence, CI, CodeRabbit, GitHub PR/check snapshots.
 - Decisions: accepted decisions and source references.
 - Infrastructure: hosts, runner pools, model endpoints, snapshots.
@@ -54,7 +55,7 @@ Nodes are Macs, DGX Spark, Proxmox, TrueNAS, runners, Hermes instances, and mode
 
 ### Approval Queue
 
-Pending review records, missing readiness gates, and mutation blockers are grouped into one queue so the operator sees what requires human action.
+Pending review records, missing readiness gates, requested approvals, and mutation blockers are grouped into one queue so the operator sees what requires human action.
 
 ### Memory And Mail
 

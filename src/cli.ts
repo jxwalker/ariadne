@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 import path from "node:path";
+import { decideApproval, requestApproval } from "./approvals.js";
 import { generateArtifactCheckReport } from "./artifactChecks.js";
 import { generateBehaviorCheckReport } from "./behaviorChecks.js";
 import { benchmarkSets, materializeBenchmarkPack, parseBenchmarkSet } from "./benchmarkPacks.js";
@@ -105,6 +106,8 @@ function usage(): string {
     "  ariadne import-coderabbit --project <project> --from <review.md>",
     "  ariadne record-check --project <project> --name <name> --status <status> --command <cmd>",
     "  ariadne record-review --project <project> --source <source> --status <status> --summary <text>",
+    "  ariadne approval-request --project <project> --by <name> --target <system> --action <text> --risk <low|medium|high> --reason <text> --rollback <text> [--evidence <paths>]",
+    "  ariadne approval-decision --project <project> --approval <id|json> --status <approved|rejected|expired> --by <name> [--notes <text>]",
     "  ariadne control --project <project>",
     "  ariadne recovery-report --project <project>",
     "  ariadne console-data --project <project>",
@@ -614,6 +617,38 @@ async function main(): Promise<void> {
     return;
   }
 
+  if (parsed.command === "approval-request") {
+    const result = await requestApproval({
+      project,
+      vaultRoot,
+      requestedBy: requiredOption(parsed.options, "by"),
+      target: requiredOption(parsed.options, "target"),
+      action: requiredOption(parsed.options, "action"),
+      risk: approvalRiskOption(parsed.options),
+      reason: requiredOption(parsed.options, "reason"),
+      rollback: requiredOption(parsed.options, "rollback"),
+      evidenceRefs: splitList(optionString(parsed.options, "evidence", ""))
+    });
+    console.log(`Approval request: ${result.markdownPath}`);
+    console.log(`Status: ${result.record.status}`);
+    console.log(`Risk: ${result.record.risk}`);
+    return;
+  }
+
+  if (parsed.command === "approval-decision") {
+    const result = await decideApproval({
+      project,
+      vaultRoot,
+      approval: requiredOption(parsed.options, "approval"),
+      status: approvalDecisionStatusOption(parsed.options),
+      decisionBy: requiredOption(parsed.options, "by"),
+      decisionNotes: optionString(parsed.options, "notes", "") || undefined
+    });
+    console.log(`Approval decision: ${result.markdownPath}`);
+    console.log(`Status: ${result.record.status}`);
+    return;
+  }
+
 
   if (parsed.command === "control") {
     const result = await generateControlReport({ project, vaultRoot });
@@ -805,6 +840,22 @@ function agentLeaseStatusOption(options: Map<string, string | true>): "acquired"
     return value;
   }
   throw new Error("--status must be acquired, released, or expired.");
+}
+
+function approvalRiskOption(options: Map<string, string | true>): "low" | "medium" | "high" {
+  const value = options.get("risk");
+  if (value === "low" || value === "medium" || value === "high") {
+    return value;
+  }
+  throw new Error("--risk must be low, medium, or high.");
+}
+
+function approvalDecisionStatusOption(options: Map<string, string | true>): "approved" | "rejected" | "expired" {
+  const value = options.get("status");
+  if (value === "approved" || value === "rejected" || value === "expired") {
+    return value;
+  }
+  throw new Error("--status must be approved, rejected, or expired.");
 }
 
 main().catch((error: unknown) => {
