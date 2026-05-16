@@ -1173,7 +1173,7 @@ export interface ConsoleData {
   liveAdapterReadiness?: LiveAdapterReadinessReport;
   liveAdapterNextActions?: LiveAdapterNextActionsReport;
   liveAdapterApprovalPack?: LiveAdapterApprovalPack;
-  liveAdapterApprovalReviews: LiveAdapterApprovalReview[];
+  liveAdapterApprovalReviews?: LiveAdapterApprovalReview[];
   recovery?: RecoveryReport;
   readiness?: ControlReport;
   artifacts: {

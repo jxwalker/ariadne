@@ -460,7 +460,7 @@ function liveAdapters(data: ConsoleData): string {
   const actionsByTarget = new Map(nextActions?.targets.map((target) => [target.target, target.actions]) ?? []);
   const approvalTargets = new Set(approvalPack?.packets.map((packet) => packet.target) ?? []);
   const acceptedReviewsByTarget = new Map(
-    data.liveAdapterApprovalReviews
+    (data.liveAdapterApprovalReviews ?? [])
       .filter((review) => review.status === "accepted")
       .map((review) => [review.target, review.id])
   );

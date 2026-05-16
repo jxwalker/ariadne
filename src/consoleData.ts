@@ -498,6 +498,7 @@ function isLiveAdapterApprovalReview(value: unknown): value is LiveAdapterApprov
     value.schemaVersion === 1 &&
     typeof value.id === "string" &&
     value.id.startsWith("approval-review-") &&
+    isNonGenericMutationTarget(value.target) &&
     (value.status === "accepted" || value.status === "needs_changes" || value.status === "rejected") &&
     value.mutationApproved === false
   );
@@ -603,6 +604,10 @@ function isMutationTarget(value: unknown): value is MutationReadinessPlan["targe
     value === "notebooklm" ||
     value === "generic"
   );
+}
+
+function isNonGenericMutationTarget(value: unknown): value is Exclude<MutationReadinessPlan["target"], "generic"> {
+  return isMutationTarget(value) && value !== "generic";
 }
 
 function isSleepRoutine(value: unknown): value is SleepRoutineRecord {

@@ -252,6 +252,7 @@ Artifacts:
 - `control/live-adapter-next-actions.json`
 - `control/live-adapter-approval-pack.json`
 - `control/live-adapter-approval-reviews/approval-review-<target>-<timestamp>.json`
+- `control/live-adapter-approval-reviews/approval-review-<target>-<timestamp>.md`
 
 ## Evaluation
 

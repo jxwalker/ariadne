@@ -911,7 +911,11 @@ describe("roadmap adapters", () => {
     expect(console.data.summary.acceptedLiveAdapterApprovalReviews).toBe(1);
     expect(console.data.liveAdapterNextActions?.targets.some((target) => target.target === "github")).toBe(true);
     expect(console.data.liveAdapterApprovalPack?.packets.some((packet) => packet.target === "deployment")).toBe(true);
-    expect(console.data.liveAdapterApprovalReviews.some((review) => review.target === "github" && review.status === "accepted")).toBe(true);
+    expect(
+      (console.data.liveAdapterApprovalReviews ?? []).some(
+        (review) => review.target === "github" && review.status === "accepted"
+      )
+    ).toBe(true);
     expect(console.data.behaviorChecks?.status).toBe("passed");
 
     const artifactChecks = await generateArtifactCheckReport({ project: "ariadne", vaultRoot });

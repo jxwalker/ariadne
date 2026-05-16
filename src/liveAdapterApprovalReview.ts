@@ -19,7 +19,7 @@ export async function recordLiveAdapterApprovalReview(input: {
   const project = slugifyProject(input.project);
   const packetRef = input.packetRef ?? "control/live-adapter-approval-pack.json";
   const packetPath = resolveProjectPath(input.vaultRoot, project, packetRef);
-  const packet = JSON.parse(await fs.readFile(packetPath, "utf8")) as LiveAdapterApprovalPack;
+  const packet = await loadApprovalPack(packetPath, project, packetRef);
   if (packet.project !== project) {
     throw new Error(`Approval pack ${packetRef} belongs to ${packet.project}, not ${project}.`);
   }
@@ -96,6 +96,35 @@ async function assertEvidenceRefsExist(vaultRoot: string, project: string, refs:
 
 function resolveProjectPath(vaultRoot: string, project: string, ref: string): string {
   return path.isAbsolute(ref) ? ref : path.join(projectDir(vaultRoot, project), ref);
+}
+
+async function loadApprovalPack(packetPath: string, project: string, packetRef: string): Promise<LiveAdapterApprovalPack> {
+  let parsed: unknown;
+  try {
+    parsed = JSON.parse(await fs.readFile(packetPath, "utf8"));
+  } catch (error) {
+    throw new Error(
+      `Failed to load approval packet ${packetRef} for project ${project} at ${packetPath}: ${(error as Error).message}`
+    );
+  }
+  if (!isLiveAdapterApprovalPack(parsed)) {
+    throw new Error(`Approval packet ${packetRef} for project ${project} is not a valid live-adapter approval pack.`);
+  }
+  return parsed;
+}
+
+function isLiveAdapterApprovalPack(value: unknown): value is LiveAdapterApprovalPack {
+  return (
+    isRecord(value) &&
+    value.schemaVersion === 1 &&
+    typeof value.project === "string" &&
+    Array.isArray(value.packets) &&
+    value.packets.every((packet) => isRecord(packet) && typeof packet.target === "string")
+  );
+}
+
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return Boolean(value && typeof value === "object" && !Array.isArray(value));
 }
 
 function renderReview(record: LiveAdapterApprovalReview): string {
