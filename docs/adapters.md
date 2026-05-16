@@ -54,13 +54,19 @@ Artifacts:
 - `evaluation/evaluation-<timestamp>.json`
 - `evaluation/evaluation-<timestamp>.md`
 
-## Dashboard Data
+## Console Data
 
-`dashboard-data` writes a normalised read-only projection of the vault to:
+`console-data` writes a normalised read-only projection of the vault to:
 
-- `dashboard/dashboard-data.json`
+- `console/console-data.json`
 
-The record includes source summaries, requirements, GSD tasks, execution runs, checks, reviews, decisions, Playwright evidence, evaluation runs, infrastructure registry/snapshots, merge readiness, and key artifact paths. It is intended as the stable data contract for future dashboard UI work.
+The record includes source summaries, requirements, GSD tasks, execution runs, checks, reviews, decisions, Playwright evidence, evaluation runs, infrastructure registry/snapshots, merge readiness, and key artifact paths. It is intended as the stable data contract for future console UI work.
+
+`console-html` renders that contract into:
+
+- `console/index.html`
+
+Use `--refresh-data` to regenerate `console/console-data.json` before rendering the HTML.
 
 ## Infrastructure And Governance
 

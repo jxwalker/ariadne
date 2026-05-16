@@ -143,7 +143,11 @@ export async function generatePrd(options: GeneratePrdOptions): Promise<{ jsonPa
 
   const resolvedSource = path.resolve(sourcePath);
   const text = await fs.readFile(resolvedSource, "utf8");
-  const sourceRefs = sourceRefsFromText(resolvedSource, text);
+  const relativeSource = path.relative(options.vaultRoot, resolvedSource);
+  const sourceRef = relativeSource.startsWith("..")
+    ? resolvedSource
+    : `<VAULT_ROOT>/${relativeSource.split(path.sep).join("/")}`;
+  const sourceRefs = sourceRefsFromText(sourceRef, text);
   const requirements = CORE_REQUIREMENTS.map((requirement) => ({
     ...requirement,
     sourceRefs
@@ -166,7 +170,7 @@ export async function generatePrd(options: GeneratePrdOptions): Promise<{ jsonPa
     ],
     requirements,
     ambiguities: ambiguitiesFromText(text),
-    sourceDossier: resolvedSource
+    sourceDossier: sourceRef
   };
 
   const markdown = renderPrdMarkdown(prd);

@@ -6,14 +6,14 @@ import { assembleDossier, ingestFiles, projectStatus } from "../src/vault.js";
 
 describe("source intake", () => {
   it("preserves a raw source, extracts text, and assembles a dossier", async () => {
-    const temp = await fs.mkdtemp(path.join(os.tmpdir(), "dev-pipeline-"));
+    const temp = await fs.mkdtemp(path.join(os.tmpdir(), "ariadne-"));
     const source = path.join(temp, "note.md");
     const vaultRoot = path.join(temp, "vault");
 
     await fs.writeFile(source, "# Note\n\nRun unit tests and Playwright UI tests before completion.\n");
 
     const records = await ingestFiles([source], {
-      project: "Agentic Coding",
+      project: "Ariadne",
       vaultRoot,
       notes: "test fixture"
     });
@@ -27,28 +27,28 @@ describe("source intake", () => {
     expect(stored).toContain("Playwright UI tests");
 
     const dossier = await assembleDossier({
-      project: "agentic-coding",
+      project: "ariadne",
       vaultRoot,
       maxCharsPerSource: 2000
     });
     const dossierText = await fs.readFile(dossier, "utf8");
-    expect(dossierText).toContain("Context Dossier: agentic-coding");
+    expect(dossierText).toContain("Context Dossier: ariadne");
     expect(dossierText).toContain("Playwright UI tests");
 
-    const status = await projectStatus(vaultRoot, "agentic-coding");
+    const status = await projectStatus(vaultRoot, "ariadne");
     expect(status.records).toBe(1);
     expect(status.extracted).toBe(1);
   });
 
   it("creates handoff instructions for image sources", async () => {
-    const temp = await fs.mkdtemp(path.join(os.tmpdir(), "dev-pipeline-"));
+    const temp = await fs.mkdtemp(path.join(os.tmpdir(), "ariadne-"));
     const source = path.join(temp, "sketch.png");
     const vaultRoot = path.join(temp, "vault");
 
     await fs.writeFile(source, "not a real png, but enough for source-kind routing");
 
     const records = await ingestFiles([source], {
-      project: "Agentic Coding",
+      project: "Ariadne",
       vaultRoot,
       sensitivity: "confidential"
     });

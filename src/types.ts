@@ -311,7 +311,7 @@ export interface EvaluationRun {
   recommendations: string[];
 }
 
-export interface DashboardData {
+export interface ConsoleData {
   schemaVersion: 1;
   project: string;
   generatedAt: string;

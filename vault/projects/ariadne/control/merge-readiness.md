@@ -1,0 +1,30 @@
+# Merge Readiness: ariadne
+
+Generated: 2026-05-16T07:16:41.872Z
+Status: review_required
+
+## Evidence
+
+- requirements/prd.json
+- gsd/roadmap.json
+- verification/commands.json
+- Playwright plan: 7 scenarios for http://localhost:3000
+- Execution run run-2026-05-16T07-16-41-868Z: planned
+- GSD tasks: 7
+- Check typecheck: passed (npm run check)
+- Check unit-tests: passed (npm test)
+- Check build: passed (npm run build)
+
+## Missing
+
+- Execution run run-2026-05-16T07-16-41-868Z is not complete
+- CodeRabbit or human review approval
+
+## Merge Gates
+
+- typecheck passed
+- unit tests passed
+- build passed
+- Playwright evidence captured for UI work
+- CodeRabbit or human review completed
+- human approval present for infrastructure or external repo mutation

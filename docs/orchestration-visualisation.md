@@ -50,10 +50,10 @@ Line charts for D1-D5 scores over time, plus regression counts and missing-gate 
 
 ## Implementation Direction
 
-Start with static JSON artifacts and generated Markdown. `dashboard-data` now creates a normalised read-only projection at `dashboard/dashboard-data.json`; the next local web dashboard should read that file rather than scanning the vault directly. The dashboard should remain read-only until the artifact model and access control are stable.
+Start with static JSON artifacts and generated Markdown. `console-data` creates a normalised read-only projection at `console/console-data.json`, and `console-html` renders the first static local console at `console/index.html`. A future live console should read the same JSON contract rather than scanning the vault directly. The console should remain read-only until the artifact model and access control are stable.
 
 ## Integration Lessons From Current Tools
 
 - Hermes and Hermes Web UI show that sessions, memory, scheduled jobs, logs, model config, and terminal backends need one visible operations surface.
 - Mission Control-style systems show the value of a shared UI/API object model for tasks, agents, gateways, approvals, and audit history.
-- The dev-pipeline-specific gap is evidence lineage: every visual state should link back to a file artifact.
+- The Ariadne-specific gap is evidence lineage: every visual state should link back to a file artifact.

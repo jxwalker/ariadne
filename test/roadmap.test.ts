@@ -12,14 +12,14 @@ import { assembleDossier, ingestFiles } from "../src/vault.js";
 
 describe("roadmap generation", () => {
   it("turns an evidence dossier into PRD, GSD, execution, verification, infra, and control artifacts", async () => {
-    const temp = await fs.mkdtemp(path.join(os.tmpdir(), "dev-pipeline-roadmap-"));
+    const temp = await fs.mkdtemp(path.join(os.tmpdir(), "ariadne-roadmap-"));
     const source = path.join(temp, "manifesto.md");
     const vaultRoot = path.join(temp, "vault");
 
     await fs.writeFile(
       source,
       [
-        "# Agentic Coding System",
+        "# Ariadne",
         "",
         "Use NotebookLM for grounded source synthesis.",
         "Use GSD2 for task decomposition.",
@@ -29,29 +29,29 @@ describe("roadmap generation", () => {
       ].join("\n")
     );
 
-    await ingestFiles([source], { project: "agentic-coding", vaultRoot });
-    await assembleDossier({ project: "agentic-coding", vaultRoot, maxCharsPerSource: 4000 });
+    await ingestFiles([source], { project: "ariadne", vaultRoot });
+    await assembleDossier({ project: "ariadne", vaultRoot, maxCharsPerSource: 4000 });
 
-    const prd = await generatePrd({ project: "agentic-coding", vaultRoot });
+    const prd = await generatePrd({ project: "ariadne", vaultRoot });
     expect(prd.prd.requirements).toHaveLength(7);
 
-    const gsd = await generateGsd({ project: "agentic-coding", vaultRoot });
+    const gsd = await generateGsd({ project: "ariadne", vaultRoot });
     expect(gsd.roadmap.milestones.flatMap((milestone) => milestone.tasks)).toHaveLength(7);
 
-    const execution = await planExecution({ project: "agentic-coding", vaultRoot, repoPath: temp });
+    const execution = await planExecution({ project: "ariadne", vaultRoot, repoPath: temp });
     expect(execution.run.status).toBe("planned");
 
     const playwright = await generatePlaywrightPlan({
-      project: "agentic-coding",
+      project: "ariadne",
       vaultRoot,
       targetUrl: "http://localhost:6001"
     });
     expect(playwright.plan.targetUrl).toBe("http://localhost:6001");
 
-    const infra = await generateInfrastructureRegistry({ project: "agentic-coding", vaultRoot });
+    const infra = await generateInfrastructureRegistry({ project: "ariadne", vaultRoot });
     expect(infra.registry.hosts.map((host) => host.id)).toContain("beast");
 
-    const control = await generateControlReport({ project: "agentic-coding", vaultRoot });
+    const control = await generateControlReport({ project: "ariadne", vaultRoot });
     expect(control.report.status).toBe("review_required");
     expect(control.report.missing).toContain(`Execution run ${execution.run.id} is not complete`);
   });

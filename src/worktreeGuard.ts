@@ -15,8 +15,12 @@ export async function guardWorktrees(input: {
   const run = JSON.parse(await fs.readFile(path.resolve(input.runFile), "utf8")) as ExecutionRun;
   const checks: WorktreeGuardReport["checks"] = [];
 
-  if (!run.repoPath) {
-    checks.push({ name: "repoPath", status: "failed", detail: "Execution run has no repository path." });
+  if (!run.repoPath || isPlaceholderPath(run.repoPath)) {
+    checks.push({
+      name: "repoPath",
+      status: "failed",
+      detail: run.repoPath ? `Execution run has placeholder repository path ${run.repoPath}.` : "Execution run has no repository path."
+    });
   } else {
     checks.push({ name: "repoPath", status: "passed", detail: run.repoPath });
     const statusResult = tryGit(run.repoPath, ["status", "--porcelain"]);
@@ -111,6 +115,10 @@ function tryGit(repoPath: string, args: string[]): { ok: true; output: string } 
     const message = error instanceof Error ? error.message : String(error);
     return { ok: false, error: `git ${args.join(" ")} failed in ${repoPath}: ${message}` };
   }
+}
+
+function isPlaceholderPath(value: string): boolean {
+  return value.includes("<REPO_ROOT>");
 }
 
 function resolveBaseRef(repoPath: string): string {

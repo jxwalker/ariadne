@@ -15,13 +15,13 @@ Reference: https://martinfowler.com/articles/harness-engineering.html
 
 ## Hermes
 
-Hermes Agent is relevant because it already includes memory, scheduled automation, multi-backend terminal execution, subagents, and a gateway model. The integration lesson is to treat Hermes as a runtime/supervisor and preserve `dev-pipeline` as the evidence/control layer.
+Hermes Agent is relevant because it already includes memory, scheduled automation, multi-backend terminal execution, subagents, and a gateway model. The integration lesson is to treat Hermes as a runtime/supervisor and preserve `ariadne` as the evidence/control layer.
 
 Reference: https://github.com/NousResearch/hermes-agent
 
 ## Hermes Web UI
 
-Hermes Web UI shows useful dashboard primitives: chat sessions, scheduled jobs, usage analytics, profile isolation, skills, memory, logs, web terminal, and a BFF layer over the Hermes gateway. The relevant design pattern is the BFF/dashboard reading runtime state while respecting profile and credential boundaries.
+Hermes Web UI shows useful console primitives: chat sessions, scheduled jobs, usage analytics, profile isolation, skills, memory, logs, web terminal, and a BFF layer over the Hermes gateway. The relevant design pattern is the BFF/console reading runtime state while respecting profile and credential boundaries.
 
 Reference: https://github.com/EKKOLearnAI/hermes-web-ui
 
@@ -33,7 +33,7 @@ Reference: https://github.com/abhi1693/openclaw-mission-control
 
 ## Design Consequence
 
-The dev-pipeline dashboard should start as a read-only vault viewer with:
+The Ariadne Console should start as a read-only vault viewer with:
 
 - evidence lineage
 - gate status

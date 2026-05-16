@@ -29,7 +29,8 @@ npm run build
 - `src/worktreeGuard.ts`: git readiness checks and optional guarded worktree creation.
 - `src/playwrightPlan.ts` and `src/playwrightEvidence.ts`: UI verification planning and evidence.
 - `src/controlPlane.ts`: checks, reviews, merge readiness.
-- `src/dashboardData.ts`: normalised read-only dashboard projection.
+- `src/consoleData.ts`: normalised read-only console projection.
+- `src/consoleHtml.ts`: static console renderer over console data.
 - `src/evaluation.ts`: pipeline evaluation plans and run scores.
 - `src/infrastructure.ts` and `src/infraSnapshot.ts`: substrate registry and read-only imports.
 - `src/types.ts`: shared record contracts.

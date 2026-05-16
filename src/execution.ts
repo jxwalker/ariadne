@@ -30,14 +30,16 @@ export async function planExecution(options: PlanExecutionOptions): Promise<{
     project,
     createdAt,
     taskIds: tasks.map((task) => task.id),
-    repoPath,
-    branchPrefix: "jxw/dev-pipeline",
+    repoPath: repoPath ?? "<REPO_ROOT>",
+    branchPrefix: "jxw/ariadne",
     status: "planned",
     gates: ["npm run check", "npm test", "npm run build", "review evidence", "human approval before external mutation"],
     worktrees: tasks.map((task) => ({
       taskId: task.id,
-      branch: `jxw/dev-pipeline-${task.id.toLowerCase()}`,
-      worktreePath: repoPath ? path.join(path.dirname(repoPath), `${path.basename(repoPath)}-${task.id.toLowerCase()}`) : `<repo>-${task.id.toLowerCase()}`
+      branch: `jxw/ariadne-${task.id.toLowerCase()}`,
+      worktreePath: repoPath
+        ? path.join(path.dirname(repoPath), `${path.basename(repoPath)}-${task.id.toLowerCase()}`)
+        : `<REPO_ROOT>-${task.id.toLowerCase()}`
     })),
     stopConditions: [
       "A verification command fails twice for the same reason.",
@@ -70,7 +72,7 @@ function renderRun(run: ExecutionRun, tasks: GsdTask[]): string {
     "",
     `Project: ${run.project}`,
     `Status: ${run.status}`,
-    run.repoPath ? `Repository: ${run.repoPath}` : "Repository: not bound",
+    `Repository: ${run.repoPath ?? "<REPO_ROOT>"}`,
     "",
     "## Worktrees",
     "",
