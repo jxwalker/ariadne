@@ -29,6 +29,7 @@ npm run build
 - `src/worktreeGuard.ts`: git readiness checks and optional guarded worktree creation.
 - `src/playwrightPlan.ts` and `src/playwrightEvidence.ts`: UI verification planning and evidence.
 - `src/controlPlane.ts`: checks, reviews, merge readiness.
+- `src/recovery.ts`: crash recovery reports from recorded vault state.
 - `src/consoleData.ts`: normalised read-only console projection.
 - `src/consoleHtml.ts`: static console renderer over console data.
 - `src/consoleVisualChecks.ts`: deterministic visual contract checks for the generated console.

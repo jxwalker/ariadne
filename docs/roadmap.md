@@ -69,11 +69,11 @@ Implemented:
 - stop conditions and human escalation
 - guarded worktree readiness checks
 - read-only GitHub PR/check snapshot records
+- crash recovery reports from recorded state files
 
 Next:
 
 - mutation-capable commit/PR/check/review loop after explicit approval
-- crash recovery from state files
 
 ## Milestone 4: UI Verification
 

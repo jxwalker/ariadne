@@ -206,6 +206,14 @@ npm run cli -- control --project ariadne
 
 The control report is the answer to: what is proven, what is missing, and what gate still blocks the work?
 
+## Recover Interrupted Work
+
+```bash
+npm run cli -- recovery-report --project ariadne
+```
+
+The recovery report reads the recorded execution runs, worktree guard files, check history, review history, and merge-readiness report. It writes `vault/projects/ariadne/control/recovery-report.md` with resume actions for each run and a list of issues that need attention before continuing.
+
 ## Publish Console Data
 
 ```bash

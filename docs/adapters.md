@@ -57,6 +57,15 @@ Artifacts:
 - `integrations/github/github-snapshot-<timestamp>.json`
 - `integrations/github/github-snapshot-<timestamp>.md`
 
+## Recovery
+
+`recovery-report` reads the vault state and writes a crash-resume report without mutating worktrees, branches, PRs, or external systems. It identifies incomplete execution runs, missing worktree guard reports, failed checks, pending reviews, and missing readiness gates.
+
+Artifacts:
+
+- `control/recovery-report.json`
+- `control/recovery-report.md`
+
 ## Evaluation
 
 `evaluation` creates a project evaluation plan with dimensions for evidence fidelity, planning quality, execution safety, verification strength, and operational fit. `evaluation-record` stores scored run evidence so the pipeline can be compared across machines and over time.
@@ -126,7 +135,7 @@ Artifacts are written under `coordination/`, `coordination/mail/`, and `coordina
 
 - `console/console-data.json`
 
-The record includes source summaries, requirements, GSD tasks, execution runs, checks, reviews, decisions, Playwright evidence, evaluation runs, GitHub snapshots, infrastructure registry/snapshots, merge readiness, and key artifact paths. It is intended as the stable data contract for future console UI work.
+The record includes source summaries, requirements, GSD tasks, execution runs, checks, reviews, decisions, Playwright evidence, evaluation runs, GitHub snapshots, recovery state, infrastructure registry/snapshots, merge readiness, and key artifact paths. It is intended as the stable data contract for future console UI work.
 
 `console-html` renders that contract into:
 

@@ -617,6 +617,34 @@ export interface GithubSnapshot {
   raw: unknown;
 }
 
+export interface RecoveryReport {
+  schemaVersion: 1;
+  project: string;
+  generatedAt: string;
+  status: "ready" | "attention_required";
+  summary: {
+    executionRuns: number;
+    incompleteRuns: number;
+    missingWorktreeGuards: number;
+    failedChecks: number;
+    pendingReviews: number;
+    missingGates: number;
+  };
+  resumes: Array<{
+    runId: string;
+    runStatus: ExecutionRun["status"];
+    createdAt: string;
+    nextAction: string;
+    evidenceRefs: string[];
+  }>;
+  issues: Array<{
+    kind: "execution" | "guard" | "check" | "review" | "gate";
+    severity: "info" | "warning" | "blocking";
+    detail: string;
+    evidenceRef?: string;
+  }>;
+}
+
 export interface ConsoleData {
   schemaVersion: 1;
   project: string;
@@ -638,6 +666,7 @@ export interface ConsoleData {
     agentLeases: number;
     deploymentSnapshots: number;
     githubSnapshots: number;
+    recoveryIssues: number;
     readinessStatus?: ControlReport["status"];
     latestEvaluationScore?: number;
     evaluationTrendStatus?: EvaluationTrendReport["status"];
@@ -684,6 +713,7 @@ export interface ConsoleData {
   github: {
     snapshots: GithubSnapshot[];
   };
+  recovery?: RecoveryReport;
   readiness?: ControlReport;
   artifacts: {
     hotIndex?: string;
@@ -698,5 +728,6 @@ export interface ConsoleData {
     gbrainExport?: string;
     consoleVisualChecks?: string;
     githubSnapshots?: string;
+    recoveryReport?: string;
   };
 }
