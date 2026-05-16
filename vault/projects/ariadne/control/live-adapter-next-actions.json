@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "project": "ariadne",
-  "generatedAt": "2026-05-16T22:09:50.788Z",
+  "generatedAt": "2026-05-16T22:15:34.341Z",
   "status": "actions_required",
   "summary": {
     "targets": 6,
@@ -24,19 +24,19 @@
         {
           "id": "github-audit-fix",
           "status": "pending",
-          "title": "Fix readiness audit blockers",
-          "rationale": "The readiness audit must pass before dry-run or execution evidence can count for a live adapter.",
-          "command": "npm run ariadne -- mutation-readiness-audit --project <project>",
+          "title": "Resolve existing readiness plan blockers",
+          "rationale": "Existing plan mutation-readiness-github-2026-05-16T16-50-54-241Z is blocked by: approval state is approval_required; approval record is requested; post-action verification command is missing. Approve the existing plan only after operator review, and regenerate it with post-action verification if that gate is missing.",
+          "command": "Review mutation-readiness-github-2026-05-16T16-50-54-241Z; after operator approval, record approval-decision, ensure --post-verify is present, then rerun npm run ariadne -- mutation-readiness-audit --project <project>",
           "evidenceRefs": [
             "control/mutation-readiness-audit.json"
           ]
         },
         {
           "id": "github-dry-run",
-          "status": "blocked",
+          "status": "pending",
           "title": "Run the reviewed dry-run command",
           "rationale": "Dry-run evidence proves the reviewed command path before the live command is eligible for target-guarded execution.",
-          "command": "Create and audit-pass a target-specific readiness plan first.",
+          "command": "After mutation-readiness-github-2026-05-16T16-50-54-241Z passes audit, run npm run ariadne -- mutation-dry-run --project <project> --plan mutation-readiness-github-2026-05-16T16-50-54-241Z",
           "evidenceRefs": [
             "control/mutation-readiness-audit.json"
           ]
@@ -45,7 +45,7 @@
           "id": "github-target-execution",
           "status": "blocked",
           "title": "Capture target-guarded execution evidence",
-          "rationale": "The live adapter should only replace placeholder shell commands after the audited target wrapper has successfully verified the same target.",
+          "rationale": "The live adapter should only replace placeholder shell commands after the audited target wrapper has successfully verified the same target and recorded post-action verification evidence.",
           "command": "Run a passed dry-run for an audit-passed plan first.",
           "evidenceRefs": [
             "control/mutation-readiness-audit.json"
@@ -108,7 +108,7 @@
           "id": "deployment-target-execution",
           "status": "blocked",
           "title": "Capture target-guarded execution evidence",
-          "rationale": "The live adapter should only replace placeholder shell commands after the audited target wrapper has successfully verified the same target.",
+          "rationale": "The live adapter should only replace placeholder shell commands after the audited target wrapper has successfully verified the same target and recorded post-action verification evidence.",
           "command": "Run a passed dry-run for an audit-passed plan first.",
           "evidenceRefs": [
             "control/mutation-readiness-audit.json"
@@ -171,7 +171,7 @@
           "id": "hermes-cron-target-execution",
           "status": "blocked",
           "title": "Capture target-guarded execution evidence",
-          "rationale": "The live adapter should only replace placeholder shell commands after the audited target wrapper has successfully verified the same target.",
+          "rationale": "The live adapter should only replace placeholder shell commands after the audited target wrapper has successfully verified the same target and recorded post-action verification evidence.",
           "command": "Run a passed dry-run for an audit-passed plan first.",
           "evidenceRefs": [
             "control/mutation-readiness-audit.json"
@@ -234,7 +234,7 @@
           "id": "openscorpion-target-execution",
           "status": "blocked",
           "title": "Capture target-guarded execution evidence",
-          "rationale": "The live adapter should only replace placeholder shell commands after the audited target wrapper has successfully verified the same target.",
+          "rationale": "The live adapter should only replace placeholder shell commands after the audited target wrapper has successfully verified the same target and recorded post-action verification evidence.",
           "command": "Run a passed dry-run for an audit-passed plan first.",
           "evidenceRefs": [
             "control/mutation-readiness-audit.json"
@@ -297,7 +297,7 @@
           "id": "gsd2-target-execution",
           "status": "blocked",
           "title": "Capture target-guarded execution evidence",
-          "rationale": "The live adapter should only replace placeholder shell commands after the audited target wrapper has successfully verified the same target.",
+          "rationale": "The live adapter should only replace placeholder shell commands after the audited target wrapper has successfully verified the same target and recorded post-action verification evidence.",
           "command": "Run a passed dry-run for an audit-passed plan first.",
           "evidenceRefs": [
             "control/mutation-readiness-audit.json"
@@ -360,7 +360,7 @@
           "id": "notebooklm-target-execution",
           "status": "blocked",
           "title": "Capture target-guarded execution evidence",
-          "rationale": "The live adapter should only replace placeholder shell commands after the audited target wrapper has successfully verified the same target.",
+          "rationale": "The live adapter should only replace placeholder shell commands after the audited target wrapper has successfully verified the same target and recorded post-action verification evidence.",
           "command": "Run a passed dry-run for an audit-passed plan first.",
           "evidenceRefs": [
             "control/mutation-readiness-audit.json"

@@ -1,11 +1,13 @@
+import fs from "node:fs/promises";
 import path from "node:path";
 import { writeJsonArtifact, writeTextArtifact } from "./artifacts.js";
 import { generateLiveAdapterReadiness } from "./liveAdapterReadiness.js";
-import { slugifyProject } from "./paths.js";
-import type { LiveAdapterNextActionsReport, LiveAdapterReadinessReport } from "./types.js";
+import { projectDir, slugifyProject } from "./paths.js";
+import type { LiveAdapterNextActionsReport, LiveAdapterReadinessReport, MutationReadinessAudit } from "./types.js";
 
 type ReadinessTarget = LiveAdapterReadinessReport["targets"][number];
 type NextAction = LiveAdapterNextActionsReport["targets"][number]["actions"][number];
+type AuditCheck = MutationReadinessAudit["checks"][number];
 
 export async function generateLiveAdapterNextActions(input: {
   project: string;
@@ -13,7 +15,13 @@ export async function generateLiveAdapterNextActions(input: {
 }): Promise<{ jsonPath: string; markdownPath: string; report: LiveAdapterNextActionsReport }> {
   const project = slugifyProject(input.project);
   const readiness = await generateLiveAdapterReadiness({ project, vaultRoot: input.vaultRoot });
-  const targets = readiness.report.targets.map((target) => targetNextActions(target));
+  const audit = await readMutationReadinessAudit(input.vaultRoot, project);
+  const targets = readiness.report.targets.map((target) =>
+    targetNextActions(
+      target,
+      audit.checks.filter((check) => check.target === target.target)
+    )
+  );
   const actionItems = targets.reduce((count, target) => count + target.actions.length, 0);
   const report: LiveAdapterNextActionsReport = {
     schemaVersion: 1,
@@ -40,8 +48,17 @@ export async function generateLiveAdapterNextActions(input: {
   return { jsonPath, markdownPath, report };
 }
 
-function targetNextActions(target: ReadinessTarget): LiveAdapterNextActionsReport["targets"][number] {
+async function readMutationReadinessAudit(vaultRoot: string, project: string): Promise<MutationReadinessAudit> {
+  const auditPath = path.join(projectDir(vaultRoot, project), "control", "mutation-readiness-audit.json");
+  return JSON.parse(await fs.readFile(auditPath, "utf8")) as MutationReadinessAudit;
+}
+
+function targetNextActions(target: ReadinessTarget, auditChecks: AuditCheck[]): LiveAdapterNextActionsReport["targets"][number] {
   const actions: NextAction[] = [];
+  const latestExistingPlanId = auditChecks
+    .map((check) => check.planId)
+    .sort()
+    .at(-1);
   if (target.blockers.includes("no target-specific readiness plan exists")) {
     actions.push({
       id: `${target.target}-approval-request`,
@@ -64,20 +81,26 @@ function targetNextActions(target: ReadinessTarget): LiveAdapterNextActionsRepor
     actions.push({
       id: `${target.target}-audit-fix`,
       status: "pending",
-      title: "Fix readiness audit blockers",
-      rationale: "The readiness audit must pass before dry-run or execution evidence can count for a live adapter.",
-      command: "npm run ariadne -- mutation-readiness-audit --project <project>",
+      title: latestExistingPlanId ? "Resolve existing readiness plan blockers" : "Fix readiness audit blockers",
+      rationale: latestExistingPlanId
+        ? `Existing plan ${latestExistingPlanId} is blocked by: ${auditBlockers(auditChecks)}. Approve the existing plan only after operator review, and regenerate it with post-action verification if that gate is missing.`
+        : "The readiness audit must pass before dry-run or execution evidence can count for a live adapter.",
+      command: latestExistingPlanId
+        ? `Review ${latestExistingPlanId}; after operator approval, record approval-decision, ensure --post-verify is present, then rerun npm run ariadne -- mutation-readiness-audit --project <project>`
+        : "npm run ariadne -- mutation-readiness-audit --project <project>",
       evidenceRefs: target.evidenceRefs
     });
   }
   if (target.blockers.includes("no passed dry-run evidence exists for an audit-passed plan")) {
     actions.push({
       id: `${target.target}-dry-run`,
-      status: target.latestReadyPlanId ? "ready" : "blocked",
+      status: target.latestReadyPlanId ? "ready" : latestExistingPlanId ? "pending" : "blocked",
       title: "Run the reviewed dry-run command",
       rationale: "Dry-run evidence proves the reviewed command path before the live command is eligible for target-guarded execution.",
       command: target.latestReadyPlanId
         ? `npm run ariadne -- mutation-dry-run --project <project> --plan ${target.latestReadyPlanId}`
+        : latestExistingPlanId
+          ? `After ${latestExistingPlanId} passes audit, run npm run ariadne -- mutation-dry-run --project <project> --plan ${latestExistingPlanId}`
         : "Create and audit-pass a target-specific readiness plan first.",
       evidenceRefs: target.evidenceRefs
     });
@@ -87,7 +110,8 @@ function targetNextActions(target: ReadinessTarget): LiveAdapterNextActionsRepor
       id: `${target.target}-target-execution`,
       status: target.latestReadyPlanId && target.passedDryRunCount > 0 ? "ready" : "blocked",
       title: "Capture target-guarded execution evidence",
-      rationale: "The live adapter should only replace placeholder shell commands after the audited target wrapper has successfully verified the same target.",
+      rationale:
+        "The live adapter should only replace placeholder shell commands after the audited target wrapper has successfully verified the same target and recorded post-action verification evidence.",
       command:
         target.latestReadyPlanId && target.passedDryRunCount > 0
           ? `npm run ariadne -- ${target.executeCommand} --project <project> --plan ${target.latestReadyPlanId} --confirm-plan ${target.latestReadyPlanId}`
@@ -171,6 +195,11 @@ function renderReport(report: LiveAdapterNextActionsReport): string {
 
 function inlineList(items: string[]): string {
   return items.length > 0 ? items.join("; ") : "none";
+}
+
+function auditBlockers(checks: AuditCheck[]): string {
+  const blockers = Array.from(new Set(checks.flatMap((check) => check.blockers)));
+  return inlineList(blockers);
 }
 
 function tableCell(value: string): string {
