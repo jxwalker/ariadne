@@ -13,6 +13,9 @@ const targetExecutionCommands = {
 } as const satisfies Record<string, MutationReadinessPlan["target"]>;
 
 export function targetForMutationExecutionCommand(command: string): MutationReadinessPlan["target"] | undefined {
+  if (!Object.prototype.hasOwnProperty.call(targetExecutionCommands, command)) {
+    return undefined;
+  }
   return targetExecutionCommands[command as keyof typeof targetExecutionCommands];
 }
 

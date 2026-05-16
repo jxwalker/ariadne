@@ -673,7 +673,12 @@ describe("roadmap adapters", () => {
     expect(targetMutationExecution.record.execute).toBe(true);
     expect(targetForMutationExecutionCommand("github-mutation-execute")).toBe("github");
     expect(targetForMutationExecutionCommand("deployment-mutation-execute")).toBe("deployment");
+    expect(targetForMutationExecutionCommand("hermes-cron-mutation-execute")).toBe("hermes-cron");
+    expect(targetForMutationExecutionCommand("openscorpion-mutation-execute")).toBe("openscorpion");
+    expect(targetForMutationExecutionCommand("gsd2-mutation-execute")).toBe("gsd2");
+    expect(targetForMutationExecutionCommand("notebooklm-mutation-execute")).toBe("notebooklm");
     expect(targetForMutationExecutionCommand("mutation-execute")).toBeUndefined();
+    expect(targetForMutationExecutionCommand("toString")).toBeUndefined();
     const tsx = path.join(process.cwd(), "node_modules", ".bin", "tsx");
     const githubWrapperOutput = execFileSync(
       tsx,
