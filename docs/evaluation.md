@@ -151,6 +151,7 @@ npm test
 npm run build
 npm run ariadne -- artifact-checks --project ariadne
 npm run ariadne -- benchmark-pack --set all
+npm run ariadne -- benchmark-run --project bench-smoke --set smoke
 npm run ariadne -- evaluation-trends --project ariadne
 npm run ariadne -- usage-report --project ariadne
 npm run ariadne -- playwright-capture --project ariadne --target-url http://localhost:3000 --selector "text=Dashboard"
@@ -177,6 +178,15 @@ Generate them with:
 npm run ariadne -- benchmark-pack --set all
 ```
 
+Run a pack through the local deterministic pipeline with:
+
+```bash
+npm run ariadne -- benchmark-run --project bench-smoke --set smoke
+npm run ariadne -- benchmark-run --project bench-all --set all
+```
+
+`benchmark-run` reads the pack manifest, ingests source files into benchmark projects, generates PRD/GSD/GSD2/execution/Playwright/evaluation/infrastructure/control/GBrain artifacts, imports role-specific fixtures, runs artifact checks, and records a benchmark report. It does not call live services or execute mutation-capable commands.
+
 ## Pass Criteria
 
 A run is acceptable when:
@@ -190,12 +200,10 @@ A run is acceptable when:
 - trend reports show whether scores are stable, improving, or declining,
 - token/cost reports make review and model-spend visible,
 - behavior checks prove approved fixtures and no-mutation gates are present,
+- benchmark runs prove the source packs can drive the local pipeline end to end,
 - console visual checks prove the static console renders expected sections and trend chart hooks,
 - regressions are listed rather than hidden.
 
 ## Future Automation
 
-Next evaluation work should add:
-
-- browser-backed screenshot comparison for target apps,
-- optional automatic repair execution only after review gates and mutation approvals are explicit.
+Next evaluation work should add optional automatic repair execution only after review gates and mutation approvals are explicit.

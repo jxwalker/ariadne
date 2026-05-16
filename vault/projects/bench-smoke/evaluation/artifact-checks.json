@@ -1,0 +1,313 @@
+{
+  "schemaVersion": 1,
+  "project": "bench-smoke",
+  "generatedAt": "2026-05-16T18:29:09.268Z",
+  "status": "passed",
+  "summary": {
+    "required": 13,
+    "optional": 24,
+    "present": 20,
+    "missingRequired": 0
+  },
+  "checks": [
+    {
+      "id": "manifest",
+      "label": "Source manifest",
+      "required": true,
+      "path": "projects/bench-smoke/manifest.jsonl",
+      "status": "present"
+    },
+    {
+      "id": "hot-index",
+      "label": "Hot index",
+      "required": true,
+      "path": "projects/bench-smoke/HOT_INDEX.md",
+      "status": "present"
+    },
+    {
+      "id": "dossier",
+      "label": "Context dossier",
+      "required": true,
+      "path": "projects/bench-smoke/context/dossier-*.md",
+      "status": "present",
+      "count": 1,
+      "matches": [
+        "projects/bench-smoke/context/dossier-2026-05-16T18-29-06-687Z.md"
+      ]
+    },
+    {
+      "id": "prd-json",
+      "label": "PRD JSON",
+      "required": true,
+      "path": "projects/bench-smoke/requirements/prd.json",
+      "status": "present"
+    },
+    {
+      "id": "prd-markdown",
+      "label": "PRD Markdown",
+      "required": true,
+      "path": "projects/bench-smoke/requirements/PRD.md",
+      "status": "present"
+    },
+    {
+      "id": "gsd-roadmap",
+      "label": "GSD roadmap",
+      "required": true,
+      "path": "projects/bench-smoke/gsd/roadmap.json",
+      "status": "present"
+    },
+    {
+      "id": "gsd-tasks",
+      "label": "GSD task list",
+      "required": true,
+      "path": "projects/bench-smoke/gsd/TASKS.md",
+      "status": "present"
+    },
+    {
+      "id": "gsd2-bundle",
+      "label": "GSD2 bundle",
+      "required": true,
+      "path": "projects/bench-smoke/gsd/gsd2-bundle.json",
+      "status": "present"
+    },
+    {
+      "id": "gsd2-process-snapshots",
+      "label": "GSD2 process snapshots",
+      "required": false,
+      "path": "projects/bench-smoke/gsd/process/gsd2-process-*.json",
+      "status": "missing",
+      "count": 0,
+      "matches": []
+    },
+    {
+      "id": "execution-runs",
+      "label": "Execution run JSON",
+      "required": true,
+      "path": "projects/bench-smoke/execution/run-*.json",
+      "status": "present",
+      "count": 1,
+      "matches": [
+        "projects/bench-smoke/execution/run-2026-05-16T18-29-06-690Z.json"
+      ]
+    },
+    {
+      "id": "playwright-plan",
+      "label": "Playwright plan",
+      "required": true,
+      "path": "projects/bench-smoke/verification/playwright-plan.json",
+      "status": "present"
+    },
+    {
+      "id": "playwright-captures",
+      "label": "Target app Playwright screenshots",
+      "required": false,
+      "path": "projects/bench-smoke/verification/playwright-captures/target-*.png",
+      "status": "missing",
+      "count": 0,
+      "matches": []
+    },
+    {
+      "id": "playwright-traces",
+      "label": "Target app Playwright traces",
+      "required": false,
+      "path": "projects/bench-smoke/verification/playwright-captures/target-*.zip",
+      "status": "missing",
+      "count": 0,
+      "matches": []
+    },
+    {
+      "id": "healer-proposals",
+      "label": "Review-gated healer proposals",
+      "required": false,
+      "path": "projects/bench-smoke/verification/healer-proposals/healer-*.json",
+      "status": "missing",
+      "count": 0,
+      "matches": []
+    },
+    {
+      "id": "evaluation-plan",
+      "label": "Evaluation plan",
+      "required": true,
+      "path": "projects/bench-smoke/evaluation/evaluation-plan.json",
+      "status": "present"
+    },
+    {
+      "id": "benchmark-runs",
+      "label": "Benchmark run reports",
+      "required": false,
+      "path": "projects/bench-smoke/evaluation/benchmark-run-*.json",
+      "status": "present",
+      "count": 1,
+      "matches": [
+        "projects/bench-smoke/evaluation/benchmark-run-smoke-2026-05-16T18-29-06-696Z.json"
+      ]
+    },
+    {
+      "id": "infra-registry",
+      "label": "Infrastructure registry",
+      "required": true,
+      "path": "projects/bench-smoke/infrastructure/registry.json",
+      "status": "present"
+    },
+    {
+      "id": "infra-snapshots",
+      "label": "Infrastructure snapshots",
+      "required": false,
+      "path": "projects/bench-smoke/infrastructure/infra-snapshot-*.json",
+      "status": "missing",
+      "count": 0,
+      "matches": []
+    },
+    {
+      "id": "control-report",
+      "label": "Merge-readiness report",
+      "required": true,
+      "path": "projects/bench-smoke/control/merge-readiness.json",
+      "status": "present"
+    },
+    {
+      "id": "console-data",
+      "label": "Console data projection",
+      "required": false,
+      "path": "projects/bench-smoke/console/console-data.json",
+      "status": "present"
+    },
+    {
+      "id": "console-html",
+      "label": "Static console",
+      "required": false,
+      "path": "projects/bench-smoke/console/index.html",
+      "status": "present"
+    },
+    {
+      "id": "console-visual-checks",
+      "label": "Console visual checks",
+      "required": false,
+      "path": "projects/bench-smoke/console/visual-checks.json",
+      "status": "present"
+    },
+    {
+      "id": "console-browser-checks",
+      "label": "Console browser checks",
+      "required": false,
+      "path": "projects/bench-smoke/console/browser-checks.json",
+      "status": "present"
+    },
+    {
+      "id": "recovery-report",
+      "label": "Crash recovery report",
+      "required": false,
+      "path": "projects/bench-smoke/control/recovery-report.json",
+      "status": "missing"
+    },
+    {
+      "id": "usage-report",
+      "label": "Usage metrics report",
+      "required": false,
+      "path": "projects/bench-smoke/evaluation/usage-report.json",
+      "status": "missing"
+    },
+    {
+      "id": "behavior-checks",
+      "label": "Behavior checks",
+      "required": false,
+      "path": "projects/bench-smoke/evaluation/behavior-checks.json",
+      "status": "present"
+    },
+    {
+      "id": "gbrain-export",
+      "label": "GBrain export bundle",
+      "required": false,
+      "path": "projects/bench-smoke/integrations/gbrain/gbrain-export.json",
+      "status": "present"
+    },
+    {
+      "id": "github-snapshots",
+      "label": "GitHub PR and check snapshots",
+      "required": false,
+      "path": "projects/bench-smoke/integrations/github/github-snapshot-*.json",
+      "status": "missing",
+      "count": 0,
+      "matches": []
+    },
+    {
+      "id": "approval-records",
+      "label": "Mutation approval records",
+      "required": false,
+      "path": "projects/bench-smoke/control/approvals/approval-*.json",
+      "status": "missing",
+      "count": 0,
+      "matches": []
+    },
+    {
+      "id": "mutation-readiness-plans",
+      "label": "Mutation readiness plans",
+      "required": false,
+      "path": "projects/bench-smoke/control/mutation-readiness/mutation-readiness-*.json",
+      "status": "missing",
+      "count": 0,
+      "matches": []
+    },
+    {
+      "id": "mutation-readiness-audit",
+      "label": "Mutation readiness audit",
+      "required": false,
+      "path": "projects/bench-smoke/control/mutation-readiness-audit.json",
+      "status": "missing"
+    },
+    {
+      "id": "extraction-results",
+      "label": "OCR/transcription extraction results",
+      "required": false,
+      "path": "projects/bench-smoke/extractions/extraction-*.json",
+      "status": "missing",
+      "count": 0,
+      "matches": []
+    },
+    {
+      "id": "extraction-runner-plans",
+      "label": "OCR/transcription runner plans",
+      "required": false,
+      "path": "projects/bench-smoke/extractions/plans/extraction-plan-*.json",
+      "status": "missing",
+      "count": 0,
+      "matches": []
+    },
+    {
+      "id": "coordination-records",
+      "label": "Sleep, memory, or mail records",
+      "required": false,
+      "path": "projects/bench-smoke/coordination/**/*.json",
+      "status": "missing",
+      "count": 0,
+      "matches": []
+    },
+    {
+      "id": "hermes-cron-snapshots",
+      "label": "Hermes cron snapshots",
+      "required": false,
+      "path": "projects/bench-smoke/coordination/hermes/hermes-cron-*.json",
+      "status": "missing",
+      "count": 0,
+      "matches": []
+    },
+    {
+      "id": "hermes-cron-proposals",
+      "label": "Hermes cron proposals",
+      "required": false,
+      "path": "projects/bench-smoke/coordination/hermes/hermes-cron-proposal-*.json",
+      "status": "missing",
+      "count": 0,
+      "matches": []
+    },
+    {
+      "id": "deployment-snapshots",
+      "label": "Deployment snapshots",
+      "required": false,
+      "path": "projects/bench-smoke/deployment/deployment-*.json",
+      "status": "missing",
+      "count": 0,
+      "matches": []
+    }
+  ]
+}

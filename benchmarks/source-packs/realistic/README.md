@@ -1,7 +1,7 @@
 # Realistic Benchmark Pack
 
 Set: realistic
-Generated: 2026-05-16T11:02:09.297Z
+Generated: 2026-05-16T18:29:06.234Z
 
 Exercise mixed source intake and manual adapter imports that resemble a real Ariadne project handoff.
 
@@ -35,6 +35,6 @@ npm run ariadne -- artifact-checks --project bench-realistic
 
 ## Acceptance
 
-- Mixed source intake produces three source records.
-- Manual NotebookLM, CI, CodeRabbit, usage, and infrastructure imports create evidence records.
-- Control and artifact-check reports are generated without live mutations.
+- realistic-pipeline-output (pipeline_output): Mixed source intake produces three source records.
+- realistic-adapter-evidence (pipeline_output): Manual NotebookLM, CI, CodeRabbit, usage, and infrastructure imports create evidence records.
+- realistic-fixture-safety (fixture_safety): Control and artifact-check reports are generated without live mutations.

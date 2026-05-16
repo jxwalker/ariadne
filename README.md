@@ -65,6 +65,7 @@ npm run ariadne -- roadmap --project ariadne --target-url http://localhost:3000 
 npm run ariadne -- evaluation --project ariadne --target mac-local
 npm run ariadne -- artifact-checks --project ariadne
 npm run ariadne -- benchmark-pack --set all
+npm run ariadne -- benchmark-run --project bench-smoke --set smoke
 npm run ariadne -- evaluation-trends --project ariadne
 npm run ariadne -- usage-report --project ariadne
 npm run ariadne -- control --project ariadne

@@ -1,0 +1,1234 @@
+{
+  "schemaVersion": 1,
+  "project": "bench-smoke",
+  "generatedAt": "2026-05-16T18:29:09.711Z",
+  "projectDir": "projects/bench-smoke",
+  "summary": {
+    "sources": 1,
+    "extractionResults": 0,
+    "requirements": 7,
+    "tasks": 7,
+    "executionRuns": 1,
+    "checks": 0,
+    "reviews": 0,
+    "decisions": 0,
+    "evaluations": 0,
+    "benchmarkRuns": 1,
+    "infraSnapshots": 0,
+    "gsd2ProcessSnapshots": 0,
+    "sleepRoutines": 0,
+    "memoryProposals": 0,
+    "agentMail": 0,
+    "agentLeases": 0,
+    "hermesCronSnapshots": 0,
+    "hermesCronProposals": 0,
+    "deploymentSnapshots": 0,
+    "healerProposals": 0,
+    "githubSnapshots": 0,
+    "approvals": 0,
+    "pendingApprovals": 0,
+    "mutationReadinessPlans": 0,
+    "recoveryIssues": 0,
+    "consoleBrowserChecks": "passed",
+    "readinessStatus": "review_required"
+  },
+  "sources": [
+    {
+      "id": "2026-05-16T18-29-06-684Z-f93360299695",
+      "fileName": "source.md",
+      "kind": "markdown",
+      "sensitivity": "internal",
+      "sha256": "f9336029969522392c8aa0d21718733fbc1f0af0e330297597c351cfaff753bc",
+      "ingestedAt": "2026-05-16T18:29:06.684Z",
+      "hasExtractedText": true,
+      "hasHandoff": false,
+      "hygieneStatus": "clean"
+    }
+  ],
+  "extractionResults": [],
+  "requirements": [
+    {
+      "id": "REQ-001",
+      "title": "Source evidence intake",
+      "description": "Preserve drawings, whitepapers, dictated notes, documents, and related artifacts before any summarisation or automation.",
+      "acceptance": [
+        "Raw artifacts are copied into the durable vault.",
+        "Each artifact has a digest, source path, kind, and timestamp.",
+        "Extracted text remains linked to the raw evidence."
+      ],
+      "priority": "must",
+      "status": "draft",
+      "sourceRefs": [
+        "<VAULT_ROOT>/projects/bench-smoke/context/dossier-2026-05-16T18-29-06-687Z.md",
+        "<VAULT_ROOT>/projects/bench-smoke/context/dossier-2026-05-16T18-29-06-687Z.md:7",
+        "<VAULT_ROOT>/projects/bench-smoke/context/dossier-2026-05-16T18-29-06-687Z.md:9",
+        "<VAULT_ROOT>/projects/bench-smoke/context/dossier-2026-05-16T18-29-06-687Z.md:20",
+        "<VAULT_ROOT>/projects/bench-smoke/context/dossier-2026-05-16T18-29-06-687Z.md:35",
+        "<VAULT_ROOT>/projects/bench-smoke/context/dossier-2026-05-16T18-29-06-687Z.md:37"
+      ]
+    },
+    {
+      "id": "REQ-002",
+      "title": "Source-grounded PRD synthesis",
+      "description": "Convert evidence dossiers and NotebookLM-style grounded exports into requirements, ambiguities, acceptance criteria, and source references.",
+      "acceptance": [
+        "PRD records source references for every major claim.",
+        "Ambiguities are separated from accepted requirements.",
+        "Manual exports work before automation is attempted."
+      ],
+      "priority": "must",
+      "status": "draft",
+      "sourceRefs": [
+        "<VAULT_ROOT>/projects/bench-smoke/context/dossier-2026-05-16T18-29-06-687Z.md",
+        "<VAULT_ROOT>/projects/bench-smoke/context/dossier-2026-05-16T18-29-06-687Z.md:7",
+        "<VAULT_ROOT>/projects/bench-smoke/context/dossier-2026-05-16T18-29-06-687Z.md:9",
+        "<VAULT_ROOT>/projects/bench-smoke/context/dossier-2026-05-16T18-29-06-687Z.md:20",
+        "<VAULT_ROOT>/projects/bench-smoke/context/dossier-2026-05-16T18-29-06-687Z.md:35",
+        "<VAULT_ROOT>/projects/bench-smoke/context/dossier-2026-05-16T18-29-06-687Z.md:37"
+      ]
+    },
+    {
+      "id": "REQ-003",
+      "title": "GSD2 task bridge",
+      "description": "Transform accepted requirements into milestones, vertical slices, tasks, success criteria, and verification commands.",
+      "acceptance": [
+        "Tasks are independently inspectable as JSON and Markdown.",
+        "Each task names expected write areas and verification commands.",
+        "Tasks preserve requirement traceability."
+      ],
+      "priority": "must",
+      "status": "draft",
+      "sourceRefs": [
+        "<VAULT_ROOT>/projects/bench-smoke/context/dossier-2026-05-16T18-29-06-687Z.md",
+        "<VAULT_ROOT>/projects/bench-smoke/context/dossier-2026-05-16T18-29-06-687Z.md:7",
+        "<VAULT_ROOT>/projects/bench-smoke/context/dossier-2026-05-16T18-29-06-687Z.md:9",
+        "<VAULT_ROOT>/projects/bench-smoke/context/dossier-2026-05-16T18-29-06-687Z.md:20",
+        "<VAULT_ROOT>/projects/bench-smoke/context/dossier-2026-05-16T18-29-06-687Z.md:35",
+        "<VAULT_ROOT>/projects/bench-smoke/context/dossier-2026-05-16T18-29-06-687Z.md:37"
+      ]
+    },
+    {
+      "id": "REQ-004",
+      "title": "Bounded execution loop",
+      "description": "Plan isolated worktree execution with explicit branch names, gates, stop conditions, and review points.",
+      "acceptance": [
+        "Execution runs are recorded before work begins.",
+        "The system can identify planned worktrees and gates.",
+        "External mutations remain blocked unless a later approved adapter is enabled."
+      ],
+      "priority": "must",
+      "status": "draft",
+      "sourceRefs": [
+        "<VAULT_ROOT>/projects/bench-smoke/context/dossier-2026-05-16T18-29-06-687Z.md",
+        "<VAULT_ROOT>/projects/bench-smoke/context/dossier-2026-05-16T18-29-06-687Z.md:7",
+        "<VAULT_ROOT>/projects/bench-smoke/context/dossier-2026-05-16T18-29-06-687Z.md:9",
+        "<VAULT_ROOT>/projects/bench-smoke/context/dossier-2026-05-16T18-29-06-687Z.md:20",
+        "<VAULT_ROOT>/projects/bench-smoke/context/dossier-2026-05-16T18-29-06-687Z.md:35",
+        "<VAULT_ROOT>/projects/bench-smoke/context/dossier-2026-05-16T18-29-06-687Z.md:37"
+      ]
+    },
+    {
+      "id": "REQ-005",
+      "title": "Playwright UI verification evidence",
+      "description": "Generate UI test plans and Playwright skeletons from requirements, with room for screenshots, traces, and healer proposals.",
+      "acceptance": [
+        "Generated tests use role-oriented locators where possible.",
+        "Scenario records link back to requirement ids.",
+        "Evidence paths are recorded separately from claims."
+      ],
+      "priority": "should",
+      "status": "draft",
+      "sourceRefs": [
+        "<VAULT_ROOT>/projects/bench-smoke/context/dossier-2026-05-16T18-29-06-687Z.md",
+        "<VAULT_ROOT>/projects/bench-smoke/context/dossier-2026-05-16T18-29-06-687Z.md:7",
+        "<VAULT_ROOT>/projects/bench-smoke/context/dossier-2026-05-16T18-29-06-687Z.md:9",
+        "<VAULT_ROOT>/projects/bench-smoke/context/dossier-2026-05-16T18-29-06-687Z.md:20",
+        "<VAULT_ROOT>/projects/bench-smoke/context/dossier-2026-05-16T18-29-06-687Z.md:35",
+        "<VAULT_ROOT>/projects/bench-smoke/context/dossier-2026-05-16T18-29-06-687Z.md:37"
+      ]
+    },
+    {
+      "id": "REQ-006",
+      "title": "Review and CI control plane",
+      "description": "Collect deterministic checks, CodeRabbit feedback, human review, and merge-readiness state into one evidence surface.",
+      "acceptance": [
+        "Merge readiness lists satisfied and missing gates.",
+        "CI and review records are imported without being treated as hidden authority.",
+        "Blocked states are explicit."
+      ],
+      "priority": "must",
+      "status": "draft",
+      "sourceRefs": [
+        "<VAULT_ROOT>/projects/bench-smoke/context/dossier-2026-05-16T18-29-06-687Z.md",
+        "<VAULT_ROOT>/projects/bench-smoke/context/dossier-2026-05-16T18-29-06-687Z.md:7",
+        "<VAULT_ROOT>/projects/bench-smoke/context/dossier-2026-05-16T18-29-06-687Z.md:9",
+        "<VAULT_ROOT>/projects/bench-smoke/context/dossier-2026-05-16T18-29-06-687Z.md:20",
+        "<VAULT_ROOT>/projects/bench-smoke/context/dossier-2026-05-16T18-29-06-687Z.md:35",
+        "<VAULT_ROOT>/projects/bench-smoke/context/dossier-2026-05-16T18-29-06-687Z.md:37"
+      ]
+    },
+    {
+      "id": "REQ-007",
+      "title": "Infrastructure substrate registry",
+      "description": "Represent Proxmox, DGX Spark, M-series Macs, Hermes, OpenScorpion, local model endpoints, and runner pools as read-only registry records first.",
+      "acceptance": [
+        "Infrastructure records are readable without model calls.",
+        "Runner trust boundaries are explicit.",
+        "Mutation plans require approval and remain non-executing in this slice."
+      ],
+      "priority": "must",
+      "status": "draft",
+      "sourceRefs": [
+        "<VAULT_ROOT>/projects/bench-smoke/context/dossier-2026-05-16T18-29-06-687Z.md",
+        "<VAULT_ROOT>/projects/bench-smoke/context/dossier-2026-05-16T18-29-06-687Z.md:7",
+        "<VAULT_ROOT>/projects/bench-smoke/context/dossier-2026-05-16T18-29-06-687Z.md:9",
+        "<VAULT_ROOT>/projects/bench-smoke/context/dossier-2026-05-16T18-29-06-687Z.md:20",
+        "<VAULT_ROOT>/projects/bench-smoke/context/dossier-2026-05-16T18-29-06-687Z.md:35",
+        "<VAULT_ROOT>/projects/bench-smoke/context/dossier-2026-05-16T18-29-06-687Z.md:37"
+      ]
+    }
+  ],
+  "tasks": [
+    {
+      "id": "TASK-001",
+      "title": "Source evidence intake",
+      "requirementIds": [
+        "REQ-001"
+      ],
+      "slice": "core",
+      "successCriteria": [
+        "Raw artifacts are copied into the durable vault.",
+        "Each artifact has a digest, source path, kind, and timestamp.",
+        "Extracted text remains linked to the raw evidence."
+      ],
+      "verificationCommands": [
+        "npm run check",
+        "npm test"
+      ],
+      "canRunInParallel": true,
+      "writes": [
+        "src/vault.ts",
+        "src/extract.ts",
+        "docs/source-contract.md"
+      ],
+      "milestoneId": "M1",
+      "milestoneTitle": "Control Spine"
+    },
+    {
+      "id": "TASK-002",
+      "title": "Source-grounded PRD synthesis",
+      "requirementIds": [
+        "REQ-002"
+      ],
+      "slice": "core",
+      "successCriteria": [
+        "PRD records source references for every major claim.",
+        "Ambiguities are separated from accepted requirements.",
+        "Manual exports work before automation is attempted."
+      ],
+      "verificationCommands": [
+        "npm run check",
+        "npm test"
+      ],
+      "canRunInParallel": true,
+      "writes": [
+        "src/prd.ts",
+        "vault/projects/<project>/requirements/"
+      ],
+      "milestoneId": "M1",
+      "milestoneTitle": "Control Spine"
+    },
+    {
+      "id": "TASK-003",
+      "title": "GSD2 task bridge",
+      "requirementIds": [
+        "REQ-003"
+      ],
+      "slice": "core",
+      "successCriteria": [
+        "Tasks are independently inspectable as JSON and Markdown.",
+        "Each task names expected write areas and verification commands.",
+        "Tasks preserve requirement traceability."
+      ],
+      "verificationCommands": [
+        "npm run check",
+        "npm test"
+      ],
+      "canRunInParallel": false,
+      "writes": [
+        "src/gsd.ts",
+        "vault/projects/<project>/gsd/"
+      ],
+      "milestoneId": "M1",
+      "milestoneTitle": "Control Spine"
+    },
+    {
+      "id": "TASK-004",
+      "title": "Bounded execution loop",
+      "requirementIds": [
+        "REQ-004"
+      ],
+      "slice": "core",
+      "successCriteria": [
+        "Execution runs are recorded before work begins.",
+        "The system can identify planned worktrees and gates.",
+        "External mutations remain blocked unless a later approved adapter is enabled."
+      ],
+      "verificationCommands": [
+        "npm run check",
+        "npm test"
+      ],
+      "canRunInParallel": false,
+      "writes": [
+        "src/execution.ts",
+        "vault/projects/<project>/execution/"
+      ],
+      "milestoneId": "M1",
+      "milestoneTitle": "Control Spine"
+    },
+    {
+      "id": "TASK-006",
+      "title": "Review and CI control plane",
+      "requirementIds": [
+        "REQ-006"
+      ],
+      "slice": "core",
+      "successCriteria": [
+        "Merge readiness lists satisfied and missing gates.",
+        "CI and review records are imported without being treated as hidden authority.",
+        "Blocked states are explicit."
+      ],
+      "verificationCommands": [
+        "npm run check",
+        "npm test"
+      ],
+      "canRunInParallel": true,
+      "writes": [
+        "src/controlPlane.ts",
+        "vault/projects/<project>/control/"
+      ],
+      "milestoneId": "M1",
+      "milestoneTitle": "Control Spine"
+    },
+    {
+      "id": "TASK-007",
+      "title": "Infrastructure substrate registry",
+      "requirementIds": [
+        "REQ-007"
+      ],
+      "slice": "core",
+      "successCriteria": [
+        "Infrastructure records are readable without model calls.",
+        "Runner trust boundaries are explicit.",
+        "Mutation plans require approval and remain non-executing in this slice."
+      ],
+      "verificationCommands": [
+        "npm run check",
+        "npm test"
+      ],
+      "canRunInParallel": true,
+      "writes": [
+        "src/infraSnapshot.ts",
+        "vault/projects/<project>/infrastructure/"
+      ],
+      "milestoneId": "M1",
+      "milestoneTitle": "Control Spine"
+    },
+    {
+      "id": "TASK-005",
+      "title": "Playwright UI verification evidence",
+      "requirementIds": [
+        "REQ-005"
+      ],
+      "slice": "verification",
+      "successCriteria": [
+        "Generated tests use role-oriented locators where possible.",
+        "Scenario records link back to requirement ids.",
+        "Evidence paths are recorded separately from claims."
+      ],
+      "verificationCommands": [
+        "npm run check",
+        "npm test",
+        "npx playwright test --reporter=list"
+      ],
+      "canRunInParallel": true,
+      "writes": [
+        "src/playwrightEvidence.ts",
+        "vault/projects/<project>/verification/"
+      ],
+      "milestoneId": "M2",
+      "milestoneTitle": "Verification Surface"
+    }
+  ],
+  "executionRuns": [
+    {
+      "schemaVersion": 1,
+      "id": "run-2026-05-16T18-29-06-690Z",
+      "project": "bench-smoke",
+      "createdAt": "2026-05-16T18:29:06.690Z",
+      "taskIds": [
+        "TASK-001",
+        "TASK-002",
+        "TASK-003",
+        "TASK-004",
+        "TASK-006",
+        "TASK-007",
+        "TASK-005"
+      ],
+      "repoPath": "<REPO_ROOT>",
+      "branchPrefix": "jxw/ariadne",
+      "status": "planned",
+      "gates": [
+        "npm run check",
+        "npm test",
+        "npm run build",
+        "review evidence",
+        "human approval before external mutation"
+      ],
+      "worktrees": [
+        {
+          "taskId": "TASK-001",
+          "branch": "jxw/ariadne-task-001",
+          "worktreePath": "<REPO_ROOT>-task-001"
+        },
+        {
+          "taskId": "TASK-002",
+          "branch": "jxw/ariadne-task-002",
+          "worktreePath": "<REPO_ROOT>-task-002"
+        },
+        {
+          "taskId": "TASK-003",
+          "branch": "jxw/ariadne-task-003",
+          "worktreePath": "<REPO_ROOT>-task-003"
+        },
+        {
+          "taskId": "TASK-004",
+          "branch": "jxw/ariadne-task-004",
+          "worktreePath": "<REPO_ROOT>-task-004"
+        },
+        {
+          "taskId": "TASK-006",
+          "branch": "jxw/ariadne-task-006",
+          "worktreePath": "<REPO_ROOT>-task-006"
+        },
+        {
+          "taskId": "TASK-007",
+          "branch": "jxw/ariadne-task-007",
+          "worktreePath": "<REPO_ROOT>-task-007"
+        },
+        {
+          "taskId": "TASK-005",
+          "branch": "jxw/ariadne-task-005",
+          "worktreePath": "<REPO_ROOT>-task-005"
+        }
+      ],
+      "stopConditions": [
+        "A verification command fails twice for the same reason.",
+        "A task requires credentials or external mutation not represented by an approved plan.",
+        "The working tree contains unrelated user changes in a write scope.",
+        "Generated tests cannot identify a target URL or stable user workflow."
+      ]
+    }
+  ],
+  "checks": [],
+  "reviews": [],
+  "approvals": [],
+  "mutationReadinessPlans": [],
+  "decisions": [],
+  "playwrightEvidence": [],
+  "healerProposals": [],
+  "evaluations": [],
+  "benchmarkRuns": [
+    {
+      "schemaVersion": 1,
+      "id": "benchmark-run-smoke-2026-05-16T18-29-06-696Z",
+      "project": "bench-smoke",
+      "set": "smoke",
+      "generatedAt": "2026-05-16T18:29:06.696Z",
+      "mode": "local_deterministic",
+      "status": "passed",
+      "packPath": "<PACK_ROOT>/benchmark-pack.json",
+      "packRoot": "<PACK_ROOT>",
+      "targetProjects": [
+        "bench-smoke"
+      ],
+      "summary": {
+        "steps": 13,
+        "passed": 13,
+        "failed": 0,
+        "targetProjects": 1,
+        "missingRequiredArtifacts": 0
+      },
+      "steps": [
+        {
+          "id": "ingest",
+          "project": "bench-smoke",
+          "status": "passed",
+          "detail": "completed",
+          "evidenceRefs": [
+            "<PACK_ROOT>/sources/source.md"
+          ]
+        },
+        {
+          "id": "assemble",
+          "project": "bench-smoke",
+          "status": "passed",
+          "detail": "completed",
+          "evidenceRefs": []
+        },
+        {
+          "id": "prd",
+          "project": "bench-smoke",
+          "status": "passed",
+          "detail": "completed",
+          "evidenceRefs": [
+            "<VAULT_ROOT>/projects/bench-smoke/requirements/prd.json",
+            "<VAULT_ROOT>/projects/bench-smoke/requirements/PRD.md"
+          ]
+        },
+        {
+          "id": "gsd",
+          "project": "bench-smoke",
+          "status": "passed",
+          "detail": "completed",
+          "evidenceRefs": [
+            "<VAULT_ROOT>/projects/bench-smoke/gsd/roadmap.json",
+            "<VAULT_ROOT>/projects/bench-smoke/gsd/TASKS.md",
+            "<VAULT_ROOT>/projects/bench-smoke/verification/commands.json"
+          ]
+        },
+        {
+          "id": "gsd2-export",
+          "project": "bench-smoke",
+          "status": "passed",
+          "detail": "completed",
+          "evidenceRefs": [
+            "<VAULT_ROOT>/projects/bench-smoke/gsd/gsd2-bundle.json",
+            "<VAULT_ROOT>/projects/bench-smoke/gsd/gsd2-bundle.md"
+          ]
+        },
+        {
+          "id": "execution",
+          "project": "bench-smoke",
+          "status": "passed",
+          "detail": "completed",
+          "evidenceRefs": [
+            "<VAULT_ROOT>/projects/bench-smoke/execution/run-2026-05-16T18-29-06-690Z.json",
+            "<VAULT_ROOT>/projects/bench-smoke/execution/run-2026-05-16T18-29-06-690Z.md"
+          ]
+        },
+        {
+          "id": "playwright",
+          "project": "bench-smoke",
+          "status": "passed",
+          "detail": "completed",
+          "evidenceRefs": [
+            "<VAULT_ROOT>/projects/bench-smoke/verification/playwright-plan.json",
+            "<VAULT_ROOT>/projects/bench-smoke/verification/playwright-plan.md",
+            "<VAULT_ROOT>/projects/bench-smoke/verification/generated.playwright.spec.ts"
+          ]
+        },
+        {
+          "id": "evaluation",
+          "project": "bench-smoke",
+          "status": "passed",
+          "detail": "completed",
+          "evidenceRefs": [
+            "<VAULT_ROOT>/projects/bench-smoke/evaluation/evaluation-plan.json",
+            "<VAULT_ROOT>/projects/bench-smoke/evaluation/evaluation-plan.md"
+          ]
+        },
+        {
+          "id": "infra",
+          "project": "bench-smoke",
+          "status": "passed",
+          "detail": "completed",
+          "evidenceRefs": [
+            "<VAULT_ROOT>/projects/bench-smoke/infrastructure/registry.json",
+            "<VAULT_ROOT>/projects/bench-smoke/infrastructure/runner-and-model-plan.md"
+          ]
+        },
+        {
+          "id": "control",
+          "project": "bench-smoke",
+          "status": "passed",
+          "detail": "completed",
+          "evidenceRefs": [
+            "<VAULT_ROOT>/projects/bench-smoke/control/merge-readiness.json",
+            "<VAULT_ROOT>/projects/bench-smoke/control/merge-readiness.md"
+          ]
+        },
+        {
+          "id": "behavior-checks",
+          "project": "bench-smoke",
+          "status": "passed",
+          "detail": "completed",
+          "evidenceRefs": [
+            "<VAULT_ROOT>/projects/bench-smoke/evaluation/behavior-checks.json",
+            "<VAULT_ROOT>/projects/bench-smoke/evaluation/behavior-checks.md"
+          ]
+        },
+        {
+          "id": "gbrain-export",
+          "project": "bench-smoke",
+          "status": "passed",
+          "detail": "completed",
+          "evidenceRefs": [
+            "<VAULT_ROOT>/projects/bench-smoke/integrations/gbrain/gbrain-export.json",
+            "<VAULT_ROOT>/projects/bench-smoke/integrations/gbrain/gbrain-export.md"
+          ]
+        },
+        {
+          "id": "artifact-checks",
+          "project": "bench-smoke",
+          "status": "passed",
+          "detail": "completed",
+          "evidenceRefs": [
+            "<VAULT_ROOT>/projects/bench-smoke/evaluation/artifact-checks.json",
+            "<VAULT_ROOT>/projects/bench-smoke/evaluation/artifact-checks.md"
+          ]
+        }
+      ],
+      "acceptance": [
+        {
+          "id": "smoke-artifact-contract",
+          "type": "artifact_contract",
+          "criterion": "Artifact checks pass with no missing required artifacts.",
+          "status": "passed",
+          "evidenceRefs": [
+            "<VAULT_ROOT>/projects/bench-smoke/evaluation/artifact-checks.md"
+          ]
+        },
+        {
+          "id": "smoke-pipeline-output",
+          "type": "pipeline_output",
+          "criterion": "The generated PRD contains the core evidence, planning, verification, and control requirements.",
+          "status": "passed",
+          "evidenceRefs": [
+            "<VAULT_ROOT>/projects/bench-smoke/evaluation/artifact-checks.md"
+          ]
+        },
+        {
+          "id": "smoke-fixture-safety",
+          "type": "fixture_safety",
+          "criterion": "No command requires a live external service.",
+          "status": "passed",
+          "evidenceRefs": [
+            "<VAULT_ROOT>/projects/bench-smoke/evaluation/artifact-checks.md"
+          ]
+        }
+      ],
+      "artifactChecks": [
+        {
+          "project": "bench-smoke",
+          "status": "passed",
+          "missingRequired": 0,
+          "reportPath": "<VAULT_ROOT>/projects/bench-smoke/evaluation/artifact-checks.md"
+        }
+      ]
+    }
+  ],
+  "consoleVisualChecks": {
+    "schemaVersion": 1,
+    "project": "bench-smoke",
+    "generatedAt": "2026-05-16T18:29:07.598Z",
+    "htmlPath": "projects/bench-smoke/console/index.html",
+    "status": "passed",
+    "summary": {
+      "passed": 10,
+      "failed": 0
+    },
+    "checks": [
+      {
+        "id": "doctype",
+        "label": "HTML document shell",
+        "status": "passed",
+        "detail": "Found <!doctype html>."
+      },
+      {
+        "id": "brand",
+        "label": "Ariadne brand lockup",
+        "status": "passed",
+        "detail": "Found Ariadne Console."
+      },
+      {
+        "id": "gate-matrix",
+        "label": "Gate matrix section",
+        "status": "passed",
+        "detail": "Found Gate Matrix."
+      },
+      {
+        "id": "timeline",
+        "label": "Timeline section",
+        "status": "passed",
+        "detail": "Found Timeline."
+      },
+      {
+        "id": "approval-queue",
+        "label": "Approval queue section",
+        "status": "passed",
+        "detail": "Found Approval Queue."
+      },
+      {
+        "id": "trend-chart",
+        "label": "Evaluation trend empty state",
+        "status": "passed",
+        "detail": "Found No evaluation trend data is available."
+      },
+      {
+        "id": "visual-check-panel",
+        "label": "Visual check panel",
+        "status": "passed",
+        "detail": "Found Visual Checks."
+      },
+      {
+        "id": "embedded-data",
+        "label": "Embedded console data",
+        "status": "passed",
+        "detail": "Found id=\"console-data\"."
+      },
+      {
+        "id": "embedded-data-parse",
+        "label": "Embedded console data parses",
+        "status": "passed",
+        "detail": "Project bench-smoke summary is present."
+      },
+      {
+        "id": "absolute-path-leaks",
+        "label": "No local absolute path leaks",
+        "status": "passed",
+        "detail": "No local absolute paths found."
+      }
+    ]
+  },
+  "consoleBrowserChecks": {
+    "schemaVersion": 1,
+    "project": "bench-smoke",
+    "generatedAt": "2026-05-16T18:29:08.050Z",
+    "htmlPath": "projects/bench-smoke/console/index.html",
+    "screenshotPath": "projects/bench-smoke/console/screenshots/console-2026-05-16T18-29-08-050Z.png",
+    "status": "passed",
+    "viewport": {
+      "width": 1440,
+      "height": 1100
+    },
+    "summary": {
+      "passed": 7,
+      "failed": 0
+    },
+    "checks": [
+      {
+        "id": "brand",
+        "label": "Ariadne brand",
+        "status": "passed",
+        "detail": "Ariadne brand is visible."
+      },
+      {
+        "id": "gate-matrix",
+        "label": "Gate matrix section",
+        "status": "passed",
+        "detail": "Gate matrix section is visible."
+      },
+      {
+        "id": "evaluation-trends",
+        "label": "Evaluation trends section",
+        "status": "passed",
+        "detail": "Evaluation trends section is visible."
+      },
+      {
+        "id": "recovery",
+        "label": "Recovery section",
+        "status": "passed",
+        "detail": "Recovery section is visible."
+      },
+      {
+        "id": "github",
+        "label": "GitHub section",
+        "status": "passed",
+        "detail": "GitHub section is visible."
+      },
+      {
+        "id": "embedded-data",
+        "label": "Embedded console data parses",
+        "status": "passed",
+        "detail": "Embedded console data is parseable."
+      },
+      {
+        "id": "screenshot",
+        "label": "Screenshot captured",
+        "status": "passed",
+        "detail": "597076 bytes captured."
+      }
+    ]
+  },
+  "behaviorChecks": {
+    "schemaVersion": 1,
+    "project": "bench-smoke",
+    "generatedAt": "2026-05-16T18:29:06.694Z",
+    "status": "warning",
+    "summary": {
+      "passed": 3,
+      "warnings": 3,
+      "failed": 0
+    },
+    "checks": [
+      {
+        "id": "approved-fixture",
+        "label": "Approved review fixture",
+        "status": "warning",
+        "evidence": [],
+        "notes": "No approved review or approved fixture is present yet."
+      },
+      {
+        "id": "execution-mutation-gates",
+        "label": "Execution mutation gates",
+        "status": "passed",
+        "evidence": [
+          "run-2026-05-16T18-29-06-690Z"
+        ],
+        "notes": "Execution runs include explicit human approval gates before external mutation."
+      },
+      {
+        "id": "approval-workflow-records",
+        "label": "Mutation approval workflow records",
+        "status": "warning",
+        "evidence": [],
+        "notes": "No explicit approval request records exist yet for mutation-capable adapters."
+      },
+      {
+        "id": "infra-read-only",
+        "label": "Infrastructure snapshots are read-only",
+        "status": "passed",
+        "evidence": [],
+        "notes": "Infrastructure evidence is limited to manual, manifest, or live_read_only snapshot kinds."
+      },
+      {
+        "id": "governance-drafts-non-submitting",
+        "label": "Governance drafts do not submit",
+        "status": "passed",
+        "evidence": [],
+        "notes": "OpenScorpion activity records are drafts with submit=false."
+      },
+      {
+        "id": "worktree-guard-fixture",
+        "label": "Worktree guard fixture",
+        "status": "warning",
+        "evidence": [
+          "projects/bench-smoke/execution/run-*-worktree-guard.json"
+        ],
+        "notes": "Worktree guard is available as a behavior fixture; record it for each real execution run before applying worktrees."
+      }
+    ]
+  },
+  "gsd2ProcessSnapshots": [],
+  "gbrain": {
+    "exportBundle": {
+      "schemaVersion": 1,
+      "project": "bench-smoke",
+      "generatedAt": "2026-05-16T18:29:06.695Z",
+      "source": "ariadne",
+      "mode": "read_only_export",
+      "instructions": [
+        "Import this bundle into GBrain as derived memory, not as Ariadne's source of truth.",
+        "Preserve evidenceRefs when returning search or query results.",
+        "Do not write back to Ariadne without an explicit Ariadne import command."
+      ],
+      "documents": [
+        {
+          "slug": "source/2026-05-16T18-29-06-684Z-f93360299695",
+          "title": "source.md",
+          "kind": "source",
+          "content": "Source kind: markdown\nSensitivity: internal\nSHA-256: f9336029969522392c8aa0d21718733fbc1f0af0e330297597c351cfaff753bc\nNotes: none",
+          "evidenceRefs": [
+            "<VAULT_ROOT>/projects/bench-smoke/raw/2026-05-16T18-29-06-684Z-f93360299695/source.md",
+            "<VAULT_ROOT>/projects/bench-smoke/raw/2026-05-16T18-29-06-684Z-f93360299695/extracted.md"
+          ],
+          "tags": [
+            "ariadne",
+            "source",
+            "markdown"
+          ]
+        },
+        {
+          "slug": "requirement/req-001",
+          "title": "Source evidence intake",
+          "kind": "requirement",
+          "content": "Preserve drawings, whitepapers, dictated notes, documents, and related artifacts before any summarisation or automation.\n\n- Raw artifacts are copied into the durable vault.\n- Each artifact has a digest, source path, kind, and timestamp.\n- Extracted text remains linked to the raw evidence.",
+          "evidenceRefs": [
+            "<VAULT_ROOT>/projects/bench-smoke/context/dossier-2026-05-16T18-29-06-687Z.md",
+            "<VAULT_ROOT>/projects/bench-smoke/context/dossier-2026-05-16T18-29-06-687Z.md:7",
+            "<VAULT_ROOT>/projects/bench-smoke/context/dossier-2026-05-16T18-29-06-687Z.md:9",
+            "<VAULT_ROOT>/projects/bench-smoke/context/dossier-2026-05-16T18-29-06-687Z.md:20",
+            "<VAULT_ROOT>/projects/bench-smoke/context/dossier-2026-05-16T18-29-06-687Z.md:35",
+            "<VAULT_ROOT>/projects/bench-smoke/context/dossier-2026-05-16T18-29-06-687Z.md:37"
+          ],
+          "tags": [
+            "ariadne",
+            "requirement",
+            "must",
+            "draft"
+          ]
+        },
+        {
+          "slug": "requirement/req-002",
+          "title": "Source-grounded PRD synthesis",
+          "kind": "requirement",
+          "content": "Convert evidence dossiers and NotebookLM-style grounded exports into requirements, ambiguities, acceptance criteria, and source references.\n\n- PRD records source references for every major claim.\n- Ambiguities are separated from accepted requirements.\n- Manual exports work before automation is attempted.",
+          "evidenceRefs": [
+            "<VAULT_ROOT>/projects/bench-smoke/context/dossier-2026-05-16T18-29-06-687Z.md",
+            "<VAULT_ROOT>/projects/bench-smoke/context/dossier-2026-05-16T18-29-06-687Z.md:7",
+            "<VAULT_ROOT>/projects/bench-smoke/context/dossier-2026-05-16T18-29-06-687Z.md:9",
+            "<VAULT_ROOT>/projects/bench-smoke/context/dossier-2026-05-16T18-29-06-687Z.md:20",
+            "<VAULT_ROOT>/projects/bench-smoke/context/dossier-2026-05-16T18-29-06-687Z.md:35",
+            "<VAULT_ROOT>/projects/bench-smoke/context/dossier-2026-05-16T18-29-06-687Z.md:37"
+          ],
+          "tags": [
+            "ariadne",
+            "requirement",
+            "must",
+            "draft"
+          ]
+        },
+        {
+          "slug": "requirement/req-003",
+          "title": "GSD2 task bridge",
+          "kind": "requirement",
+          "content": "Transform accepted requirements into milestones, vertical slices, tasks, success criteria, and verification commands.\n\n- Tasks are independently inspectable as JSON and Markdown.\n- Each task names expected write areas and verification commands.\n- Tasks preserve requirement traceability.",
+          "evidenceRefs": [
+            "<VAULT_ROOT>/projects/bench-smoke/context/dossier-2026-05-16T18-29-06-687Z.md",
+            "<VAULT_ROOT>/projects/bench-smoke/context/dossier-2026-05-16T18-29-06-687Z.md:7",
+            "<VAULT_ROOT>/projects/bench-smoke/context/dossier-2026-05-16T18-29-06-687Z.md:9",
+            "<VAULT_ROOT>/projects/bench-smoke/context/dossier-2026-05-16T18-29-06-687Z.md:20",
+            "<VAULT_ROOT>/projects/bench-smoke/context/dossier-2026-05-16T18-29-06-687Z.md:35",
+            "<VAULT_ROOT>/projects/bench-smoke/context/dossier-2026-05-16T18-29-06-687Z.md:37"
+          ],
+          "tags": [
+            "ariadne",
+            "requirement",
+            "must",
+            "draft"
+          ]
+        },
+        {
+          "slug": "requirement/req-004",
+          "title": "Bounded execution loop",
+          "kind": "requirement",
+          "content": "Plan isolated worktree execution with explicit branch names, gates, stop conditions, and review points.\n\n- Execution runs are recorded before work begins.\n- The system can identify planned worktrees and gates.\n- External mutations remain blocked unless a later approved adapter is enabled.",
+          "evidenceRefs": [
+            "<VAULT_ROOT>/projects/bench-smoke/context/dossier-2026-05-16T18-29-06-687Z.md",
+            "<VAULT_ROOT>/projects/bench-smoke/context/dossier-2026-05-16T18-29-06-687Z.md:7",
+            "<VAULT_ROOT>/projects/bench-smoke/context/dossier-2026-05-16T18-29-06-687Z.md:9",
+            "<VAULT_ROOT>/projects/bench-smoke/context/dossier-2026-05-16T18-29-06-687Z.md:20",
+            "<VAULT_ROOT>/projects/bench-smoke/context/dossier-2026-05-16T18-29-06-687Z.md:35",
+            "<VAULT_ROOT>/projects/bench-smoke/context/dossier-2026-05-16T18-29-06-687Z.md:37"
+          ],
+          "tags": [
+            "ariadne",
+            "requirement",
+            "must",
+            "draft"
+          ]
+        },
+        {
+          "slug": "requirement/req-005",
+          "title": "Playwright UI verification evidence",
+          "kind": "requirement",
+          "content": "Generate UI test plans and Playwright skeletons from requirements, with room for screenshots, traces, and healer proposals.\n\n- Generated tests use role-oriented locators where possible.\n- Scenario records link back to requirement ids.\n- Evidence paths are recorded separately from claims.",
+          "evidenceRefs": [
+            "<VAULT_ROOT>/projects/bench-smoke/context/dossier-2026-05-16T18-29-06-687Z.md",
+            "<VAULT_ROOT>/projects/bench-smoke/context/dossier-2026-05-16T18-29-06-687Z.md:7",
+            "<VAULT_ROOT>/projects/bench-smoke/context/dossier-2026-05-16T18-29-06-687Z.md:9",
+            "<VAULT_ROOT>/projects/bench-smoke/context/dossier-2026-05-16T18-29-06-687Z.md:20",
+            "<VAULT_ROOT>/projects/bench-smoke/context/dossier-2026-05-16T18-29-06-687Z.md:35",
+            "<VAULT_ROOT>/projects/bench-smoke/context/dossier-2026-05-16T18-29-06-687Z.md:37"
+          ],
+          "tags": [
+            "ariadne",
+            "requirement",
+            "should",
+            "draft"
+          ]
+        },
+        {
+          "slug": "requirement/req-006",
+          "title": "Review and CI control plane",
+          "kind": "requirement",
+          "content": "Collect deterministic checks, CodeRabbit feedback, human review, and merge-readiness state into one evidence surface.\n\n- Merge readiness lists satisfied and missing gates.\n- CI and review records are imported without being treated as hidden authority.\n- Blocked states are explicit.",
+          "evidenceRefs": [
+            "<VAULT_ROOT>/projects/bench-smoke/context/dossier-2026-05-16T18-29-06-687Z.md",
+            "<VAULT_ROOT>/projects/bench-smoke/context/dossier-2026-05-16T18-29-06-687Z.md:7",
+            "<VAULT_ROOT>/projects/bench-smoke/context/dossier-2026-05-16T18-29-06-687Z.md:9",
+            "<VAULT_ROOT>/projects/bench-smoke/context/dossier-2026-05-16T18-29-06-687Z.md:20",
+            "<VAULT_ROOT>/projects/bench-smoke/context/dossier-2026-05-16T18-29-06-687Z.md:35",
+            "<VAULT_ROOT>/projects/bench-smoke/context/dossier-2026-05-16T18-29-06-687Z.md:37"
+          ],
+          "tags": [
+            "ariadne",
+            "requirement",
+            "must",
+            "draft"
+          ]
+        },
+        {
+          "slug": "requirement/req-007",
+          "title": "Infrastructure substrate registry",
+          "kind": "requirement",
+          "content": "Represent Proxmox, DGX Spark, M-series Macs, Hermes, OpenScorpion, local model endpoints, and runner pools as read-only registry records first.\n\n- Infrastructure records are readable without model calls.\n- Runner trust boundaries are explicit.\n- Mutation plans require approval and remain non-executing in this slice.",
+          "evidenceRefs": [
+            "<VAULT_ROOT>/projects/bench-smoke/context/dossier-2026-05-16T18-29-06-687Z.md",
+            "<VAULT_ROOT>/projects/bench-smoke/context/dossier-2026-05-16T18-29-06-687Z.md:7",
+            "<VAULT_ROOT>/projects/bench-smoke/context/dossier-2026-05-16T18-29-06-687Z.md:9",
+            "<VAULT_ROOT>/projects/bench-smoke/context/dossier-2026-05-16T18-29-06-687Z.md:20",
+            "<VAULT_ROOT>/projects/bench-smoke/context/dossier-2026-05-16T18-29-06-687Z.md:35",
+            "<VAULT_ROOT>/projects/bench-smoke/context/dossier-2026-05-16T18-29-06-687Z.md:37"
+          ],
+          "tags": [
+            "ariadne",
+            "requirement",
+            "must",
+            "draft"
+          ]
+        },
+        {
+          "slug": "task/task-001",
+          "title": "Source evidence intake",
+          "kind": "task",
+          "content": "Milestone: Control Spine\nSlice: core\n\nSuccess criteria:\n- Raw artifacts are copied into the durable vault.\n- Each artifact has a digest, source path, kind, and timestamp.\n- Extracted text remains linked to the raw evidence.\n\nVerification:\n- npm run check\n- npm test",
+          "evidenceRefs": [
+            "requirement/req-001"
+          ],
+          "tags": [
+            "ariadne",
+            "task",
+            "M1"
+          ]
+        },
+        {
+          "slug": "task/task-002",
+          "title": "Source-grounded PRD synthesis",
+          "kind": "task",
+          "content": "Milestone: Control Spine\nSlice: core\n\nSuccess criteria:\n- PRD records source references for every major claim.\n- Ambiguities are separated from accepted requirements.\n- Manual exports work before automation is attempted.\n\nVerification:\n- npm run check\n- npm test",
+          "evidenceRefs": [
+            "requirement/req-002"
+          ],
+          "tags": [
+            "ariadne",
+            "task",
+            "M1"
+          ]
+        },
+        {
+          "slug": "task/task-003",
+          "title": "GSD2 task bridge",
+          "kind": "task",
+          "content": "Milestone: Control Spine\nSlice: core\n\nSuccess criteria:\n- Tasks are independently inspectable as JSON and Markdown.\n- Each task names expected write areas and verification commands.\n- Tasks preserve requirement traceability.\n\nVerification:\n- npm run check\n- npm test",
+          "evidenceRefs": [
+            "requirement/req-003"
+          ],
+          "tags": [
+            "ariadne",
+            "task",
+            "M1"
+          ]
+        },
+        {
+          "slug": "task/task-004",
+          "title": "Bounded execution loop",
+          "kind": "task",
+          "content": "Milestone: Control Spine\nSlice: core\n\nSuccess criteria:\n- Execution runs are recorded before work begins.\n- The system can identify planned worktrees and gates.\n- External mutations remain blocked unless a later approved adapter is enabled.\n\nVerification:\n- npm run check\n- npm test",
+          "evidenceRefs": [
+            "requirement/req-004"
+          ],
+          "tags": [
+            "ariadne",
+            "task",
+            "M1"
+          ]
+        },
+        {
+          "slug": "task/task-006",
+          "title": "Review and CI control plane",
+          "kind": "task",
+          "content": "Milestone: Control Spine\nSlice: core\n\nSuccess criteria:\n- Merge readiness lists satisfied and missing gates.\n- CI and review records are imported without being treated as hidden authority.\n- Blocked states are explicit.\n\nVerification:\n- npm run check\n- npm test",
+          "evidenceRefs": [
+            "requirement/req-006"
+          ],
+          "tags": [
+            "ariadne",
+            "task",
+            "M1"
+          ]
+        },
+        {
+          "slug": "task/task-007",
+          "title": "Infrastructure substrate registry",
+          "kind": "task",
+          "content": "Milestone: Control Spine\nSlice: core\n\nSuccess criteria:\n- Infrastructure records are readable without model calls.\n- Runner trust boundaries are explicit.\n- Mutation plans require approval and remain non-executing in this slice.\n\nVerification:\n- npm run check\n- npm test",
+          "evidenceRefs": [
+            "requirement/req-007"
+          ],
+          "tags": [
+            "ariadne",
+            "task",
+            "M1"
+          ]
+        },
+        {
+          "slug": "task/task-005",
+          "title": "Playwright UI verification evidence",
+          "kind": "task",
+          "content": "Milestone: Verification Surface\nSlice: verification\n\nSuccess criteria:\n- Generated tests use role-oriented locators where possible.\n- Scenario records link back to requirement ids.\n- Evidence paths are recorded separately from claims.\n\nVerification:\n- npm run check\n- npm test\n- npx playwright test --reporter=list",
+          "evidenceRefs": [
+            "requirement/req-005"
+          ],
+          "tags": [
+            "ariadne",
+            "task",
+            "M2"
+          ]
+        },
+        {
+          "slug": "infrastructure/registry",
+          "title": "Infrastructure Registry",
+          "kind": "infrastructure",
+          "content": "m1-hermes: M1 Mac mini / always-on Hermes supervisor / Control-plane host for long-running supervision; verify live details before automation.\nm1-max: M1 Max / local development and testing / Apple Silicon development machine; use for local validation where available.\nm5-max: M5 Max / high-memory local agent workstation / Primary Mac-class local execution surface mentioned by user.\ndgx-spark: DGX Spark / local inference and memory-heavy workloads / Treat as planned/observed only until live endpoint inventory exists.\nbeast: Proxmox dev server / runners, services, model endpoints, infrastructure substrate / Read-only inventory first; Proxmox live state is authoritative at execution time.\nopenscorpion-router: governed model route / planned\ndgx-local-models: local inference / planned\ntrusted-private-runners: private jxwalker project repositories / persistent self-hosted runners only for trusted private repositories\npublic-repo-safe-path: public repositories / manual or ephemeral approval path; no untrusted public PRs on persistent runners",
+          "evidenceRefs": [
+            "infrastructure/registry.json"
+          ],
+          "tags": [
+            "ariadne",
+            "infrastructure"
+          ]
+        }
+      ]
+    },
+    "reports": []
+  },
+  "coordination": {
+    "sleepRoutines": [],
+    "memoryProposals": [],
+    "agentMail": [],
+    "agentLeases": [],
+    "hermesCronSnapshots": [],
+    "hermesCronProposals": []
+  },
+  "infrastructure": {
+    "registry": {
+      "schemaVersion": 1,
+      "project": "bench-smoke",
+      "generatedAt": "2026-05-16T18:29:06.692Z",
+      "hosts": [
+        {
+          "id": "m1-hermes",
+          "label": "M1 Mac mini",
+          "role": "always-on Hermes supervisor",
+          "notes": "Control-plane host for long-running supervision; verify live details before automation."
+        },
+        {
+          "id": "m1-max",
+          "label": "M1 Max",
+          "role": "local development and testing",
+          "notes": "Apple Silicon development machine; use for local validation where available."
+        },
+        {
+          "id": "m5-max",
+          "label": "M5 Max",
+          "role": "high-memory local agent workstation",
+          "notes": "Primary Mac-class local execution surface mentioned by user."
+        },
+        {
+          "id": "dgx-spark",
+          "label": "DGX Spark",
+          "role": "local inference and memory-heavy workloads",
+          "notes": "Treat as planned/observed only until live endpoint inventory exists."
+        },
+        {
+          "id": "beast",
+          "label": "Proxmox dev server",
+          "role": "runners, services, model endpoints, infrastructure substrate",
+          "notes": "Read-only inventory first; Proxmox live state is authoritative at execution time."
+        }
+      ],
+      "modelEndpoints": [
+        {
+          "id": "openscorpion-router",
+          "hostId": "beast",
+          "kind": "governed model route",
+          "url": "http://localhost:8080",
+          "status": "planned"
+        },
+        {
+          "id": "dgx-local-models",
+          "hostId": "dgx-spark",
+          "kind": "local inference",
+          "status": "planned"
+        }
+      ],
+      "runnerPools": [
+        {
+          "id": "trusted-private-runners",
+          "hostId": "beast",
+          "scope": "private jxwalker project repositories",
+          "trustBoundary": "persistent self-hosted runners only for trusted private repositories",
+          "status": "planned"
+        },
+        {
+          "id": "public-repo-safe-path",
+          "hostId": "beast",
+          "scope": "public repositories",
+          "trustBoundary": "manual or ephemeral approval path; no untrusted public PRs on persistent runners",
+          "status": "planned"
+        }
+      ]
+    },
+    "snapshots": []
+  },
+  "deployment": {
+    "snapshots": []
+  },
+  "github": {
+    "snapshots": []
+  },
+  "readiness": {
+    "schemaVersion": 1,
+    "project": "bench-smoke",
+    "generatedAt": "2026-05-16T18:29:06.693Z",
+    "status": "review_required",
+    "evidence": [
+      "requirements/prd.json",
+      "gsd/roadmap.json",
+      "verification/commands.json",
+      "Playwright plan: 7 scenarios for http://localhost:3000",
+      "Execution run run-2026-05-16T18-29-06-690Z: planned",
+      "GSD tasks: 7"
+    ],
+    "missing": [
+      "Execution run run-2026-05-16T18-29-06-690Z is not complete",
+      "Check typecheck has not passed",
+      "Check unit-tests has not passed",
+      "Check build has not passed",
+      "CodeRabbit or human review approval"
+    ],
+    "mergeGates": [
+      "typecheck passed",
+      "unit tests passed",
+      "build passed",
+      "Playwright evidence captured for UI work",
+      "CodeRabbit or human review completed",
+      "human approval present for infrastructure or external repo mutation"
+    ]
+  },
+  "artifacts": {
+    "hotIndex": "projects/bench-smoke/HOT_INDEX.md",
+    "prd": "projects/bench-smoke/requirements/prd.json",
+    "roadmap": "projects/bench-smoke/gsd/roadmap.json",
+    "control": "projects/bench-smoke/control/merge-readiness.json",
+    "evaluationPlan": "projects/bench-smoke/evaluation/evaluation-plan.json",
+    "benchmarkRuns": "projects/bench-smoke/evaluation",
+    "artifactChecks": "projects/bench-smoke/evaluation/artifact-checks.json",
+    "behaviorChecks": "projects/bench-smoke/evaluation/behavior-checks.json",
+    "gbrainExport": "projects/bench-smoke/integrations/gbrain/gbrain-export.json",
+    "consoleVisualChecks": "projects/bench-smoke/console/visual-checks.json",
+    "consoleBrowserChecks": "projects/bench-smoke/console/browser-checks.json"
+  }
+}

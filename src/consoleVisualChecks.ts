@@ -68,8 +68,12 @@ function checkContains(
     id,
     label,
     status: present ? "passed" : "failed",
-    detail: present ? `Found ${needle}.` : `Missing ${needle}.`
+    detail: detailSentence(present ? "Found" : "Missing", needle)
   };
+}
+
+function detailSentence(action: "Found" | "Missing", value: string): string {
+  return `${action} ${value.replace(/[.?!]+$/, "")}.`;
 }
 
 function parseEmbeddedConsoleData(html: string): ConsoleData | undefined {
@@ -100,7 +104,7 @@ function trendChartCheck(html: string, data: ConsoleData | undefined): ConsoleVi
     id: "trend-chart",
     label: hasTrendRuns ? "Evaluation trend chart hook" : "Evaluation trend empty state",
     status: present ? "passed" : "failed",
-    detail: present ? `Found ${expected}.` : `Missing ${expected}.`
+    detail: detailSentence(present ? "Found" : "Missing", expected)
   };
 }
 

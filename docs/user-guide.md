@@ -149,6 +149,14 @@ npm run ariadne -- benchmark-pack --set all
 
 This writes smoke, realistic, and stress packs under `benchmarks/source-packs/`. Each pack has a `benchmark-pack.json`, a README, source files, and recommended commands for exercising the harness.
 
+Run a pack through the local deterministic pipeline:
+
+```bash
+npm run ariadne -- benchmark-run --project bench-smoke --set smoke
+```
+
+This writes `vault/projects/bench-smoke/evaluation/benchmark-run-smoke-...json` and `.md`, plus the generated Ariadne artifacts for that benchmark project. The run is local and non-mutating.
+
 After a real run, record scores:
 
 ```bash

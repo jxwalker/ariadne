@@ -3,7 +3,7 @@
   "set": "realistic",
   "title": "Realistic Benchmark Pack",
   "purpose": "Exercise mixed source intake and manual adapter imports that resemble a real Ariadne project handoff.",
-  "generatedAt": "2026-05-16T11:02:09.297Z",
+  "generatedAt": "2026-05-16T18:29:06.234Z",
   "root": "<PACK_ROOT>",
   "files": [
     {
@@ -60,8 +60,20 @@
     "npm run ariadne -- artifact-checks --project bench-realistic"
   ],
   "acceptance": [
-    "Mixed source intake produces three source records.",
-    "Manual NotebookLM, CI, CodeRabbit, usage, and infrastructure imports create evidence records.",
-    "Control and artifact-check reports are generated without live mutations."
+    {
+      "id": "realistic-pipeline-output",
+      "type": "pipeline_output",
+      "criterion": "Mixed source intake produces three source records."
+    },
+    {
+      "id": "realistic-adapter-evidence",
+      "type": "pipeline_output",
+      "criterion": "Manual NotebookLM, CI, CodeRabbit, usage, and infrastructure imports create evidence records."
+    },
+    {
+      "id": "realistic-fixture-safety",
+      "type": "fixture_safety",
+      "criterion": "Control and artifact-check reports are generated without live mutations."
+    }
   ]
 }

@@ -1,0 +1,404 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>bench-smoke Console</title>
+<style>
+
+:root {
+  color-scheme: light;
+  --bg: #f7f8f8;
+  --ink: #1e2324;
+  --muted: #697170;
+  --line: #d8ddda;
+  --panel: #ffffff;
+  --accent: #2f6f5e;
+  --warn: #8a641f;
+  --bad: #9d3e35;
+  --mono: "SFMono-Regular", "JetBrains Mono", ui-monospace, monospace;
+  --sans: "Geist", "Aptos", "Helvetica Neue", Arial, sans-serif;
+}
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--sans);
+  letter-spacing: 0;
+}
+.shell {
+  width: min(1440px, calc(100vw - 40px));
+  margin: 0 auto;
+  padding: 32px 0 56px;
+}
+.hero {
+  display: grid;
+  grid-template-columns: minmax(0, 1.8fr) minmax(260px, 0.7fr);
+  gap: 28px;
+  align-items: end;
+  min-height: 220px;
+  border-bottom: 1px solid var(--line);
+  padding-bottom: 28px;
+}
+.hero-copy {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+.brand-lockup {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 18px;
+}
+.logo-mark {
+  width: 44px;
+  height: 44px;
+  border-radius: 9px;
+  flex: 0 0 auto;
+  object-fit: cover;
+  object-position: center;
+}
+.eyebrow, .label {
+  margin: 0;
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+}
+h1 {
+  margin: 0;
+  font-size: clamp(38px, 6vw, 82px);
+  line-height: .92;
+  letter-spacing: 0;
+}
+.lead {
+  max-width: 760px;
+  margin: 18px 0 0;
+  color: var(--muted);
+  font-size: 17px;
+  line-height: 1.55;
+  overflow-wrap: anywhere;
+}
+.stamp {
+  margin: 6px 0 0;
+  color: var(--muted);
+  font-family: var(--mono);
+  font-size: 13px;
+  line-height: 1.45;
+  overflow-wrap: anywhere;
+}
+.status-panel {
+  border: 1px solid var(--line);
+  background: var(--panel);
+  padding: 18px;
+  min-height: 142px;
+  min-width: 0;
+  display: grid;
+  align-content: space-between;
+}
+.status-panel strong {
+  font-family: var(--mono);
+  font-size: 22px;
+}
+.metrics {
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  border-bottom: 1px solid var(--line);
+}
+.metric {
+  min-height: 116px;
+  padding: 18px 16px;
+  border-right: 1px solid var(--line);
+  display: grid;
+  align-content: space-between;
+}
+.metric:last-child { border-right: 0; }
+.metric span, .metric small {
+  color: var(--muted);
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: .08em;
+}
+.metric strong {
+  font-family: var(--mono);
+  font-size: clamp(28px, 3vw, 44px);
+  line-height: 1;
+}
+.layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1.55fr) minmax(320px, .8fr);
+  gap: 34px;
+  padding-top: 34px;
+}
+.block {
+  border-top: 1px solid var(--line);
+  padding: 20px 0 30px;
+}
+.block h2 {
+  margin: 0 0 18px;
+  font-size: 15px;
+  text-transform: uppercase;
+  letter-spacing: .08em;
+}
+.gate-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  border: 1px solid var(--line);
+  background: var(--panel);
+}
+.gate {
+  min-height: 86px;
+  padding: 14px;
+  border-right: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+  display: grid;
+  align-content: space-between;
+}
+.gate:nth-child(3n) { border-right: 0; }
+.gate span, td span, .timeline span, .infra span, .infra small {
+  display: block;
+  color: var(--muted);
+}
+.gate strong, .status {
+  font-family: var(--mono);
+  font-size: 13px;
+}
+.ok { color: var(--accent); }
+.warn { color: var(--warn); }
+.bad { color: var(--bad); }
+.muted { color: var(--muted); }
+.table-wrap {
+  overflow-x: auto;
+  border: 1px solid var(--line);
+  background: var(--panel);
+}
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+}
+th, td {
+  padding: 13px 14px;
+  border-bottom: 1px solid var(--line);
+  text-align: left;
+  vertical-align: top;
+}
+th {
+  color: var(--muted);
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: .08em;
+}
+td:first-child strong {
+  font-family: var(--mono);
+  margin-bottom: 4px;
+  display: block;
+}
+.timeline {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  border-top: 1px solid var(--line);
+}
+.timeline li {
+  display: grid;
+  grid-template-columns: minmax(180px, .35fr) minmax(0, 1fr);
+  gap: 18px;
+  padding: 14px 0;
+  border-bottom: 1px solid var(--line);
+}
+time, .artifacts dt, .chain strong {
+  font-family: var(--mono);
+}
+time {
+  color: var(--muted);
+  font-size: 12px;
+}
+.chain, .infra, .artifacts {
+  display: grid;
+  gap: 10px;
+}
+.chain div, .infra div, .artifacts div, .trend-card {
+  border: 1px solid var(--line);
+  background: var(--panel);
+  padding: 13px;
+}
+.chain div {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+}
+.infra strong { display: block; margin-bottom: 4px; }
+.infra small { margin-top: 6px; line-height: 1.35; }
+.artifacts {
+  margin: 0;
+}
+.artifacts dt {
+  margin-bottom: 6px;
+  color: var(--muted);
+  font-size: 12px;
+}
+.artifacts dd {
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+.empty {
+  margin: 0;
+  border: 1px dashed var(--line);
+  padding: 18px;
+  color: var(--muted);
+}
+.metadata {
+  margin: 0;
+  color: var(--muted);
+  font-size: 12px;
+  overflow-wrap: anywhere;
+}
+.trend-card {
+  display: grid;
+  grid-template-columns: minmax(220px, .9fr) minmax(220px, 1fr);
+  gap: 18px;
+  align-items: center;
+}
+.trend-card svg {
+  width: 100%;
+  min-height: 220px;
+}
+.trend-line {
+  fill: none;
+  stroke: var(--accent);
+  stroke-width: 3;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.axis {
+  stroke: var(--line);
+  stroke-width: 1;
+}
+circle {
+  fill: var(--panel);
+  stroke: var(--accent);
+  stroke-width: 2;
+}
+.trend-meta {
+  display: grid;
+  gap: 10px;
+}
+.trend-meta strong {
+  font-family: var(--mono);
+  font-size: 18px;
+}
+.trend-row {
+  display: grid;
+  grid-template-columns: 42px minmax(0, 1fr) 42px;
+  gap: 10px;
+  align-items: center;
+}
+meter {
+  width: 100%;
+}
+.visual-status {
+  border: 1px solid var(--line);
+  background: var(--panel);
+  padding: 13px;
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+}
+.compact-list {
+  list-style: none;
+  margin: 10px 0 0;
+  padding: 0;
+  display: grid;
+  gap: 8px;
+}
+.compact-list li {
+  border-bottom: 1px solid var(--line);
+  padding-bottom: 8px;
+  display: flex;
+  gap: 10px;
+  justify-content: space-between;
+}
+@media (max-width: 980px) {
+  .shell { width: min(calc(100vw - 28px), 760px); }
+  .hero, .layout { grid-template-columns: 1fr; }
+  .metrics { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .metric:nth-child(2n) { border-right: 0; }
+  .gate-grid { grid-template-columns: 1fr; }
+  .gate, .gate:nth-child(3n) { border-right: 0; }
+  .timeline li { grid-template-columns: 1fr; gap: 6px; }
+  .trend-card { grid-template-columns: 1fr; }
+}
+
+</style>
+</head>
+<body>
+<main class="shell">
+<section class="hero">
+<div class="hero-copy">
+<div class="brand-lockup">
+<img class="logo-mark" src="../../../../assets/ariadne-logo-square.png" alt="" aria-hidden="true">
+<p class="eyebrow">Ariadne Console</p>
+</div>
+<h1>bench-smoke</h1>
+<p class="lead">Vault-backed orchestration view.</p>
+<p class="stamp">Last refreshed 2026-05-16T18:29:09.711Z.</p>
+</div>
+<div class="status-panel">
+<span class="label">Merge readiness</span>
+<strong class="status warn">review_required</strong>
+<span>5 missing gates</span>
+</div>
+</section>
+<section class="metrics" aria-label="Project metrics">
+<div class="metric"><span>Sources</span><strong>1</strong><small>total</small></div>
+<div class="metric"><span>Extractions</span><strong>0</strong><small>results</small></div>
+<div class="metric"><span>Requirements</span><strong>7</strong><small>total</small></div>
+<div class="metric"><span>Tasks</span><strong>7</strong><small>total</small></div>
+<div class="metric"><span>GSD2</span><strong>0</strong><small>process</small></div>
+<div class="metric"><span>Runs</span><strong>1</strong><small>total</small></div>
+<div class="metric"><span>Checks</span><strong>0</strong><small>recorded</small></div>
+<div class="metric"><span>Healer</span><strong>0</strong><small>proposals</small></div>
+<div class="metric"><span>GitHub</span><strong>0</strong><small>snapshots</small></div>
+<div class="metric"><span>Approvals</span><strong>0</strong><small>0 total</small></div>
+<div class="metric"><span>Mutation</span><strong>0</strong><small>readiness</small></div>
+<div class="metric"><span>Audit</span><strong>none</strong><small>mutation</small></div>
+<div class="metric"><span>Hermes</span><strong>0</strong><small>0 proposals</small></div>
+<div class="metric"><span>Recovery</span><strong>0</strong><small>issues</small></div>
+<div class="metric"><span>Browser</span><strong>passed</strong><small>console</small></div>
+<div class="metric"><span>Evaluation</span><strong>none</strong><small>latest</small></div>
+<div class="metric"><span>Benchmarks</span><strong>1</strong><small>runs</small></div>
+</section>
+<section class="layout">
+<div class="main-column">
+<section class="block"><h2>Gate Matrix</h2><div class="gate-grid"><div class="gate"><span>Source</span><strong class="ok">passed</strong></div><div class="gate"><span>PRD</span><strong class="ok">passed</strong></div><div class="gate"><span>GSD</span><strong class="ok">passed</strong></div><div class="gate"><span>Execution</span><strong class="ok">passed</strong></div><div class="gate"><span>Typecheck</span><strong class="muted">missing</strong></div><div class="gate"><span>Unit tests</span><strong class="muted">missing</strong></div><div class="gate"><span>Build</span><strong class="muted">missing</strong></div><div class="gate"><span>Review</span><strong class="muted">missing</strong></div><div class="gate"><span>Behavior</span><strong class="warn">warning</strong></div><div class="gate"><span>Readiness</span><strong class="warn">review_required</strong></div></div></section>
+<section class="block"><h2>Evaluation Trends</h2><p class="empty">No evaluation trend data is available.</p></section>
+<section class="block"><h2>Benchmark Runs</h2><div class="table-wrap"><table><thead><tr><th>Set</th><th>Status</th><th>Projects</th><th>Steps</th><th>Missing Required</th></tr></thead><tbody><tr><td>smoke</td><td class="ok">passed</td><td>bench-smoke</td><td>13/13</td><td>0</td></tr></tbody></table></div></section>
+<section class="block"><h2>Task Flow</h2><div class="table-wrap"><table><thead><tr><th>Task</th><th>Milestone</th><th>Slice</th><th>Writes</th></tr></thead><tbody><tr><td><strong>TASK-001</strong><span>Source evidence intake</span></td><td>Control Spine</td><td>core</td><td>src/vault.ts, src/extract.ts</td></tr><tr><td><strong>TASK-002</strong><span>Source-grounded PRD synthesis</span></td><td>Control Spine</td><td>core</td><td>src/prd.ts, vault/projects/&lt;project&gt;/requirements/</td></tr><tr><td><strong>TASK-003</strong><span>GSD2 task bridge</span></td><td>Control Spine</td><td>core</td><td>src/gsd.ts, vault/projects/&lt;project&gt;/gsd/</td></tr><tr><td><strong>TASK-004</strong><span>Bounded execution loop</span></td><td>Control Spine</td><td>core</td><td>src/execution.ts, vault/projects/&lt;project&gt;/execution/</td></tr><tr><td><strong>TASK-006</strong><span>Review and CI control plane</span></td><td>Control Spine</td><td>core</td><td>src/controlPlane.ts, vault/projects/&lt;project&gt;/control/</td></tr><tr><td><strong>TASK-007</strong><span>Infrastructure substrate registry</span></td><td>Control Spine</td><td>core</td><td>src/infraSnapshot.ts, vault/projects/&lt;project&gt;/infrastructure/</td></tr><tr><td><strong>TASK-005</strong><span>Playwright UI verification evidence</span></td><td>Verification Surface</td><td>verification</td><td>src/playwrightEvidence.ts, vault/projects/&lt;project&gt;/verification/</td></tr></tbody></table></div></section>
+<section class="block"><h2>Approval Queue</h2><div class="table-wrap"><table><thead><tr><th>Kind</th><th>Detail</th></tr></thead><tbody><tr><td>missing gate</td><td>Execution run run-2026-05-16T18-29-06-690Z is not complete</td></tr><tr><td>missing gate</td><td>Check typecheck has not passed</td></tr><tr><td>missing gate</td><td>Check unit-tests has not passed</td></tr><tr><td>missing gate</td><td>Check build has not passed</td></tr><tr><td>missing gate</td><td>CodeRabbit or human review approval</td></tr></tbody></table></div></section>
+<section class="block"><h2>Mutation Audit</h2><p class="empty">No mutation-readiness audit is available.</p></section>
+<section class="block"><h2>Timeline</h2><ol class="timeline"><li><time>2026-05-16T18:29:06.696Z</time><strong>Benchmark passed: smoke</strong><span>13 passed / 0 failed</span></li><li><time>2026-05-16T18:29:06.690Z</time><strong>Execution run: run-2026-05-16T18-29-06-690Z</strong><span>planned / 7 tasks</span></li><li><time>2026-05-16T18:29:06.684Z</time><strong>Source ingested: source.md</strong><span>markdown / f93360299695</span></li></ol></section>
+</div>
+<aside class="side-column">
+<section class="block"><h2>Evidence Chain</h2><div class="chain"><div><span>Raw sources</span><strong>1</strong></div><div><span>Extraction results</span><strong>0</strong></div><div><span>Requirements</span><strong>7</strong></div><div><span>Tasks</span><strong>7</strong></div><div><span>GSD2 process</span><strong>0</strong></div><div><span>Checks</span><strong>0</strong></div><div><span>Reviews</span><strong>0</strong></div><div><span>Decisions</span><strong>0</strong></div><div><span>Healer proposals</span><strong>0</strong></div><div><span>GitHub snapshots</span><strong>0</strong></div><div><span>Pending approvals</span><strong>0</strong></div><div><span>Recovery issues</span><strong>0</strong></div><div><span>Browser checks</span><strong>passed</strong></div><div><span>Hermes cron</span><strong>0</strong></div><div><span>GBrain reports</span><strong>0</strong></div></div></section>
+<section class="block"><h2>Extraction Results</h2><p class="empty">No OCR, transcription, or PDF extraction results are available.</p></section>
+<section class="block"><h2>Healer Proposals</h2><p class="empty">No review-gated healer proposals are available.</p></section>
+<section class="block"><h2>Visual Checks</h2><div class="visual-status"><strong class="ok">passed</strong><span>10 passed / 0 failed</span></div><ul class="compact-list"><li><strong class="ok">passed</strong><span>HTML document shell</span></li><li><strong class="ok">passed</strong><span>Ariadne brand lockup</span></li><li><strong class="ok">passed</strong><span>Gate matrix section</span></li><li><strong class="ok">passed</strong><span>Timeline section</span></li><li><strong class="ok">passed</strong><span>Approval queue section</span></li><li><strong class="ok">passed</strong><span>Evaluation trend empty state</span></li><li><strong class="ok">passed</strong><span>Visual check panel</span></li><li><strong class="ok">passed</strong><span>Embedded console data</span></li><li><strong class="ok">passed</strong><span>Embedded console data parses</span></li><li><strong class="ok">passed</strong><span>No local absolute path leaks</span></li></ul></section>
+<section class="block"><h2>Browser Checks</h2><div class="visual-status"><strong class="ok">passed</strong><span>7 passed / 0 failed</span></div><p class="metadata">Screenshot: projects/bench-smoke/console/screenshots/console-2026-05-16T18-29-08-050Z.png</p><ul class="compact-list"><li><strong class="ok">passed</strong><span>Ariadne brand</span></li><li><strong class="ok">passed</strong><span>Gate matrix section</span></li><li><strong class="ok">passed</strong><span>Evaluation trends section</span></li><li><strong class="ok">passed</strong><span>Recovery section</span></li><li><strong class="ok">passed</strong><span>GitHub section</span></li><li><strong class="ok">passed</strong><span>Embedded console data parses</span></li><li><strong class="ok">passed</strong><span>Screenshot captured</span></li></ul></section>
+<section class="block"><h2>Recovery</h2><p class="empty">No recovery report is available.</p></section>
+<section class="block"><h2>Memory And Mail</h2><div class="chain"><div><span>Sleep routines</span><strong>0</strong></div><div><span>Memory proposals</span><strong>0</strong></div><div><span>Agent mail</span><strong>0</strong></div><div><span>Agent leases</span><strong>0</strong></div><div><span>Hermes cron snapshots</span><strong>0</strong></div><div><span>Hermes cron proposals</span><strong>0</strong></div></div></section>
+<section class="block"><h2>Infrastructure</h2><div class="infra"><div><strong>M1 Mac mini</strong><span>always-on Hermes supervisor</span><small>Control-plane host for long-running supervision; verify live details before automation.</small></div><div><strong>M1 Max</strong><span>local development and testing</span><small>Apple Silicon development machine; use for local validation where available.</small></div><div><strong>M5 Max</strong><span>high-memory local agent workstation</span><small>Primary Mac-class local execution surface mentioned by user.</small></div><div><strong>DGX Spark</strong><span>local inference and memory-heavy workloads</span><small>Treat as planned/observed only until live endpoint inventory exists.</small></div><div><strong>Proxmox dev server</strong><span>runners, services, model endpoints, infrastructure substrate</span><small>Read-only inventory first; Proxmox live state is authoritative at execution time.</small></div></div></section>
+<section class="block"><h2>Deployment</h2><p class="empty">No deployment snapshots are available.</p></section>
+<section class="block"><h2>GitHub</h2><p class="empty">No GitHub snapshots are available.</p></section>
+<section class="block"><h2>GBrain</h2><div class="chain"><div><span>Export documents</span><strong>16</strong></div><div><span>Imported reports</span><strong>0</strong></div></div></section>
+<section class="block"><h2>Artifacts</h2><dl class="artifacts"><div><dt>hotIndex</dt><dd>projects/bench-smoke/HOT_INDEX.md</dd></div><div><dt>prd</dt><dd>projects/bench-smoke/requirements/prd.json</dd></div><div><dt>roadmap</dt><dd>projects/bench-smoke/gsd/roadmap.json</dd></div><div><dt>control</dt><dd>projects/bench-smoke/control/merge-readiness.json</dd></div><div><dt>evaluationPlan</dt><dd>projects/bench-smoke/evaluation/evaluation-plan.json</dd></div><div><dt>benchmarkRuns</dt><dd>projects/bench-smoke/evaluation</dd></div><div><dt>artifactChecks</dt><dd>projects/bench-smoke/evaluation/artifact-checks.json</dd></div><div><dt>behaviorChecks</dt><dd>projects/bench-smoke/evaluation/behavior-checks.json</dd></div><div><dt>gbrainExport</dt><dd>projects/bench-smoke/integrations/gbrain/gbrain-export.json</dd></div><div><dt>consoleVisualChecks</dt><dd>projects/bench-smoke/console/visual-checks.json</dd></div><div><dt>consoleBrowserChecks</dt><dd>projects/bench-smoke/console/browser-checks.json</dd></div></dl></section>
+</aside>
+</section>
+<script type="application/json" id="console-data">
+{"schemaVersion":1,"project":"bench-smoke","generatedAt":"2026-05-16T18:29:09.711Z","projectDir":"projects/bench-smoke","summary":{"sources":1,"extractionResults":0,"requirements":7,"tasks":7,"executionRuns":1,"checks":0,"reviews":0,"decisions":0,"evaluations":0,"benchmarkRuns":1,"infraSnapshots":0,"gsd2ProcessSnapshots":0,"sleepRoutines":0,"memoryProposals":0,"agentMail":0,"agentLeases":0,"hermesCronSnapshots":0,"hermesCronProposals":0,"deploymentSnapshots":0,"healerProposals":0,"githubSnapshots":0,"approvals":0,"pendingApprovals":0,"mutationReadinessPlans":0,"recoveryIssues":0,"consoleBrowserChecks":"passed","readinessStatus":"review_required"},"sources":[{"id":"2026-05-16T18-29-06-684Z-f93360299695","fileName":"source.md","kind":"markdown","sensitivity":"internal","sha256":"f9336029969522392c8aa0d21718733fbc1f0af0e330297597c351cfaff753bc","ingestedAt":"2026-05-16T18:29:06.684Z","hasExtractedText":true,"hasHandoff":false,"hygieneStatus":"clean"}],"extractionResults":[],"requirements":[{"id":"REQ-001","title":"Source evidence intake","description":"Preserve drawings, whitepapers, dictated notes, documents, and related artifacts before any summarisation or automation.","acceptance":["Raw artifacts are copied into the durable vault.","Each artifact has a digest, source path, kind, and timestamp.","Extracted text remains linked to the raw evidence."],"priority":"must","status":"draft","sourceRefs":["\u003cVAULT_ROOT>/projects/bench-smoke/context/dossier-2026-05-16T18-29-06-687Z.md","\u003cVAULT_ROOT>/projects/bench-smoke/context/dossier-2026-05-16T18-29-06-687Z.md:7","\u003cVAULT_ROOT>/projects/bench-smoke/context/dossier-2026-05-16T18-29-06-687Z.md:9","\u003cVAULT_ROOT>/projects/bench-smoke/context/dossier-2026-05-16T18-29-06-687Z.md:20","\u003cVAULT_ROOT>/projects/bench-smoke/context/dossier-2026-05-16T18-29-06-687Z.md:35","\u003cVAULT_ROOT>/projects/bench-smoke/context/dossier-2026-05-16T18-29-06-687Z.md:37"]},{"id":"REQ-002","title":"Source-grounded PRD synthesis","description":"Convert evidence dossiers and NotebookLM-style grounded exports into requirements, ambiguities, acceptance criteria, and source references.","acceptance":["PRD records source references for every major claim.","Ambiguities are separated from accepted requirements.","Manual exports work before automation is attempted."],"priority":"must","status":"draft","sourceRefs":["\u003cVAULT_ROOT>/projects/bench-smoke/context/dossier-2026-05-16T18-29-06-687Z.md","\u003cVAULT_ROOT>/projects/bench-smoke/context/dossier-2026-05-16T18-29-06-687Z.md:7","\u003cVAULT_ROOT>/projects/bench-smoke/context/dossier-2026-05-16T18-29-06-687Z.md:9","\u003cVAULT_ROOT>/projects/bench-smoke/context/dossier-2026-05-16T18-29-06-687Z.md:20","\u003cVAULT_ROOT>/projects/bench-smoke/context/dossier-2026-05-16T18-29-06-687Z.md:35","\u003cVAULT_ROOT>/projects/bench-smoke/context/dossier-2026-05-16T18-29-06-687Z.md:37"]},{"id":"REQ-003","title":"GSD2 task bridge","description":"Transform accepted requirements into milestones, vertical slices, tasks, success criteria, and verification commands.","acceptance":["Tasks are independently inspectable as JSON and Markdown.","Each task names expected write areas and verification commands.","Tasks preserve requirement traceability."],"priority":"must","status":"draft","sourceRefs":["\u003cVAULT_ROOT>/projects/bench-smoke/context/dossier-2026-05-16T18-29-06-687Z.md","\u003cVAULT_ROOT>/projects/bench-smoke/context/dossier-2026-05-16T18-29-06-687Z.md:7","\u003cVAULT_ROOT>/projects/bench-smoke/context/dossier-2026-05-16T18-29-06-687Z.md:9","\u003cVAULT_ROOT>/projects/bench-smoke/context/dossier-2026-05-16T18-29-06-687Z.md:20","\u003cVAULT_ROOT>/projects/bench-smoke/context/dossier-2026-05-16T18-29-06-687Z.md:35","\u003cVAULT_ROOT>/projects/bench-smoke/context/dossier-2026-05-16T18-29-06-687Z.md:37"]},{"id":"REQ-004","title":"Bounded execution loop","description":"Plan isolated worktree execution with explicit branch names, gates, stop conditions, and review points.","acceptance":["Execution runs are recorded before work begins.","The system can identify planned worktrees and gates.","External mutations remain blocked unless a later approved adapter is enabled."],"priority":"must","status":"draft","sourceRefs":["\u003cVAULT_ROOT>/projects/bench-smoke/context/dossier-2026-05-16T18-29-06-687Z.md","\u003cVAULT_ROOT>/projects/bench-smoke/context/dossier-2026-05-16T18-29-06-687Z.md:7","\u003cVAULT_ROOT>/projects/bench-smoke/context/dossier-2026-05-16T18-29-06-687Z.md:9","\u003cVAULT_ROOT>/projects/bench-smoke/context/dossier-2026-05-16T18-29-06-687Z.md:20","\u003cVAULT_ROOT>/projects/bench-smoke/context/dossier-2026-05-16T18-29-06-687Z.md:35","\u003cVAULT_ROOT>/projects/bench-smoke/context/dossier-2026-05-16T18-29-06-687Z.md:37"]},{"id":"REQ-005","title":"Playwright UI verification evidence","description":"Generate UI test plans and Playwright skeletons from requirements, with room for screenshots, traces, and healer proposals.","acceptance":["Generated tests use role-oriented locators where possible.","Scenario records link back to requirement ids.","Evidence paths are recorded separately from claims."],"priority":"should","status":"draft","sourceRefs":["\u003cVAULT_ROOT>/projects/bench-smoke/context/dossier-2026-05-16T18-29-06-687Z.md","\u003cVAULT_ROOT>/projects/bench-smoke/context/dossier-2026-05-16T18-29-06-687Z.md:7","\u003cVAULT_ROOT>/projects/bench-smoke/context/dossier-2026-05-16T18-29-06-687Z.md:9","\u003cVAULT_ROOT>/projects/bench-smoke/context/dossier-2026-05-16T18-29-06-687Z.md:20","\u003cVAULT_ROOT>/projects/bench-smoke/context/dossier-2026-05-16T18-29-06-687Z.md:35","\u003cVAULT_ROOT>/projects/bench-smoke/context/dossier-2026-05-16T18-29-06-687Z.md:37"]},{"id":"REQ-006","title":"Review and CI control plane","description":"Collect deterministic checks, CodeRabbit feedback, human review, and merge-readiness state into one evidence surface.","acceptance":["Merge readiness lists satisfied and missing gates.","CI and review records are imported without being treated as hidden authority.","Blocked states are explicit."],"priority":"must","status":"draft","sourceRefs":["\u003cVAULT_ROOT>/projects/bench-smoke/context/dossier-2026-05-16T18-29-06-687Z.md","\u003cVAULT_ROOT>/projects/bench-smoke/context/dossier-2026-05-16T18-29-06-687Z.md:7","\u003cVAULT_ROOT>/projects/bench-smoke/context/dossier-2026-05-16T18-29-06-687Z.md:9","\u003cVAULT_ROOT>/projects/bench-smoke/context/dossier-2026-05-16T18-29-06-687Z.md:20","\u003cVAULT_ROOT>/projects/bench-smoke/context/dossier-2026-05-16T18-29-06-687Z.md:35","\u003cVAULT_ROOT>/projects/bench-smoke/context/dossier-2026-05-16T18-29-06-687Z.md:37"]},{"id":"REQ-007","title":"Infrastructure substrate registry","description":"Represent Proxmox, DGX Spark, M-series Macs, Hermes, OpenScorpion, local model endpoints, and runner pools as read-only registry records first.","acceptance":["Infrastructure records are readable without model calls.","Runner trust boundaries are explicit.","Mutation plans require approval and remain non-executing in this slice."],"priority":"must","status":"draft","sourceRefs":["\u003cVAULT_ROOT>/projects/bench-smoke/context/dossier-2026-05-16T18-29-06-687Z.md","\u003cVAULT_ROOT>/projects/bench-smoke/context/dossier-2026-05-16T18-29-06-687Z.md:7","\u003cVAULT_ROOT>/projects/bench-smoke/context/dossier-2026-05-16T18-29-06-687Z.md:9","\u003cVAULT_ROOT>/projects/bench-smoke/context/dossier-2026-05-16T18-29-06-687Z.md:20","\u003cVAULT_ROOT>/projects/bench-smoke/context/dossier-2026-05-16T18-29-06-687Z.md:35","\u003cVAULT_ROOT>/projects/bench-smoke/context/dossier-2026-05-16T18-29-06-687Z.md:37"]}],"tasks":[{"id":"TASK-001","title":"Source evidence intake","requirementIds":["REQ-001"],"slice":"core","successCriteria":["Raw artifacts are copied into the durable vault.","Each artifact has a digest, source path, kind, and timestamp.","Extracted text remains linked to the raw evidence."],"verificationCommands":["npm run check","npm test"],"canRunInParallel":true,"writes":["src/vault.ts","src/extract.ts","docs/source-contract.md"],"milestoneId":"M1","milestoneTitle":"Control Spine"},{"id":"TASK-002","title":"Source-grounded PRD synthesis","requirementIds":["REQ-002"],"slice":"core","successCriteria":["PRD records source references for every major claim.","Ambiguities are separated from accepted requirements.","Manual exports work before automation is attempted."],"verificationCommands":["npm run check","npm test"],"canRunInParallel":true,"writes":["src/prd.ts","vault/projects/\u003cproject>/requirements/"],"milestoneId":"M1","milestoneTitle":"Control Spine"},{"id":"TASK-003","title":"GSD2 task bridge","requirementIds":["REQ-003"],"slice":"core","successCriteria":["Tasks are independently inspectable as JSON and Markdown.","Each task names expected write areas and verification commands.","Tasks preserve requirement traceability."],"verificationCommands":["npm run check","npm test"],"canRunInParallel":false,"writes":["src/gsd.ts","vault/projects/\u003cproject>/gsd/"],"milestoneId":"M1","milestoneTitle":"Control Spine"},{"id":"TASK-004","title":"Bounded execution loop","requirementIds":["REQ-004"],"slice":"core","successCriteria":["Execution runs are recorded before work begins.","The system can identify planned worktrees and gates.","External mutations remain blocked unless a later approved adapter is enabled."],"verificationCommands":["npm run check","npm test"],"canRunInParallel":false,"writes":["src/execution.ts","vault/projects/\u003cproject>/execution/"],"milestoneId":"M1","milestoneTitle":"Control Spine"},{"id":"TASK-006","title":"Review and CI control plane","requirementIds":["REQ-006"],"slice":"core","successCriteria":["Merge readiness lists satisfied and missing gates.","CI and review records are imported without being treated as hidden authority.","Blocked states are explicit."],"verificationCommands":["npm run check","npm test"],"canRunInParallel":true,"writes":["src/controlPlane.ts","vault/projects/\u003cproject>/control/"],"milestoneId":"M1","milestoneTitle":"Control Spine"},{"id":"TASK-007","title":"Infrastructure substrate registry","requirementIds":["REQ-007"],"slice":"core","successCriteria":["Infrastructure records are readable without model calls.","Runner trust boundaries are explicit.","Mutation plans require approval and remain non-executing in this slice."],"verificationCommands":["npm run check","npm test"],"canRunInParallel":true,"writes":["src/infraSnapshot.ts","vault/projects/\u003cproject>/infrastructure/"],"milestoneId":"M1","milestoneTitle":"Control Spine"},{"id":"TASK-005","title":"Playwright UI verification evidence","requirementIds":["REQ-005"],"slice":"verification","successCriteria":["Generated tests use role-oriented locators where possible.","Scenario records link back to requirement ids.","Evidence paths are recorded separately from claims."],"verificationCommands":["npm run check","npm test","npx playwright test --reporter=list"],"canRunInParallel":true,"writes":["src/playwrightEvidence.ts","vault/projects/\u003cproject>/verification/"],"milestoneId":"M2","milestoneTitle":"Verification Surface"}],"executionRuns":[{"schemaVersion":1,"id":"run-2026-05-16T18-29-06-690Z","project":"bench-smoke","createdAt":"2026-05-16T18:29:06.690Z","taskIds":["TASK-001","TASK-002","TASK-003","TASK-004","TASK-006","TASK-007","TASK-005"],"repoPath":"\u003cREPO_ROOT>","branchPrefix":"jxw/ariadne","status":"planned","gates":["npm run check","npm test","npm run build","review evidence","human approval before external mutation"],"worktrees":[{"taskId":"TASK-001","branch":"jxw/ariadne-task-001","worktreePath":"\u003cREPO_ROOT>-task-001"},{"taskId":"TASK-002","branch":"jxw/ariadne-task-002","worktreePath":"\u003cREPO_ROOT>-task-002"},{"taskId":"TASK-003","branch":"jxw/ariadne-task-003","worktreePath":"\u003cREPO_ROOT>-task-003"},{"taskId":"TASK-004","branch":"jxw/ariadne-task-004","worktreePath":"\u003cREPO_ROOT>-task-004"},{"taskId":"TASK-006","branch":"jxw/ariadne-task-006","worktreePath":"\u003cREPO_ROOT>-task-006"},{"taskId":"TASK-007","branch":"jxw/ariadne-task-007","worktreePath":"\u003cREPO_ROOT>-task-007"},{"taskId":"TASK-005","branch":"jxw/ariadne-task-005","worktreePath":"\u003cREPO_ROOT>-task-005"}],"stopConditions":["A verification command fails twice for the same reason.","A task requires credentials or external mutation not represented by an approved plan.","The working tree contains unrelated user changes in a write scope.","Generated tests cannot identify a target URL or stable user workflow."]}],"checks":[],"reviews":[],"approvals":[],"mutationReadinessPlans":[],"decisions":[],"playwrightEvidence":[],"healerProposals":[],"evaluations":[],"benchmarkRuns":[{"schemaVersion":1,"id":"benchmark-run-smoke-2026-05-16T18-29-06-696Z","project":"bench-smoke","set":"smoke","generatedAt":"2026-05-16T18:29:06.696Z","mode":"local_deterministic","status":"passed","packPath":"\u003cPACK_ROOT>/benchmark-pack.json","packRoot":"\u003cPACK_ROOT>","targetProjects":["bench-smoke"],"summary":{"steps":13,"passed":13,"failed":0,"targetProjects":1,"missingRequiredArtifacts":0},"steps":[{"id":"ingest","project":"bench-smoke","status":"passed","detail":"completed","evidenceRefs":["\u003cPACK_ROOT>/sources/source.md"]},{"id":"assemble","project":"bench-smoke","status":"passed","detail":"completed","evidenceRefs":[]},{"id":"prd","project":"bench-smoke","status":"passed","detail":"completed","evidenceRefs":["\u003cVAULT_ROOT>/projects/bench-smoke/requirements/prd.json","\u003cVAULT_ROOT>/projects/bench-smoke/requirements/PRD.md"]},{"id":"gsd","project":"bench-smoke","status":"passed","detail":"completed","evidenceRefs":["\u003cVAULT_ROOT>/projects/bench-smoke/gsd/roadmap.json","\u003cVAULT_ROOT>/projects/bench-smoke/gsd/TASKS.md","\u003cVAULT_ROOT>/projects/bench-smoke/verification/commands.json"]},{"id":"gsd2-export","project":"bench-smoke","status":"passed","detail":"completed","evidenceRefs":["\u003cVAULT_ROOT>/projects/bench-smoke/gsd/gsd2-bundle.json","\u003cVAULT_ROOT>/projects/bench-smoke/gsd/gsd2-bundle.md"]},{"id":"execution","project":"bench-smoke","status":"passed","detail":"completed","evidenceRefs":["\u003cVAULT_ROOT>/projects/bench-smoke/execution/run-2026-05-16T18-29-06-690Z.json","\u003cVAULT_ROOT>/projects/bench-smoke/execution/run-2026-05-16T18-29-06-690Z.md"]},{"id":"playwright","project":"bench-smoke","status":"passed","detail":"completed","evidenceRefs":["\u003cVAULT_ROOT>/projects/bench-smoke/verification/playwright-plan.json","\u003cVAULT_ROOT>/projects/bench-smoke/verification/playwright-plan.md","\u003cVAULT_ROOT>/projects/bench-smoke/verification/generated.playwright.spec.ts"]},{"id":"evaluation","project":"bench-smoke","status":"passed","detail":"completed","evidenceRefs":["\u003cVAULT_ROOT>/projects/bench-smoke/evaluation/evaluation-plan.json","\u003cVAULT_ROOT>/projects/bench-smoke/evaluation/evaluation-plan.md"]},{"id":"infra","project":"bench-smoke","status":"passed","detail":"completed","evidenceRefs":["\u003cVAULT_ROOT>/projects/bench-smoke/infrastructure/registry.json","\u003cVAULT_ROOT>/projects/bench-smoke/infrastructure/runner-and-model-plan.md"]},{"id":"control","project":"bench-smoke","status":"passed","detail":"completed","evidenceRefs":["\u003cVAULT_ROOT>/projects/bench-smoke/control/merge-readiness.json","\u003cVAULT_ROOT>/projects/bench-smoke/control/merge-readiness.md"]},{"id":"behavior-checks","project":"bench-smoke","status":"passed","detail":"completed","evidenceRefs":["\u003cVAULT_ROOT>/projects/bench-smoke/evaluation/behavior-checks.json","\u003cVAULT_ROOT>/projects/bench-smoke/evaluation/behavior-checks.md"]},{"id":"gbrain-export","project":"bench-smoke","status":"passed","detail":"completed","evidenceRefs":["\u003cVAULT_ROOT>/projects/bench-smoke/integrations/gbrain/gbrain-export.json","\u003cVAULT_ROOT>/projects/bench-smoke/integrations/gbrain/gbrain-export.md"]},{"id":"artifact-checks","project":"bench-smoke","status":"passed","detail":"completed","evidenceRefs":["\u003cVAULT_ROOT>/projects/bench-smoke/evaluation/artifact-checks.json","\u003cVAULT_ROOT>/projects/bench-smoke/evaluation/artifact-checks.md"]}],"acceptance":[{"id":"smoke-artifact-contract","type":"artifact_contract","criterion":"Artifact checks pass with no missing required artifacts.","status":"passed","evidenceRefs":["\u003cVAULT_ROOT>/projects/bench-smoke/evaluation/artifact-checks.md"]},{"id":"smoke-pipeline-output","type":"pipeline_output","criterion":"The generated PRD contains the core evidence, planning, verification, and control requirements.","status":"passed","evidenceRefs":["\u003cVAULT_ROOT>/projects/bench-smoke/evaluation/artifact-checks.md"]},{"id":"smoke-fixture-safety","type":"fixture_safety","criterion":"No command requires a live external service.","status":"passed","evidenceRefs":["\u003cVAULT_ROOT>/projects/bench-smoke/evaluation/artifact-checks.md"]}],"artifactChecks":[{"project":"bench-smoke","status":"passed","missingRequired":0,"reportPath":"\u003cVAULT_ROOT>/projects/bench-smoke/evaluation/artifact-checks.md"}]}],"consoleVisualChecks":{"schemaVersion":1,"project":"bench-smoke","generatedAt":"2026-05-16T18:29:07.598Z","htmlPath":"projects/bench-smoke/console/index.html","status":"passed","summary":{"passed":10,"failed":0},"checks":[{"id":"doctype","label":"HTML document shell","status":"passed","detail":"Found \u003c!doctype html>."},{"id":"brand","label":"Ariadne brand lockup","status":"passed","detail":"Found Ariadne Console."},{"id":"gate-matrix","label":"Gate matrix section","status":"passed","detail":"Found Gate Matrix."},{"id":"timeline","label":"Timeline section","status":"passed","detail":"Found Timeline."},{"id":"approval-queue","label":"Approval queue section","status":"passed","detail":"Found Approval Queue."},{"id":"trend-chart","label":"Evaluation trend empty state","status":"passed","detail":"Found No evaluation trend data is available."},{"id":"visual-check-panel","label":"Visual check panel","status":"passed","detail":"Found Visual Checks."},{"id":"embedded-data","label":"Embedded console data","status":"passed","detail":"Found id=\"console-data\"."},{"id":"embedded-data-parse","label":"Embedded console data parses","status":"passed","detail":"Project bench-smoke summary is present."},{"id":"absolute-path-leaks","label":"No local absolute path leaks","status":"passed","detail":"No local absolute paths found."}]},"consoleBrowserChecks":{"schemaVersion":1,"project":"bench-smoke","generatedAt":"2026-05-16T18:29:08.050Z","htmlPath":"projects/bench-smoke/console/index.html","screenshotPath":"projects/bench-smoke/console/screenshots/console-2026-05-16T18-29-08-050Z.png","status":"passed","viewport":{"width":1440,"height":1100},"summary":{"passed":7,"failed":0},"checks":[{"id":"brand","label":"Ariadne brand","status":"passed","detail":"Ariadne brand is visible."},{"id":"gate-matrix","label":"Gate matrix section","status":"passed","detail":"Gate matrix section is visible."},{"id":"evaluation-trends","label":"Evaluation trends section","status":"passed","detail":"Evaluation trends section is visible."},{"id":"recovery","label":"Recovery section","status":"passed","detail":"Recovery section is visible."},{"id":"github","label":"GitHub section","status":"passed","detail":"GitHub section is visible."},{"id":"embedded-data","label":"Embedded console data parses","status":"passed","detail":"Embedded console data is parseable."},{"id":"screenshot","label":"Screenshot captured","status":"passed","detail":"597076 bytes captured."}]},"behaviorChecks":{"schemaVersion":1,"project":"bench-smoke","generatedAt":"2026-05-16T18:29:06.694Z","status":"warning","summary":{"passed":3,"warnings":3,"failed":0},"checks":[{"id":"approved-fixture","label":"Approved review fixture","status":"warning","evidence":[],"notes":"No approved review or approved fixture is present yet."},{"id":"execution-mutation-gates","label":"Execution mutation gates","status":"passed","evidence":["run-2026-05-16T18-29-06-690Z"],"notes":"Execution runs include explicit human approval gates before external mutation."},{"id":"approval-workflow-records","label":"Mutation approval workflow records","status":"warning","evidence":[],"notes":"No explicit approval request records exist yet for mutation-capable adapters."},{"id":"infra-read-only","label":"Infrastructure snapshots are read-only","status":"passed","evidence":[],"notes":"Infrastructure evidence is limited to manual, manifest, or live_read_only snapshot kinds."},{"id":"governance-drafts-non-submitting","label":"Governance drafts do not submit","status":"passed","evidence":[],"notes":"OpenScorpion activity records are drafts with submit=false."},{"id":"worktree-guard-fixture","label":"Worktree guard fixture","status":"warning","evidence":["projects/bench-smoke/execution/run-*-worktree-guard.json"],"notes":"Worktree guard is available as a behavior fixture; record it for each real execution run before applying worktrees."}]},"gsd2ProcessSnapshots":[],"gbrain":{"exportBundle":{"schemaVersion":1,"project":"bench-smoke","generatedAt":"2026-05-16T18:29:06.695Z","source":"ariadne","mode":"read_only_export","instructions":["Import this bundle into GBrain as derived memory, not as Ariadne's source of truth.","Preserve evidenceRefs when returning search or query results.","Do not write back to Ariadne without an explicit Ariadne import command."],"documents":[{"slug":"source/2026-05-16T18-29-06-684Z-f93360299695","title":"source.md","kind":"source","content":"Source kind: markdown\nSensitivity: internal\nSHA-256: f9336029969522392c8aa0d21718733fbc1f0af0e330297597c351cfaff753bc\nNotes: none","evidenceRefs":["\u003cVAULT_ROOT>/projects/bench-smoke/raw/2026-05-16T18-29-06-684Z-f93360299695/source.md","\u003cVAULT_ROOT>/projects/bench-smoke/raw/2026-05-16T18-29-06-684Z-f93360299695/extracted.md"],"tags":["ariadne","source","markdown"]},{"slug":"requirement/req-001","title":"Source evidence intake","kind":"requirement","content":"Preserve drawings, whitepapers, dictated notes, documents, and related artifacts before any summarisation or automation.\n\n- Raw artifacts are copied into the durable vault.\n- Each artifact has a digest, source path, kind, and timestamp.\n- Extracted text remains linked to the raw evidence.","evidenceRefs":["\u003cVAULT_ROOT>/projects/bench-smoke/context/dossier-2026-05-16T18-29-06-687Z.md","\u003cVAULT_ROOT>/projects/bench-smoke/context/dossier-2026-05-16T18-29-06-687Z.md:7","\u003cVAULT_ROOT>/projects/bench-smoke/context/dossier-2026-05-16T18-29-06-687Z.md:9","\u003cVAULT_ROOT>/projects/bench-smoke/context/dossier-2026-05-16T18-29-06-687Z.md:20","\u003cVAULT_ROOT>/projects/bench-smoke/context/dossier-2026-05-16T18-29-06-687Z.md:35","\u003cVAULT_ROOT>/projects/bench-smoke/context/dossier-2026-05-16T18-29-06-687Z.md:37"],"tags":["ariadne","requirement","must","draft"]},{"slug":"requirement/req-002","title":"Source-grounded PRD synthesis","kind":"requirement","content":"Convert evidence dossiers and NotebookLM-style grounded exports into requirements, ambiguities, acceptance criteria, and source references.\n\n- PRD records source references for every major claim.\n- Ambiguities are separated from accepted requirements.\n- Manual exports work before automation is attempted.","evidenceRefs":["\u003cVAULT_ROOT>/projects/bench-smoke/context/dossier-2026-05-16T18-29-06-687Z.md","\u003cVAULT_ROOT>/projects/bench-smoke/context/dossier-2026-05-16T18-29-06-687Z.md:7","\u003cVAULT_ROOT>/projects/bench-smoke/context/dossier-2026-05-16T18-29-06-687Z.md:9","\u003cVAULT_ROOT>/projects/bench-smoke/context/dossier-2026-05-16T18-29-06-687Z.md:20","\u003cVAULT_ROOT>/projects/bench-smoke/context/dossier-2026-05-16T18-29-06-687Z.md:35","\u003cVAULT_ROOT>/projects/bench-smoke/context/dossier-2026-05-16T18-29-06-687Z.md:37"],"tags":["ariadne","requirement","must","draft"]},{"slug":"requirement/req-003","title":"GSD2 task bridge","kind":"requirement","content":"Transform accepted requirements into milestones, vertical slices, tasks, success criteria, and verification commands.\n\n- Tasks are independently inspectable as JSON and Markdown.\n- Each task names expected write areas and verification commands.\n- Tasks preserve requirement traceability.","evidenceRefs":["\u003cVAULT_ROOT>/projects/bench-smoke/context/dossier-2026-05-16T18-29-06-687Z.md","\u003cVAULT_ROOT>/projects/bench-smoke/context/dossier-2026-05-16T18-29-06-687Z.md:7","\u003cVAULT_ROOT>/projects/bench-smoke/context/dossier-2026-05-16T18-29-06-687Z.md:9","\u003cVAULT_ROOT>/projects/bench-smoke/context/dossier-2026-05-16T18-29-06-687Z.md:20","\u003cVAULT_ROOT>/projects/bench-smoke/context/dossier-2026-05-16T18-29-06-687Z.md:35","\u003cVAULT_ROOT>/projects/bench-smoke/context/dossier-2026-05-16T18-29-06-687Z.md:37"],"tags":["ariadne","requirement","must","draft"]},{"slug":"requirement/req-004","title":"Bounded execution loop","kind":"requirement","content":"Plan isolated worktree execution with explicit branch names, gates, stop conditions, and review points.\n\n- Execution runs are recorded before work begins.\n- The system can identify planned worktrees and gates.\n- External mutations remain blocked unless a later approved adapter is enabled.","evidenceRefs":["\u003cVAULT_ROOT>/projects/bench-smoke/context/dossier-2026-05-16T18-29-06-687Z.md","\u003cVAULT_ROOT>/projects/bench-smoke/context/dossier-2026-05-16T18-29-06-687Z.md:7","\u003cVAULT_ROOT>/projects/bench-smoke/context/dossier-2026-05-16T18-29-06-687Z.md:9","\u003cVAULT_ROOT>/projects/bench-smoke/context/dossier-2026-05-16T18-29-06-687Z.md:20","\u003cVAULT_ROOT>/projects/bench-smoke/context/dossier-2026-05-16T18-29-06-687Z.md:35","\u003cVAULT_ROOT>/projects/bench-smoke/context/dossier-2026-05-16T18-29-06-687Z.md:37"],"tags":["ariadne","requirement","must","draft"]},{"slug":"requirement/req-005","title":"Playwright UI verification evidence","kind":"requirement","content":"Generate UI test plans and Playwright skeletons from requirements, with room for screenshots, traces, and healer proposals.\n\n- Generated tests use role-oriented locators where possible.\n- Scenario records link back to requirement ids.\n- Evidence paths are recorded separately from claims.","evidenceRefs":["\u003cVAULT_ROOT>/projects/bench-smoke/context/dossier-2026-05-16T18-29-06-687Z.md","\u003cVAULT_ROOT>/projects/bench-smoke/context/dossier-2026-05-16T18-29-06-687Z.md:7","\u003cVAULT_ROOT>/projects/bench-smoke/context/dossier-2026-05-16T18-29-06-687Z.md:9","\u003cVAULT_ROOT>/projects/bench-smoke/context/dossier-2026-05-16T18-29-06-687Z.md:20","\u003cVAULT_ROOT>/projects/bench-smoke/context/dossier-2026-05-16T18-29-06-687Z.md:35","\u003cVAULT_ROOT>/projects/bench-smoke/context/dossier-2026-05-16T18-29-06-687Z.md:37"],"tags":["ariadne","requirement","should","draft"]},{"slug":"requirement/req-006","title":"Review and CI control plane","kind":"requirement","content":"Collect deterministic checks, CodeRabbit feedback, human review, and merge-readiness state into one evidence surface.\n\n- Merge readiness lists satisfied and missing gates.\n- CI and review records are imported without being treated as hidden authority.\n- Blocked states are explicit.","evidenceRefs":["\u003cVAULT_ROOT>/projects/bench-smoke/context/dossier-2026-05-16T18-29-06-687Z.md","\u003cVAULT_ROOT>/projects/bench-smoke/context/dossier-2026-05-16T18-29-06-687Z.md:7","\u003cVAULT_ROOT>/projects/bench-smoke/context/dossier-2026-05-16T18-29-06-687Z.md:9","\u003cVAULT_ROOT>/projects/bench-smoke/context/dossier-2026-05-16T18-29-06-687Z.md:20","\u003cVAULT_ROOT>/projects/bench-smoke/context/dossier-2026-05-16T18-29-06-687Z.md:35","\u003cVAULT_ROOT>/projects/bench-smoke/context/dossier-2026-05-16T18-29-06-687Z.md:37"],"tags":["ariadne","requirement","must","draft"]},{"slug":"requirement/req-007","title":"Infrastructure substrate registry","kind":"requirement","content":"Represent Proxmox, DGX Spark, M-series Macs, Hermes, OpenScorpion, local model endpoints, and runner pools as read-only registry records first.\n\n- Infrastructure records are readable without model calls.\n- Runner trust boundaries are explicit.\n- Mutation plans require approval and remain non-executing in this slice.","evidenceRefs":["\u003cVAULT_ROOT>/projects/bench-smoke/context/dossier-2026-05-16T18-29-06-687Z.md","\u003cVAULT_ROOT>/projects/bench-smoke/context/dossier-2026-05-16T18-29-06-687Z.md:7","\u003cVAULT_ROOT>/projects/bench-smoke/context/dossier-2026-05-16T18-29-06-687Z.md:9","\u003cVAULT_ROOT>/projects/bench-smoke/context/dossier-2026-05-16T18-29-06-687Z.md:20","\u003cVAULT_ROOT>/projects/bench-smoke/context/dossier-2026-05-16T18-29-06-687Z.md:35","\u003cVAULT_ROOT>/projects/bench-smoke/context/dossier-2026-05-16T18-29-06-687Z.md:37"],"tags":["ariadne","requirement","must","draft"]},{"slug":"task/task-001","title":"Source evidence intake","kind":"task","content":"Milestone: Control Spine\nSlice: core\n\nSuccess criteria:\n- Raw artifacts are copied into the durable vault.\n- Each artifact has a digest, source path, kind, and timestamp.\n- Extracted text remains linked to the raw evidence.\n\nVerification:\n- npm run check\n- npm test","evidenceRefs":["requirement/req-001"],"tags":["ariadne","task","M1"]},{"slug":"task/task-002","title":"Source-grounded PRD synthesis","kind":"task","content":"Milestone: Control Spine\nSlice: core\n\nSuccess criteria:\n- PRD records source references for every major claim.\n- Ambiguities are separated from accepted requirements.\n- Manual exports work before automation is attempted.\n\nVerification:\n- npm run check\n- npm test","evidenceRefs":["requirement/req-002"],"tags":["ariadne","task","M1"]},{"slug":"task/task-003","title":"GSD2 task bridge","kind":"task","content":"Milestone: Control Spine\nSlice: core\n\nSuccess criteria:\n- Tasks are independently inspectable as JSON and Markdown.\n- Each task names expected write areas and verification commands.\n- Tasks preserve requirement traceability.\n\nVerification:\n- npm run check\n- npm test","evidenceRefs":["requirement/req-003"],"tags":["ariadne","task","M1"]},{"slug":"task/task-004","title":"Bounded execution loop","kind":"task","content":"Milestone: Control Spine\nSlice: core\n\nSuccess criteria:\n- Execution runs are recorded before work begins.\n- The system can identify planned worktrees and gates.\n- External mutations remain blocked unless a later approved adapter is enabled.\n\nVerification:\n- npm run check\n- npm test","evidenceRefs":["requirement/req-004"],"tags":["ariadne","task","M1"]},{"slug":"task/task-006","title":"Review and CI control plane","kind":"task","content":"Milestone: Control Spine\nSlice: core\n\nSuccess criteria:\n- Merge readiness lists satisfied and missing gates.\n- CI and review records are imported without being treated as hidden authority.\n- Blocked states are explicit.\n\nVerification:\n- npm run check\n- npm test","evidenceRefs":["requirement/req-006"],"tags":["ariadne","task","M1"]},{"slug":"task/task-007","title":"Infrastructure substrate registry","kind":"task","content":"Milestone: Control Spine\nSlice: core\n\nSuccess criteria:\n- Infrastructure records are readable without model calls.\n- Runner trust boundaries are explicit.\n- Mutation plans require approval and remain non-executing in this slice.\n\nVerification:\n- npm run check\n- npm test","evidenceRefs":["requirement/req-007"],"tags":["ariadne","task","M1"]},{"slug":"task/task-005","title":"Playwright UI verification evidence","kind":"task","content":"Milestone: Verification Surface\nSlice: verification\n\nSuccess criteria:\n- Generated tests use role-oriented locators where possible.\n- Scenario records link back to requirement ids.\n- Evidence paths are recorded separately from claims.\n\nVerification:\n- npm run check\n- npm test\n- npx playwright test --reporter=list","evidenceRefs":["requirement/req-005"],"tags":["ariadne","task","M2"]},{"slug":"infrastructure/registry","title":"Infrastructure Registry","kind":"infrastructure","content":"m1-hermes: M1 Mac mini / always-on Hermes supervisor / Control-plane host for long-running supervision; verify live details before automation.\nm1-max: M1 Max / local development and testing / Apple Silicon development machine; use for local validation where available.\nm5-max: M5 Max / high-memory local agent workstation / Primary Mac-class local execution surface mentioned by user.\ndgx-spark: DGX Spark / local inference and memory-heavy workloads / Treat as planned/observed only until live endpoint inventory exists.\nbeast: Proxmox dev server / runners, services, model endpoints, infrastructure substrate / Read-only inventory first; Proxmox live state is authoritative at execution time.\nopenscorpion-router: governed model route / planned\ndgx-local-models: local inference / planned\ntrusted-private-runners: private jxwalker project repositories / persistent self-hosted runners only for trusted private repositories\npublic-repo-safe-path: public repositories / manual or ephemeral approval path; no untrusted public PRs on persistent runners","evidenceRefs":["infrastructure/registry.json"],"tags":["ariadne","infrastructure"]}]},"reports":[]},"coordination":{"sleepRoutines":[],"memoryProposals":[],"agentMail":[],"agentLeases":[],"hermesCronSnapshots":[],"hermesCronProposals":[]},"infrastructure":{"registry":{"schemaVersion":1,"project":"bench-smoke","generatedAt":"2026-05-16T18:29:06.692Z","hosts":[{"id":"m1-hermes","label":"M1 Mac mini","role":"always-on Hermes supervisor","notes":"Control-plane host for long-running supervision; verify live details before automation."},{"id":"m1-max","label":"M1 Max","role":"local development and testing","notes":"Apple Silicon development machine; use for local validation where available."},{"id":"m5-max","label":"M5 Max","role":"high-memory local agent workstation","notes":"Primary Mac-class local execution surface mentioned by user."},{"id":"dgx-spark","label":"DGX Spark","role":"local inference and memory-heavy workloads","notes":"Treat as planned/observed only until live endpoint inventory exists."},{"id":"beast","label":"Proxmox dev server","role":"runners, services, model endpoints, infrastructure substrate","notes":"Read-only inventory first; Proxmox live state is authoritative at execution time."}],"modelEndpoints":[{"id":"openscorpion-router","hostId":"beast","kind":"governed model route","url":"http://localhost:8080","status":"planned"},{"id":"dgx-local-models","hostId":"dgx-spark","kind":"local inference","status":"planned"}],"runnerPools":[{"id":"trusted-private-runners","hostId":"beast","scope":"private jxwalker project repositories","trustBoundary":"persistent self-hosted runners only for trusted private repositories","status":"planned"},{"id":"public-repo-safe-path","hostId":"beast","scope":"public repositories","trustBoundary":"manual or ephemeral approval path; no untrusted public PRs on persistent runners","status":"planned"}]},"snapshots":[]},"deployment":{"snapshots":[]},"github":{"snapshots":[]},"readiness":{"schemaVersion":1,"project":"bench-smoke","generatedAt":"2026-05-16T18:29:06.693Z","status":"review_required","evidence":["requirements/prd.json","gsd/roadmap.json","verification/commands.json","Playwright plan: 7 scenarios for http://localhost:3000","Execution run run-2026-05-16T18-29-06-690Z: planned","GSD tasks: 7"],"missing":["Execution run run-2026-05-16T18-29-06-690Z is not complete","Check typecheck has not passed","Check unit-tests has not passed","Check build has not passed","CodeRabbit or human review approval"],"mergeGates":["typecheck passed","unit tests passed","build passed","Playwright evidence captured for UI work","CodeRabbit or human review completed","human approval present for infrastructure or external repo mutation"]},"artifacts":{"hotIndex":"projects/bench-smoke/HOT_INDEX.md","prd":"projects/bench-smoke/requirements/prd.json","roadmap":"projects/bench-smoke/gsd/roadmap.json","control":"projects/bench-smoke/control/merge-readiness.json","evaluationPlan":"projects/bench-smoke/evaluation/evaluation-plan.json","benchmarkRuns":"projects/bench-smoke/evaluation","artifactChecks":"projects/bench-smoke/evaluation/artifact-checks.json","behaviorChecks":"projects/bench-smoke/evaluation/behavior-checks.json","gbrainExport":"projects/bench-smoke/integrations/gbrain/gbrain-export.json","consoleVisualChecks":"projects/bench-smoke/console/visual-checks.json","consoleBrowserChecks":"projects/bench-smoke/console/browser-checks.json"}}
+</script>
+</main>
+</body>
+</html>

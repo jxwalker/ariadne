@@ -147,9 +147,10 @@ Implemented:
 - D1-D5 score model for evidence, planning, execution, verification, and operations
 - automatic artifact existence checks
 - benchmark source packs for smoke, realistic, and stress runs
+- deterministic benchmark-run reports that exercise local packs through the pipeline
 - trend report generation
 - token/cost metrics from Hermes and review tools
-- runner support for `evaluation`, `evaluation-record`, `evaluation-trends`, `usage-import`, `usage-report`, `artifact-checks`, and `benchmark-pack`
+- runner support for `evaluation`, `evaluation-record`, `evaluation-trends`, `usage-import`, `usage-report`, `artifact-checks`, `benchmark-pack`, and `benchmark-run`
 - mutation and approved-fixture checks for behavior confidence
 - runner support for `behavior-checks`
 

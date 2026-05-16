@@ -111,6 +111,16 @@ const ARTIFACT_SPECS: ArtifactSpec[] = [
     relativePath: "evaluation/evaluation-plan.json"
   },
   {
+    id: "benchmark-runs",
+    label: "Benchmark run reports",
+    required: false,
+    kind: "matching-files",
+    relativePath: "evaluation",
+    prefix: "benchmark-run-",
+    suffix: ".json",
+    minimumCount: 1
+  },
+  {
     id: "infra-registry",
     label: "Infrastructure registry",
     required: true,

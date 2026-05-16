@@ -3,7 +3,7 @@
   "set": "stress",
   "title": "Stress Benchmark Pack",
   "purpose": "Exercise stale, failed, noisy, and multi-project conditions without including real secrets or live system mutations.",
-  "generatedAt": "2026-05-16T09:45:59.633Z",
+  "generatedAt": "2026-05-16T18:29:06.236Z",
   "root": "<PACK_ROOT>",
   "files": [
     {
@@ -19,22 +19,26 @@
     {
       "path": "imports/failed-ci.json",
       "role": "ci_status",
-      "description": "Failing CI fixture for control-plane regression tests."
+      "description": "Failing CI fixture for control-plane regression tests.",
+      "targetProject": "beta"
     },
     {
       "path": "imports/pending-coderabbit-review.md",
       "role": "coderabbit_review",
-      "description": "Pending review fixture with no approval signal."
+      "description": "Pending review fixture with no approval signal.",
+      "targetProject": "beta"
     },
     {
       "path": "imports/odd-infra-snapshot.json",
       "role": "infra_snapshot",
-      "description": "Valid JSON with unusual shape for snapshot summarisation tests."
+      "description": "Valid JSON with unusual shape for snapshot summarisation tests.",
+      "targetProject": "beta"
     },
     {
       "path": "stale/interrupted-run.json",
       "role": "execution_seed",
-      "description": "Interrupted execution fixture for future benchmark-run ingestion."
+      "description": "Interrupted execution fixture for future benchmark-run ingestion.",
+      "targetProject": "alpha"
     }
   ],
   "recommendedCommands": [
@@ -45,8 +49,20 @@
     "npm run ariadne -- infra-snapshot --project bench-stress-beta --from <PACK_ROOT>/imports/odd-infra-snapshot.json"
   ],
   "acceptance": [
-    "The benchmark can create more than one project in a vault.",
-    "Failed checks and pending review evidence remain explicit.",
-    "No fixture contains a real credential or requires a live host."
+    {
+      "id": "stress-multi-project",
+      "type": "pipeline_output",
+      "criterion": "The benchmark can create more than one project in a vault."
+    },
+    {
+      "id": "stress-regression-signal",
+      "type": "pipeline_output",
+      "criterion": "Failed checks and pending review evidence remain explicit."
+    },
+    {
+      "id": "stress-fixture-safety",
+      "type": "fixture_safety",
+      "criterion": "No fixture contains a real credential or requires a live host."
+    }
   ]
 }

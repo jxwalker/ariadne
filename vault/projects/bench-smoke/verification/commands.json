@@ -1,0 +1,31 @@
+{
+  "TASK-001": [
+    "npm run check",
+    "npm test"
+  ],
+  "TASK-002": [
+    "npm run check",
+    "npm test"
+  ],
+  "TASK-003": [
+    "npm run check",
+    "npm test"
+  ],
+  "TASK-004": [
+    "npm run check",
+    "npm test"
+  ],
+  "TASK-006": [
+    "npm run check",
+    "npm test"
+  ],
+  "TASK-007": [
+    "npm run check",
+    "npm test"
+  ],
+  "TASK-005": [
+    "npm run check",
+    "npm test",
+    "npx playwright test --reporter=list"
+  ]
+}

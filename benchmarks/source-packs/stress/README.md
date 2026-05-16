@@ -1,7 +1,7 @@
 # Stress Benchmark Pack
 
 Set: stress
-Generated: 2026-05-16T09:45:59.633Z
+Generated: 2026-05-16T18:29:06.236Z
 
 Exercise stale, failed, noisy, and multi-project conditions without including real secrets or live system mutations.
 
@@ -28,6 +28,6 @@ npm run ariadne -- infra-snapshot --project bench-stress-beta --from <PACK_ROOT>
 
 ## Acceptance
 
-- The benchmark can create more than one project in a vault.
-- Failed checks and pending review evidence remain explicit.
-- No fixture contains a real credential or requires a live host.
+- stress-multi-project (pipeline_output): The benchmark can create more than one project in a vault.
+- stress-regression-signal (pipeline_output): Failed checks and pending review evidence remain explicit.
+- stress-fixture-safety (fixture_safety): No fixture contains a real credential or requires a live host.

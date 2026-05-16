@@ -46,6 +46,7 @@ npm run build
 - `src/behaviorChecks.ts`: behavior-confidence checks for approved fixtures and no-mutation gates.
 - `src/mutationReadiness.ts`: non-executing readiness plans for future mutation-capable adapters.
 - `src/benchmarkPacks.ts`: repeatable smoke, realistic, and stress source-pack generation.
+- `src/benchmarkRun.ts`: deterministic local benchmark execution over source packs.
 - `src/gbrainAdapter.ts`: optional read-only GBrain export and report import.
 - `src/githubAdapter.ts`: read-only GitHub PR and check snapshot import or `gh` collection.
 - `src/hermesCron.ts`: read-only Hermes cron/job snapshot import and proposal-only scheduler recommendations for sleep and memory automation evidence.

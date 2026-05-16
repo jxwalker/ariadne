@@ -2,6 +2,7 @@
 import path from "node:path";
 import { decideApproval, requestApproval } from "./approvals.js";
 import { generateArtifactCheckReport } from "./artifactChecks.js";
+import { runBenchmarkPack } from "./benchmarkRun.js";
 import { generateBehaviorCheckReport } from "./behaviorChecks.js";
 import { benchmarkSets, materializeBenchmarkPack, parseBenchmarkSet } from "./benchmarkPacks.js";
 import { importCiStatus, importCodeRabbitReview } from "./ciImport.js";
@@ -123,6 +124,7 @@ function usage(): string {
     "  ariadne deployment-live-ssh --project <project> --system <proxmox|truenas|dgx-spark|mac> --host <id> --target <ssh-target> [--ssh-binary <path>] [--notes <text>]",
     "  ariadne artifact-checks --project <project>",
     "  ariadne benchmark-pack --set <smoke|realistic|stress|all> [--output <dir>]",
+    "  ariadne benchmark-run --project <project> --set <smoke|realistic|stress|all> [--pack-root <dir>] [--target-url <url>]",
     "  ariadne infra --project <project>",
     "  ariadne infra-snapshot --project <project> --from <manifest.json>",
     "  ariadne infra-live-local --project <project> [--notes <text>]",
@@ -671,6 +673,25 @@ async function main(): Promise<void> {
       console.log(`  Manifest: ${result.manifestPath}`);
       console.log(`  README: ${result.markdownPath}`);
       console.log(`  Files: ${result.pack.files.length}`);
+    }
+    return;
+  }
+
+  if (parsed.command === "benchmark-run") {
+    const set = parseBenchmarkSet(optionString(parsed.options, "set", ""));
+    const sets = set === "all" ? benchmarkSets() : [set];
+    for (const benchmarkSet of sets) {
+      const result = await runBenchmarkPack({
+        project: sets.length === 1 ? project : `${project}-${benchmarkSet}`,
+        vaultRoot,
+        set: benchmarkSet,
+        packRoot: optionString(parsed.options, "pack-root", "") || undefined,
+        targetUrl: optionString(parsed.options, "target-url", "") || undefined
+      });
+      console.log(`Benchmark run: ${benchmarkSet}`);
+      console.log(`  Report: ${result.markdownPath}`);
+      console.log(`  Status: ${result.run.status}`);
+      console.log(`  Failed steps: ${result.run.summary.failed}`);
     }
     return;
   }
