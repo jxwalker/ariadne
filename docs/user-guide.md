@@ -40,6 +40,14 @@ npm run ariadne -- gsd2-process --project ariadne --binary gsd
 
 `gsd2-process` records the selected local `gsd` executable version, package list, output modes, and subcommands. It is read-only and does not invoke headless execution, models, package install/update, or worktree mutation.
 
+Plan a target-specific GSD2 mutation without invoking GSD:
+
+```bash
+npm run ariadne -- gsd2-mutation-plan --project ariadne --task TASK-001 --mode headless --package ariadne-roadmap --scope "Submit one reviewed task to GSD2" --auth-evidence control/approvals/approval-...json --dry-run "gsd task show TASK-001 --package ariadne-roadmap" --live-command "gsd headless TASK-001 --package ariadne-roadmap" --post-verify "gsd task show TASK-001 --package ariadne-roadmap" --rollback "Remove generated worktree and mark TASK-001 planned" --approval approval-...
+```
+
+This writes a GSD2 mutation-readiness plan for one task id and one mode. Supported modes are `headless`, `auto`, and `worktree`; the command still writes `execute=false`.
+
 For a complete local planning pass:
 
 ```bash
@@ -292,6 +300,8 @@ This writes a GitHub mutation-readiness plan with the dry-run, live command, pos
 For deployment plans, prefer `deployment-mutation-plan` over the generic `mutation-readiness` command because it forces a supported estate system and host label into the reviewed scope.
 
 For Hermes scheduler plans, prefer `hermes-cron-mutation-plan` because it forces a supported scheduler action and job label into the reviewed scope.
+
+For GSD2 plans, prefer `gsd2-mutation-plan` because it forces the task id, package, and execution mode into the reviewed scope.
 
 ## Request Mutation Approval
 
