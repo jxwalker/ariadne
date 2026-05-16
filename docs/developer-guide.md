@@ -39,6 +39,7 @@ npm run build
 - `src/behaviorChecks.ts`: behavior-confidence checks for approved fixtures and no-mutation gates.
 - `src/benchmarkPacks.ts`: repeatable smoke, realistic, and stress source-pack generation.
 - `src/gbrainAdapter.ts`: optional read-only GBrain export and report import.
+- `src/githubAdapter.ts`: read-only GitHub PR and check snapshot import or `gh` collection.
 - `src/coordination.ts`: sleep routine, memory proposal, agent mail, and lease records.
 - `src/deploymentAdapters.ts`: read-only deployment evidence imports for the local estate.
 - `src/infrastructure.ts` and `src/infraSnapshot.ts`: substrate registry and read-only imports.

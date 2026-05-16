@@ -9,7 +9,7 @@ The first visualisation should be an operations surface over evidence, not a cha
 - Requirements: PRD goals, requirements, ambiguities.
 - Tasks: GSD tasks, write scopes, verification commands.
 - Execution: run status, worktree guard checks, stop conditions.
-- Verification: typecheck, tests, build, Playwright evidence, CI, CodeRabbit.
+- Verification: typecheck, tests, build, Playwright evidence, CI, CodeRabbit, GitHub PR/check snapshots.
 - Decisions: accepted decisions and source references.
 - Infrastructure: hosts, runner pools, model endpoints, snapshots.
 - Evaluation: dimension scores, regressions, recommendations.
@@ -22,7 +22,7 @@ The first visualisation should be an operations surface over evidence, not a cha
 
 ### Project Timeline
 
-A chronological stream of ingests, generated artifacts, decisions, checks, reviews, and evaluation runs.
+A chronological stream of ingests, generated artifacts, decisions, checks, reviews, GitHub snapshots, and evaluation runs.
 
 ### Harness Board
 

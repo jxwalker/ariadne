@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "project": "ariadne",
-  "generatedAt": "2026-05-16T12:10:58.640Z",
+  "generatedAt": "2026-05-16T12:25:24.694Z",
   "projectDir": "projects/ariadne",
   "summary": {
     "sources": 3,
@@ -18,6 +18,7 @@
     "agentMail": 1,
     "agentLeases": 1,
     "deploymentSnapshots": 1,
+    "githubSnapshots": 1,
     "readinessStatus": "ready",
     "latestEvaluationScore": 86,
     "evaluationTrendStatus": "stable"
@@ -885,7 +886,7 @@
   "consoleVisualChecks": {
     "schemaVersion": 1,
     "project": "ariadne",
-    "generatedAt": "2026-05-16T12:10:58.382Z",
+    "generatedAt": "2026-05-16T12:25:24.466Z",
     "htmlPath": "projects/ariadne/console/index.html",
     "status": "passed",
     "summary": {
@@ -1597,6 +1598,75 @@
       }
     ]
   },
+  "github": {
+    "snapshots": [
+      {
+        "schemaVersion": 1,
+        "project": "ariadne",
+        "importedAt": "2026-05-16T12:25:16.576Z",
+        "mode": "read_only",
+        "source": "gh_cli",
+        "repository": "jxwalker/ariadne",
+        "summary": {
+          "repositories": 1,
+          "pullRequests": 1,
+          "open": 0,
+          "merged": 1,
+          "closed": 0,
+          "drafts": 0,
+          "checks": 1,
+          "passingChecks": 1,
+          "failingChecks": 0,
+          "pendingChecks": 0
+        },
+        "pullRequests": [
+          {
+            "number": 10,
+            "title": "Add console visual trend checks",
+            "state": "MERGED",
+            "url": "https://github.com/jxwalker/ariadne/pull/10",
+            "baseRefName": "main",
+            "headRefName": "codex/console-visual-trends",
+            "isDraft": false,
+            "mergeStateStatus": "UNKNOWN",
+            "createdAt": "2026-05-16T12:15:43Z",
+            "updatedAt": "2026-05-16T12:18:13Z",
+            "mergedAt": "2026-05-16T12:16:55Z",
+            "checks": [
+              {
+                "name": "CodeRabbit",
+                "status": "passed",
+                "rawStatus": "SUCCESS"
+              }
+            ]
+          }
+        ],
+        "raw": {
+          "baseRefName": "main",
+          "createdAt": "2026-05-16T12:15:43Z",
+          "headRefName": "codex/console-visual-trends",
+          "isDraft": false,
+          "mergeStateStatus": "UNKNOWN",
+          "mergedAt": "2026-05-16T12:16:55Z",
+          "number": 10,
+          "reviewDecision": "",
+          "state": "MERGED",
+          "statusCheckRollup": [
+            {
+              "__typename": "StatusContext",
+              "context": "CodeRabbit",
+              "startedAt": "2026-05-16T12:17:28Z",
+              "state": "SUCCESS",
+              "targetUrl": ""
+            }
+          ],
+          "title": "Add console visual trend checks",
+          "updatedAt": "2026-05-16T12:18:13Z",
+          "url": "https://github.com/jxwalker/ariadne/pull/10"
+        }
+      }
+    ]
+  },
   "readiness": {
     "schemaVersion": 1,
     "project": "ariadne",
@@ -1635,6 +1705,7 @@
     "usageReport": "projects/ariadne/evaluation/usage-report.json",
     "behaviorChecks": "projects/ariadne/evaluation/behavior-checks.json",
     "gbrainExport": "projects/ariadne/integrations/gbrain/gbrain-export.json",
-    "consoleVisualChecks": "projects/ariadne/console/visual-checks.json"
+    "consoleVisualChecks": "projects/ariadne/console/visual-checks.json",
+    "githubSnapshots": "projects/ariadne/integrations/github"
   }
 }

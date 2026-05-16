@@ -573,6 +573,50 @@ export interface DeploymentSnapshot {
   raw: unknown;
 }
 
+export interface GithubSnapshot {
+  schemaVersion: 1;
+  project: string;
+  importedAt: string;
+  mode: "read_only";
+  source: "manual_import" | "gh_cli";
+  sourcePath?: string;
+  repository?: string;
+  summary: {
+    repositories: number;
+    pullRequests: number;
+    open: number;
+    merged: number;
+    closed: number;
+    drafts: number;
+    checks: number;
+    passingChecks: number;
+    failingChecks: number;
+    pendingChecks: number;
+  };
+  pullRequests: Array<{
+    number: number;
+    title: string;
+    state: string;
+    url?: string;
+    baseRefName?: string;
+    headRefName?: string;
+    isDraft?: boolean;
+    mergeStateStatus?: string;
+    reviewDecision?: string;
+    createdAt?: string;
+    updatedAt?: string;
+    mergedAt?: string;
+    checks: Array<{
+      name: string;
+      status: "passed" | "failed" | "pending" | "skipped" | "unknown";
+      conclusion?: string;
+      detailsUrl?: string;
+      rawStatus?: string;
+    }>;
+  }>;
+  raw: unknown;
+}
+
 export interface ConsoleData {
   schemaVersion: 1;
   project: string;
@@ -593,6 +637,7 @@ export interface ConsoleData {
     agentMail: number;
     agentLeases: number;
     deploymentSnapshots: number;
+    githubSnapshots: number;
     readinessStatus?: ControlReport["status"];
     latestEvaluationScore?: number;
     evaluationTrendStatus?: EvaluationTrendReport["status"];
@@ -636,6 +681,9 @@ export interface ConsoleData {
   deployment: {
     snapshots: DeploymentSnapshot[];
   };
+  github: {
+    snapshots: GithubSnapshot[];
+  };
   readiness?: ControlReport;
   artifacts: {
     hotIndex?: string;
@@ -649,5 +697,6 @@ export interface ConsoleData {
     behaviorChecks?: string;
     gbrainExport?: string;
     consoleVisualChecks?: string;
+    githubSnapshots?: string;
   };
 }

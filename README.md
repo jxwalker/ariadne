@@ -22,7 +22,7 @@ The system starts with source-grounded intake: drawings, white papers, dictated 
 - Ingest local files into `vault/projects/<project>/raw/`.
 - Extract safe text from Markdown, text, and macOS `.docx` files.
 - Write manifests, hot indexes, context dossiers, PRDs, GSD roadmaps, GSD2 bundles, execution plans, decision records, Playwright plans, infrastructure registries, evaluation plans, and merge-readiness reports.
-- Import manual NotebookLM exports, CI status, CodeRabbit review text, read-only infrastructure snapshots, and Playwright evidence.
+- Import manual NotebookLM exports, CI status, CodeRabbit review text, read-only GitHub PR/check snapshots, read-only infrastructure snapshots, and Playwright evidence.
 - Import token and cost metrics from Hermes, CodeRabbit, OpenAI, CI, or manual JSON exports.
 - Export Ariadne evidence into an optional GBrain import bundle and import GBrain query/eval reports back as evidence.
 - Record behavior-confidence checks for approved review fixtures, mutation gates, read-only infrastructure snapshots, and non-submitting governance drafts.
@@ -124,6 +124,7 @@ npm run cli -- usage-report --project ariadne
 npm run cli -- behavior-checks --project ariadne --approved-fixture coderabbit.md
 npm run cli -- gbrain-export --project ariadne
 npm run cli -- gbrain-report-import --project ariadne --from gbrain-report.json
+npm run cli -- github-snapshot --project ariadne --repo jxwalker/ariadne --pr 10
 npm run cli -- sleep-record --project ariadne --scope nightly --summary "Review stale gates" --evidence control/merge-readiness.md --next "Refresh console data"
 npm run cli -- memory-proposal --project ariadne --title "Lesson" --proposal "Keep GBrain as a derived index" --evidence docs/adapters.md
 npm run cli -- agent-mail --project ariadne --from planner --to executor --subject "Next slice" --body "Run checks before editing"

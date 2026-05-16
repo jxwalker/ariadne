@@ -15,6 +15,7 @@ import { recordAgentLease, recordAgentMail, recordMemoryProposal, recordSleepRou
 import { importDeploymentSnapshot } from "../src/deploymentAdapters.js";
 import { planExecution } from "../src/execution.js";
 import { exportGbrainBundle, importGbrainReport } from "../src/gbrainAdapter.js";
+import { importGithubSnapshot } from "../src/githubAdapter.js";
 import { generateGsd } from "../src/gsd.js";
 import { exportGsd2Bundle, importGsd2Bundle } from "../src/gsdAdapter.js";
 import { generateInfrastructureRegistry } from "../src/infrastructure.js";
@@ -479,6 +480,38 @@ describe("roadmap adapters", () => {
     const reviews = await readJsonl(path.join(vaultRoot, "projects", "ariadne", "control", "reviews.jsonl"));
     expect(reviews.at(-1)?.status).toBe("pending");
 
+    const github = path.join(temp, "github-pr.json");
+    await fs.writeFile(
+      github,
+      JSON.stringify({
+        number: 10,
+        title: "Add console visual trend checks",
+        state: "MERGED",
+        url: "https://github.com/jxwalker/ariadne/pull/10",
+        baseRefName: "main",
+        headRefName: "codex/console-visual-trends",
+        isDraft: false,
+        mergedAt: "2026-05-16T12:16:55Z",
+        statusCheckRollup: [
+          { context: "CodeRabbit", state: "PENDING" },
+          { name: "unit-tests", status: "COMPLETED", conclusion: "success" },
+          { name: "stale-preview", status: "COMPLETED", conclusion: "stale" }
+        ]
+      })
+    );
+    const githubSnapshot = await importGithubSnapshot({
+      project: "ariadne",
+      vaultRoot,
+      sourcePath: github,
+      repository: "jxwalker/ariadne"
+    });
+    expect(githubSnapshot.snapshot.summary.pullRequests).toBe(1);
+    expect(githubSnapshot.snapshot.summary.pendingChecks).toBe(1);
+    expect(githubSnapshot.snapshot.summary.passingChecks).toBe(1);
+    expect(githubSnapshot.snapshot.pullRequests[0]?.checks.find((check) => check.name === "stale-preview")?.status).toBe(
+      "skipped"
+    );
+
     const infra = path.join(temp, "manifest.json");
     await fs.writeFile(infra, JSON.stringify({ host: { short_name: "beast" }, guests: { vms: [], lxc: [] } }));
     await generateInfrastructureRegistry({ project: "ariadne", vaultRoot });
@@ -512,6 +545,8 @@ describe("roadmap adapters", () => {
     expect(console.data.summary.readinessStatus).toBe(control.report.status);
     expect(console.data.sources[0]?.hygieneStatus).toBe("clean");
     expect(console.data.infrastructure.registry?.hosts.length).toBeGreaterThan(0);
+    expect(console.data.summary.githubSnapshots).toBe(1);
+    expect(console.data.github.snapshots[0]?.summary.pendingChecks).toBe(1);
     expect(console.data.artifacts.control).toBeTruthy();
 
     const consoleHtml = await generateConsoleHtml({
@@ -524,6 +559,7 @@ describe("roadmap adapters", () => {
     expect(html).toContain("<!doctype html>");
     expect(html).toContain("Gate Matrix");
     expect(html).toContain("Visual Checks");
+    expect(html).toContain("GitHub");
     expect(html).toContain("console-data");
     expect(html).not.toContain(temp);
     expect(visual.report.status).toBe("passed");

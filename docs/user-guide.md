@@ -187,6 +187,17 @@ npm run cli -- deployment-snapshot --project ariadne --system proxmox --from dep
 
 Snapshots are read-only evidence. They are used by the console and evaluation system to make deployment posture visible without granting mutation capability.
 
+## Import GitHub PR And Check Evidence
+
+Use `github-snapshot` when Ariadne needs durable PR and check-state evidence:
+
+```bash
+npm run cli -- github-snapshot --project ariadne --from github-pr.json --repo jxwalker/ariadne
+npm run cli -- github-snapshot --project ariadne --repo jxwalker/ariadne --pr 10
+```
+
+The `--from` path is deterministic and works with saved fixtures. The `--repo` path uses the local `gh` CLI in read-only mode. The adapter records PR state, draft status, review decision, and check rollup summaries under `vault/projects/ariadne/integrations/github/`.
+
 ## Check Readiness
 
 ```bash

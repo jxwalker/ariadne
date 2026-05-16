@@ -43,6 +43,20 @@ Typical fields include status, context, consequences, and source references so l
 
 `playwright-evidence`, `import-ci`, and `import-coderabbit` write evidence records into the project control plane. They do not mark the project ready unless the required gates are satisfied.
 
+`github-snapshot` records read-only pull request and check state from either a saved GitHub JSON export or the `gh` CLI:
+
+```bash
+npm run cli -- github-snapshot --project ariadne --from github-pr.json --repo jxwalker/ariadne
+npm run cli -- github-snapshot --project ariadne --repo jxwalker/ariadne --pr 10
+```
+
+The live mode only runs read operations through `gh pr view` or `gh pr list`. It does not create branches, update PRs, approve reviews, retry checks, or merge.
+
+Artifacts:
+
+- `integrations/github/github-snapshot-<timestamp>.json`
+- `integrations/github/github-snapshot-<timestamp>.md`
+
 ## Evaluation
 
 `evaluation` creates a project evaluation plan with dimensions for evidence fidelity, planning quality, execution safety, verification strength, and operational fit. `evaluation-record` stores scored run evidence so the pipeline can be compared across machines and over time.
@@ -112,7 +126,7 @@ Artifacts are written under `coordination/`, `coordination/mail/`, and `coordina
 
 - `console/console-data.json`
 
-The record includes source summaries, requirements, GSD tasks, execution runs, checks, reviews, decisions, Playwright evidence, evaluation runs, infrastructure registry/snapshots, merge readiness, and key artifact paths. It is intended as the stable data contract for future console UI work.
+The record includes source summaries, requirements, GSD tasks, execution runs, checks, reviews, decisions, Playwright evidence, evaluation runs, GitHub snapshots, infrastructure registry/snapshots, merge readiness, and key artifact paths. It is intended as the stable data contract for future console UI work.
 
 `console-html` renders that contract into:
 
