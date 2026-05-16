@@ -214,17 +214,7 @@ function empty(message: string): string {
 }
 
 function logoMark(): string {
-  return [
-    '<svg class="logo-mark" viewBox="0 0 128 128" aria-hidden="true">',
-    '<rect width="128" height="128" rx="24"></rect>',
-    '<path d="M28 100 64 24l36 76"></path>',
-    '<path d="M43 72h42"></path>',
-    '<path class="thread" d="M32 98c22-8 28-24 37-44 6-13 12-23 27-28"></path>',
-    '<circle class="start" cx="32" cy="98" r="6"></circle>',
-    '<circle class="end" cx="96" cy="26" r="6"></circle>',
-    '<path class="frame" d="M24 24h18M86 24h18M24 104h18M86 104h18"></path>',
-    "</svg>"
-  ].join("");
+  return '<img class="logo-mark" src="../../../../assets/ariadne-logo-square.png" alt="" aria-hidden="true">';
 }
 
 function statusClass(value: string | undefined): string {
@@ -297,25 +287,10 @@ body {
 .logo-mark {
   width: 44px;
   height: 44px;
+  border-radius: 9px;
   flex: 0 0 auto;
-}
-.logo-mark rect { fill: var(--ink); }
-.logo-mark path {
-  fill: none;
-  stroke: var(--bg);
-  stroke-width: 10;
-  stroke-linecap: round;
-  stroke-linejoin: round;
-}
-.logo-mark .thread {
-  stroke: #9c6f2f;
-  stroke-width: 5;
-}
-.logo-mark .start { fill: var(--accent); }
-.logo-mark .end { fill: var(--bad); }
-.logo-mark .frame {
-  stroke: var(--muted);
-  stroke-width: 4;
+  object-fit: cover;
+  object-position: center;
 }
 .eyebrow, .label {
   margin: 0;
