@@ -31,6 +31,12 @@ OpenClaw Mission Control is useful as an operations-surface reference: boards, t
 
 Reference: https://github.com/abhi1693/openclaw-mission-control
 
+## GBrain
+
+GBrain is relevant as a memory/search substrate: it exposes CLI and MCP surfaces, supports hybrid retrieval and graph-style links, and includes eval capture/replay concepts. Ariadne should use it as a derived index over Ariadne artifacts, not as the canonical source for approvals, gates, or deployment state.
+
+Reference: https://github.com/garrytan/gbrain
+
 ## Design Consequence
 
 The Ariadne Console should start as a read-only vault viewer with:

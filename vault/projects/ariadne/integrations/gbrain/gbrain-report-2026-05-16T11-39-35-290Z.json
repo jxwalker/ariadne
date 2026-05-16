@@ -1,0 +1,25 @@
+{
+  "schemaVersion": 1,
+  "project": "ariadne",
+  "importedAt": "2026-05-16T11:39:35.290Z",
+  "sourcePath": "/tmp/ariadne-gbrain-report.json",
+  "query": "how should Ariadne use GBrain?",
+  "mode": "balanced",
+  "resultCount": 1,
+  "metrics": {
+    "latencyMs": 37,
+    "jaccardAt5": 0.82
+  },
+  "results": [
+    {
+      "title": "GBrain as derived memory",
+      "slug": "decision/gbrain-derived-memory",
+      "score": 0.93,
+      "source": "ariadne",
+      "excerpt": "Use GBrain as an optional derived memory and search index."
+    }
+  ],
+  "notes": [
+    "Synthetic local import fixture for adapter verification."
+  ]
+}

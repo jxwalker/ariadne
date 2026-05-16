@@ -1,12 +1,12 @@
 {
   "schemaVersion": 1,
   "project": "ariadne",
-  "generatedAt": "2026-05-16T11:02:09.346Z",
+  "generatedAt": "2026-05-16T11:45:59.353Z",
   "status": "passed",
   "summary": {
     "required": 13,
-    "optional": 3,
-    "present": 16,
+    "optional": 7,
+    "present": 20,
     "missingRequired": 0
   },
   "checks": [
@@ -77,11 +77,12 @@
       "required": true,
       "path": "projects/ariadne/execution/run-*.json",
       "status": "present",
-      "count": 3,
+      "count": 4,
       "matches": [
         "projects/ariadne/execution/run-2026-05-15T21-29-14-025Z.json",
         "projects/ariadne/execution/run-2026-05-16T06-09-25-010Z.json",
-        "projects/ariadne/execution/run-2026-05-16T07-16-41-868Z.json"
+        "projects/ariadne/execution/run-2026-05-16T07-16-41-868Z.json",
+        "projects/ariadne/execution/run-2026-05-16T11-30-01-596Z.json"
       ]
     },
     {
@@ -132,6 +133,45 @@
       "required": false,
       "path": "projects/ariadne/evaluation/usage-report.json",
       "status": "present"
+    },
+    {
+      "id": "behavior-checks",
+      "label": "Behavior checks",
+      "required": false,
+      "path": "projects/ariadne/evaluation/behavior-checks.json",
+      "status": "present"
+    },
+    {
+      "id": "gbrain-export",
+      "label": "GBrain export bundle",
+      "required": false,
+      "path": "projects/ariadne/integrations/gbrain/gbrain-export.json",
+      "status": "present"
+    },
+    {
+      "id": "coordination-records",
+      "label": "Sleep, memory, or mail records",
+      "required": false,
+      "path": "projects/ariadne/coordination/**/*.json",
+      "status": "present",
+      "count": 4,
+      "matches": [
+        "projects/ariadne/coordination/leases/lease-2026-05-16T11-39-24-249Z-0aac5ab1.json",
+        "projects/ariadne/coordination/mail/mail-2026-05-16T11-39-24-249Z-92bd4afb.json",
+        "projects/ariadne/coordination/memory-2026-05-16T11-39-24-249Z-1dd70b46.json",
+        "projects/ariadne/coordination/sleep-2026-05-16T11-39-24-249Z-0f6ad8b1.json"
+      ]
+    },
+    {
+      "id": "deployment-snapshots",
+      "label": "Deployment snapshots",
+      "required": false,
+      "path": "projects/ariadne/deployment/deployment-*.json",
+      "status": "present",
+      "count": 1,
+      "matches": [
+        "projects/ariadne/deployment/deployment-proxmox-2026-05-16T11-39-35-290Z.json"
+      ]
     }
   ]
 }

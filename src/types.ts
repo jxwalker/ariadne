@@ -433,6 +433,128 @@ export interface UsageMetricsReport {
   latest?: UsageMetricRecord;
 }
 
+export interface BehaviorCheckReport {
+  schemaVersion: 1;
+  project: string;
+  generatedAt: string;
+  status: "passed" | "warning" | "failed";
+  summary: {
+    passed: number;
+    warnings: number;
+    failed: number;
+  };
+  checks: Array<{
+    id: string;
+    label: string;
+    status: "passed" | "warning" | "failed";
+    evidence: string[];
+    notes: string;
+  }>;
+}
+
+export interface GbrainExportBundle {
+  schemaVersion: 1;
+  project: string;
+  generatedAt: string;
+  source: "ariadne";
+  mode: "read_only_export";
+  instructions: string[];
+  documents: Array<{
+    slug: string;
+    title: string;
+    kind: "source" | "requirement" | "task" | "decision" | "evaluation" | "infrastructure";
+    content: string;
+    evidenceRefs: string[];
+    tags: string[];
+  }>;
+}
+
+export interface GbrainReportImport {
+  schemaVersion: 1;
+  project: string;
+  importedAt: string;
+  sourcePath: string;
+  query: string;
+  mode: string;
+  resultCount: number;
+  metrics: Record<string, number>;
+  results: Array<{
+    title: string;
+    slug?: string;
+    score?: number;
+    source?: string;
+    excerpt?: string;
+  }>;
+  notes: string[];
+}
+
+export interface SleepRoutineRecord {
+  schemaVersion: 1;
+  id: string;
+  project: string;
+  recordedAt: string;
+  scope: string;
+  summary: string;
+  evidenceRefs: string[];
+  nextActions: string[];
+}
+
+export interface MemoryProposalRecord {
+  schemaVersion: 1;
+  id: string;
+  project: string;
+  recordedAt: string;
+  title: string;
+  proposal: string;
+  evidenceRefs: string[];
+  status: "proposed";
+}
+
+export interface AgentMailRecord {
+  schemaVersion: 1;
+  id: string;
+  project: string;
+  recordedAt: string;
+  from: string;
+  to: string;
+  subject: string;
+  body: string;
+  taskId?: string;
+  runId?: string;
+  status: "sent";
+}
+
+export interface AgentLeaseRecord {
+  schemaVersion: 1;
+  id: string;
+  project: string;
+  recordedAt: string;
+  agent: string;
+  resource: string;
+  status: "acquired" | "released" | "expired";
+  taskId?: string;
+  runId?: string;
+  notes?: string;
+}
+
+export interface DeploymentSnapshot {
+  schemaVersion: 1;
+  project: string;
+  importedAt: string;
+  sourcePath: string;
+  system: "proxmox" | "truenas" | "dgx-spark" | "mac" | "github" | "generic";
+  mode: "read_only";
+  summary: {
+    keys: string[];
+    host?: string;
+    services: number;
+    modelEndpoints: number;
+    runnerPools: number;
+    storagePools: number;
+  };
+  raw: unknown;
+}
+
 export interface ConsoleData {
   schemaVersion: 1;
   project: string;
@@ -448,6 +570,11 @@ export interface ConsoleData {
     decisions: number;
     evaluations: number;
     infraSnapshots: number;
+    sleepRoutines: number;
+    memoryProposals: number;
+    agentMail: number;
+    agentLeases: number;
+    deploymentSnapshots: number;
     readinessStatus?: ControlReport["status"];
     latestEvaluationScore?: number;
   };
@@ -470,9 +597,23 @@ export interface ConsoleData {
   decisions: DecisionRecord[];
   playwrightEvidence: PlaywrightEvidenceRecord[];
   evaluations: EvaluationRun[];
+  behaviorChecks?: BehaviorCheckReport;
+  gbrain?: {
+    exportBundle?: GbrainExportBundle;
+    reports: GbrainReportImport[];
+  };
+  coordination: {
+    sleepRoutines: SleepRoutineRecord[];
+    memoryProposals: MemoryProposalRecord[];
+    agentMail: AgentMailRecord[];
+    agentLeases: AgentLeaseRecord[];
+  };
   infrastructure: {
     registry?: InfraRegistry;
     snapshots: InfraSnapshot[];
+  };
+  deployment: {
+    snapshots: DeploymentSnapshot[];
   };
   readiness?: ControlReport;
   artifacts: {
@@ -484,5 +625,7 @@ export interface ConsoleData {
     artifactChecks?: string;
     evaluationTrends?: string;
     usageReport?: string;
+    behaviorChecks?: string;
+    gbrainExport?: string;
   };
 }

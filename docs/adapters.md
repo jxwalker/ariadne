@@ -53,6 +53,14 @@ Typical fields include status, context, consequences, and source references so l
 
 `artifact-checks` is a deterministic evaluation sensor. It verifies that the required evidence spine exists before an operator records scores or relies on a control report. Optional console artifacts are reported without blocking the status.
 
+`behavior-checks` records behavior-confidence checks for:
+
+- approved review fixtures,
+- explicit human-approval gates before mutation,
+- read-only infrastructure snapshot modes,
+- non-submitting OpenScorpion activity drafts,
+- worktree guard records.
+
 `benchmark-pack` materialises repeatable source packs for smoke, realistic, and stress evaluations. The packs are local files only; they do not ingest sources or call live services by themselves.
 
 Artifacts:
@@ -68,8 +76,35 @@ Artifacts:
 - `evaluation/usage-report.md`
 - `evaluation/artifact-checks.json`
 - `evaluation/artifact-checks.md`
+- `evaluation/behavior-checks.json`
+- `evaluation/behavior-checks.md`
 - `benchmarks/source-packs/<set>/benchmark-pack.json`
 - `benchmarks/source-packs/<set>/README.md`
+
+## GBrain
+
+`gbrain-export` writes a read-only Ariadne evidence bundle for optional import into [GBrain](https://github.com/garrytan/gbrain). Ariadne remains the source of truth; GBrain is treated as a derived memory/search substrate.
+
+Artifacts:
+
+- `integrations/gbrain/gbrain-export.json`
+- `integrations/gbrain/gbrain-export.md`
+
+`gbrain-report-import` imports a GBrain query, search, or eval report JSON back into Ariadne as evidence:
+
+- `integrations/gbrain/gbrain-report-<timestamp>.json`
+- `integrations/gbrain/gbrain-report-<timestamp>.md`
+
+## Sleep, Memory, And Agent Mail
+
+The coordination adapters are append-only file records:
+
+- `sleep-record`: recurring review summaries and proposed next actions.
+- `memory-proposal`: durable lessons proposed from evidence, not silently written into global memory.
+- `agent-mail`: interagent inbox/outbox messages tied to optional task and run ids.
+- `agent-lease`: ownership records for worktrees, repos, hosts, or other contested resources.
+
+Artifacts are written under `coordination/`, `coordination/mail/`, and `coordination/leases/`.
 
 ## Console Data
 
@@ -88,3 +123,5 @@ Use `--refresh-data` to regenerate `console/console-data.json` before rendering 
 ## Infrastructure And Governance
 
 `infra-snapshot` imports a read-only JSON snapshot. `openscorpion-draft` writes a governed activity draft with `submit: false`; live submission requires a later approved adapter.
+
+`deployment-snapshot` imports read-only estate snapshots for Proxmox, TrueNAS, DGX Spark, Macs, GitHub, or generic systems. This is the deployment adapter bridge for visualising where Ariadne can run without granting mutation capability.

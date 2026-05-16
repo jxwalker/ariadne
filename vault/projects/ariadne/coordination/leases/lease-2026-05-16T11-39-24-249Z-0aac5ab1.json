@@ -1,0 +1,11 @@
+{
+  "schemaVersion": 1,
+  "id": "lease-2026-05-16T11-39-24-249Z-0aac5ab1",
+  "project": "ariadne",
+  "recordedAt": "2026-05-16T11:39:24.249Z",
+  "agent": "executor",
+  "resource": "repo:<WORKSPACE_ROOT>",
+  "status": "acquired",
+  "runId": "run-2026-05-16T11-30-01-596Z",
+  "notes": "Lease recorded for roadmap completion tranche."
+}

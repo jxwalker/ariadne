@@ -107,6 +107,13 @@ export async function markRunStatus(
   const run = JSON.parse(await fs.readFile(resolved, "utf8")) as ExecutionRun;
   run.status = status;
   await fs.writeFile(resolved, `${JSON.stringify(run, null, 2)}\n`);
+  const markdownPath = resolved.replace(/\.json$/, ".md");
+  try {
+    const markdown = await fs.readFile(markdownPath, "utf8");
+    await fs.writeFile(markdownPath, markdown.replace(/^Status: .+$/m, `Status: ${status}`));
+  } catch (error) {
+    if ((error as NodeJS.ErrnoException).code !== "ENOENT") throw error;
+  }
   await writeTextArtifact(vaultRoot, project, "execution", `${run.id}-status.md`, `# ${run.id}\n\nStatus: ${status}\n`);
   return resolved;
 }

@@ -5,18 +5,26 @@ import { projectDir, slugifyProject } from "./paths.js";
 import { loadRecords } from "./vault.js";
 import type {
   CheckRecord,
+  AgentLeaseRecord,
+  AgentMailRecord,
+  BehaviorCheckReport,
   ControlReport,
   ConsoleData,
   DecisionRecord,
+  DeploymentSnapshot,
   EvaluationPlan,
   EvaluationRun,
   ExecutionRun,
+  GbrainExportBundle,
+  GbrainReportImport,
   GsdRoadmap,
   InfraRegistry,
   InfraSnapshot,
+  MemoryProposalRecord,
   PlaywrightEvidenceRecord,
   PrdDocument,
   ReviewRecord,
+  SleepRoutineRecord,
   SourceHygieneReport
 } from "./types.js";
 
@@ -39,6 +47,8 @@ export async function collectConsoleData(vaultRoot: string, projectInput: string
   const readiness = await readProjectJson<ControlReport>(vaultRoot, project, "control", "merge-readiness.json");
   const evaluationPlan = await readProjectJson<EvaluationPlan>(vaultRoot, project, "evaluation", "evaluation-plan.json");
   const registry = await readProjectJson<InfraRegistry>(vaultRoot, project, "infrastructure", "registry.json");
+  const behaviorChecks = await readProjectJson<BehaviorCheckReport>(vaultRoot, project, "evaluation", "behavior-checks.json");
+  const gbrainExport = await readProjectJson<GbrainExportBundle>(vaultRoot, project, "integrations/gbrain", "gbrain-export.json");
   const checks = await readJsonl<CheckRecord>(path.join(dir, "control", "check-history.jsonl"));
   const reviews = await readJsonl<ReviewRecord>(path.join(dir, "control", "reviews.jsonl"));
   const executionRuns = await readJsonFiles<ExecutionRun>(path.join(dir, "execution"), isExecutionRun);
@@ -49,6 +59,12 @@ export async function collectConsoleData(vaultRoot: string, projectInput: string
   );
   const evaluations = await readJsonFiles<EvaluationRun>(path.join(dir, "evaluation"), isEvaluationRun);
   const infraSnapshots = await readJsonFiles<InfraSnapshot>(path.join(dir, "infrastructure"), isInfraSnapshot);
+  const gbrainReports = await readJsonFiles<GbrainReportImport>(path.join(dir, "integrations", "gbrain"), isGbrainReport);
+  const sleepRoutines = await readJsonFiles<SleepRoutineRecord>(path.join(dir, "coordination"), isSleepRoutine);
+  const memoryProposals = await readJsonFiles<MemoryProposalRecord>(path.join(dir, "coordination"), isMemoryProposal);
+  const agentMail = await readJsonFiles<AgentMailRecord>(path.join(dir, "coordination", "mail"), isAgentMail);
+  const agentLeases = await readJsonFiles<AgentLeaseRecord>(path.join(dir, "coordination", "leases"), isAgentLease);
+  const deploymentSnapshots = await readJsonFiles<DeploymentSnapshot>(path.join(dir, "deployment"), isDeploymentSnapshot);
   const sources = await Promise.all(
     records.map(async (record) => ({
       id: record.id,
@@ -88,6 +104,11 @@ export async function collectConsoleData(vaultRoot: string, projectInput: string
       decisions: decisions.length,
       evaluations: evaluations.length,
       infraSnapshots: infraSnapshots.length,
+      sleepRoutines: sleepRoutines.length,
+      memoryProposals: memoryProposals.length,
+      agentMail: agentMail.length,
+      agentLeases: agentLeases.length,
+      deploymentSnapshots: deploymentSnapshots.length,
       readinessStatus: readiness?.status,
       latestEvaluationScore: evaluations.at(-1)?.overallScore
     },
@@ -100,9 +121,23 @@ export async function collectConsoleData(vaultRoot: string, projectInput: string
     decisions,
     playwrightEvidence,
     evaluations,
+    behaviorChecks,
+    gbrain: {
+      exportBundle: gbrainExport,
+      reports: gbrainReports
+    },
+    coordination: {
+      sleepRoutines,
+      memoryProposals,
+      agentMail,
+      agentLeases
+    },
     infrastructure: {
       registry,
       snapshots: infraSnapshots
+    },
+    deployment: {
+      snapshots: deploymentSnapshots
     },
     readiness,
     artifacts: {
@@ -113,7 +148,9 @@ export async function collectConsoleData(vaultRoot: string, projectInput: string
       evaluationPlan: evaluationPlan ? vaultRelative(vaultRoot, path.join(dir, "evaluation", "evaluation-plan.json")) : undefined,
       artifactChecks: await existingPath(vaultRoot, path.join(dir, "evaluation", "artifact-checks.json")),
       evaluationTrends: await existingPath(vaultRoot, path.join(dir, "evaluation", "evaluation-trends.json")),
-      usageReport: await existingPath(vaultRoot, path.join(dir, "evaluation", "usage-report.json"))
+      usageReport: await existingPath(vaultRoot, path.join(dir, "evaluation", "usage-report.json")),
+      behaviorChecks: await existingPath(vaultRoot, path.join(dir, "evaluation", "behavior-checks.json")),
+      gbrainExport: await existingPath(vaultRoot, path.join(dir, "integrations", "gbrain", "gbrain-export.json"))
     }
   };
   return makePortable(data, vaultRoot);
@@ -234,4 +271,28 @@ function isEvaluationRun(value: unknown): value is EvaluationRun {
 
 function isInfraSnapshot(value: unknown): value is InfraSnapshot {
   return hasSchema(value) && value.schemaVersion === 1 && "snapshotKind" in value && "summary" in value;
+}
+
+function isGbrainReport(value: unknown): value is GbrainReportImport {
+  return hasSchema(value) && value.schemaVersion === 1 && "query" in value && "resultCount" in value;
+}
+
+function isSleepRoutine(value: unknown): value is SleepRoutineRecord {
+  return hasSchema(value) && value.schemaVersion === 1 && typeof value.id === "string" && value.id.startsWith("sleep-");
+}
+
+function isMemoryProposal(value: unknown): value is MemoryProposalRecord {
+  return hasSchema(value) && value.schemaVersion === 1 && typeof value.id === "string" && value.id.startsWith("memory-");
+}
+
+function isAgentMail(value: unknown): value is AgentMailRecord {
+  return hasSchema(value) && value.schemaVersion === 1 && typeof value.id === "string" && value.id.startsWith("mail-");
+}
+
+function isAgentLease(value: unknown): value is AgentLeaseRecord {
+  return hasSchema(value) && value.schemaVersion === 1 && typeof value.id === "string" && value.id.startsWith("lease-");
+}
+
+function isDeploymentSnapshot(value: unknown): value is DeploymentSnapshot {
+  return hasSchema(value) && value.schemaVersion === 1 && value.mode === "read_only" && "system" in value;
 }

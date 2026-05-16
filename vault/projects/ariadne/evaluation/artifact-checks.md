@@ -2,13 +2,13 @@
 
 Project: ariadne
 Status: passed
-Generated: 2026-05-16T11:02:09.346Z
+Generated: 2026-05-16T11:45:59.353Z
 
 ## Summary
 
 - Required checks: 13
-- Optional checks: 3
-- Present artifacts: 16
+- Optional checks: 7
+- Present artifacts: 20
 - Missing required artifacts: 0
 
 ## Checks
@@ -23,7 +23,7 @@ Generated: 2026-05-16T11:02:09.346Z
 | gsd-roadmap | yes | present | - | projects/ariadne/gsd/roadmap.json |
 | gsd-tasks | yes | present | - | projects/ariadne/gsd/TASKS.md |
 | gsd2-bundle | yes | present | - | projects/ariadne/gsd/gsd2-bundle.json |
-| execution-runs | yes | present | 3 | projects/ariadne/execution/run-*.json |
+| execution-runs | yes | present | 4 | projects/ariadne/execution/run-*.json |
 | playwright-plan | yes | present | - | projects/ariadne/verification/playwright-plan.json |
 | evaluation-plan | yes | present | - | projects/ariadne/evaluation/evaluation-plan.json |
 | infra-registry | yes | present | - | projects/ariadne/infrastructure/registry.json |
@@ -31,3 +31,7 @@ Generated: 2026-05-16T11:02:09.346Z
 | console-data | no | present | - | projects/ariadne/console/console-data.json |
 | console-html | no | present | - | projects/ariadne/console/index.html |
 | usage-report | no | present | - | projects/ariadne/evaluation/usage-report.json |
+| behavior-checks | no | present | - | projects/ariadne/evaluation/behavior-checks.json |
+| gbrain-export | no | present | - | projects/ariadne/integrations/gbrain/gbrain-export.json |
+| coordination-records | no | present | 4 | projects/ariadne/coordination/**/*.json |
+| deployment-snapshots | no | present | 1 | projects/ariadne/deployment/deployment-*.json |

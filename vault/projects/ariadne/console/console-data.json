@@ -1,19 +1,24 @@
 {
   "schemaVersion": 1,
   "project": "ariadne",
-  "generatedAt": "2026-05-16T11:02:18.224Z",
+  "generatedAt": "2026-05-16T11:45:59.617Z",
   "projectDir": "projects/ariadne",
   "summary": {
     "sources": 3,
     "requirements": 7,
     "tasks": 7,
-    "executionRuns": 3,
-    "checks": 3,
-    "reviews": 1,
+    "executionRuns": 4,
+    "checks": 6,
+    "reviews": 2,
     "decisions": 1,
     "evaluations": 0,
     "infraSnapshots": 0,
-    "readinessStatus": "review_required"
+    "sleepRoutines": 1,
+    "memoryProposals": 1,
+    "agentMail": 1,
+    "agentLeases": 1,
+    "deploymentSnapshots": 1,
+    "readinessStatus": "ready"
   },
   "sources": [
     {
@@ -607,6 +612,74 @@
         "The working tree contains unrelated user changes in a write scope.",
         "Generated tests cannot identify a target URL or stable user workflow."
       ]
+    },
+    {
+      "schemaVersion": 1,
+      "id": "run-2026-05-16T11-30-01-596Z",
+      "project": "ariadne",
+      "createdAt": "2026-05-16T11:30:01.596Z",
+      "taskIds": [
+        "TASK-001",
+        "TASK-002",
+        "TASK-003",
+        "TASK-004",
+        "TASK-006",
+        "TASK-007",
+        "TASK-005"
+      ],
+      "repoPath": "<WORKSPACE_ROOT>",
+      "branchPrefix": "jxw/ariadne",
+      "status": "complete",
+      "gates": [
+        "npm run check",
+        "npm test",
+        "npm run build",
+        "review evidence",
+        "human approval before external mutation"
+      ],
+      "worktrees": [
+        {
+          "taskId": "TASK-001",
+          "branch": "jxw/ariadne-task-001",
+          "worktreePath": "<WORKSPACE_ROOT>-task-001"
+        },
+        {
+          "taskId": "TASK-002",
+          "branch": "jxw/ariadne-task-002",
+          "worktreePath": "<WORKSPACE_ROOT>-task-002"
+        },
+        {
+          "taskId": "TASK-003",
+          "branch": "jxw/ariadne-task-003",
+          "worktreePath": "<WORKSPACE_ROOT>-task-003"
+        },
+        {
+          "taskId": "TASK-004",
+          "branch": "jxw/ariadne-task-004",
+          "worktreePath": "<WORKSPACE_ROOT>-task-004"
+        },
+        {
+          "taskId": "TASK-006",
+          "branch": "jxw/ariadne-task-006",
+          "worktreePath": "<WORKSPACE_ROOT>-task-006"
+        },
+        {
+          "taskId": "TASK-007",
+          "branch": "jxw/ariadne-task-007",
+          "worktreePath": "<WORKSPACE_ROOT>-task-007"
+        },
+        {
+          "taskId": "TASK-005",
+          "branch": "jxw/ariadne-task-005",
+          "worktreePath": "<WORKSPACE_ROOT>-task-005"
+        }
+      ],
+      "stopConditions": [
+        "A verification command fails twice for the same reason.",
+        "A task requires credentials or external mutation not represented by an approved plan.",
+        "The working tree contains unrelated user changes in a write scope.",
+        "Generated tests cannot identify a target URL or stable user workflow."
+      ]
     }
   ],
   "checks": [
@@ -636,6 +709,33 @@
       "name": "build",
       "command": "npm run build",
       "status": "passed"
+    },
+    {
+      "schemaVersion": 1,
+      "id": "check-build-2026-05-16T11-31-14-353Z",
+      "project": "ariadne",
+      "recordedAt": "2026-05-16T11:31:14.354Z",
+      "name": "build",
+      "command": "npm run build",
+      "status": "passed"
+    },
+    {
+      "schemaVersion": 1,
+      "id": "check-unit-tests-2026-05-16T11-31-14-353Z",
+      "project": "ariadne",
+      "recordedAt": "2026-05-16T11:31:14.354Z",
+      "name": "unit-tests",
+      "command": "npm test",
+      "status": "passed"
+    },
+    {
+      "schemaVersion": 1,
+      "id": "check-typecheck-2026-05-16T11-31-14-353Z",
+      "project": "ariadne",
+      "recordedAt": "2026-05-16T11:31:14.354Z",
+      "name": "typecheck",
+      "command": "npm run check",
+      "status": "passed"
     }
   ],
   "reviews": [
@@ -647,6 +747,16 @@
       "source": "local",
       "status": "passed",
       "summary": "Local implementation self-review completed; external CodeRabbit or human approval still required before merge-ready."
+    },
+    {
+      "schemaVersion": 1,
+      "id": "review-coderabbit-2026-05-16T11-45-58-592Z",
+      "project": "ariadne",
+      "recordedAt": "2026-05-16T11:45:58.593Z",
+      "source": "coderabbit",
+      "status": "approved",
+      "summary": "Direct CodeRabbit review against main raised 0 issues.",
+      "evidence": "coderabbit review --agent --base main -c AGENTS.md"
     }
   ],
   "decisions": [
@@ -672,11 +782,528 @@
   ],
   "playwrightEvidence": [],
   "evaluations": [],
+  "behaviorChecks": {
+    "schemaVersion": 1,
+    "project": "ariadne",
+    "generatedAt": "2026-05-16T11:45:58.842Z",
+    "status": "passed",
+    "summary": {
+      "passed": 5,
+      "warnings": 0,
+      "failed": 0
+    },
+    "checks": [
+      {
+        "id": "approved-fixture",
+        "label": "Approved review fixture",
+        "status": "passed",
+        "evidence": [
+          "review-coderabbit-2026-05-16T11-45-58-592Z"
+        ],
+        "notes": "At least one approved review or approved fixture is present."
+      },
+      {
+        "id": "execution-mutation-gates",
+        "label": "Execution mutation gates",
+        "status": "passed",
+        "evidence": [
+          "run-2026-05-15T21-29-14-025Z",
+          "run-2026-05-16T06-09-25-010Z",
+          "run-2026-05-16T07-16-41-868Z",
+          "run-2026-05-16T11-30-01-596Z"
+        ],
+        "notes": "Execution runs include explicit human approval gates before external mutation."
+      },
+      {
+        "id": "infra-read-only",
+        "label": "Infrastructure snapshots are read-only",
+        "status": "passed",
+        "evidence": [],
+        "notes": "Infrastructure evidence is limited to manual, manifest, or live_read_only snapshot kinds."
+      },
+      {
+        "id": "governance-drafts-non-submitting",
+        "label": "Governance drafts do not submit",
+        "status": "passed",
+        "evidence": [],
+        "notes": "OpenScorpion activity records are drafts with submit=false."
+      },
+      {
+        "id": "worktree-guard-fixture",
+        "label": "Worktree guard fixture",
+        "status": "passed",
+        "evidence": [
+          "projects/ariadne/execution/run-2026-05-16T11-30-01-596Z-worktree-guard.json"
+        ],
+        "notes": "1 worktree guard record(s) are present."
+      }
+    ]
+  },
+  "gbrain": {
+    "exportBundle": {
+      "schemaVersion": 1,
+      "project": "ariadne",
+      "generatedAt": "2026-05-16T11:39:09.248Z",
+      "source": "ariadne",
+      "mode": "read_only_export",
+      "instructions": [
+        "Import this bundle into GBrain as derived memory, not as Ariadne's source of truth.",
+        "Preserve evidenceRefs when returning search or query results.",
+        "Do not write back to Ariadne without an explicit Ariadne import command."
+      ],
+      "documents": [
+        {
+          "slug": "source/2026-05-15T21-07-25-476Z-7d15cd2e4d21",
+          "title": "Designing the Ultimate Ariadne.docx",
+          "kind": "source",
+          "content": "Source kind: docx\nSensitivity: internal\nSHA-256: 7d15cd2e4d215c7007b98e1b37e472d94e2bb69d423dea3d8b15315e318f833c\nNotes: Initial source bundle for end-to-end coding system",
+          "evidenceRefs": [
+            "<VAULT_ROOT>/projects/ariadne/raw/2026-05-15T21-07-25-476Z-7d15cd2e4d21/Designing the Ultimate Ariadne.docx",
+            "<VAULT_ROOT>/projects/ariadne/raw/2026-05-15T21-07-25-476Z-7d15cd2e4d21/extracted.md"
+          ],
+          "tags": [
+            "ariadne",
+            "source",
+            "docx"
+          ]
+        },
+        {
+          "slug": "source/2026-05-15T21-07-25-534Z-bd098aacf200",
+          "title": "ars_memoriae_whitepaper_revised.md",
+          "kind": "source",
+          "content": "Source kind: markdown\nSensitivity: internal\nSHA-256: bd098aacf200cb51eb880fdeb6d41f01b3be5e4090e535ed403028250e16acc4\nNotes: Initial source bundle for end-to-end coding system",
+          "evidenceRefs": [
+            "<VAULT_ROOT>/projects/ariadne/raw/2026-05-15T21-07-25-534Z-bd098aacf200/ars_memoriae_whitepaper_revised.md",
+            "<VAULT_ROOT>/projects/ariadne/raw/2026-05-15T21-07-25-534Z-bd098aacf200/extracted.md"
+          ],
+          "tags": [
+            "ariadne",
+            "source",
+            "markdown"
+          ]
+        },
+        {
+          "slug": "source/2026-05-15T21-07-25-535Z-16aa520c50e0",
+          "title": "codex_hermes_infra_spec.md",
+          "kind": "source",
+          "content": "Source kind: markdown\nSensitivity: internal\nSHA-256: 16aa520c50e02e3f6871372b49a1ffc69da31e6f8f445ce43f1a7a4063377da5\nNotes: Initial source bundle for end-to-end coding system",
+          "evidenceRefs": [
+            "<VAULT_ROOT>/projects/ariadne/raw/2026-05-15T21-07-25-535Z-16aa520c50e0/codex_hermes_infra_spec.md",
+            "<VAULT_ROOT>/projects/ariadne/raw/2026-05-15T21-07-25-535Z-16aa520c50e0/extracted.md"
+          ],
+          "tags": [
+            "ariadne",
+            "source",
+            "markdown"
+          ]
+        },
+        {
+          "slug": "requirement/req-001",
+          "title": "Source evidence intake",
+          "kind": "requirement",
+          "content": "Preserve drawings, whitepapers, dictated notes, documents, and related artifacts before any summarisation or automation.\n\n- Raw artifacts are copied into the durable vault.\n- Each artifact has a digest, source path, kind, and timestamp.\n- Extracted text remains linked to the raw evidence.",
+          "evidenceRefs": [
+            "<VAULT_ROOT>/projects/ariadne/context/dossier-2026-05-15T21-29-09-496Z.md",
+            "<VAULT_ROOT>/projects/ariadne/context/dossier-2026-05-15T21-29-09-496Z.md:7",
+            "<VAULT_ROOT>/projects/ariadne/context/dossier-2026-05-15T21-29-09-496Z.md:9",
+            "<VAULT_ROOT>/projects/ariadne/context/dossier-2026-05-15T21-29-09-496Z.md:16",
+            "<VAULT_ROOT>/projects/ariadne/context/dossier-2026-05-15T21-29-09-496Z.md:22",
+            "<VAULT_ROOT>/projects/ariadne/context/dossier-2026-05-15T21-29-09-496Z.md:34",
+            "<VAULT_ROOT>/projects/ariadne/context/dossier-2026-05-15T21-29-09-496Z.md:35",
+            "<VAULT_ROOT>/projects/ariadne/context/dossier-2026-05-15T21-29-09-496Z.md:36",
+            "<VAULT_ROOT>/projects/ariadne/context/dossier-2026-05-15T21-29-09-496Z.md:37",
+            "<VAULT_ROOT>/projects/ariadne/context/dossier-2026-05-15T21-29-09-496Z.md:39",
+            "<VAULT_ROOT>/projects/ariadne/context/dossier-2026-05-15T21-29-09-496Z.md:41",
+            "<VAULT_ROOT>/projects/ariadne/context/dossier-2026-05-15T21-29-09-496Z.md:60"
+          ],
+          "tags": [
+            "ariadne",
+            "requirement",
+            "must",
+            "draft"
+          ]
+        },
+        {
+          "slug": "requirement/req-002",
+          "title": "Source-grounded PRD synthesis",
+          "kind": "requirement",
+          "content": "Convert evidence dossiers and NotebookLM-style grounded exports into requirements, ambiguities, acceptance criteria, and source references.\n\n- PRD records source references for every major claim.\n- Ambiguities are separated from accepted requirements.\n- Manual exports work before automation is attempted.",
+          "evidenceRefs": [
+            "<VAULT_ROOT>/projects/ariadne/context/dossier-2026-05-15T21-29-09-496Z.md",
+            "<VAULT_ROOT>/projects/ariadne/context/dossier-2026-05-15T21-29-09-496Z.md:7",
+            "<VAULT_ROOT>/projects/ariadne/context/dossier-2026-05-15T21-29-09-496Z.md:9",
+            "<VAULT_ROOT>/projects/ariadne/context/dossier-2026-05-15T21-29-09-496Z.md:16",
+            "<VAULT_ROOT>/projects/ariadne/context/dossier-2026-05-15T21-29-09-496Z.md:22",
+            "<VAULT_ROOT>/projects/ariadne/context/dossier-2026-05-15T21-29-09-496Z.md:34",
+            "<VAULT_ROOT>/projects/ariadne/context/dossier-2026-05-15T21-29-09-496Z.md:35",
+            "<VAULT_ROOT>/projects/ariadne/context/dossier-2026-05-15T21-29-09-496Z.md:36",
+            "<VAULT_ROOT>/projects/ariadne/context/dossier-2026-05-15T21-29-09-496Z.md:37",
+            "<VAULT_ROOT>/projects/ariadne/context/dossier-2026-05-15T21-29-09-496Z.md:39",
+            "<VAULT_ROOT>/projects/ariadne/context/dossier-2026-05-15T21-29-09-496Z.md:41",
+            "<VAULT_ROOT>/projects/ariadne/context/dossier-2026-05-15T21-29-09-496Z.md:60"
+          ],
+          "tags": [
+            "ariadne",
+            "requirement",
+            "must",
+            "draft"
+          ]
+        },
+        {
+          "slug": "requirement/req-003",
+          "title": "GSD2 task bridge",
+          "kind": "requirement",
+          "content": "Transform accepted requirements into milestones, vertical slices, tasks, success criteria, and verification commands.\n\n- Tasks are independently inspectable as JSON and Markdown.\n- Each task names expected write areas and verification commands.\n- Tasks preserve requirement traceability.",
+          "evidenceRefs": [
+            "<VAULT_ROOT>/projects/ariadne/context/dossier-2026-05-15T21-29-09-496Z.md",
+            "<VAULT_ROOT>/projects/ariadne/context/dossier-2026-05-15T21-29-09-496Z.md:7",
+            "<VAULT_ROOT>/projects/ariadne/context/dossier-2026-05-15T21-29-09-496Z.md:9",
+            "<VAULT_ROOT>/projects/ariadne/context/dossier-2026-05-15T21-29-09-496Z.md:16",
+            "<VAULT_ROOT>/projects/ariadne/context/dossier-2026-05-15T21-29-09-496Z.md:22",
+            "<VAULT_ROOT>/projects/ariadne/context/dossier-2026-05-15T21-29-09-496Z.md:34",
+            "<VAULT_ROOT>/projects/ariadne/context/dossier-2026-05-15T21-29-09-496Z.md:35",
+            "<VAULT_ROOT>/projects/ariadne/context/dossier-2026-05-15T21-29-09-496Z.md:36",
+            "<VAULT_ROOT>/projects/ariadne/context/dossier-2026-05-15T21-29-09-496Z.md:37",
+            "<VAULT_ROOT>/projects/ariadne/context/dossier-2026-05-15T21-29-09-496Z.md:39",
+            "<VAULT_ROOT>/projects/ariadne/context/dossier-2026-05-15T21-29-09-496Z.md:41",
+            "<VAULT_ROOT>/projects/ariadne/context/dossier-2026-05-15T21-29-09-496Z.md:60"
+          ],
+          "tags": [
+            "ariadne",
+            "requirement",
+            "must",
+            "draft"
+          ]
+        },
+        {
+          "slug": "requirement/req-004",
+          "title": "Bounded execution loop",
+          "kind": "requirement",
+          "content": "Plan isolated worktree execution with explicit branch names, gates, stop conditions, and review points.\n\n- Execution runs are recorded before work begins.\n- The system can identify planned worktrees and gates.\n- External mutations remain blocked unless a later approved adapter is enabled.",
+          "evidenceRefs": [
+            "<VAULT_ROOT>/projects/ariadne/context/dossier-2026-05-15T21-29-09-496Z.md",
+            "<VAULT_ROOT>/projects/ariadne/context/dossier-2026-05-15T21-29-09-496Z.md:7",
+            "<VAULT_ROOT>/projects/ariadne/context/dossier-2026-05-15T21-29-09-496Z.md:9",
+            "<VAULT_ROOT>/projects/ariadne/context/dossier-2026-05-15T21-29-09-496Z.md:16",
+            "<VAULT_ROOT>/projects/ariadne/context/dossier-2026-05-15T21-29-09-496Z.md:22",
+            "<VAULT_ROOT>/projects/ariadne/context/dossier-2026-05-15T21-29-09-496Z.md:34",
+            "<VAULT_ROOT>/projects/ariadne/context/dossier-2026-05-15T21-29-09-496Z.md:35",
+            "<VAULT_ROOT>/projects/ariadne/context/dossier-2026-05-15T21-29-09-496Z.md:36",
+            "<VAULT_ROOT>/projects/ariadne/context/dossier-2026-05-15T21-29-09-496Z.md:37",
+            "<VAULT_ROOT>/projects/ariadne/context/dossier-2026-05-15T21-29-09-496Z.md:39",
+            "<VAULT_ROOT>/projects/ariadne/context/dossier-2026-05-15T21-29-09-496Z.md:41",
+            "<VAULT_ROOT>/projects/ariadne/context/dossier-2026-05-15T21-29-09-496Z.md:60"
+          ],
+          "tags": [
+            "ariadne",
+            "requirement",
+            "must",
+            "draft"
+          ]
+        },
+        {
+          "slug": "requirement/req-005",
+          "title": "Playwright UI verification evidence",
+          "kind": "requirement",
+          "content": "Generate UI test plans and Playwright skeletons from requirements, with room for screenshots, traces, and healer proposals.\n\n- Generated tests use role-oriented locators where possible.\n- Scenario records link back to requirement ids.\n- Evidence paths are recorded separately from claims.",
+          "evidenceRefs": [
+            "<VAULT_ROOT>/projects/ariadne/context/dossier-2026-05-15T21-29-09-496Z.md",
+            "<VAULT_ROOT>/projects/ariadne/context/dossier-2026-05-15T21-29-09-496Z.md:7",
+            "<VAULT_ROOT>/projects/ariadne/context/dossier-2026-05-15T21-29-09-496Z.md:9",
+            "<VAULT_ROOT>/projects/ariadne/context/dossier-2026-05-15T21-29-09-496Z.md:16",
+            "<VAULT_ROOT>/projects/ariadne/context/dossier-2026-05-15T21-29-09-496Z.md:22",
+            "<VAULT_ROOT>/projects/ariadne/context/dossier-2026-05-15T21-29-09-496Z.md:34",
+            "<VAULT_ROOT>/projects/ariadne/context/dossier-2026-05-15T21-29-09-496Z.md:35",
+            "<VAULT_ROOT>/projects/ariadne/context/dossier-2026-05-15T21-29-09-496Z.md:36",
+            "<VAULT_ROOT>/projects/ariadne/context/dossier-2026-05-15T21-29-09-496Z.md:37",
+            "<VAULT_ROOT>/projects/ariadne/context/dossier-2026-05-15T21-29-09-496Z.md:39",
+            "<VAULT_ROOT>/projects/ariadne/context/dossier-2026-05-15T21-29-09-496Z.md:41",
+            "<VAULT_ROOT>/projects/ariadne/context/dossier-2026-05-15T21-29-09-496Z.md:60"
+          ],
+          "tags": [
+            "ariadne",
+            "requirement",
+            "should",
+            "draft"
+          ]
+        },
+        {
+          "slug": "requirement/req-006",
+          "title": "Review and CI control plane",
+          "kind": "requirement",
+          "content": "Collect deterministic checks, CodeRabbit feedback, human review, and merge-readiness state into one evidence surface.\n\n- Merge readiness lists satisfied and missing gates.\n- CI and review records are imported without being treated as hidden authority.\n- Blocked states are explicit.",
+          "evidenceRefs": [
+            "<VAULT_ROOT>/projects/ariadne/context/dossier-2026-05-15T21-29-09-496Z.md",
+            "<VAULT_ROOT>/projects/ariadne/context/dossier-2026-05-15T21-29-09-496Z.md:7",
+            "<VAULT_ROOT>/projects/ariadne/context/dossier-2026-05-15T21-29-09-496Z.md:9",
+            "<VAULT_ROOT>/projects/ariadne/context/dossier-2026-05-15T21-29-09-496Z.md:16",
+            "<VAULT_ROOT>/projects/ariadne/context/dossier-2026-05-15T21-29-09-496Z.md:22",
+            "<VAULT_ROOT>/projects/ariadne/context/dossier-2026-05-15T21-29-09-496Z.md:34",
+            "<VAULT_ROOT>/projects/ariadne/context/dossier-2026-05-15T21-29-09-496Z.md:35",
+            "<VAULT_ROOT>/projects/ariadne/context/dossier-2026-05-15T21-29-09-496Z.md:36",
+            "<VAULT_ROOT>/projects/ariadne/context/dossier-2026-05-15T21-29-09-496Z.md:37",
+            "<VAULT_ROOT>/projects/ariadne/context/dossier-2026-05-15T21-29-09-496Z.md:39",
+            "<VAULT_ROOT>/projects/ariadne/context/dossier-2026-05-15T21-29-09-496Z.md:41",
+            "<VAULT_ROOT>/projects/ariadne/context/dossier-2026-05-15T21-29-09-496Z.md:60"
+          ],
+          "tags": [
+            "ariadne",
+            "requirement",
+            "must",
+            "draft"
+          ]
+        },
+        {
+          "slug": "requirement/req-007",
+          "title": "Infrastructure substrate registry",
+          "kind": "requirement",
+          "content": "Represent Proxmox, DGX Spark, M-series Macs, Hermes, OpenScorpion, local model endpoints, and runner pools as read-only registry records first.\n\n- Infrastructure records are readable without model calls.\n- Runner trust boundaries are explicit.\n- Mutation plans require approval and remain non-executing in this slice.",
+          "evidenceRefs": [
+            "<VAULT_ROOT>/projects/ariadne/context/dossier-2026-05-15T21-29-09-496Z.md",
+            "<VAULT_ROOT>/projects/ariadne/context/dossier-2026-05-15T21-29-09-496Z.md:7",
+            "<VAULT_ROOT>/projects/ariadne/context/dossier-2026-05-15T21-29-09-496Z.md:9",
+            "<VAULT_ROOT>/projects/ariadne/context/dossier-2026-05-15T21-29-09-496Z.md:16",
+            "<VAULT_ROOT>/projects/ariadne/context/dossier-2026-05-15T21-29-09-496Z.md:22",
+            "<VAULT_ROOT>/projects/ariadne/context/dossier-2026-05-15T21-29-09-496Z.md:34",
+            "<VAULT_ROOT>/projects/ariadne/context/dossier-2026-05-15T21-29-09-496Z.md:35",
+            "<VAULT_ROOT>/projects/ariadne/context/dossier-2026-05-15T21-29-09-496Z.md:36",
+            "<VAULT_ROOT>/projects/ariadne/context/dossier-2026-05-15T21-29-09-496Z.md:37",
+            "<VAULT_ROOT>/projects/ariadne/context/dossier-2026-05-15T21-29-09-496Z.md:39",
+            "<VAULT_ROOT>/projects/ariadne/context/dossier-2026-05-15T21-29-09-496Z.md:41",
+            "<VAULT_ROOT>/projects/ariadne/context/dossier-2026-05-15T21-29-09-496Z.md:60"
+          ],
+          "tags": [
+            "ariadne",
+            "requirement",
+            "must",
+            "draft"
+          ]
+        },
+        {
+          "slug": "task/task-001",
+          "title": "Source evidence intake",
+          "kind": "task",
+          "content": "Milestone: Control Spine\nSlice: core\n\nSuccess criteria:\n- Raw artifacts are copied into the durable vault.\n- Each artifact has a digest, source path, kind, and timestamp.\n- Extracted text remains linked to the raw evidence.\n\nVerification:\n- npm run check\n- npm test",
+          "evidenceRefs": [
+            "REQ-001"
+          ],
+          "tags": [
+            "ariadne",
+            "task",
+            "M1"
+          ]
+        },
+        {
+          "slug": "task/task-002",
+          "title": "Source-grounded PRD synthesis",
+          "kind": "task",
+          "content": "Milestone: Control Spine\nSlice: core\n\nSuccess criteria:\n- PRD records source references for every major claim.\n- Ambiguities are separated from accepted requirements.\n- Manual exports work before automation is attempted.\n\nVerification:\n- npm run check\n- npm test",
+          "evidenceRefs": [
+            "REQ-002"
+          ],
+          "tags": [
+            "ariadne",
+            "task",
+            "M1"
+          ]
+        },
+        {
+          "slug": "task/task-003",
+          "title": "GSD2 task bridge",
+          "kind": "task",
+          "content": "Milestone: Control Spine\nSlice: core\n\nSuccess criteria:\n- Tasks are independently inspectable as JSON and Markdown.\n- Each task names expected write areas and verification commands.\n- Tasks preserve requirement traceability.\n\nVerification:\n- npm run check\n- npm test",
+          "evidenceRefs": [
+            "REQ-003"
+          ],
+          "tags": [
+            "ariadne",
+            "task",
+            "M1"
+          ]
+        },
+        {
+          "slug": "task/task-004",
+          "title": "Bounded execution loop",
+          "kind": "task",
+          "content": "Milestone: Control Spine\nSlice: core\n\nSuccess criteria:\n- Execution runs are recorded before work begins.\n- The system can identify planned worktrees and gates.\n- External mutations remain blocked unless a later approved adapter is enabled.\n\nVerification:\n- npm run check\n- npm test",
+          "evidenceRefs": [
+            "REQ-004"
+          ],
+          "tags": [
+            "ariadne",
+            "task",
+            "M1"
+          ]
+        },
+        {
+          "slug": "task/task-006",
+          "title": "Review and CI control plane",
+          "kind": "task",
+          "content": "Milestone: Control Spine\nSlice: core\n\nSuccess criteria:\n- Merge readiness lists satisfied and missing gates.\n- CI and review records are imported without being treated as hidden authority.\n- Blocked states are explicit.\n\nVerification:\n- npm run check\n- npm test",
+          "evidenceRefs": [
+            "REQ-006"
+          ],
+          "tags": [
+            "ariadne",
+            "task",
+            "M1"
+          ]
+        },
+        {
+          "slug": "task/task-007",
+          "title": "Infrastructure substrate registry",
+          "kind": "task",
+          "content": "Milestone: Control Spine\nSlice: core\n\nSuccess criteria:\n- Infrastructure records are readable without model calls.\n- Runner trust boundaries are explicit.\n- Mutation plans require approval and remain non-executing in this slice.\n\nVerification:\n- npm run check\n- npm test",
+          "evidenceRefs": [
+            "REQ-007"
+          ],
+          "tags": [
+            "ariadne",
+            "task",
+            "M1"
+          ]
+        },
+        {
+          "slug": "task/task-005",
+          "title": "Playwright UI verification evidence",
+          "kind": "task",
+          "content": "Milestone: Verification Surface\nSlice: verification\n\nSuccess criteria:\n- Generated tests use role-oriented locators where possible.\n- Scenario records link back to requirement ids.\n- Evidence paths are recorded separately from claims.\n\nVerification:\n- npm run check\n- npm test\n- npx playwright test --reporter=list",
+          "evidenceRefs": [
+            "REQ-005"
+          ],
+          "tags": [
+            "ariadne",
+            "task",
+            "M2"
+          ]
+        },
+        {
+          "slug": "decision/decision-2026-05-15T22-38-53-515Z",
+          "title": "Keep live adapters evidence-first",
+          "kind": "decision",
+          "content": "Roadmap adapters now cover NotebookLM, GSD2, worktree, Playwright, CI, CodeRabbit, infrastructure, and OpenScorpion surfaces.\n\nKeep adapters as file-contract and evidence-record producers until each live integration has an approved mutation or submission path.\n\n- External systems are not mutated by default\n- Humans can inspect artifacts before enabling live adapters\n- Future work can add narrow approved live connectors",
+          "evidenceRefs": [
+            "docs/roadmap.md",
+            "docs/adapters.md"
+          ],
+          "tags": [
+            "ariadne",
+            "decision",
+            "accepted"
+          ]
+        },
+        {
+          "slug": "infrastructure/registry",
+          "title": "Infrastructure Registry",
+          "kind": "infrastructure",
+          "content": "m1-hermes: M1 Mac mini / always-on Hermes supervisor / Control-plane host for long-running supervision; verify live details before automation.\nm1-max: M1 Max / local development and testing / Apple Silicon development machine; use for local validation where available.\nm5-max: M5 Max / high-memory local agent workstation / Primary Mac-class local execution surface mentioned by user.\ndgx-spark: DGX Spark / local inference and memory-heavy workloads / Treat as planned/observed only until live endpoint inventory exists.\nbeast: Proxmox dev server / runners, services, model endpoints, infrastructure substrate / Read-only inventory first; Proxmox live state is authoritative at execution time.\nopenscorpion-router: governed model route / planned\ndgx-local-models: local inference / planned\ntrusted-private-runners: private jxwalker project repositories / persistent self-hosted runners only for trusted private repositories\npublic-repo-safe-path: public repositories / manual or ephemeral approval path; no untrusted public PRs on persistent runners",
+          "evidenceRefs": [
+            "infrastructure/registry.json"
+          ],
+          "tags": [
+            "ariadne",
+            "infrastructure"
+          ]
+        }
+      ]
+    },
+    "reports": [
+      {
+        "schemaVersion": 1,
+        "project": "ariadne",
+        "importedAt": "2026-05-16T11:39:35.290Z",
+        "sourcePath": "/tmp/ariadne-gbrain-report.json",
+        "query": "how should Ariadne use GBrain?",
+        "mode": "balanced",
+        "resultCount": 1,
+        "metrics": {
+          "latencyMs": 37,
+          "jaccardAt5": 0.82
+        },
+        "results": [
+          {
+            "title": "GBrain as derived memory",
+            "slug": "decision/gbrain-derived-memory",
+            "score": 0.93,
+            "source": "ariadne",
+            "excerpt": "Use GBrain as an optional derived memory and search index."
+          }
+        ],
+        "notes": [
+          "Synthetic local import fixture for adapter verification."
+        ]
+      }
+    ]
+  },
+  "coordination": {
+    "sleepRoutines": [
+      {
+        "schemaVersion": 1,
+        "id": "sleep-2026-05-16T11-39-24-249Z-0f6ad8b1",
+        "project": "ariadne",
+        "recordedAt": "2026-05-16T11:39:24.249Z",
+        "scope": "nightly",
+        "summary": "Review stale gates, usage trends, GBrain reports, and deployment snapshots before proposing the next run.",
+        "evidenceRefs": [
+          "vault/projects/ariadne/control/merge-readiness.md",
+          "vault/projects/ariadne/evaluation/behavior-checks.md"
+        ],
+        "nextActions": [
+          "Refresh console data",
+          "Record evaluation trends",
+          "Escalate missing review gates"
+        ]
+      }
+    ],
+    "memoryProposals": [
+      {
+        "schemaVersion": 1,
+        "id": "memory-2026-05-16T11-39-24-249Z-1dd70b46",
+        "project": "ariadne",
+        "recordedAt": "2026-05-16T11:39:24.249Z",
+        "title": "GBrain as derived memory",
+        "proposal": "Use GBrain as an optional derived memory and search index over Ariadne artifacts. Keep Ariadne vault artifacts as the source of truth for gates, approvals, deployment state, and evidence lineage.",
+        "evidenceRefs": [
+          "docs/research-notes.md",
+          "docs/adapters.md",
+          "vault/projects/ariadne/integrations/gbrain/gbrain-export.md"
+        ],
+        "status": "proposed"
+      }
+    ],
+    "agentMail": [
+      {
+        "schemaVersion": 1,
+        "id": "mail-2026-05-16T11-39-24-249Z-92bd4afb",
+        "project": "ariadne",
+        "recordedAt": "2026-05-16T11:39:24.249Z",
+        "from": "planner",
+        "to": "executor",
+        "subject": "Roadmap completion tranche",
+        "body": "Run typecheck, tests, build, behavior checks, artifact checks, console refresh, and review before merge.",
+        "runId": "run-2026-05-16T11-30-01-596Z",
+        "status": "sent"
+      }
+    ],
+    "agentLeases": [
+      {
+        "schemaVersion": 1,
+        "id": "lease-2026-05-16T11-39-24-249Z-0aac5ab1",
+        "project": "ariadne",
+        "recordedAt": "2026-05-16T11:39:24.249Z",
+        "agent": "executor",
+        "resource": "repo:<WORKSPACE_ROOT>",
+        "status": "acquired",
+        "runId": "run-2026-05-16T11-30-01-596Z",
+        "notes": "Lease recorded for roadmap completion tranche."
+      }
+    ]
+  },
   "infrastructure": {
     "registry": {
       "schemaVersion": 1,
       "project": "ariadne",
-      "generatedAt": "2026-05-16T07:16:41.870Z",
+      "generatedAt": "2026-05-16T11:30:01.598Z",
       "hosts": [
         {
           "id": "m1-hermes",
@@ -743,26 +1370,78 @@
     },
     "snapshots": []
   },
+  "deployment": {
+    "snapshots": [
+      {
+        "schemaVersion": 1,
+        "project": "ariadne",
+        "importedAt": "2026-05-16T11:39:35.290Z",
+        "sourcePath": "/tmp/ariadne-deployment.json",
+        "system": "proxmox",
+        "mode": "read_only",
+        "summary": {
+          "keys": [
+            "host",
+            "modelEndpoints",
+            "runnerPools",
+            "services",
+            "storagePools"
+          ],
+          "host": "beast",
+          "services": 2,
+          "modelEndpoints": 1,
+          "runnerPools": 1,
+          "storagePools": 1
+        },
+        "raw": {
+          "host": {
+            "short_name": "beast"
+          },
+          "services": [
+            {
+              "name": "hermes"
+            },
+            {
+              "name": "ariadne-console"
+            }
+          ],
+          "modelEndpoints": [
+            {
+              "name": "dgx-spark"
+            }
+          ],
+          "runnerPools": [
+            {
+              "name": "proxmox-dev"
+            }
+          ],
+          "storagePools": [
+            {
+              "name": "truenas-vault"
+            }
+          ]
+        }
+      }
+    ]
+  },
   "readiness": {
     "schemaVersion": 1,
     "project": "ariadne",
-    "generatedAt": "2026-05-16T07:16:41.872Z",
-    "status": "review_required",
+    "generatedAt": "2026-05-16T11:45:59.097Z",
+    "status": "ready",
     "evidence": [
       "requirements/prd.json",
       "gsd/roadmap.json",
       "verification/commands.json",
       "Playwright plan: 7 scenarios for http://localhost:3000",
-      "Execution run run-2026-05-16T07-16-41-868Z: planned",
+      "Execution run run-2026-05-16T11-30-01-596Z: complete",
       "GSD tasks: 7",
       "Check typecheck: passed (npm run check)",
       "Check unit-tests: passed (npm test)",
-      "Check build: passed (npm run build)"
+      "Check build: passed (npm run build)",
+      "Review approved by coderabbit: Direct CodeRabbit review against main raised 0 issues."
     ],
-    "missing": [
-      "Execution run run-2026-05-16T07-16-41-868Z is not complete",
-      "CodeRabbit or human review approval"
-    ],
+    "missing": [],
     "mergeGates": [
       "typecheck passed",
       "unit tests passed",
@@ -780,6 +1459,8 @@
     "evaluationPlan": "projects/ariadne/evaluation/evaluation-plan.json",
     "artifactChecks": "projects/ariadne/evaluation/artifact-checks.json",
     "evaluationTrends": "projects/ariadne/evaluation/evaluation-trends.json",
-    "usageReport": "projects/ariadne/evaluation/usage-report.json"
+    "usageReport": "projects/ariadne/evaluation/usage-report.json",
+    "behaviorChecks": "projects/ariadne/evaluation/behavior-checks.json",
+    "gbrainExport": "projects/ariadne/integrations/gbrain/gbrain-export.json"
   }
 }

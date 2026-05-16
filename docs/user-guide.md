@@ -142,6 +142,51 @@ npm run cli -- usage-report --project ariadne
 
 The importer accepts common fields such as `input_tokens`, `output_tokens`, `prompt_tokens`, `completion_tokens`, `total_tokens`, and `cost_usd`. The report is written to `vault/projects/ariadne/evaluation/usage-report.md`.
 
+Run behavior checks before trusting an execution slice:
+
+```bash
+npm run cli -- behavior-checks --project ariadne --approved-fixture coderabbit.md
+```
+
+This checks approval evidence, mutation gates, read-only infrastructure snapshots, non-submitting governance drafts, and worktree guard records.
+
+## Optional GBrain Memory Index
+
+Ariadne can export a derived bundle for GBrain:
+
+```bash
+npm run cli -- gbrain-export --project ariadne
+```
+
+Import the generated JSON or Markdown into GBrain if you want hybrid search over Ariadne evidence. Keep Ariadne as the source of truth. If GBrain produces query or eval output, import that report back:
+
+```bash
+npm run cli -- gbrain-report-import --project ariadne --from gbrain-report.json
+```
+
+## Coordinate Long-Running Agents
+
+Use file-backed records before adding live scheduling or interagent services:
+
+```bash
+npm run cli -- sleep-record --project ariadne --scope nightly --summary "Review stale gates" --evidence control/merge-readiness.md --next "Refresh console data"
+npm run cli -- memory-proposal --project ariadne --title "Adapter lesson" --proposal "Keep live adapters read-only until proven." --evidence docs/adapters.md
+npm run cli -- agent-mail --project ariadne --from planner --to executor --subject "Next slice" --body "Run checks before editing."
+npm run cli -- agent-lease --project ariadne --agent executor --resource repo:/ariadne --status acquired
+```
+
+These records are intentionally append-only and live under `vault/projects/ariadne/coordination/`.
+
+## Import Deployment Evidence
+
+For Macs, DGX Spark, Proxmox, TrueNAS, GitHub, and generic estate snapshots:
+
+```bash
+npm run cli -- deployment-snapshot --project ariadne --system proxmox --from deployment.json
+```
+
+Snapshots are read-only evidence. They are used by the console and evaluation system to make deployment posture visible without granting mutation capability.
+
 ## Check Readiness
 
 ```bash

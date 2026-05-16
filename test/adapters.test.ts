@@ -4,12 +4,16 @@ import os from "node:os";
 import path from "node:path";
 import { describe, expect, it } from "vitest";
 import { generateArtifactCheckReport } from "../src/artifactChecks.js";
+import { generateBehaviorCheckReport } from "../src/behaviorChecks.js";
 import { materializeBenchmarkPack } from "../src/benchmarkPacks.js";
 import { importCiStatus, importCodeRabbitReview } from "../src/ciImport.js";
 import { generateControlReport } from "../src/controlPlane.js";
 import { generateConsoleData } from "../src/consoleData.js";
 import { generateConsoleHtml } from "../src/consoleHtml.js";
+import { recordAgentLease, recordAgentMail, recordMemoryProposal, recordSleepRoutine } from "../src/coordination.js";
+import { importDeploymentSnapshot } from "../src/deploymentAdapters.js";
 import { planExecution } from "../src/execution.js";
+import { exportGbrainBundle, importGbrainReport } from "../src/gbrainAdapter.js";
 import { generateGsd } from "../src/gsd.js";
 import { exportGsd2Bundle, importGsd2Bundle } from "../src/gsdAdapter.js";
 import { generateInfrastructureRegistry } from "../src/infrastructure.js";
@@ -259,6 +263,114 @@ describe("roadmap adapters", () => {
     const markdown = await fs.readFile(report.markdownPath, "utf8");
     expect(markdown).toContain("# Usage Metrics Report");
     expect(markdown).toContain("| coderabbit | 1 | 0 | 0 | 750 | 0.1200 |");
+  });
+
+  it("exports Ariadne evidence to GBrain and imports GBrain reports", async () => {
+    const { temp, vaultRoot } = await preparedProject();
+    await exportGsd2Bundle({ project: "ariadne", vaultRoot });
+    await generateInfrastructureRegistry({ project: "ariadne", vaultRoot });
+
+    const exported = await exportGbrainBundle({ project: "ariadne", vaultRoot });
+    expect(exported.bundle.mode).toBe("read_only_export");
+    expect(exported.bundle.documents.some((document) => document.kind === "source")).toBe(true);
+    expect(exported.bundle.documents.some((document) => document.kind === "task")).toBe(true);
+
+    const reportPath = path.join(temp, "gbrain-report.json");
+    await fs.writeFile(
+      reportPath,
+      JSON.stringify({
+        query: "where is the Playwright evidence?",
+        mode: "balanced",
+        metrics: { latencyMs: 42, jaccardAt5: 0.8 },
+        results: [{ title: "Playwright plan", slug: "task/task-004", score: 0.91, source: "ariadne" }],
+        notes: ["Fixture report only."]
+      })
+    );
+    const imported = await importGbrainReport({ project: "ariadne", vaultRoot, sourcePath: reportPath });
+    expect(imported.report.resultCount).toBe(1);
+    expect(imported.report.metrics.latencyMs).toBe(42);
+  });
+
+  it("records behavior checks, sleep routines, memory proposals, agent mail, leases, and deployment snapshots", async () => {
+    const { temp, vaultRoot } = await preparedProject();
+    const repo = path.join(temp, "repo");
+    await fs.mkdir(repo);
+    execFileSync("git", ["init", "-b", "main"], { cwd: repo });
+    const execution = await planExecution({ project: "ariadne", vaultRoot, repoPath: repo, taskId: "TASK-001" });
+    await guardWorktrees({ project: "ariadne", vaultRoot, runFile: execution.jsonPath, apply: false });
+
+    const coderabbit = path.join(temp, "coderabbit-approved.md");
+    await fs.writeFile(coderabbit, "Approved\n\nNo issues found.\n");
+    await importCodeRabbitReview({ project: "ariadne", vaultRoot, sourcePath: coderabbit });
+    const behavior = await generateBehaviorCheckReport({
+      project: "ariadne",
+      vaultRoot,
+      approvedFixturePath: coderabbit
+    });
+    expect(behavior.report.status).toBe("passed");
+
+    await recordSleepRoutine({
+      project: "ariadne",
+      vaultRoot,
+      scope: "nightly",
+      summary: "Review new evidence and propose the next run.",
+      evidenceRefs: [behavior.jsonPath],
+      nextActions: ["Refresh console data."]
+    });
+    await recordMemoryProposal({
+      project: "ariadne",
+      vaultRoot,
+      title: "Preserve adapter stance",
+      proposal: "Treat GBrain as a memory substrate, not as source of truth.",
+      evidenceRefs: [behavior.jsonPath]
+    });
+    await recordAgentMail({
+      project: "ariadne",
+      vaultRoot,
+      from: "planner",
+      to: "executor",
+      subject: "Next bounded slice",
+      body: "Run artifact checks before implementation.",
+      taskId: "TASK-001",
+      runId: execution.run.id
+    });
+    await recordAgentLease({
+      project: "ariadne",
+      vaultRoot,
+      agent: "executor",
+      resource: "repo:/ariadne",
+      status: "acquired",
+      taskId: "TASK-001",
+      runId: execution.run.id
+    });
+
+    const deploymentPath = path.join(temp, "deployment.json");
+    await fs.writeFile(
+      deploymentPath,
+      JSON.stringify({
+        host: { short_name: "beast" },
+        services: [{ name: "hermes" }],
+        modelEndpoints: [{ name: "dgx-spark" }],
+        runnerPools: [{ name: "local" }],
+        storagePools: [{ name: "vault-backup" }]
+      })
+    );
+    const deployment = await importDeploymentSnapshot({
+      project: "ariadne",
+      vaultRoot,
+      sourcePath: deploymentPath,
+      system: "proxmox"
+    });
+    expect(deployment.snapshot.mode).toBe("read_only");
+    expect(deployment.snapshot.summary.host).toBe("beast");
+
+    const console = await generateConsoleData({ project: "ariadne", vaultRoot });
+    expect(console.data.summary.sleepRoutines).toBe(1);
+    expect(console.data.summary.memoryProposals).toBe(1);
+    expect(console.data.summary.agentMail).toBe(1);
+    expect(console.data.summary.agentLeases).toBe(1);
+    expect(console.data.summary.deploymentSnapshots).toBe(1);
+    expect(console.data.behaviorChecks?.status).toBe("passed");
   });
 
   it("records CI, CodeRabbit, Playwright, infra, OpenScorpion, and guarded worktree evidence", async () => {

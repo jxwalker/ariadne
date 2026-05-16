@@ -1,6 +1,6 @@
 # Ariadne PRD
 
-Generated: 2026-05-16T07:16:41.864Z
+Generated: 2026-05-16T11:30:01.592Z
 Source dossier: <VAULT_ROOT>/projects/ariadne/context/dossier-2026-05-15T21-29-09-496Z.md
 
 ## Goals

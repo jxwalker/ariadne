@@ -1,0 +1,50 @@
+{
+  "schemaVersion": 1,
+  "project": "ariadne",
+  "importedAt": "2026-05-16T11:39:35.290Z",
+  "sourcePath": "/tmp/ariadne-deployment.json",
+  "system": "proxmox",
+  "mode": "read_only",
+  "summary": {
+    "keys": [
+      "host",
+      "modelEndpoints",
+      "runnerPools",
+      "services",
+      "storagePools"
+    ],
+    "host": "beast",
+    "services": 2,
+    "modelEndpoints": 1,
+    "runnerPools": 1,
+    "storagePools": 1
+  },
+  "raw": {
+    "host": {
+      "short_name": "beast"
+    },
+    "services": [
+      {
+        "name": "hermes"
+      },
+      {
+        "name": "ariadne-console"
+      }
+    ],
+    "modelEndpoints": [
+      {
+        "name": "dgx-spark"
+      }
+    ],
+    "runnerPools": [
+      {
+        "name": "proxmox-dev"
+      }
+    ],
+    "storagePools": [
+      {
+        "name": "truenas-vault"
+      }
+    ]
+  }
+}

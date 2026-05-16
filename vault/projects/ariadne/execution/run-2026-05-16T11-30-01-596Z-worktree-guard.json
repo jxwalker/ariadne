@@ -1,0 +1,90 @@
+{
+  "schemaVersion": 1,
+  "project": "ariadne",
+  "generatedAt": "2026-05-16T11:30:15.448Z",
+  "runId": "run-2026-05-16T11-30-01-596Z",
+  "apply": false,
+  "status": "blocked",
+  "checks": [
+    {
+      "name": "repoPath",
+      "status": "passed",
+      "detail": "/Users/james/Documents/dev/ariadne"
+    },
+    {
+      "name": "working-tree-clean",
+      "status": "failed",
+      "detail": "M README.md\n M docs/adapters.md\n M docs/architecture.md\n M docs/deployment.md\n M docs/developer-guide.md\n M docs/evaluation.md\n M docs/orchestration-visualisation.md\n M docs/research-notes.md\n M docs/roadmap.md\n M docs/user-guide.md\n M src/artifactChecks.ts\n M src/cli.ts\n M src/consoleData.ts\n M src/consoleHtml.ts\n M src/types.ts\n M test/adapters.test.ts\n M vault/projects/ariadne/control/merge-readiness.json\n M vault/projects/ariadne/control/merge-readiness.md\n M vault/projects/ariadne/evaluation/artifact-checks.json\n M vault/projects/ariadne/evaluation/artifact-checks.md\n M vault/projects/ariadne/evaluation/evaluation-plan.json\n M vault/projects/ariadne/evaluation/evaluation-plan.md\n M vault/projects/ariadne/gsd/TASKS.md\n M vault/projects/ariadne/gsd/gsd2-bundle.json\n M vault/projects/ariadne/gsd/gsd2-bundle.md\n M vault/projects/ariadne/gsd/roadmap.json\n M vault/projects/ariadne/infrastructure/registry.json\n M vault/projects/ariadne/infrastructure/runner-and-model-plan.md\n M vault/projects/ariadne/requirements/PRD.md\n M vault/projects/ariadne/requirements/prd.json\n M vault/projects/ariadne/verification/playwright-plan.json\n M vault/projects/ariadne/verification/playwright-plan.md\n?? src/behaviorChecks.ts\n?? src/coordination.ts\n?? src/deploymentAdapters.ts\n?? src/gbrainAdapter.ts\n?? vault/projects/ariadne/coordination/\n?? vault/projects/ariadne/evaluation/behavior-checks.json\n?? vault/projects/ariadne/evaluation/behavior-checks.md\n?? vault/projects/ariadne/execution/run-2026-05-16T11-30-01-596Z.json\n?? vault/projects/ariadne/execution/run-2026-05-16T11-30-01-596Z.md\n?? vault/projects/ariadne/integrations/"
+    },
+    {
+      "name": "worktree-path-TASK-001",
+      "status": "passed",
+      "detail": "/Users/james/Documents/dev/ariadne-task-001 is available"
+    },
+    {
+      "name": "branch-TASK-001",
+      "status": "passed",
+      "detail": "jxw/ariadne-task-001 is available"
+    },
+    {
+      "name": "worktree-path-TASK-002",
+      "status": "passed",
+      "detail": "/Users/james/Documents/dev/ariadne-task-002 is available"
+    },
+    {
+      "name": "branch-TASK-002",
+      "status": "passed",
+      "detail": "jxw/ariadne-task-002 is available"
+    },
+    {
+      "name": "worktree-path-TASK-003",
+      "status": "passed",
+      "detail": "/Users/james/Documents/dev/ariadne-task-003 is available"
+    },
+    {
+      "name": "branch-TASK-003",
+      "status": "passed",
+      "detail": "jxw/ariadne-task-003 is available"
+    },
+    {
+      "name": "worktree-path-TASK-004",
+      "status": "passed",
+      "detail": "/Users/james/Documents/dev/ariadne-task-004 is available"
+    },
+    {
+      "name": "branch-TASK-004",
+      "status": "passed",
+      "detail": "jxw/ariadne-task-004 is available"
+    },
+    {
+      "name": "worktree-path-TASK-006",
+      "status": "passed",
+      "detail": "/Users/james/Documents/dev/ariadne-task-006 is available"
+    },
+    {
+      "name": "branch-TASK-006",
+      "status": "passed",
+      "detail": "jxw/ariadne-task-006 is available"
+    },
+    {
+      "name": "worktree-path-TASK-007",
+      "status": "passed",
+      "detail": "/Users/james/Documents/dev/ariadne-task-007 is available"
+    },
+    {
+      "name": "branch-TASK-007",
+      "status": "passed",
+      "detail": "jxw/ariadne-task-007 is available"
+    },
+    {
+      "name": "worktree-path-TASK-005",
+      "status": "passed",
+      "detail": "/Users/james/Documents/dev/ariadne-task-005 is available"
+    },
+    {
+      "name": "branch-TASK-005",
+      "status": "passed",
+      "detail": "jxw/ariadne-task-005 is available"
+    }
+  ]
+}

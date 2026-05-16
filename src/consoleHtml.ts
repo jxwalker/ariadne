@@ -45,6 +45,21 @@ function renderConsole(data: ConsoleData): string {
       time: run.recordedAt,
       label: `Evaluation score: ${run.overallScore}`,
       detail: `${run.target} / ${run.operator}`
+    })),
+    ...data.coordination.sleepRoutines.map((record) => ({
+      time: record.recordedAt,
+      label: `Sleep routine: ${record.scope}`,
+      detail: record.summary
+    })),
+    ...data.coordination.agentMail.map((record) => ({
+      time: record.recordedAt,
+      label: `Agent mail: ${record.subject}`,
+      detail: `${record.from} to ${record.to}`
+    })),
+    ...data.deployment.snapshots.map((snapshot) => ({
+      time: snapshot.importedAt,
+      label: `Deployment snapshot: ${snapshot.system}`,
+      detail: `${snapshot.mode} / ${snapshot.summary.host ?? "unknown host"}`
     }))
   ].sort((left, right) => right.time.localeCompare(left.time));
 
@@ -89,11 +104,15 @@ function renderConsole(data: ConsoleData): string {
     '<div class="main-column">',
     section("Gate Matrix", gateMatrix(data)),
     section("Task Flow", taskTable(data)),
+    section("Approval Queue", approvalQueue(data)),
     section("Timeline", timelineList(timeline.slice(0, 12))),
     "</div>",
     '<aside class="side-column">',
     section("Evidence Chain", evidenceChain(data)),
+    section("Memory And Mail", memoryAndMail(data)),
     section("Infrastructure", infrastructure(data)),
+    section("Deployment", deployment(data)),
+    section("GBrain", gbrain(data)),
     section("Artifacts", artifactList(data)),
     "</aside>",
     "</section>",
@@ -131,6 +150,7 @@ function gateMatrix(data: ConsoleData): string {
     ["Unit tests", checks.get("unit-tests") ?? "missing"],
     ["Build", checks.get("build") ?? "missing"],
     ["Review", data.reviews.some((review) => review.status === "approved") ? "passed" : "missing"],
+    ["Behavior", data.behaviorChecks?.status ?? "missing"],
     ["Readiness", data.summary.readinessStatus ?? "unknown"]
   ];
 
@@ -181,7 +201,33 @@ function evidenceChain(data: ConsoleData): string {
     ["Tasks", data.summary.tasks],
     ["Checks", data.summary.checks],
     ["Reviews", data.summary.reviews],
-    ["Decisions", data.summary.decisions]
+    ["Decisions", data.summary.decisions],
+    ["GBrain reports", data.gbrain?.reports.length ?? 0]
+  ];
+  return `<div class="chain">${rows.map(([label, value]) => `<div><span>${escapeHtml(String(label))}</span><strong>${escapeHtml(String(value))}</strong></div>`).join("")}</div>`;
+}
+
+function approvalQueue(data: ConsoleData): string {
+  const missing = data.readiness?.missing ?? [];
+  const pendingReviews = data.reviews.filter((review) => review.status === "pending" || review.status === "changes_requested");
+  const rows = [
+    ...missing.map((item) => ({ kind: "missing gate", detail: item })),
+    ...pendingReviews.map((review) => ({ kind: review.status, detail: `${review.source}: ${review.summary}` }))
+  ];
+  if (rows.length === 0) return empty("No approval queue items are available.");
+  return [
+    '<div class="table-wrap"><table><thead><tr><th>Kind</th><th>Detail</th></tr></thead><tbody>',
+    ...rows.map((row) => `<tr><td>${escapeHtml(row.kind)}</td><td>${escapeHtml(row.detail)}</td></tr>`),
+    "</tbody></table></div>"
+  ].join("");
+}
+
+function memoryAndMail(data: ConsoleData): string {
+  const rows = [
+    ["Sleep routines", data.summary.sleepRoutines],
+    ["Memory proposals", data.summary.memoryProposals],
+    ["Agent mail", data.summary.agentMail],
+    ["Agent leases", data.summary.agentLeases]
   ];
   return `<div class="chain">${rows.map(([label, value]) => `<div><span>${escapeHtml(String(label))}</span><strong>${escapeHtml(String(value))}</strong></div>`).join("")}</div>`;
 }
@@ -197,6 +243,25 @@ function infrastructure(data: ConsoleData): string {
     ),
     "</div>"
   ].join("");
+}
+
+function deployment(data: ConsoleData): string {
+  if (data.deployment.snapshots.length === 0) return empty("No deployment snapshots are available.");
+  return [
+    '<div class="infra">',
+    ...data.deployment.snapshots.slice(-6).map(
+      (snapshot) =>
+        `<div><strong>${escapeHtml(snapshot.system)}</strong><span>${escapeHtml(snapshot.summary.host ?? "unknown host")}</span><small>${escapeHtml(`${snapshot.summary.services} services / ${snapshot.summary.modelEndpoints} model endpoints / ${snapshot.summary.runnerPools} runner pools`)}</small></div>`
+    ),
+    "</div>"
+  ].join("");
+}
+
+function gbrain(data: ConsoleData): string {
+  const exportBundle = data.gbrain?.exportBundle;
+  const reportCount = data.gbrain?.reports.length ?? 0;
+  if (!exportBundle && reportCount === 0) return empty("No GBrain export or report imports are available.");
+  return `<div class="chain"><div><span>Export documents</span><strong>${escapeHtml(String(exportBundle?.documents.length ?? 0))}</strong></div><div><span>Imported reports</span><strong>${escapeHtml(String(reportCount))}</strong></div></div>`;
 }
 
 function artifactList(data: ConsoleData): string {
@@ -220,7 +285,7 @@ function logoMark(): string {
 function statusClass(value: string | undefined): string {
   if (value === "passed" || value === "ready" || value === "approved" || value === "complete") return "ok";
   if (value === "failed" || value === "blocked" || value === "changes_requested") return "bad";
-  if (value === "review_required" || value === "pending" || value === "skipped") return "warn";
+  if (value === "review_required" || value === "pending" || value === "skipped" || value === "warning") return "warn";
   return "muted";
 }
 
