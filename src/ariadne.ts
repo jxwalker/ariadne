@@ -19,6 +19,7 @@ import {
   importDeploymentSnapshot,
   liveDeploymentSystemOption
 } from "./deploymentAdapters.js";
+import { planDeploymentMutation } from "./deploymentMutation.js";
 import { generateEvaluationPlan, recordEvaluationRun } from "./evaluation.js";
 import { generateEvaluationTrendReport } from "./evaluationTrends.js";
 import { markRunStatus, planExecution } from "./execution.js";
@@ -126,6 +127,7 @@ function usage(): string {
     "  ariadne hermes-cron-proposal --project <project> [--scope <name>]",
     "  ariadne deployment-snapshot --project <project> --from <snapshot.json> [--system <system>]",
     "  ariadne deployment-live-ssh --project <project> --system <proxmox|truenas|dgx-spark|mac> --host <id> --target <ssh-target> [--ssh-binary <path>] [--notes <text>]",
+    "  ariadne deployment-mutation-plan --project <project> --system <proxmox|truenas|dgx-spark|mac> --host <id> --scope <text> --auth-evidence <paths> --dry-run <cmd> --live-command <cmd> --post-verify <cmd> --rollback <text> [--approval <id|json>] [--risk <low|medium|high>] [--evidence <paths>] [--notes <text>]",
     "  ariadne artifact-checks --project <project>",
     "  ariadne benchmark-pack --set <smoke|realistic|stress|all> [--output <dir>]",
     "  ariadne benchmark-run --project <project> --set <smoke|realistic|stress|all> [--pack-root <dir>] [--target-url <url>]",
@@ -676,6 +678,29 @@ async function main(): Promise<void> {
     console.log(`System: ${result.snapshot.system}`);
     console.log(`Host: ${String(result.snapshot.summary.host ?? "unknown")}`);
     console.log(`Mode: ${result.snapshot.mode}`);
+    return;
+  }
+
+  if (parsed.command === "deployment-mutation-plan") {
+    const result = await planDeploymentMutation({
+      project,
+      vaultRoot,
+      system: liveDeploymentSystemOption(requiredOption(parsed.options, "system")),
+      host: requiredOption(parsed.options, "host"),
+      scope: requiredOption(parsed.options, "scope"),
+      authEvidenceRefs: splitList(requiredOption(parsed.options, "auth-evidence")),
+      evidenceRefs: splitList(optionString(parsed.options, "evidence", "")),
+      dryRunCommand: requiredOption(parsed.options, "dry-run"),
+      liveCommand: requiredOption(parsed.options, "live-command"),
+      postVerificationCommand: requiredOption(parsed.options, "post-verify"),
+      rollback: requiredOption(parsed.options, "rollback"),
+      approvalRef: optionString(parsed.options, "approval", "") || undefined,
+      risk: approvalRiskOption(parsed.options, "medium"),
+      notes: optionString(parsed.options, "notes", "") || undefined
+    });
+    console.log(`Deployment mutation plan: ${result.markdownPath}`);
+    console.log(`Status: ${result.plan.status}`);
+    console.log(`Execute: ${result.plan.execute}`);
     return;
   }
 

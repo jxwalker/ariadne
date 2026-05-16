@@ -237,6 +237,14 @@ npm run ariadne -- deployment-live-ssh --project ariadne --system dgx-spark --ho
 
 This writes both a sanitized infrastructure snapshot and a deployment snapshot. Supported live deployment systems are `proxmox`, `truenas`, `dgx-spark`, and `mac`; the collector remains read-only and derives confidence from observed capabilities such as Proxmox tooling, ZFS, Docker, and `nvidia-smi`.
 
+Plan a target-specific deployment mutation without executing it:
+
+```bash
+npm run ariadne -- deployment-mutation-plan --project ariadne --system proxmox --host beast --scope "Restart Ariadne worker service" --auth-evidence control/approvals/approval-...json --dry-run "ssh beast systemctl status ariadne" --live-command "ssh beast sudo systemctl restart ariadne" --post-verify "ssh beast systemctl is-active ariadne" --rollback "ssh beast sudo systemctl restart ariadne-previous" --approval approval-...
+```
+
+This writes a deployment mutation-readiness plan for one estate system and host. It captures the exact commands and rollback text reviewers should inspect before a live deployment adapter is allowed; it still writes `execute=false`.
+
 For the current machine, collect a sanitized live read-only local inventory:
 
 ```bash
@@ -272,6 +280,8 @@ npm run ariadne -- github-mutation-plan --project ariadne --repo jxwalker/ariadn
 ```
 
 This writes a GitHub mutation-readiness plan with the dry-run, live command, post-verification command, and rollback text already scoped to the requested PR or workflow run. It still does not execute; use `mutation-dry-run` and `mutation-execute` after audit approval.
+
+For deployment plans, prefer `deployment-mutation-plan` over the generic `mutation-readiness` command because it forces a supported estate system and host label into the reviewed scope.
 
 ## Request Mutation Approval
 

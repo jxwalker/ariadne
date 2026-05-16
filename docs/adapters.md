@@ -136,6 +136,19 @@ Execution still goes through `mutation-dry-run` and `mutation-execute`.
 - `control/mutation-readiness/mutation-readiness-github-<timestamp>.json`
 - `control/mutation-readiness/mutation-readiness-github-<timestamp>.md`
 
+`deployment-mutation-plan` is the target-specific deployment bridge on top of the same readiness substrate. It does not connect to a host or execute deployment commands. It records a bounded plan for one estate system and host, carrying the exact dry-run, live command, post-verification command, rollback, approval, and auth evidence reviewers need before a live deployment adapter can exist:
+
+```bash
+npm run ariadne -- deployment-mutation-plan --project ariadne --system proxmox --host beast --scope "Restart Ariadne worker service" --auth-evidence control/approvals/approval-...json --dry-run "ssh beast systemctl status ariadne" --live-command "ssh beast sudo systemctl restart ariadne" --post-verify "ssh beast systemctl is-active ariadne" --rollback "ssh beast sudo systemctl restart ariadne-previous" --approval approval-...
+```
+
+Supported systems are `proxmox`, `truenas`, `dgx-spark`, and `mac`. The host label is included in the plan scope and rollback prefix so a deployment approval for one machine cannot be mistaken for a general estate mutation.
+
+`deployment-mutation-plan` artifacts:
+
+- `control/mutation-readiness/mutation-readiness-deployment-<timestamp>.json`
+- `control/mutation-readiness/mutation-readiness-deployment-<timestamp>.md`
+
 ## Recovery
 
 `recovery-report` reads the vault state and writes a crash-resume report without mutating worktrees, branches, PRs, or external systems. It identifies incomplete execution runs, missing worktree guard reports, failed checks, pending reviews, and missing readiness gates.
@@ -161,6 +174,7 @@ Artifacts:
 npm run ariadne -- approval-request --project ariadne --by planner --target github --action "Enable PR mutation adapter" --risk medium --reason "Manual gate before live mutation" --rollback "Disable adapter and return to manual PR flow"
 npm run ariadne -- approval-decision --project ariadne --approval approval-... --status approved --by james --notes "Approved for a bounded test only."
 npm run ariadne -- mutation-readiness --project ariadne --target github --scope "Single PR merge adapter" --auth-evidence control/approvals/approval-...json --dry-run "gh pr view 1 --json statusCheckRollup" --live-command "gh pr merge 1 --squash" --post-verify "gh pr view 1 --json mergeStateStatus,statusCheckRollup" --rollback "Revert merge commit and disable adapter" --approval approval-...
+npm run ariadne -- deployment-mutation-plan --project ariadne --system proxmox --host beast --scope "Restart Ariadne worker service" --auth-evidence control/approvals/approval-...json --dry-run "ssh beast systemctl status ariadne" --live-command "ssh beast sudo systemctl restart ariadne" --post-verify "ssh beast systemctl is-active ariadne" --rollback "ssh beast sudo systemctl restart ariadne-previous" --approval approval-...
 npm run ariadne -- mutation-readiness-audit --project ariadne
 npm run ariadne -- mutation-dry-run --project ariadne --plan mutation-readiness-github-...
 npm run ariadne -- mutation-execute --project ariadne --plan mutation-readiness-github-... --confirm-plan mutation-readiness-github-...
@@ -318,3 +332,11 @@ npm run ariadne -- deployment-live-ssh --project ariadne --system proxmox --host
 ```
 
 It first records the sanitized SSH infrastructure snapshot, then writes a deployment snapshot for `proxmox`, `truenas`, `dgx-spark`, or `mac`. The profile includes capability evidence, a confidence level, and counts for model endpoints, runner pools, storage pools, and services. It never mutates the host.
+
+`deployment-mutation-plan` is the next review gate after read-only deployment evidence. Use it to bind one system and host to the proposed deployment commands before any live deployment adapter is built:
+
+```bash
+npm run ariadne -- deployment-mutation-plan --project ariadne --system proxmox --host beast --scope "Restart Ariadne worker service" --auth-evidence control/approvals/approval-...json --dry-run "ssh beast systemctl status ariadne" --live-command "ssh beast sudo systemctl restart ariadne" --post-verify "ssh beast systemctl is-active ariadne" --rollback "ssh beast sudo systemctl restart ariadne-previous" --approval approval-...
+```
+
+The plan still has `execute=false`; follow with `mutation-readiness-audit`, `mutation-dry-run`, and `mutation-execute` only after review.

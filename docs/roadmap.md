@@ -106,6 +106,7 @@ Implemented:
 - CodeRabbit feedback ingestion
 - GitHub PR/check snapshot ingestion
 - target-specific GitHub mutation-readiness plan generation for PR merges and workflow reruns
+- target-specific deployment mutation-readiness plan generation for Proxmox, TrueNAS, DGX Spark, and Mac hosts
 - explicit approval workflow records
 - test history through check records
 - mutation-readiness artifacts for future live adapters
@@ -115,7 +116,7 @@ Implemented:
 
 Next:
 
-- target-specific deployment, Hermes, GSD2, NotebookLM, and OpenScorpion adapters on top of the generic audited execution substrate
+- target-specific Hermes, GSD2, NotebookLM, and OpenScorpion adapters on top of the generic audited execution substrate
 
 ## Milestone 6: Infrastructure Substrate
 
@@ -209,7 +210,8 @@ Implemented:
 - GitHub deployment/check snapshot import
 - explicit approval workflow before mutation-capable adapters
 - mutation-readiness artifacts before deployment mutation
+- target-specific deployment mutation-readiness plan generation
 
 Next:
 
-- mutation-capable deployment adapters only after approved readiness and rollback plans
+- mutation-capable deployment adapters only after approved readiness, dry-run, rollback, and post-verification evidence
