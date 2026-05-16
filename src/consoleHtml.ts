@@ -70,7 +70,16 @@ function renderConsole(data: ConsoleData): string {
       time: snapshot.importedAt,
       label: `GitHub snapshot: ${snapshot.repository ?? "unknown repository"}`,
       detail: `${snapshot.summary.pullRequests} PRs / ${snapshot.summary.pendingChecks} pending checks`
-    }))
+    })),
+    ...(data.mutationReadinessAudit
+      ? [
+          {
+            time: data.mutationReadinessAudit.generatedAt,
+            label: `Mutation audit: ${data.mutationReadinessAudit.status}`,
+            detail: `${data.mutationReadinessAudit.summary.ready} ready / ${data.mutationReadinessAudit.summary.blocked} blocked`
+          }
+        ]
+      : [])
   ].sort((left, right) => right.time.localeCompare(left.time));
 
   return [
@@ -114,6 +123,7 @@ function renderConsole(data: ConsoleData): string {
     metric("GitHub", data.summary.githubSnapshots, "snapshots"),
     metric("Approvals", data.summary.pendingApprovals, `${data.summary.approvals} total`),
     metric("Mutation", data.summary.mutationReadinessPlans, "readiness"),
+    metric("Audit", data.summary.mutationReadinessAuditStatus ?? "none", "mutation"),
     metric("Hermes", data.summary.hermesCronSnapshots, `${data.summary.hermesCronProposals} proposals`),
     metric("Recovery", data.summary.recoveryIssues, "issues"),
     metric("Browser", data.summary.consoleBrowserChecks ?? "none", "console"),
@@ -129,6 +139,7 @@ function renderConsole(data: ConsoleData): string {
     section("Evaluation Trends", evaluationTrendChart(data)),
     section("Task Flow", taskTable(data)),
     section("Approval Queue", approvalQueue(data)),
+    section("Mutation Audit", mutationReadinessAudit(data)),
     section("Timeline", timelineList(timeline.slice(0, 12))),
     "</div>",
     '<aside class="side-column">',
@@ -341,6 +352,13 @@ function approvalQueue(data: ConsoleData): string {
   const pendingReviews = data.reviews.filter((review) => review.status === "pending" || review.status === "changes_requested");
   const pendingApprovals = data.approvals.filter((approval) => approval.status === "requested");
   const blockedMutation = data.mutationReadinessPlans.filter((plan) => plan.status !== "ready_for_bounded_review");
+  const auditBlockers =
+    data.mutationReadinessAudit?.checks.flatMap((check) =>
+      check.blockers.map((blocker) => ({
+        kind: `audit ${check.target}`,
+        detail: `${check.planId}: ${blocker}`
+      }))
+    ) ?? [];
   const healerReviews = data.healerProposals.filter((proposal) => proposal.status === "review_required");
   const rows = [
     ...missing.map((item) => ({ kind: "missing gate", detail: item })),
@@ -356,12 +374,27 @@ function approvalQueue(data: ConsoleData): string {
     ...blockedMutation.map((plan) => ({
       kind: `mutation ${plan.status}`,
       detail: `${plan.target}: ${plan.scope}`
-    }))
+    })),
+    ...auditBlockers
   ];
   if (rows.length === 0) return empty("No approval queue items are available.");
   return [
     '<div class="table-wrap"><table><thead><tr><th>Kind</th><th>Detail</th></tr></thead><tbody>',
     ...rows.map((row) => `<tr><td>${escapeHtml(row.kind)}</td><td>${escapeHtml(row.detail)}</td></tr>`),
+    "</tbody></table></div>"
+  ].join("");
+}
+
+function mutationReadinessAudit(data: ConsoleData): string {
+  const audit = data.mutationReadinessAudit;
+  if (!audit) return empty("No mutation-readiness audit is available.");
+  return [
+    `<div class="visual-status"><strong class="${statusClass(audit.status)}">${escapeHtml(audit.status)}</strong><span>${escapeHtml(`${audit.summary.ready} ready / ${audit.summary.blocked} blocked`)}</span></div>`,
+    '<div class="table-wrap"><table><thead><tr><th>Plan</th><th>Target</th><th>Status</th><th>Blockers</th></tr></thead><tbody>',
+    ...audit.checks.map(
+      (check) =>
+        `<tr><td>${escapeHtml(check.planId)}</td><td>${escapeHtml(check.target)}</td><td>${escapeHtml(check.status)}</td><td>${escapeHtml(check.blockers.length === 0 ? "none" : check.blockers.join("; "))}</td></tr>`
+    ),
     "</tbody></table></div>"
   ].join("");
 }
@@ -463,7 +496,14 @@ function logoMark(): string {
 }
 
 function statusClass(value: string | undefined): string {
-  if (value === "passed" || value === "ready" || value === "approved" || value === "complete" || value === "info") {
+  if (
+    value === "passed" ||
+    value === "ready" ||
+    value === "ready_for_bounded_review" ||
+    value === "approved" ||
+    value === "complete" ||
+    value === "info"
+  ) {
     return "ok";
   }
   if (value === "failed" || value === "blocked" || value === "changes_requested" || value === "blocking") return "bad";

@@ -14,6 +14,7 @@ export async function planMutationReadiness(input: {
   evidenceRefs: string[];
   dryRunCommand: string;
   proposedLiveCommand: string;
+  postVerificationCommand: string;
   rollback: string;
   approvalRef?: string;
   notes?: string;
@@ -38,6 +39,7 @@ export async function planMutationReadiness(input: {
     evidenceRefs: input.evidenceRefs,
     dryRunCommand: input.dryRunCommand,
     proposedLiveCommand: input.proposedLiveCommand,
+    postVerificationCommand: input.postVerificationCommand,
     rollback: input.rollback,
     requiredGates: requiredGates(input.target),
     notes: input.notes,
@@ -125,6 +127,9 @@ function validatePlan(plan: MutationReadinessPlan): void {
   if (!plan.proposedLiveCommand.trim()) {
     throw new Error("--live-command is required for mutation readiness.");
   }
+  if (!plan.postVerificationCommand?.trim()) {
+    throw new Error("--post-verify is required for mutation readiness.");
+  }
   if (!plan.rollback.trim()) {
     throw new Error("--rollback is required for mutation readiness.");
   }
@@ -180,6 +185,12 @@ function renderPlan(plan: MutationReadinessPlan): string {
     "",
     "```bash",
     plan.proposedLiveCommand,
+    "```",
+    "",
+    "## Post-Action Verification",
+    "",
+    "```bash",
+    plan.postVerificationCommand ?? "",
     "```",
     "",
     "## Rollback",

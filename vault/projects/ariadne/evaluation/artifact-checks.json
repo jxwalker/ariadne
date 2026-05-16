@@ -1,12 +1,12 @@
 {
   "schemaVersion": 1,
   "project": "ariadne",
-  "generatedAt": "2026-05-16T17:16:40.775Z",
+  "generatedAt": "2026-05-16T17:37:17.435Z",
   "status": "passed",
   "summary": {
     "required": 13,
-    "optional": 22,
-    "present": 31,
+    "optional": 23,
+    "present": 32,
     "missingRequired": 0
   },
   "checks": [
@@ -77,9 +77,8 @@
       "required": false,
       "path": "projects/ariadne/gsd/process/gsd2-process-*.json",
       "status": "present",
-      "count": 2,
+      "count": 1,
       "matches": [
-        "projects/ariadne/gsd/process/gsd2-process-2026-05-16T17-13-27-231Z.json",
         "projects/ariadne/gsd/process/gsd2-process-2026-05-16T17-16-38-666Z.json"
       ]
     },
@@ -259,6 +258,13 @@
       "matches": [
         "projects/ariadne/control/mutation-readiness/mutation-readiness-github-2026-05-16T16-50-54-241Z.json"
       ]
+    },
+    {
+      "id": "mutation-readiness-audit",
+      "label": "Mutation readiness audit",
+      "required": false,
+      "path": "projects/ariadne/control/mutation-readiness-audit.json",
+      "status": "present"
     },
     {
       "id": "extraction-results",

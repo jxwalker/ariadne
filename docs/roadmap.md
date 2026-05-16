@@ -108,10 +108,11 @@ Implemented:
 - explicit approval workflow records
 - test history through check records
 - mutation-readiness artifacts for future live adapters
+- mutation-readiness audit report for blocked live-adapter plans
 
 Next:
 
-- GitHub mutation and check-retry adapter only after an approved readiness plan
+- GitHub mutation and check-retry adapter only after an approved readiness plan passes audit
 
 ## Milestone 6: Infrastructure Substrate
 

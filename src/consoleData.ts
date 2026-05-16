@@ -31,6 +31,7 @@ import type {
   InfraRegistry,
   InfraSnapshot,
   MemoryProposalRecord,
+  MutationReadinessAudit,
   MutationReadinessPlan,
   PlaywrightEvidenceRecord,
   PrdDocument,
@@ -73,6 +74,12 @@ export async function collectConsoleData(vaultRoot: string, projectInput: string
     "browser-checks.json"
   );
   const behaviorChecks = await readProjectJson<BehaviorCheckReport>(vaultRoot, project, "evaluation", "behavior-checks.json");
+  const mutationReadinessAudit = await readProjectJson<MutationReadinessAudit>(
+    vaultRoot,
+    project,
+    "control",
+    "mutation-readiness-audit.json"
+  );
   const recovery = await readProjectJson<RecoveryReport>(vaultRoot, project, "control", "recovery-report.json");
   const gbrainExport = await readProjectJson<GbrainExportBundle>(vaultRoot, project, "integrations/gbrain", "gbrain-export.json");
   const checks = await readJsonl<CheckRecord>(path.join(dir, "control", "check-history.jsonl"));
@@ -164,6 +171,7 @@ export async function collectConsoleData(vaultRoot: string, projectInput: string
       approvals: approvals.length,
       pendingApprovals: approvals.filter((approval) => approval.status === "requested").length,
       mutationReadinessPlans: mutationReadinessPlans.length,
+      mutationReadinessAuditStatus: mutationReadinessAudit?.status,
       recoveryIssues: recovery?.issues.length ?? 0,
       consoleBrowserChecks: consoleBrowserChecks?.status,
       readinessStatus: readiness?.status,
@@ -179,6 +187,7 @@ export async function collectConsoleData(vaultRoot: string, projectInput: string
     reviews,
     approvals,
     mutationReadinessPlans,
+    mutationReadinessAudit,
     decisions,
     playwrightEvidence,
     healerProposals,
@@ -229,6 +238,7 @@ export async function collectConsoleData(vaultRoot: string, projectInput: string
       githubSnapshots: await existingPath(vaultRoot, path.join(dir, "integrations", "github")),
       approvals: await existingPath(vaultRoot, path.join(dir, "control", "approvals")),
       mutationReadinessPlans: await existingPath(vaultRoot, path.join(dir, "control", "mutation-readiness")),
+      mutationReadinessAudit: await existingPath(vaultRoot, path.join(dir, "control", "mutation-readiness-audit.json")),
       recoveryReport: await existingPath(vaultRoot, path.join(dir, "control", "recovery-report.json")),
       extractionResults: await existingPath(vaultRoot, path.join(dir, "extractions")),
       healerProposals: await existingPath(vaultRoot, path.join(dir, "verification", "healer-proposals")),

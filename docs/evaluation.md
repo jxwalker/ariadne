@@ -84,6 +84,15 @@ vault/projects/<project>/control/mutation-readiness/mutation-readiness-<target>-
 vault/projects/<project>/control/mutation-readiness/mutation-readiness-<target>-<timestamp>.md
 ```
 
+`mutation-readiness-audit` writes the aggregate gate report for those plans:
+
+```text
+vault/projects/<project>/control/mutation-readiness-audit.json
+vault/projects/<project>/control/mutation-readiness-audit.md
+```
+
+The audit is a non-mutating evaluator. It checks approval state, evidence refs, dry-run command safety, post-action verification, rollback text, and `execute=false`.
+
 `hermes-cron-import` writes read-only scheduler evidence:
 
 ```text

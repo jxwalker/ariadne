@@ -27,6 +27,7 @@ import { generateInfrastructureRegistry } from "../src/infrastructure.js";
 import { draftOpenScorpionActivity, importInfraSnapshot } from "../src/infraSnapshot.js";
 import { collectLocalInfraSnapshot, collectSshInfraSnapshot, parseSshInventory } from "../src/liveInventory.js";
 import { planMutationReadiness } from "../src/mutationReadiness.js";
+import { generateMutationReadinessAudit } from "../src/mutationReadinessAudit.js";
 import { generatePlaywrightPlan } from "../src/playwrightPlan.js";
 import { generateEvaluationPlan, recordEvaluationRun } from "../src/evaluation.js";
 import { generateEvaluationTrendReport } from "../src/evaluationTrends.js";
@@ -493,6 +494,7 @@ describe("roadmap adapters", () => {
       evidenceRefs: [behavior.jsonPath],
       dryRunCommand: "gh pr view 1 --json statusCheckRollup",
       proposedLiveCommand: "gh pr merge 1 --squash --delete-branch",
+      postVerificationCommand: "gh pr view 1 --json mergeStateStatus,statusCheckRollup",
       rollback: "Revert the merge commit and disable the mutation adapter.",
       approvalRef: approval.record.id
     });
@@ -506,8 +508,9 @@ describe("roadmap adapters", () => {
       scope: "Do not let a GitHub approval unlock deployment mutation.",
       authEvidenceRefs: [approval.jsonPath],
       evidenceRefs: [behavior.jsonPath],
-      dryRunCommand: "ssh host true",
+      dryRunCommand: "ssh host deploy",
       proposedLiveCommand: "ssh host deploy",
+      postVerificationCommand: "ssh host systemctl status ariadne",
       rollback: "Disable deployment adapter.",
       approvalRef: approval.record.id
     });
@@ -524,6 +527,7 @@ describe("roadmap adapters", () => {
         evidenceRefs: [],
         dryRunCommand: "gh pr view 1",
         proposedLiveCommand: "gh pr merge 1",
+        postVerificationCommand: "gh pr view 1 --json mergedAt",
         rollback: "Disable adapter."
       })
     ).rejects.toThrow(/--auth-evidence is required/);
@@ -538,9 +542,21 @@ describe("roadmap adapters", () => {
         evidenceRefs: [],
         dryRunCommand: "gh pr view 1",
         proposedLiveCommand: "gh pr merge 1",
+        postVerificationCommand: "gh pr view 1 --json mergedAt",
         rollback: "Disable adapter."
       })
     ).rejects.toThrow(/Missing auth evidence/);
+
+    const audit = await generateMutationReadinessAudit({ project: "ariadne", vaultRoot });
+    expect(audit.audit.status).toBe("blocked");
+    expect(audit.audit.summary.plans).toBe(2);
+    expect(audit.audit.summary.ready).toBe(1);
+    expect(audit.audit.summary.blocked).toBe(1);
+    expect(audit.audit.summary.unsafeDryRuns).toBe(1);
+    expect(audit.audit.checks.find((check) => check.planId === mutationReadiness.plan.id)?.status).toBe("passed");
+    expect(audit.audit.checks.find((check) => check.planId === mismatchedMutationReadiness.plan.id)?.blockers).toContain(
+      "approval state is approval_required"
+    );
 
     await recordSleepRoutine({
       project: "ariadne",
@@ -655,6 +671,8 @@ describe("roadmap adapters", () => {
     expect(console.data.summary.deploymentSnapshots).toBe(1);
     expect(console.data.summary.approvals).toBe(1);
     expect(console.data.summary.mutationReadinessPlans).toBe(2);
+    expect(console.data.summary.mutationReadinessAuditStatus).toBe("blocked");
+    expect(console.data.mutationReadinessAudit?.summary.ready).toBe(1);
     expect(console.data.behaviorChecks?.status).toBe("passed");
 
     const artifactChecks = await generateArtifactCheckReport({ project: "ariadne", vaultRoot });
@@ -662,10 +680,12 @@ describe("roadmap adapters", () => {
     const hermesCheck = artifactChecks.report.checks.find((check) => check.id === "hermes-cron-snapshots");
     const hermesProposalCheck = artifactChecks.report.checks.find((check) => check.id === "hermes-cron-proposals");
     const readinessCheck = artifactChecks.report.checks.find((check) => check.id === "mutation-readiness-plans");
+    const readinessAuditCheck = artifactChecks.report.checks.find((check) => check.id === "mutation-readiness-audit");
     expect(coordinationCheck?.matches?.some((match) => match.includes("coordination/hermes"))).toBe(false);
     expect(hermesCheck?.count).toBe(1);
     expect(hermesProposalCheck?.count).toBe(2);
     expect(readinessCheck?.count).toBe(2);
+    expect(readinessAuditCheck?.status).toBe("present");
   });
 
   it("records CI, CodeRabbit, Playwright, infra, OpenScorpion, and guarded worktree evidence", async () => {

@@ -1,0 +1,45 @@
+{
+  "schemaVersion": 1,
+  "project": "ariadne",
+  "generatedAt": "2026-05-16T17:36:25.633Z",
+  "status": "blocked",
+  "mutationAllowed": false,
+  "summary": {
+    "plans": 1,
+    "ready": 0,
+    "blocked": 1,
+    "approvalRequired": 1,
+    "approvalRejected": 0,
+    "missingEvidence": 0,
+    "unsafeDryRuns": 0,
+    "executablePlans": 0
+  },
+  "checks": [
+    {
+      "planId": "mutation-readiness-github-2026-05-16T16-50-54-241Z",
+      "target": "github",
+      "status": "blocked",
+      "blockers": [
+        "approval state is approval_required",
+        "approval record is requested",
+        "post-action verification command is missing"
+      ],
+      "warnings": [],
+      "evidenceRefs": [
+        "vault/projects/ariadne/integrations/github/github-snapshot-2026-05-16T12-25-16-576Z.json",
+        "vault/projects/ariadne/control/approvals/approval-2026-05-16T13-21-33-834Z.json",
+        "vault/projects/ariadne/control/merge-readiness.json"
+      ],
+      "requiredGates": [
+        "bounded scope recorded",
+        "auth evidence reviewed",
+        "dry-run command reviewed",
+        "rollback command reviewed",
+        "human approval record approved",
+        "CodeRabbit or human review approval",
+        "post-action verification command defined",
+        "branch, PR, and merge policy verified"
+      ]
+    }
+  ]
+}

@@ -103,4 +103,4 @@ A live adapter must start read-only. Mutation requires a separate approved plan 
 
 Use `approval-request` and `approval-decision` to capture that checkpoint before adding a mutation-capable command. The approval record does not grant execution by itself; the adapter still needs its own narrow implementation, tests, rollback notes, and review.
 
-Use `mutation-readiness` to bind those pieces into one reviewable artifact before adding a live adapter. The plan must keep `execute=false`; live commands belong in later adapters only after the readiness plan has been reviewed.
+Use `mutation-readiness` to bind those pieces into one reviewable artifact before adding a live adapter. The plan must keep `execute=false`, include a post-action verification command, and pass `mutation-readiness-audit`; live commands belong in later adapters only after the readiness plan has been reviewed.

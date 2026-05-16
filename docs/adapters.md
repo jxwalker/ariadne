@@ -135,12 +135,15 @@ Artifacts:
 
 `approval-request` records an explicit human approval request before any mutation-capable adapter can be enabled. `approval-decision` records the decision. These commands only write evidence; they do not execute the requested action.
 
-`mutation-readiness` records the bounded plan that must exist before a mutation-capable adapter is implemented or enabled. It binds target, risk, scope, auth evidence, supporting evidence, dry-run command, proposed live command, rollback, approval record, and target-specific gates. It also writes `execute=false`, so it is readiness evidence rather than execution authority.
+`mutation-readiness` records the bounded plan that must exist before a mutation-capable adapter is implemented or enabled. It binds target, risk, scope, auth evidence, supporting evidence, dry-run command, proposed live command, post-action verification command, rollback, approval record, and target-specific gates. It also writes `execute=false`, so it is readiness evidence rather than execution authority.
+
+`mutation-readiness-audit` aggregates all readiness plans and reports whether each plan has approved human authorization, existing evidence refs, a non-mutating dry-run command, a post-action verification command, rollback text, and `execute=false`. It never runs dry-run or live commands.
 
 ```bash
 npm run ariadne -- approval-request --project ariadne --by planner --target github --action "Enable PR mutation adapter" --risk medium --reason "Manual gate before live mutation" --rollback "Disable adapter and return to manual PR flow"
 npm run ariadne -- approval-decision --project ariadne --approval approval-... --status approved --by james --notes "Approved for a bounded test only."
-npm run ariadne -- mutation-readiness --project ariadne --target github --scope "Single PR merge adapter" --auth-evidence control/approvals/approval-...json --dry-run "gh pr view 1 --json statusCheckRollup" --live-command "gh pr merge 1 --squash" --rollback "Revert merge commit and disable adapter" --approval approval-...
+npm run ariadne -- mutation-readiness --project ariadne --target github --scope "Single PR merge adapter" --auth-evidence control/approvals/approval-...json --dry-run "gh pr view 1 --json statusCheckRollup" --live-command "gh pr merge 1 --squash" --post-verify "gh pr view 1 --json mergeStateStatus,statusCheckRollup" --rollback "Revert merge commit and disable adapter" --approval approval-...
+npm run ariadne -- mutation-readiness-audit --project ariadne
 ```
 
 Artifacts:
@@ -149,6 +152,8 @@ Artifacts:
 - `control/approvals/approval-<timestamp>.md`
 - `control/mutation-readiness/mutation-readiness-<target>-<timestamp>.json`
 - `control/mutation-readiness/mutation-readiness-<target>-<timestamp>.md`
+- `control/mutation-readiness-audit.json`
+- `control/mutation-readiness-audit.md`
 
 ## Evaluation
 

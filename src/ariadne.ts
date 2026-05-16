@@ -35,6 +35,7 @@ import { draftOpenScorpionActivity, importInfraSnapshot } from "./infraSnapshot.
 import { collectLocalInfraSnapshot, collectSshInfraSnapshot } from "./liveInventory.js";
 import { importNotebookLmExport } from "./notebooklm.js";
 import { mutationTargetOption, planMutationReadiness } from "./mutationReadiness.js";
+import { generateMutationReadinessAudit } from "./mutationReadinessAudit.js";
 import { defaultVaultRoot } from "./paths.js";
 import { recordPlaywrightEvidence } from "./playwrightEvidence.js";
 import { generatePlaywrightPlan } from "./playwrightPlan.js";
@@ -133,7 +134,8 @@ function usage(): string {
     "  ariadne record-review --project <project> --source <source> --status <status> --summary <text>",
     "  ariadne approval-request --project <project> --by <name> --target <system> --action <text> --risk <low|medium|high> --reason <text> --rollback <text> [--evidence <paths>]",
     "  ariadne approval-decision --project <project> --approval <id|json> --status <approved|rejected|expired> --by <name> [--notes <text>]",
-    "  ariadne mutation-readiness --project <project> --target <target> --scope <text> --auth-evidence <paths> --dry-run <cmd> --live-command <cmd> --rollback <text> [--approval <id|json>] [--risk <low|medium|high>] [--evidence <paths>] [--notes <text>]",
+    "  ariadne mutation-readiness --project <project> --target <target> --scope <text> --auth-evidence <paths> --dry-run <cmd> --live-command <cmd> --post-verify <cmd> --rollback <text> [--approval <id|json>] [--risk <low|medium|high>] [--evidence <paths>] [--notes <text>]",
+    "  ariadne mutation-readiness-audit --project <project>",
     "  ariadne control --project <project>",
     "  ariadne recovery-report --project <project>",
     "  ariadne console-data --project <project>",
@@ -851,6 +853,7 @@ async function main(): Promise<void> {
       evidenceRefs: splitList(optionString(parsed.options, "evidence", "")),
       dryRunCommand: requiredOption(parsed.options, "dry-run"),
       proposedLiveCommand: requiredOption(parsed.options, "live-command"),
+      postVerificationCommand: requiredOption(parsed.options, "post-verify"),
       rollback: requiredOption(parsed.options, "rollback"),
       approvalRef: optionString(parsed.options, "approval", "") || undefined,
       notes: optionString(parsed.options, "notes", "") || undefined
@@ -858,6 +861,14 @@ async function main(): Promise<void> {
     console.log(`Mutation readiness: ${result.markdownPath}`);
     console.log(`Status: ${result.plan.status}`);
     console.log(`Execute: ${result.plan.execute}`);
+    return;
+  }
+
+  if (parsed.command === "mutation-readiness-audit") {
+    const result = await generateMutationReadinessAudit({ project, vaultRoot });
+    console.log(`Mutation readiness audit: ${result.markdownPath}`);
+    console.log(`Status: ${result.audit.status}`);
+    console.log(`Blocked: ${result.audit.summary.blocked}`);
     return;
   }
 
