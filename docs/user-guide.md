@@ -125,6 +125,14 @@ npm run cli -- evaluation-record --project ariadne --plan vault/projects/ariadne
 
 Scores are deliberately explicit and inspectable. They are not a model grade; they are an operator's current assessment backed by evidence references.
 
+Generate a trend report after one or more scored runs:
+
+```bash
+npm run cli -- evaluation-trends --project ariadne
+```
+
+The report is written to `vault/projects/ariadne/evaluation/evaluation-trends.md` and shows latest score, previous score, overall delta, per-dimension deltas, latest regressions, and latest recommendations.
+
 ## Check Readiness
 
 ```bash

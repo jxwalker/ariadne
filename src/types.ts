@@ -358,6 +358,36 @@ export interface BenchmarkPack {
   acceptance: string[];
 }
 
+export interface EvaluationTrendReport {
+  schemaVersion: 1;
+  project: string;
+  generatedAt: string;
+  status: "empty" | "stable" | "improving" | "declining";
+  runCount: number;
+  latestScore?: number;
+  previousScore?: number;
+  delta?: number;
+  runs: Array<{
+    id: string;
+    recordedAt: string;
+    target: string;
+    operator: string;
+    overallScore: number;
+    evidenceCount: number;
+    regressionCount: number;
+    recommendationCount: number;
+  }>;
+  dimensions: Array<{
+    id: string;
+    samples: number;
+    latestScore?: number;
+    previousScore?: number;
+    delta?: number;
+  }>;
+  openRegressions: string[];
+  latestRecommendations: string[];
+}
+
 export interface ConsoleData {
   schemaVersion: 1;
   project: string;
@@ -407,5 +437,6 @@ export interface ConsoleData {
     control?: string;
     evaluationPlan?: string;
     artifactChecks?: string;
+    evaluationTrends?: string;
   };
 }

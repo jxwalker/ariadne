@@ -26,6 +26,7 @@ The system starts with source-grounded intake: drawings, white papers, dictated 
 - Guard worktree creation without mutating by default.
 - Check whether the expected pipeline artifacts exist before scoring or release decisions.
 - Generate smoke, realistic, and stress benchmark source packs for repeatable harness evaluation.
+- Generate evaluation trend reports from scored pipeline runs.
 - Record pipeline evaluation scores so we can measure whether the harness is improving.
 
 ## What It Does Not Do Yet
@@ -50,6 +51,7 @@ npm run cli -- roadmap --project ariadne --target-url http://localhost:3000 --re
 npm run cli -- evaluation --project ariadne --target mac-local
 npm run cli -- artifact-checks --project ariadne
 npm run cli -- benchmark-pack --set all
+npm run cli -- evaluation-trends --project ariadne
 npm run cli -- control --project ariadne
 npm run cli -- console-data --project ariadne
 npm run cli -- console-html --project ariadne --refresh-data
@@ -104,6 +106,7 @@ npm run cli -- evaluation --project ariadne --target mac-local
 npm run cli -- evaluation-record --project ariadne --plan evaluation-plan.json --scores D1=80,D2=75,D3=60
 npm run cli -- artifact-checks --project ariadne
 npm run cli -- benchmark-pack --set all
+npm run cli -- evaluation-trends --project ariadne
 npm run cli -- import-ci --project ariadne --from checks.json
 npm run cli -- import-coderabbit --project ariadne --from coderabbit.md
 npm run cli -- console-data --project ariadne

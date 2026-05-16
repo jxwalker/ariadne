@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "project": "ariadne",
-  "generatedAt": "2026-05-16T09:23:41.563Z",
+  "generatedAt": "2026-05-16T10:32:45.367Z",
   "projectDir": "projects/ariadne",
   "summary": {
     "sources": 3,
@@ -778,6 +778,7 @@
     "roadmap": "projects/ariadne/gsd/roadmap.json",
     "control": "projects/ariadne/control/merge-readiness.json",
     "evaluationPlan": "projects/ariadne/evaluation/evaluation-plan.json",
-    "artifactChecks": "projects/ariadne/evaluation/artifact-checks.json"
+    "artifactChecks": "projects/ariadne/evaluation/artifact-checks.json",
+    "evaluationTrends": "projects/ariadne/evaluation/evaluation-trends.json"
   }
 }

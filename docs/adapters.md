@@ -47,6 +47,8 @@ Typical fields include status, context, consequences, and source references so l
 
 `evaluation` creates a project evaluation plan with dimensions for evidence fidelity, planning quality, execution safety, verification strength, and operational fit. `evaluation-record` stores scored run evidence so the pipeline can be compared across machines and over time.
 
+`evaluation-trends` reads timestamped evaluation records and writes overall plus per-dimension deltas for console charting and release review.
+
 `artifact-checks` is a deterministic evaluation sensor. It verifies that the required evidence spine exists before an operator records scores or relies on a control report. Optional console artifacts are reported without blocking the status.
 
 `benchmark-pack` materialises repeatable source packs for smoke, realistic, and stress evaluations. The packs are local files only; they do not ingest sources or call live services by themselves.
@@ -57,6 +59,8 @@ Artifacts:
 - `evaluation/evaluation-plan.md`
 - `evaluation/evaluation-<timestamp>.json`
 - `evaluation/evaluation-<timestamp>.md`
+- `evaluation/evaluation-trends.json`
+- `evaluation/evaluation-trends.md`
 - `evaluation/artifact-checks.json`
 - `evaluation/artifact-checks.md`
 - `benchmarks/source-packs/<set>/benchmark-pack.json`
