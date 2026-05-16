@@ -9,6 +9,7 @@ import { materializeBenchmarkPack } from "../src/benchmarkPacks.js";
 import { importCiStatus, importCodeRabbitReview } from "../src/ciImport.js";
 import { generateControlReport } from "../src/controlPlane.js";
 import { generateConsoleData } from "../src/consoleData.js";
+import { generateConsoleBrowserCheckReport } from "../src/consoleBrowserChecks.js";
 import { generateConsoleHtml } from "../src/consoleHtml.js";
 import { generateConsoleVisualCheckReport } from "../src/consoleVisualChecks.js";
 import { recordAgentLease, recordAgentMail, recordMemoryProposal, recordSleepRoutine } from "../src/coordination.js";
@@ -563,6 +564,7 @@ describe("roadmap adapters", () => {
       refreshData: true
     });
     const visual = await generateConsoleVisualCheckReport({ project: "ariadne", vaultRoot });
+    const browser = await generateConsoleBrowserCheckReport({ project: "ariadne", vaultRoot, width: 900, height: 900 });
     const html = await fs.readFile(consoleHtml.htmlPath, "utf8");
     expect(html).toContain("<!doctype html>");
     expect(html).toContain("Gate Matrix");
@@ -572,6 +574,8 @@ describe("roadmap adapters", () => {
     expect(html).toContain("console-data");
     expect(html).not.toContain(temp);
     expect(visual.report.status).toBe("passed");
+    expect(browser.report.status).toBe("passed");
+    await expect(fs.stat(path.join(vaultRoot, browser.report.screenshotPath))).resolves.toBeTruthy();
   });
 });
 

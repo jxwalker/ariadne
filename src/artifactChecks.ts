@@ -104,6 +104,13 @@ const ARTIFACT_SPECS: ArtifactSpec[] = [
     relativePath: "console/visual-checks.json"
   },
   {
+    id: "console-browser-checks",
+    label: "Console browser checks",
+    required: false,
+    kind: "file",
+    relativePath: "console/browser-checks.json"
+  },
+  {
     id: "recovery-report",
     label: "Crash recovery report",
     required: false,

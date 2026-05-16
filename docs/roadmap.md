@@ -85,11 +85,11 @@ Implemented:
 - generated role-oriented test skeleton
 - trace/screenshot/accessibility evidence contract
 - Playwright evidence records
+- browser-backed console screenshot checks with Playwright Chromium
 
 Next:
 
-- install Playwright when a target app is present
-- screenshot and trace evidence capture
+- target-app screenshot and trace evidence capture
 - healer loop that proposes repairs, with review gates
 
 ## Milestone 5: Control Plane
@@ -161,11 +161,8 @@ Implemented:
 - approval queue backed by review, decision, and control artifacts
 - memory, agent-mail, deployment, and GBrain summary panels
 - console visual regression checks
+- browser-backed console screenshot checks
 - evaluation trend charts
-
-Next:
-
-- browser-backed screenshot comparison once Playwright is installed for the console target
 
 ## Milestone 9: Sleep, Memory, And Agent Mail
 

@@ -27,7 +27,7 @@ The system starts with source-grounded intake: drawings, white papers, dictated 
 - Export Ariadne evidence into an optional GBrain import bundle and import GBrain query/eval reports back as evidence.
 - Record behavior-confidence checks for approved review fixtures, mutation gates, read-only infrastructure snapshots, and non-submitting governance drafts.
 - Record file-backed sleep routines, memory proposals, agent mail, interagent leases, and read-only deployment snapshots.
-- Render evaluation trend charts in the static console and generate deterministic console visual checks.
+- Render evaluation trend charts in the static console and generate deterministic plus browser-backed console checks.
 - Guard worktree creation without mutating by default.
 - Check whether the expected pipeline artifacts exist before scoring or release decisions.
 - Generate smoke, realistic, and stress benchmark source packs for repeatable harness evaluation.
@@ -63,6 +63,7 @@ npm run cli -- recovery-report --project ariadne
 npm run cli -- console-data --project ariadne
 npm run cli -- console-html --project ariadne --refresh-data
 npm run cli -- console-visual-checks --project ariadne
+npm run cli -- console-browser-checks --project ariadne
 npm run cli -- status --project ariadne
 ```
 
@@ -137,6 +138,7 @@ npm run cli -- recovery-report --project ariadne
 npm run cli -- console-data --project ariadne
 npm run cli -- console-html --project ariadne --refresh-data
 npm run cli -- console-visual-checks --project ariadne
+npm run cli -- console-browser-checks --project ariadne
 npm run cli -- infra --project ariadne
 npm run cli -- infra-snapshot --project ariadne --from manifest.json
 npm run cli -- openscorpion-draft --project ariadne --title "Evidence package" --type ariadne.evidence --evidence path-a,path-b

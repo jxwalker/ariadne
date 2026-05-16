@@ -145,10 +145,15 @@ Use `--refresh-data` to regenerate `console/console-data.json` before rendering 
 
 `console-visual-checks` performs deterministic checks against the generated console HTML. It verifies the expected visual sections, embedded data, evaluation trend chart or empty state, and absence of local absolute-path leaks.
 
+`console-browser-checks` opens the generated console with Playwright Chromium, verifies key rendered sections, parses embedded data, captures a screenshot, and writes browser-backed evidence.
+
 Artifacts:
 
 - `console/visual-checks.json`
 - `console/visual-checks.md`
+- `console/browser-checks.json`
+- `console/browser-checks.md`
+- `console/screenshots/console-<timestamp>.png`
 
 ## Infrastructure And Governance
 
