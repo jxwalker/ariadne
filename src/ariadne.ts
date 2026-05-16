@@ -38,6 +38,7 @@ import { hermesCronMutationActionOption, planHermesCronMutation } from "./hermes
 import { generateInfrastructureRegistry } from "./infrastructure.js";
 import { draftOpenScorpionActivity, importInfraSnapshot } from "./infraSnapshot.js";
 import { collectLocalInfraSnapshot, collectSshInfraSnapshot } from "./liveInventory.js";
+import { generateLiveAdapterReadiness } from "./liveAdapterReadiness.js";
 import { importNotebookLmExport } from "./notebooklm.js";
 import { notebookLmMutationActionOption, planNotebookLmMutation } from "./notebookLmMutation.js";
 import { mutationTargetOption, planMutationReadiness } from "./mutationReadiness.js";
@@ -157,6 +158,7 @@ function usage(): string {
     "  ariadne approval-decision --project <project> --approval <id|json> --status <approved|rejected|expired> --by <name> [--notes <text>]",
     "  ariadne mutation-readiness --project <project> --target <target> --scope <text> --auth-evidence <paths> --dry-run <cmd> --live-command <cmd> --post-verify <cmd> --rollback <text> [--approval <id|json>] [--risk <low|medium|high>] [--evidence <paths>] [--notes <text>]",
     "  ariadne mutation-readiness-audit --project <project>",
+    "  ariadne live-adapter-readiness --project <project>",
     "  ariadne mutation-dry-run --project <project> --plan <id|json> [--timeout-ms <ms>]",
     "  ariadne mutation-execute --project <project> --plan <id|json> --confirm-plan <id> [--timeout-ms <ms>]",
     "  ariadne target-mutation-execute --project <project> --target <target> --plan <id|json> --confirm-plan <id> [--timeout-ms <ms>]",
@@ -1057,6 +1059,15 @@ async function main(): Promise<void> {
     console.log(`Mutation readiness audit: ${result.markdownPath}`);
     console.log(`Status: ${result.audit.status}`);
     console.log(`Blocked: ${result.audit.summary.blocked}`);
+    return;
+  }
+
+  if (parsed.command === "live-adapter-readiness") {
+    const result = await generateLiveAdapterReadiness({ project, vaultRoot });
+    console.log(`Live adapter readiness: ${result.markdownPath}`);
+    console.log(`Status: ${result.report.status}`);
+    console.log(`Ready: ${result.report.summary.ready}`);
+    console.log(`Blocked: ${result.report.summary.blocked}`);
     return;
   }
 

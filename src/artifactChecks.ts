@@ -238,6 +238,13 @@ const ARTIFACT_SPECS: ArtifactSpec[] = [
     relativePath: "control/mutation-readiness-audit.json"
   },
   {
+    id: "live-adapter-readiness",
+    label: "Live adapter readiness report",
+    required: false,
+    kind: "file",
+    relativePath: "control/live-adapter-readiness.json"
+  },
+  {
     id: "mutation-dry-runs",
     label: "Mutation dry-run records",
     required: false,

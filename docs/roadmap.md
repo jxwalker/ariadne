@@ -121,6 +121,7 @@ Implemented:
 - confirmed live-command execution records with post-action verification evidence
 - target-guarded live mutation execution wrapper
 - per-target execute wrappers that delegate to target-guarded execution after readiness plans pass audit, dry-run, rollback, and post-verification review
+- per-target live adapter readiness report for approved plans, passed dry-runs, and target-guarded execution evidence
 
 Next:
 
