@@ -23,6 +23,7 @@ import { exportGsd2Bundle, importGsd2Bundle } from "../src/gsdAdapter.js";
 import { generateHealerProposal } from "../src/healerProposals.js";
 import { generateInfrastructureRegistry } from "../src/infrastructure.js";
 import { draftOpenScorpionActivity, importInfraSnapshot } from "../src/infraSnapshot.js";
+import { collectLocalInfraSnapshot } from "../src/liveInventory.js";
 import { generatePlaywrightPlan } from "../src/playwrightPlan.js";
 import { generateEvaluationPlan, recordEvaluationRun } from "../src/evaluation.js";
 import { generateEvaluationTrendReport } from "../src/evaluationTrends.js";
@@ -640,6 +641,17 @@ describe("roadmap adapters", () => {
     const snapshot = await importInfraSnapshot({ project: "ariadne", vaultRoot, sourcePath: infra });
     expect(snapshot.snapshot.summary.host).toBe("beast");
 
+    const liveSnapshot = await collectLocalInfraSnapshot({
+      project: "ariadne",
+      vaultRoot,
+      notes: "vitest local collector"
+    });
+    expect(liveSnapshot.snapshot.snapshotKind).toBe("live_read_only");
+    expect(liveSnapshot.snapshot.sourcePath).toBe("<LIVE_READ_ONLY>/local-host");
+    expect(liveSnapshot.snapshot.summary.collector).toBe("local-node-os");
+    expect(JSON.stringify(liveSnapshot.snapshot.raw)).not.toContain(os.hostname());
+    expect(JSON.stringify(liveSnapshot.snapshot.raw)).toContain("networkAddresses");
+
     const activity = await draftOpenScorpionActivity({
       project: "ariadne",
       vaultRoot,
@@ -672,6 +684,7 @@ describe("roadmap adapters", () => {
     expect(console.data.summary.readinessStatus).toBe(control.report.status);
     expect(console.data.sources[0]?.hygieneStatus).toBe("clean");
     expect(console.data.infrastructure.registry?.hosts.length).toBeGreaterThan(0);
+    expect(console.data.infrastructure.snapshots.some((item) => item.snapshotKind === "live_read_only")).toBe(true);
     expect(console.data.summary.githubSnapshots).toBe(1);
     expect(console.data.github.snapshots[0]?.summary.pendingChecks).toBe(1);
     expect(console.data.summary.recoveryIssues).toBe(recovery.report.issues.length);

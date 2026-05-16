@@ -1,12 +1,12 @@
 {
   "schemaVersion": 1,
   "project": "ariadne",
-  "generatedAt": "2026-05-16T14:29:21.522Z",
+  "generatedAt": "2026-05-16T14:47:48.112Z",
   "status": "passed",
   "summary": {
     "required": 13,
-    "optional": 16,
-    "present": 28,
+    "optional": 17,
+    "present": 29,
     "missingRequired": 0
   },
   "checks": [
@@ -140,6 +140,17 @@
       "required": true,
       "path": "projects/ariadne/infrastructure/registry.json",
       "status": "present"
+    },
+    {
+      "id": "infra-snapshots",
+      "label": "Infrastructure snapshots",
+      "required": false,
+      "path": "projects/ariadne/infrastructure/infra-snapshot-*.json",
+      "status": "present",
+      "count": 1,
+      "matches": [
+        "projects/ariadne/infrastructure/infra-snapshot-live-local-2026-05-16T14-47-06-365Z.json"
+      ]
     },
     {
       "id": "control-report",

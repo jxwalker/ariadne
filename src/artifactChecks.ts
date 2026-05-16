@@ -106,6 +106,16 @@ const ARTIFACT_SPECS: ArtifactSpec[] = [
     relativePath: "infrastructure/registry.json"
   },
   {
+    id: "infra-snapshots",
+    label: "Infrastructure snapshots",
+    required: false,
+    kind: "matching-files",
+    relativePath: "infrastructure",
+    prefix: "infra-snapshot-",
+    suffix: ".json",
+    minimumCount: 1
+  },
+  {
     id: "control-report",
     label: "Merge-readiness report",
     required: true,

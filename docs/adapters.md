@@ -216,4 +216,12 @@ Artifacts:
 
 `infra-snapshot` imports a read-only JSON snapshot. `openscorpion-draft` writes a governed activity draft with `submit: false`; live submission requires a later approved adapter.
 
+`infra-live-local` collects a sanitized live read-only snapshot of the current host:
+
+```bash
+npm run ariadne -- infra-live-local --project ariadne --notes "Mac workstation read-only snapshot"
+```
+
+The collector uses local Node.js OS APIs, hashes the hostname, omits network and MAC addresses, and records `snapshotKind: live_read_only`. It does not connect to remote hosts or mutate infrastructure.
+
 `deployment-snapshot` imports read-only estate snapshots for Proxmox, TrueNAS, DGX Spark, Macs, GitHub, or generic systems. This is the deployment adapter bridge for visualising where Ariadne can run without granting mutation capability.
