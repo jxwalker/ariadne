@@ -55,6 +55,14 @@ vault/projects/<project>/console/visual-checks.json
 vault/projects/<project>/console/visual-checks.md
 ```
 
+`console-browser-checks` writes the Playwright-backed console render report and screenshot:
+
+```text
+vault/projects/<project>/console/browser-checks.json
+vault/projects/<project>/console/browser-checks.md
+vault/projects/<project>/console/screenshots/console-<timestamp>.png
+```
+
 `behavior-checks` writes behavior-confidence checks:
 
 ```text
@@ -95,6 +103,7 @@ npm run cli -- usage-report --project ariadne
 npm run cli -- behavior-checks --project ariadne --approved-fixture coderabbit.md
 npm run cli -- console-html --project ariadne --refresh-data
 npm run cli -- console-visual-checks --project ariadne
+npm run cli -- console-browser-checks --project ariadne
 npm run cli -- control --project ariadne
 npm run cli -- evaluation-record --project ariadne --plan vault/projects/ariadne/evaluation/evaluation-plan.json --scores D1=80,D2=75,D3=70,D4=65,D5=60 --evidence vault/projects/ariadne/control/merge-readiness.md
 ```

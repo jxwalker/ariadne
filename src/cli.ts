@@ -6,6 +6,7 @@ import { benchmarkSets, materializeBenchmarkPack, parseBenchmarkSet } from "./be
 import { importCiStatus, importCodeRabbitReview } from "./ciImport.js";
 import { generateControlReport, recordCheck, recordReview } from "./controlPlane.js";
 import { generateConsoleData } from "./consoleData.js";
+import { generateConsoleBrowserCheckReport } from "./consoleBrowserChecks.js";
 import { generateConsoleHtml } from "./consoleHtml.js";
 import { generateConsoleVisualCheckReport } from "./consoleVisualChecks.js";
 import { recordAgentLease, recordAgentMail, recordMemoryProposal, recordSleepRoutine } from "./coordination.js";
@@ -109,6 +110,7 @@ function usage(): string {
     "  ariadne console-data --project <project>",
     "  ariadne console-html --project <project> [--refresh-data]",
     "  ariadne console-visual-checks --project <project> [--html <index.html>]",
+    "  ariadne console-browser-checks --project <project> [--html <index.html>] [--width <px>] [--height <px>]",
     "  ariadne roadmap --project <project> [--target-url <url>] [--repo <path>]",
     "  ariadne status --project <project>",
     "",
@@ -661,6 +663,20 @@ async function main(): Promise<void> {
       htmlPath: optionString(parsed.options, "html", "") || undefined
     });
     console.log(`Console visual checks: ${result.markdownPath}`);
+    console.log(`Status: ${result.report.status}`);
+    return;
+  }
+
+  if (parsed.command === "console-browser-checks") {
+    const result = await generateConsoleBrowserCheckReport({
+      project,
+      vaultRoot,
+      htmlPath: optionString(parsed.options, "html", "") || undefined,
+      width: optionalNumber(parsed.options, "width"),
+      height: optionalNumber(parsed.options, "height")
+    });
+    console.log(`Console browser checks: ${result.markdownPath}`);
+    console.log(`Screenshot: ${result.report.screenshotPath}`);
     console.log(`Status: ${result.report.status}`);
     return;
   }

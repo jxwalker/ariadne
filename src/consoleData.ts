@@ -11,6 +11,7 @@ import type {
   ConsoleVisualCheckReport,
   ControlReport,
   ConsoleData,
+  ConsoleBrowserCheckReport,
   DecisionRecord,
   DeploymentSnapshot,
   EvaluationPlan,
@@ -57,6 +58,12 @@ export async function collectConsoleData(vaultRoot: string, projectInput: string
     project,
     "console",
     "visual-checks.json"
+  );
+  const consoleBrowserChecks = await readProjectJson<ConsoleBrowserCheckReport>(
+    vaultRoot,
+    project,
+    "console",
+    "browser-checks.json"
   );
   const behaviorChecks = await readProjectJson<BehaviorCheckReport>(vaultRoot, project, "evaluation", "behavior-checks.json");
   const recovery = await readProjectJson<RecoveryReport>(vaultRoot, project, "control", "recovery-report.json");
@@ -124,6 +131,7 @@ export async function collectConsoleData(vaultRoot: string, projectInput: string
       deploymentSnapshots: deploymentSnapshots.length,
       githubSnapshots: githubSnapshots.length,
       recoveryIssues: recovery?.issues.length ?? 0,
+      consoleBrowserChecks: consoleBrowserChecks?.status,
       readinessStatus: readiness?.status,
       latestEvaluationScore: evaluations.at(-1)?.overallScore,
       evaluationTrendStatus: evaluationTrends?.status
@@ -139,6 +147,7 @@ export async function collectConsoleData(vaultRoot: string, projectInput: string
     evaluations,
     evaluationTrends,
     consoleVisualChecks,
+    consoleBrowserChecks,
     behaviorChecks,
     gbrain: {
       exportBundle: gbrainExport,
@@ -174,6 +183,7 @@ export async function collectConsoleData(vaultRoot: string, projectInput: string
       behaviorChecks: await existingPath(vaultRoot, path.join(dir, "evaluation", "behavior-checks.json")),
       gbrainExport: await existingPath(vaultRoot, path.join(dir, "integrations", "gbrain", "gbrain-export.json")),
       consoleVisualChecks: await existingPath(vaultRoot, path.join(dir, "console", "visual-checks.json")),
+      consoleBrowserChecks: await existingPath(vaultRoot, path.join(dir, "console", "browser-checks.json")),
       githubSnapshots: await existingPath(vaultRoot, path.join(dir, "integrations", "github")),
       recoveryReport: await existingPath(vaultRoot, path.join(dir, "control", "recovery-report.json"))
     }

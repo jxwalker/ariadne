@@ -451,6 +451,29 @@ export interface ConsoleVisualCheckReport {
   }>;
 }
 
+export interface ConsoleBrowserCheckReport {
+  schemaVersion: 1;
+  project: string;
+  generatedAt: string;
+  htmlPath: string;
+  screenshotPath: string;
+  status: "passed" | "failed";
+  viewport: {
+    width: number;
+    height: number;
+  };
+  summary: {
+    passed: number;
+    failed: number;
+  };
+  checks: Array<{
+    id: string;
+    label: string;
+    status: "passed" | "failed";
+    detail: string;
+  }>;
+}
+
 export interface BehaviorCheckReport {
   schemaVersion: 1;
   project: string;
@@ -667,6 +690,7 @@ export interface ConsoleData {
     deploymentSnapshots: number;
     githubSnapshots: number;
     recoveryIssues: number;
+    consoleBrowserChecks?: ConsoleBrowserCheckReport["status"];
     readinessStatus?: ControlReport["status"];
     latestEvaluationScore?: number;
     evaluationTrendStatus?: EvaluationTrendReport["status"];
@@ -692,6 +716,7 @@ export interface ConsoleData {
   evaluations: EvaluationRun[];
   evaluationTrends?: EvaluationTrendReport;
   consoleVisualChecks?: ConsoleVisualCheckReport;
+  consoleBrowserChecks?: ConsoleBrowserCheckReport;
   behaviorChecks?: BehaviorCheckReport;
   gbrain?: {
     exportBundle?: GbrainExportBundle;
@@ -727,6 +752,7 @@ export interface ConsoleData {
     behaviorChecks?: string;
     gbrainExport?: string;
     consoleVisualChecks?: string;
+    consoleBrowserChecks?: string;
     githubSnapshots?: string;
     recoveryReport?: string;
   };

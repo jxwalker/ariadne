@@ -33,6 +33,7 @@ npm run build
 - `src/consoleData.ts`: normalised read-only console projection.
 - `src/consoleHtml.ts`: static console renderer over console data.
 - `src/consoleVisualChecks.ts`: deterministic visual contract checks for the generated console.
+- `src/consoleBrowserChecks.ts`: Playwright-backed console rendering and screenshot evidence.
 - `src/evaluation.ts`: pipeline evaluation plans and run scores.
 - `src/evaluationTrends.ts`: longitudinal evaluation report generation.
 - `src/usageMetrics.ts`: token/cost metric import and aggregation.

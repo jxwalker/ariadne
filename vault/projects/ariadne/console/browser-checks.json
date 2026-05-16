@@ -1,0 +1,60 @@
+{
+  "schemaVersion": 1,
+  "project": "ariadne",
+  "generatedAt": "2026-05-16T13:05:56.851Z",
+  "htmlPath": "projects/ariadne/console/index.html",
+  "screenshotPath": "projects/ariadne/console/screenshots/console-2026-05-16T13-05-56-851Z.png",
+  "status": "passed",
+  "viewport": {
+    "width": 1440,
+    "height": 1100
+  },
+  "summary": {
+    "passed": 7,
+    "failed": 0
+  },
+  "checks": [
+    {
+      "id": "brand",
+      "label": "Ariadne brand",
+      "status": "passed",
+      "detail": "Ariadne brand is visible."
+    },
+    {
+      "id": "gate-matrix",
+      "label": "Gate matrix section",
+      "status": "passed",
+      "detail": "Gate matrix section is visible."
+    },
+    {
+      "id": "evaluation-trends",
+      "label": "Evaluation trends section",
+      "status": "passed",
+      "detail": "Evaluation trends section is visible."
+    },
+    {
+      "id": "recovery",
+      "label": "Recovery section",
+      "status": "passed",
+      "detail": "Recovery section is visible."
+    },
+    {
+      "id": "github",
+      "label": "GitHub section",
+      "status": "passed",
+      "detail": "GitHub section is visible."
+    },
+    {
+      "id": "embedded-data",
+      "label": "Embedded console data parses",
+      "status": "passed",
+      "detail": "Embedded console data is parseable."
+    },
+    {
+      "id": "screenshot",
+      "label": "Screenshot captured",
+      "status": "passed",
+      "detail": "695967 bytes captured."
+    }
+  ]
+}

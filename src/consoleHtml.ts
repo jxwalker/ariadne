@@ -105,6 +105,7 @@ function renderConsole(data: ConsoleData): string {
     metric("Checks", data.summary.checks, failedChecks > 0 ? `${failedChecks} failed` : "recorded"),
     metric("GitHub", data.summary.githubSnapshots, "snapshots"),
     metric("Recovery", data.summary.recoveryIssues, "issues"),
+    metric("Browser", data.summary.consoleBrowserChecks ?? "none", "console"),
     metric(
       "Evaluation",
       data.summary.latestEvaluationScore ?? latestEvaluation?.overallScore ?? "none",
@@ -122,6 +123,7 @@ function renderConsole(data: ConsoleData): string {
     '<aside class="side-column">',
     section("Evidence Chain", evidenceChain(data)),
     section("Visual Checks", visualChecks(data)),
+    section("Browser Checks", browserChecks(data)),
     section("Recovery", recovery(data)),
     section("Memory And Mail", memoryAndMail(data)),
     section("Infrastructure", infrastructure(data)),
@@ -257,6 +259,7 @@ function evidenceChain(data: ConsoleData): string {
     ["Decisions", data.summary.decisions],
     ["GitHub snapshots", data.summary.githubSnapshots],
     ["Recovery issues", data.summary.recoveryIssues],
+    ["Browser checks", data.summary.consoleBrowserChecks ?? "none"],
     ["GBrain reports", data.gbrain?.reports.length ?? 0]
   ];
   return `<div class="chain">${rows.map(([label, value]) => `<div><span>${escapeHtml(String(label))}</span><strong>${escapeHtml(String(value))}</strong></div>`).join("")}</div>`;
@@ -267,6 +270,21 @@ function visualChecks(data: ConsoleData): string {
   if (!checks) return empty("No console visual check report is available.");
   return [
     `<div class="visual-status"><strong class="${statusClass(checks.status)}">${escapeHtml(checks.status)}</strong><span>${escapeHtml(`${checks.summary.passed} passed / ${checks.summary.failed} failed`)}</span></div>`,
+    '<ul class="compact-list">',
+    ...checks.checks.map(
+      (check) =>
+        `<li><strong class="${statusClass(check.status)}">${escapeHtml(check.status)}</strong><span>${escapeHtml(check.label)}</span></li>`
+    ),
+    "</ul>"
+  ].join("");
+}
+
+function browserChecks(data: ConsoleData): string {
+  const checks = data.consoleBrowserChecks;
+  if (!checks) return empty("No browser-backed console check report is available.");
+  return [
+    `<div class="visual-status"><strong class="${statusClass(checks.status)}">${escapeHtml(checks.status)}</strong><span>${escapeHtml(`${checks.summary.passed} passed / ${checks.summary.failed} failed`)}</span></div>`,
+    `<p class="metadata">${escapeHtml(`Screenshot: ${checks.screenshotPath}`)}</p>`,
     '<ul class="compact-list">',
     ...checks.checks.map(
       (check) =>
@@ -646,6 +664,12 @@ time {
   border: 1px dashed var(--line);
   padding: 18px;
   color: var(--muted);
+}
+.metadata {
+  margin: 0;
+  color: var(--muted);
+  font-size: 12px;
+  overflow-wrap: anywhere;
 }
 .trend-card {
   display: grid;

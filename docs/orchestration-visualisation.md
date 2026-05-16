@@ -70,6 +70,8 @@ The static console renders an SVG trend chart from `evaluation/evaluation-trends
 
 `console-visual-checks` validates the generated HTML contract before a browser-backed screenshot pass exists. It checks section presence, embedded data parsing, trend chart hooks or empty state, and local absolute-path leaks.
 
+`console-browser-checks` performs the browser-backed pass with Playwright Chromium. It captures a PNG screenshot and verifies the rendered console sections from the same static HTML artifact.
+
 ## Implementation Direction
 
 Start with static JSON artifacts and generated Markdown. `console-data` creates a normalised read-only projection at `console/console-data.json`, and `console-html` renders the first static local console at `console/index.html`. A future live console should read the same JSON contract rather than scanning the vault directly. The console should remain read-only until the artifact model and access control are stable.
