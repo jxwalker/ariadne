@@ -209,6 +209,16 @@ const ARTIFACT_SPECS: ArtifactSpec[] = [
     minimumCount: 1
   },
   {
+    id: "extraction-runner-plans",
+    label: "OCR/transcription runner plans",
+    required: false,
+    kind: "matching-files",
+    relativePath: "extractions/plans",
+    prefix: "extraction-plan-",
+    suffix: ".json",
+    minimumCount: 1
+  },
+  {
     id: "coordination-records",
     label: "Sleep, memory, or mail records",
     required: false,

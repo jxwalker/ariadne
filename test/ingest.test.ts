@@ -3,6 +3,7 @@ import os from "node:os";
 import path from "node:path";
 import { describe, expect, it } from "vitest";
 import { importExtractionResult } from "../src/extractionResults.js";
+import { planExtractionRunner } from "../src/extractionRunnerPlan.js";
 import { assembleDossier, ingestFiles, loadRecords, projectStatus } from "../src/vault.js";
 
 describe("source intake", () => {
@@ -61,6 +62,38 @@ describe("source intake", () => {
     const handoff = await fs.readFile(records[0]!.handoffPath!, "utf8");
     expect(handoff).toContain("Run OCR or visual description");
     expect(handoff).toContain("Do not replace the raw evidence");
+  });
+
+  it("plans an explicit extraction runner for source handoffs", async () => {
+    const temp = await fs.mkdtemp(path.join(os.tmpdir(), "ariadne-"));
+    const source = path.join(temp, "meeting-audio.wav");
+    const vaultRoot = path.join(temp, "vault");
+
+    await fs.writeFile(source, "not a real wav, but enough for source-kind routing");
+    const records = await ingestFiles([source], {
+      project: "Ariadne",
+      vaultRoot
+    });
+
+    const planned = await planExtractionRunner({
+      project: "ariadne",
+      vaultRoot,
+      recordId: records[0]!.id,
+      tool: "whisper.cpp",
+      host: "M5 Max",
+      runner: "mac",
+      notes: "Operator selected local Mac transcription."
+    });
+
+    expect(planned.plan.extractionKind).toBe("transcription");
+    expect(planned.plan.host).toBe("M5 Max");
+    expect(planned.plan.runner).toBe("mac");
+    expect(planned.plan.inputPath).toBe(records[0]?.storedPath);
+    expect(planned.plan.handoffPath).toBe(records[0]?.handoffPath);
+    expect(planned.plan.importCommand).toContain("extraction-import");
+    expect(planned.plan.importCommand).toContain("--vault");
+    expect(planned.plan.importCommand).toContain("--kind transcription");
+    await expect(fs.readFile(planned.markdownPath, "utf8")).resolves.toContain("Extraction Runner Plan");
   });
 
   it("imports OCR or transcription output back onto the source record", async () => {

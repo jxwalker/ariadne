@@ -13,17 +13,18 @@ export async function guardWorktrees(input: {
 }): Promise<{ jsonPath: string; markdownPath: string; report: WorktreeGuardReport }> {
   const project = slugifyProject(input.project);
   const run = JSON.parse(await fs.readFile(path.resolve(input.runFile), "utf8")) as ExecutionRun;
+  const repoPath = run.repoPath ? resolveExecutionPath(input.vaultRoot, run.repoPath) : undefined;
   const checks: WorktreeGuardReport["checks"] = [];
 
-  if (!run.repoPath || isPlaceholderPath(run.repoPath)) {
+  if (!repoPath || isPlaceholderPath(repoPath)) {
     checks.push({
       name: "repoPath",
       status: "failed",
       detail: run.repoPath ? `Execution run has placeholder repository path ${run.repoPath}.` : "Execution run has no repository path."
     });
   } else {
-    checks.push({ name: "repoPath", status: "passed", detail: run.repoPath });
-    const statusResult = tryGit(run.repoPath, ["status", "--porcelain"]);
+    checks.push({ name: "repoPath", status: "passed", detail: run.repoPath ?? repoPath });
+    const statusResult = tryGit(repoPath, ["status", "--porcelain"]);
     if (statusResult.ok) {
       const status = statusResult.output;
       checks.push({
@@ -40,8 +41,9 @@ export async function guardWorktrees(input: {
     }
 
     for (const worktree of run.worktrees) {
+      const worktreePath = resolveExecutionPath(input.vaultRoot, worktree.worktreePath);
       try {
-        await fs.access(worktree.worktreePath);
+        await fs.access(worktreePath);
         checks.push({
           name: `worktree-path-${worktree.taskId}`,
           status: "failed",
@@ -55,7 +57,7 @@ export async function guardWorktrees(input: {
         });
       }
 
-      const branchResult = tryGit(run.repoPath, ["branch", "--list", worktree.branch]);
+      const branchResult = tryGit(repoPath, ["branch", "--list", worktree.branch]);
       const branchExists = branchResult.ok && branchResult.output.trim().length > 0;
       checks.push({
         name: `branch-${worktree.taskId}`,
@@ -70,10 +72,11 @@ export async function guardWorktrees(input: {
   }
 
   let blocked = checks.some((check) => check.status === "failed");
-  if (input.apply && !blocked && run.repoPath) {
-    const baseRef = resolveBaseRef(run.repoPath);
+  if (input.apply && !blocked && repoPath) {
+    const baseRef = resolveBaseRef(repoPath);
     for (const worktree of run.worktrees) {
-      const createResult = tryGit(run.repoPath, ["worktree", "add", "-b", worktree.branch, worktree.worktreePath, baseRef]);
+      const worktreePath = resolveExecutionPath(input.vaultRoot, worktree.worktreePath);
+      const createResult = tryGit(repoPath, ["worktree", "add", "-b", worktree.branch, worktreePath, baseRef]);
       checks.push({
         name: `create-worktree-${worktree.taskId}`,
         status: createResult.ok ? "passed" : "failed",
@@ -118,7 +121,15 @@ function tryGit(repoPath: string, args: string[]): { ok: true; output: string } 
 }
 
 function isPlaceholderPath(value: string): boolean {
-  return value.includes("<REPO_ROOT>");
+  return ["<REPO_ROOT>", "<WORKSPACE_ROOT>", "<WORKTREE_ROOT>", "<EXTERNAL_PATH>"].some((placeholder) =>
+    value.includes(placeholder)
+  );
+}
+
+function resolveExecutionPath(vaultRoot: string, value: string): string {
+  const workspaceRoot = path.dirname(vaultRoot);
+  const worktreeRoot = path.dirname(workspaceRoot);
+  return value.replace("<WORKSPACE_ROOT>", workspaceRoot).replace("<WORKTREE_ROOT>", worktreeRoot);
 }
 
 function resolveBaseRef(repoPath: string): string {

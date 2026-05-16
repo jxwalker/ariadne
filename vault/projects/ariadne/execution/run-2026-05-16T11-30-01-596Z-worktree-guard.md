@@ -5,7 +5,7 @@ Apply: no
 
 ## Checks
 
-- repoPath: passed - /Users/james/Documents/dev/ariadne
+- repoPath: passed - <WORKSPACE_ROOT>
 - working-tree-clean: failed - M README.md
  M docs/adapters.md
  M docs/architecture.md
@@ -48,17 +48,17 @@ Apply: no
 ?? vault/projects/ariadne/execution/run-2026-05-16T11-30-01-596Z.json
 ?? vault/projects/ariadne/execution/run-2026-05-16T11-30-01-596Z.md
 ?? vault/projects/ariadne/integrations/
-- worktree-path-TASK-001: passed - /Users/james/Documents/dev/ariadne-task-001 is available
+- worktree-path-TASK-001: passed - <WORKTREE_ROOT>/ariadne-task-001 is available
 - branch-TASK-001: passed - jxw/ariadne-task-001 is available
-- worktree-path-TASK-002: passed - /Users/james/Documents/dev/ariadne-task-002 is available
+- worktree-path-TASK-002: passed - <WORKTREE_ROOT>/ariadne-task-002 is available
 - branch-TASK-002: passed - jxw/ariadne-task-002 is available
-- worktree-path-TASK-003: passed - /Users/james/Documents/dev/ariadne-task-003 is available
+- worktree-path-TASK-003: passed - <WORKTREE_ROOT>/ariadne-task-003 is available
 - branch-TASK-003: passed - jxw/ariadne-task-003 is available
-- worktree-path-TASK-004: passed - /Users/james/Documents/dev/ariadne-task-004 is available
+- worktree-path-TASK-004: passed - <WORKTREE_ROOT>/ariadne-task-004 is available
 - branch-TASK-004: passed - jxw/ariadne-task-004 is available
-- worktree-path-TASK-006: passed - /Users/james/Documents/dev/ariadne-task-006 is available
+- worktree-path-TASK-006: passed - <WORKTREE_ROOT>/ariadne-task-006 is available
 - branch-TASK-006: passed - jxw/ariadne-task-006 is available
-- worktree-path-TASK-007: passed - /Users/james/Documents/dev/ariadne-task-007 is available
+- worktree-path-TASK-007: passed - <WORKTREE_ROOT>/ariadne-task-007 is available
 - branch-TASK-007: passed - jxw/ariadne-task-007 is available
-- worktree-path-TASK-005: passed - /Users/james/Documents/dev/ariadne-task-005 is available
+- worktree-path-TASK-005: passed - <WORKTREE_ROOT>/ariadne-task-005 is available
 - branch-TASK-005: passed - jxw/ariadne-task-005 is available

@@ -9,7 +9,7 @@
     {
       "name": "repoPath",
       "status": "passed",
-      "detail": "/Users/james/Documents/dev/ariadne"
+      "detail": "<WORKSPACE_ROOT>"
     },
     {
       "name": "working-tree-clean",
@@ -19,7 +19,7 @@
     {
       "name": "worktree-path-TASK-001",
       "status": "passed",
-      "detail": "/Users/james/Documents/dev/ariadne-task-001 is available"
+      "detail": "<WORKTREE_ROOT>/ariadne-task-001 is available"
     },
     {
       "name": "branch-TASK-001",
@@ -29,7 +29,7 @@
     {
       "name": "worktree-path-TASK-002",
       "status": "passed",
-      "detail": "/Users/james/Documents/dev/ariadne-task-002 is available"
+      "detail": "<WORKTREE_ROOT>/ariadne-task-002 is available"
     },
     {
       "name": "branch-TASK-002",
@@ -39,7 +39,7 @@
     {
       "name": "worktree-path-TASK-003",
       "status": "passed",
-      "detail": "/Users/james/Documents/dev/ariadne-task-003 is available"
+      "detail": "<WORKTREE_ROOT>/ariadne-task-003 is available"
     },
     {
       "name": "branch-TASK-003",
@@ -49,7 +49,7 @@
     {
       "name": "worktree-path-TASK-004",
       "status": "passed",
-      "detail": "/Users/james/Documents/dev/ariadne-task-004 is available"
+      "detail": "<WORKTREE_ROOT>/ariadne-task-004 is available"
     },
     {
       "name": "branch-TASK-004",
@@ -59,7 +59,7 @@
     {
       "name": "worktree-path-TASK-006",
       "status": "passed",
-      "detail": "/Users/james/Documents/dev/ariadne-task-006 is available"
+      "detail": "<WORKTREE_ROOT>/ariadne-task-006 is available"
     },
     {
       "name": "branch-TASK-006",
@@ -69,7 +69,7 @@
     {
       "name": "worktree-path-TASK-007",
       "status": "passed",
-      "detail": "/Users/james/Documents/dev/ariadne-task-007 is available"
+      "detail": "<WORKTREE_ROOT>/ariadne-task-007 is available"
     },
     {
       "name": "branch-TASK-007",
@@ -79,7 +79,7 @@
     {
       "name": "worktree-path-TASK-005",
       "status": "passed",
-      "detail": "/Users/james/Documents/dev/ariadne-task-005 is available"
+      "detail": "<WORKTREE_ROOT>/ariadne-task-005 is available"
     },
     {
       "name": "branch-TASK-005",

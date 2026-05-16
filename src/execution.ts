@@ -23,6 +23,9 @@ export async function planExecution(options: PlanExecutionOptions): Promise<{
   const createdAt = new Date().toISOString();
   const runId = `run-${timestampFile(new Date(createdAt))}`;
   const repoPath = options.repoPath ? path.resolve(options.repoPath) : undefined;
+  const worktreePaths = repoPath
+    ? tasks.map((task) => path.join(path.dirname(repoPath), `${path.basename(repoPath)}-${task.id.toLowerCase()}`))
+    : tasks.map((task) => `<REPO_ROOT>-${task.id.toLowerCase()}`);
 
   const run: ExecutionRun = {
     schemaVersion: 1,
@@ -30,16 +33,14 @@ export async function planExecution(options: PlanExecutionOptions): Promise<{
     project,
     createdAt,
     taskIds: tasks.map((task) => task.id),
-    repoPath: repoPath ?? "<REPO_ROOT>",
+    repoPath: repoPath ? portableExecutionPath(options.vaultRoot, repoPath) : "<REPO_ROOT>",
     branchPrefix: "jxw/ariadne",
     status: "planned",
     gates: ["npm run check", "npm test", "npm run build", "review evidence", "human approval before external mutation"],
-    worktrees: tasks.map((task) => ({
+    worktrees: tasks.map((task, index) => ({
       taskId: task.id,
       branch: `jxw/ariadne-${task.id.toLowerCase()}`,
-      worktreePath: repoPath
-        ? path.join(path.dirname(repoPath), `${path.basename(repoPath)}-${task.id.toLowerCase()}`)
-        : `<REPO_ROOT>-${task.id.toLowerCase()}`
+      worktreePath: repoPath ? portableExecutionPath(options.vaultRoot, worktreePaths[index]!) : worktreePaths[index]!
     })),
     stopConditions: [
       "A verification command fails twice for the same reason.",
@@ -52,6 +53,20 @@ export async function planExecution(options: PlanExecutionOptions): Promise<{
   const jsonPath = await writeJsonArtifact(options.vaultRoot, project, "execution", `${runId}.json`, run);
   const markdownPath = await writeTextArtifact(options.vaultRoot, project, "execution", `${runId}.md`, renderRun(run, tasks));
   return { jsonPath, markdownPath, run };
+}
+
+function portableExecutionPath(vaultRoot: string, filePath: string): string {
+  const workspaceRoot = path.dirname(vaultRoot);
+  const worktreeRoot = path.dirname(workspaceRoot);
+  if (filePath === workspaceRoot) return "<WORKSPACE_ROOT>";
+  if (filePath.startsWith(`${workspaceRoot}${path.sep}`)) {
+    return filePath.replace(workspaceRoot, "<WORKSPACE_ROOT>");
+  }
+  if (filePath === worktreeRoot) return "<WORKTREE_ROOT>";
+  if (filePath.startsWith(`${worktreeRoot}${path.sep}`)) {
+    return filePath.replace(worktreeRoot, "<WORKTREE_ROOT>");
+  }
+  return `<EXTERNAL_PATH>/${path.basename(filePath)}`;
 }
 
 function selectTasks(tasks: GsdTask[], taskId?: string): GsdTask[] {

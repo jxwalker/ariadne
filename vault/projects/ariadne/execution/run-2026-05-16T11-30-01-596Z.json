@@ -12,7 +12,7 @@
     "TASK-007",
     "TASK-005"
   ],
-  "repoPath": "/Users/james/Documents/dev/ariadne",
+  "repoPath": "<WORKSPACE_ROOT>",
   "branchPrefix": "jxw/ariadne",
   "status": "complete",
   "gates": [
@@ -26,37 +26,37 @@
     {
       "taskId": "TASK-001",
       "branch": "jxw/ariadne-task-001",
-      "worktreePath": "/Users/james/Documents/dev/ariadne-task-001"
+      "worktreePath": "<WORKTREE_ROOT>/ariadne-task-001"
     },
     {
       "taskId": "TASK-002",
       "branch": "jxw/ariadne-task-002",
-      "worktreePath": "/Users/james/Documents/dev/ariadne-task-002"
+      "worktreePath": "<WORKTREE_ROOT>/ariadne-task-002"
     },
     {
       "taskId": "TASK-003",
       "branch": "jxw/ariadne-task-003",
-      "worktreePath": "/Users/james/Documents/dev/ariadne-task-003"
+      "worktreePath": "<WORKTREE_ROOT>/ariadne-task-003"
     },
     {
       "taskId": "TASK-004",
       "branch": "jxw/ariadne-task-004",
-      "worktreePath": "/Users/james/Documents/dev/ariadne-task-004"
+      "worktreePath": "<WORKTREE_ROOT>/ariadne-task-004"
     },
     {
       "taskId": "TASK-006",
       "branch": "jxw/ariadne-task-006",
-      "worktreePath": "/Users/james/Documents/dev/ariadne-task-006"
+      "worktreePath": "<WORKTREE_ROOT>/ariadne-task-006"
     },
     {
       "taskId": "TASK-007",
       "branch": "jxw/ariadne-task-007",
-      "worktreePath": "/Users/james/Documents/dev/ariadne-task-007"
+      "worktreePath": "<WORKTREE_ROOT>/ariadne-task-007"
     },
     {
       "taskId": "TASK-005",
       "branch": "jxw/ariadne-task-005",
-      "worktreePath": "/Users/james/Documents/dev/ariadne-task-005"
+      "worktreePath": "<WORKTREE_ROOT>/ariadne-task-005"
     }
   ],
   "stopConditions": [
