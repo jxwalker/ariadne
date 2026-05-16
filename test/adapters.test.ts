@@ -31,6 +31,7 @@ import { planHermesCronMutation } from "../src/hermesMutation.js";
 import { generateInfrastructureRegistry } from "../src/infrastructure.js";
 import { draftOpenScorpionActivity, importInfraSnapshot } from "../src/infraSnapshot.js";
 import { collectLocalInfraSnapshot, collectSshInfraSnapshot, parseSshInventory } from "../src/liveInventory.js";
+import { generateLiveAdapterNextActions } from "../src/liveAdapterNextActions.js";
 import { generateLiveAdapterReadiness } from "../src/liveAdapterReadiness.js";
 import { planMutationReadiness } from "../src/mutationReadiness.js";
 import { generateMutationReadinessAudit } from "../src/mutationReadinessAudit.js";
@@ -731,6 +732,13 @@ describe("roadmap adapters", () => {
     expect(githubReadiness?.passedExecutionCount).toBeGreaterThan(0);
     expect(deploymentReadiness?.status).toBe("blocked");
     expect(deploymentReadiness?.blockers).toContain("no readiness plan passes audit");
+    const nextActions = await generateLiveAdapterNextActions({ project: "ariadne", vaultRoot });
+    const githubActions = nextActions.report.targets.find((target) => target.target === "github");
+    const deploymentActions = nextActions.report.targets.find((target) => target.target === "deployment");
+    expect(nextActions.report.status).toBe("actions_required");
+    expect(githubActions?.actions.some((action) => action.id === "github-replace-placeholder" && action.status === "ready")).toBe(true);
+    expect(deploymentActions?.actions.some((action) => action.id === "deployment-audit-fix")).toBe(true);
+    expect(deploymentActions?.actions.some((action) => action.id === "deployment-dry-run" && action.status === "blocked")).toBe(true);
     await expect(
       runMutationDryRun({
         project: "ariadne",
@@ -863,6 +871,7 @@ describe("roadmap adapters", () => {
     const hermesProposalCheck = artifactChecks.report.checks.find((check) => check.id === "hermes-cron-proposals");
     const readinessCheck = artifactChecks.report.checks.find((check) => check.id === "mutation-readiness-plans");
     const readinessAuditCheck = artifactChecks.report.checks.find((check) => check.id === "mutation-readiness-audit");
+    const nextActionsCheck = artifactChecks.report.checks.find((check) => check.id === "live-adapter-next-actions");
     const mutationDryRunCheck = artifactChecks.report.checks.find((check) => check.id === "mutation-dry-runs");
     const mutationExecutionCheck = artifactChecks.report.checks.find((check) => check.id === "mutation-executions");
     expect(coordinationCheck?.matches?.some((match) => match.includes("coordination/hermes"))).toBe(false);
@@ -870,6 +879,7 @@ describe("roadmap adapters", () => {
     expect(hermesProposalCheck?.count).toBe(2);
     expect(readinessCheck?.count).toBe(2);
     expect(readinessAuditCheck?.status).toBe("present");
+    expect(nextActionsCheck?.status).toBe("present");
     expect(mutationDryRunCheck?.status).toBe("present");
     expect(mutationExecutionCheck?.status).toBe("present");
   });

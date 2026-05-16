@@ -383,9 +383,10 @@ Check whether each target is ready for a real live adapter:
 
 ```bash
 npm run ariadne -- live-adapter-readiness --project ariadne
+npm run ariadne -- live-adapter-next-actions --project ariadne
 ```
 
-This report does not execute anything. It compares audit-passed plans with passed dry-run and target-guarded execution evidence, then lists the remaining blockers for GitHub, deployment, Hermes cron, OpenScorpion, GSD2, and NotebookLM.
+These reports do not execute anything. Readiness compares audit-passed plans with passed dry-run and target-guarded execution evidence. Next actions translate the blockers into the approval request, target-specific plan, dry-run, execution, or adapter replacement step still needed for GitHub, deployment, Hermes cron, OpenScorpion, GSD2, and NotebookLM.
 
 For live adapters, prefer the target-specific wrappers so the expected target is fixed by the command name:
 

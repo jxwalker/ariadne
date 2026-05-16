@@ -445,6 +445,35 @@ export interface LiveAdapterReadinessReport {
   }>;
 }
 
+export interface LiveAdapterNextActionsReport {
+  schemaVersion: 1;
+  project: string;
+  generatedAt: string;
+  status: "complete" | "actions_required";
+  summary: {
+    targets: number;
+    ready: number;
+    blocked: number;
+    actionItems: number;
+  };
+  readinessRef: string;
+  targets: Array<{
+    target: Exclude<MutationReadinessPlan["target"], "generic">;
+    readinessStatus: LiveAdapterReadinessReport["targets"][number]["status"];
+    latestReadyPlanId?: string;
+    executeCommand: string;
+    blockers: string[];
+    actions: Array<{
+      id: string;
+      status: "pending" | "blocked" | "ready";
+      title: string;
+      rationale: string;
+      command?: string;
+      evidenceRefs: string[];
+    }>;
+  }>;
+}
+
 export interface InfraRegistry {
   schemaVersion: 1;
   project: string;
