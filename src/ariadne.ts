@@ -22,6 +22,7 @@ import { generateEvaluationPlan, recordEvaluationRun } from "./evaluation.js";
 import { generateEvaluationTrendReport } from "./evaluationTrends.js";
 import { markRunStatus, planExecution } from "./execution.js";
 import { importExtractionResult } from "./extractionResults.js";
+import { extractionRunnerOption, planExtractionRunner } from "./extractionRunnerPlan.js";
 import { exportGbrainBundle, importGbrainReport } from "./gbrainAdapter.js";
 import { collectGithubSnapshot, importGithubSnapshot } from "./githubAdapter.js";
 import { generateGsd } from "./gsd.js";
@@ -83,6 +84,7 @@ function usage(): string {
     "Usage:",
     "  ariadne ingest --project <project> [--notes <text>] [--allow-secret-findings] <files...>",
     "  ariadne extraction-import --project <project> --record <id> --from <text.md> --kind <ocr|transcription|pdf-text|visual-description> --tool <name> [--confidence <0-1>] [--notes <text>]",
+    "  ariadne extraction-plan --project <project> --record <id> --tool <name> --host <name> [--runner <local|ssh|manual|mac|dgx-spark|proxmox|generic>] [--kind <ocr|transcription|pdf-text|visual-description>] [--notes <text>]",
     "  ariadne assemble --project <project> [--max-chars <number>]",
     "  ariadne prd --project <project> [--from <dossier.md>]",
     "  ariadne notebooklm-import --project <project> --from <export.md>",
@@ -193,6 +195,29 @@ async function main(): Promise<void> {
     console.log(`Extraction result: ${result.markdownPath}`);
     console.log(`Source record: ${result.result.sourceRecordId}`);
     console.log(`Extracted text: ${result.result.extractedTextPath}`);
+    return;
+  }
+
+  if (parsed.command === "extraction-plan") {
+    const runnerValue = parsed.options.get("runner");
+    if (runnerValue === true) {
+      throw new Error("--runner requires a value.");
+    }
+    const result = await planExtractionRunner({
+      project,
+      vaultRoot,
+      recordId: requiredOption(parsed.options, "record"),
+      tool: requiredOption(parsed.options, "tool"),
+      host: requiredOption(parsed.options, "host"),
+      runner: runnerValue ? extractionRunnerOption(runnerValue) : "manual",
+      extractionKind: optionalExtractionKindOption(parsed.options),
+      notes: optionString(parsed.options, "notes", "") || undefined
+    });
+    console.log(`Extraction runner plan: ${result.markdownPath}`);
+    console.log(`Record: ${result.plan.sourceRecordId}`);
+    console.log(`Extraction kind: ${result.plan.extractionKind}`);
+    console.log(`Runner: ${result.plan.runner}`);
+    console.log(`Host: ${result.plan.host}`);
     return;
   }
 
@@ -950,6 +975,13 @@ function extractionKindOption(
     return value;
   }
   throw new Error("--kind must be ocr, transcription, pdf-text, or visual-description.");
+}
+
+function optionalExtractionKindOption(
+  options: Map<string, string | true>
+): "ocr" | "transcription" | "pdf-text" | "visual-description" | undefined {
+  if (!options.has("kind")) return undefined;
+  return extractionKindOption(options);
 }
 
 function sensitivityOption(

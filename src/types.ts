@@ -40,6 +40,26 @@ export interface ExtractionResultRecord {
   notes?: string;
 }
 
+export interface ExtractionRunnerPlan {
+  schemaVersion: 1;
+  id: string;
+  project: string;
+  generatedAt: string;
+  sourceRecordId: string;
+  sourceKind: SourceKind;
+  extractionKind: ExtractionResultRecord["extractionKind"];
+  tool: string;
+  host: string;
+  runner: "local" | "ssh" | "manual" | "mac" | "dgx-spark" | "proxmox" | "generic";
+  status: "planned";
+  inputPath: string;
+  handoffPath?: string;
+  outputPath: string;
+  importCommand: string;
+  constraints: string[];
+  notes?: string;
+}
+
 export interface IngestOptions {
   project: string;
   vaultRoot: string;

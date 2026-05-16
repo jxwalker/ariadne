@@ -21,6 +21,7 @@ The system starts with source-grounded intake: drawings, white papers, dictated 
 
 - Ingest local files into `vault/projects/<project>/raw/`.
 - Extract safe text from Markdown, text, and macOS `.docx` files.
+- Plan OCR/transcription/PDF extraction runner selection before external tools run.
 - Import OCR, transcription, PDF text, and visual-description results back onto the original source record.
 - Write manifests, hot indexes, context dossiers, PRDs, GSD roadmaps, GSD2 bundles, execution plans, decision records, Playwright plans, infrastructure registries, evaluation plans, merge-readiness reports, and crash-recovery reports.
 - Import manual NotebookLM exports, CI status, CodeRabbit review text, read-only GitHub PR/check snapshots, read-only infrastructure snapshots, and Playwright evidence.
@@ -116,6 +117,7 @@ vault/projects/<project>/
 
 ```bash
 npm run ariadne -- notebooklm-import --project ariadne --from notebooklm-export.md
+npm run ariadne -- extraction-plan --project ariadne --record <record-id> --tool whisper.cpp --host "M5 Max" --runner mac
 npm run ariadne -- extraction-import --project ariadne --record <record-id> --from extracted.md --kind visual-description --tool manual-review
 npm run ariadne -- gsd2-export --project ariadne
 npm run ariadne -- gsd2-import --project ariadne --from gsd2-bundle.json

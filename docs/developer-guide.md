@@ -23,7 +23,7 @@ npm run build
 
 - `src/ariadne.ts`: command routing and argument parsing.
 - `src/vault.ts`: source intake, manifest, hot index, dossier.
-- `src/extractionResults.ts`: reviewed OCR, transcription, PDF text, and visual-description imports.
+- `src/extractionRunnerPlan.ts` and `src/extractionResults.ts`: explicit OCR/transcription runner selection and reviewed extraction imports.
 - `src/prd.ts`: requirements generation from dossier evidence.
 - `src/gsd.ts`: roadmap and task export.
 - `src/execution.ts`: non-mutating execution run records.

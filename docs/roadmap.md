@@ -13,14 +13,11 @@ Implemented:
 - context dossier generation
 - OCR handoff contracts for drawings/images
 - audio transcription handoff contracts
+- explicit OCR/transcription/PDF runner selection records with tool and host placement
 - OCR, transcription, PDF text, and visual-description result imports
 - source sensitivity labels
 - manifest schema versioning
 - secret scanning before vault promotion
-
-Next:
-
-- live OCR/transcription runner selection after tool choice and host placement are explicit
 
 ## Milestone 1: Source-Grounded PRD
 

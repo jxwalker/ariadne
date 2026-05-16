@@ -14,11 +14,21 @@ The roadmap adapters are file-contract surfaces first. They produce evidence and
 npm run ariadne -- extraction-import --project ariadne --record <record-id> --from extracted.md --kind ocr --tool tesseract
 ```
 
+`extraction-plan` records the explicit runner selection before any OCR or transcription tool is run:
+
+```bash
+npm run ariadne -- extraction-plan --project ariadne --record <record-id> --tool whisper.cpp --host "M5 Max" --runner mac
+```
+
+The plan is non-mutating. It binds a handoff record to a tool, host, runner type, extraction kind, planned output path, constraints, and the exact `extraction-import` command to run after review.
+
 Artifacts:
 
 - `raw/<record-id>/extracted-<extraction-id>.md`
 - `extractions/extraction-<timestamp>.json`
 - `extractions/extraction-<timestamp>.md`
+- `extractions/plans/extraction-plan-<timestamp>.json`
+- `extractions/plans/extraction-plan-<timestamp>.md`
 
 The command preserves the raw evidence, records the external tool and optional confidence, and updates the manifest with both the latest extracted text path and the full list of imported extraction paths.
 

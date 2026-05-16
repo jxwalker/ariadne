@@ -55,7 +55,15 @@ Do not paste untracked conclusions into the plan. Preserve the source export and
 
 ## Import OCR, Transcription, Or Drawing Descriptions
 
-When `ingest` creates a handoff for an image, audio file, or PDF, run the external tool you trust, review the output, and import the resulting text:
+When `ingest` creates a handoff for an image, audio file, or PDF, first record the selected tool and host placement:
+
+```bash
+npm run ariadne -- extraction-plan --project ariadne --record <record-id> --tool whisper.cpp --host "M5 Max" --runner mac
+```
+
+The plan writes `extractions/plans/extraction-plan-...json` and `.md` with the raw input path, handoff path, planned output path, constraints, and exact follow-up import command. It does not run the extraction tool.
+
+After the external tool output has been reviewed, import the resulting text:
 
 ```bash
 npm run ariadne -- extraction-import --project ariadne --record <record-id> --from extracted.md --kind visual-description --tool manual-review --confidence 0.9 --notes "Checked against the original whiteboard."
