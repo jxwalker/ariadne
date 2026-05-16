@@ -1,0 +1,60 @@
+{
+  "schemaVersion": 1,
+  "set": "realistic",
+  "title": "Realistic Benchmark Pack",
+  "purpose": "Exercise mixed source intake and manual adapter imports that resemble a real Ariadne project handoff.",
+  "generatedAt": "2026-05-16T09:45:59.631Z",
+  "root": "<PACK_ROOT>",
+  "files": [
+    {
+      "path": "sources/whitepaper.md",
+      "role": "source",
+      "description": "Whitepaper-style source with architecture and governance requirements."
+    },
+    {
+      "path": "sources/dictated-notes.txt",
+      "role": "source",
+      "description": "Dictated-note style source with rough operator instructions."
+    },
+    {
+      "path": "sources/sketch-handoff.md",
+      "role": "source",
+      "description": "Textual handoff for a design sketch or whiteboard image."
+    },
+    {
+      "path": "imports/notebooklm-export.md",
+      "role": "notebooklm_export",
+      "description": "Manual NotebookLM-style export for adapter import tests."
+    },
+    {
+      "path": "imports/ci-checks.json",
+      "role": "ci_status",
+      "description": "Passing CI fixture for import-ci."
+    },
+    {
+      "path": "imports/coderabbit-review.md",
+      "role": "coderabbit_review",
+      "description": "Approved CodeRabbit-style review fixture for import-coderabbit."
+    },
+    {
+      "path": "imports/infra-snapshot.json",
+      "role": "infra_snapshot",
+      "description": "Read-only infrastructure snapshot fixture."
+    }
+  ],
+  "recommendedCommands": [
+    "npm run cli -- ingest --project bench-realistic <PACK_ROOT>/sources/whitepaper.md <PACK_ROOT>/sources/dictated-notes.txt <PACK_ROOT>/sources/sketch-handoff.md",
+    "npm run cli -- assemble --project bench-realistic",
+    "npm run cli -- roadmap --project bench-realistic --target-url http://localhost:3000",
+    "npm run cli -- notebooklm-import --project bench-realistic --from <PACK_ROOT>/imports/notebooklm-export.md",
+    "npm run cli -- import-ci --project bench-realistic --from <PACK_ROOT>/imports/ci-checks.json",
+    "npm run cli -- import-coderabbit --project bench-realistic --from <PACK_ROOT>/imports/coderabbit-review.md",
+    "npm run cli -- infra-snapshot --project bench-realistic --from <PACK_ROOT>/imports/infra-snapshot.json",
+    "npm run cli -- artifact-checks --project bench-realistic"
+  ],
+  "acceptance": [
+    "Mixed source intake produces three source records.",
+    "Manual NotebookLM, CI, CodeRabbit, and infrastructure imports create evidence records.",
+    "Control and artifact-check reports are generated without live mutations."
+  ]
+}

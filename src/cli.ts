@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 import path from "node:path";
 import { generateArtifactCheckReport } from "./artifactChecks.js";
+import { benchmarkSets, materializeBenchmarkPack, parseBenchmarkSet } from "./benchmarkPacks.js";
 import { importCiStatus, importCodeRabbitReview } from "./ciImport.js";
 import { generateControlReport, recordCheck, recordReview } from "./controlPlane.js";
 import { generateConsoleData } from "./consoleData.js";
@@ -74,6 +75,7 @@ function usage(): string {
     "  ariadne evaluation --project <project> [--target <name>]",
     "  ariadne evaluation-record --project <project> --plan <plan.json> --scores <D1=80,D2=75> [--evidence <paths>]",
     "  ariadne artifact-checks --project <project>",
+    "  ariadne benchmark-pack --set <smoke|realistic|stress|all> [--output <dir>]",
     "  ariadne infra --project <project>",
     "  ariadne infra-snapshot --project <project> --from <manifest.json>",
     "  ariadne openscorpion-draft --project <project> --title <title> --type <type> --evidence <paths>",
@@ -311,6 +313,20 @@ async function main(): Promise<void> {
     console.log(`Status: ${result.report.status}`);
     if (result.report.summary.missingRequired > 0) {
       console.log(`Missing required: ${result.report.summary.missingRequired}`);
+    }
+    return;
+  }
+
+  if (parsed.command === "benchmark-pack") {
+    const set = parseBenchmarkSet(optionString(parsed.options, "set", ""));
+    const outputRoot = path.resolve(optionString(parsed.options, "output", path.join("benchmarks", "source-packs")));
+    const sets = set === "all" ? benchmarkSets() : [set];
+    for (const benchmarkSet of sets) {
+      const result = await materializeBenchmarkPack({ set: benchmarkSet, outputRoot });
+      console.log(`Benchmark pack: ${benchmarkSet}`);
+      console.log(`  Manifest: ${result.manifestPath}`);
+      console.log(`  README: ${result.markdownPath}`);
+      console.log(`  Files: ${result.pack.files.length}`);
     }
     return;
   }

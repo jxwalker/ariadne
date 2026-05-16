@@ -25,6 +25,7 @@ The system starts with source-grounded intake: drawings, white papers, dictated 
 - Import manual NotebookLM exports, CI status, CodeRabbit review text, read-only infrastructure snapshots, and Playwright evidence.
 - Guard worktree creation without mutating by default.
 - Check whether the expected pipeline artifacts exist before scoring or release decisions.
+- Generate smoke, realistic, and stress benchmark source packs for repeatable harness evaluation.
 - Record pipeline evaluation scores so we can measure whether the harness is improving.
 
 ## What It Does Not Do Yet
@@ -48,6 +49,7 @@ npm run cli -- assemble --project ariadne
 npm run cli -- roadmap --project ariadne --target-url http://localhost:3000 --repo /path/to/repo
 npm run cli -- evaluation --project ariadne --target mac-local
 npm run cli -- artifact-checks --project ariadne
+npm run cli -- benchmark-pack --set all
 npm run cli -- control --project ariadne
 npm run cli -- console-data --project ariadne
 npm run cli -- console-html --project ariadne --refresh-data
@@ -101,6 +103,7 @@ npm run cli -- playwright-evidence --project ariadne --target-url http://localho
 npm run cli -- evaluation --project ariadne --target mac-local
 npm run cli -- evaluation-record --project ariadne --plan evaluation-plan.json --scores D1=80,D2=75,D3=60
 npm run cli -- artifact-checks --project ariadne
+npm run cli -- benchmark-pack --set all
 npm run cli -- import-ci --project ariadne --from checks.json
 npm run cli -- import-coderabbit --project ariadne --from coderabbit.md
 npm run cli -- console-data --project ariadne

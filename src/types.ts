@@ -333,6 +333,31 @@ export interface ArtifactCheckReport {
   }>;
 }
 
+export type BenchmarkSet = "smoke" | "realistic" | "stress";
+
+export interface BenchmarkPack {
+  schemaVersion: 1;
+  set: BenchmarkSet;
+  title: string;
+  purpose: string;
+  generatedAt: string;
+  root: string;
+  files: Array<{
+    path: string;
+    role:
+      | "source"
+      | "notebooklm_export"
+      | "ci_status"
+      | "coderabbit_review"
+      | "infra_snapshot"
+      | "execution_seed"
+      | "expected";
+    description: string;
+  }>;
+  recommendedCommands: string[];
+  acceptance: string[];
+}
+
 export interface ConsoleData {
   schemaVersion: 1;
   project: string;

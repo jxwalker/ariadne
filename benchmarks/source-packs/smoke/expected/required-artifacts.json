@@ -1,0 +1,15 @@
+{
+  "requiredArtifactIds": [
+    "manifest",
+    "hot-index",
+    "dossier",
+    "prd-json",
+    "gsd-roadmap",
+    "gsd2-bundle",
+    "execution-runs",
+    "playwright-plan",
+    "evaluation-plan",
+    "infra-registry",
+    "control-report"
+  ]
+}
