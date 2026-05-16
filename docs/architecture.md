@@ -27,7 +27,10 @@ The repo should grow through adapters with explicit contracts:
 - verification adapter: unit tests, integration tests, Playwright, accessibility checks, screenshots
 - review adapter: CodeRabbit, GitHub PR checks, human review
 - evaluation adapter: pipeline scorecards, regression notes, benchmark runs
+- memory adapter: GBrain export/import, sleep routines, memory proposals
+- coordination adapter: agent mail, leases, handoff state
 - infrastructure adapter: Hermes, Proxmox, DGX Spark, self-hosted runners, local model endpoints
+- deployment adapter: read-only snapshots for Macs, DGX Spark, Proxmox, TrueNAS, and GitHub
 - governance adapter: OpenScorpion evidence and policy routing
 
 The adapters should exchange files and typed records. The control layer should be able to explain what it knows without depending on any one model provider.

@@ -1,0 +1,57 @@
+{
+  "schemaVersion": 1,
+  "project": "ariadne",
+  "generatedAt": "2026-05-16T11:45:58.842Z",
+  "status": "passed",
+  "summary": {
+    "passed": 5,
+    "warnings": 0,
+    "failed": 0
+  },
+  "checks": [
+    {
+      "id": "approved-fixture",
+      "label": "Approved review fixture",
+      "status": "passed",
+      "evidence": [
+        "review-coderabbit-2026-05-16T11-45-58-592Z"
+      ],
+      "notes": "At least one approved review or approved fixture is present."
+    },
+    {
+      "id": "execution-mutation-gates",
+      "label": "Execution mutation gates",
+      "status": "passed",
+      "evidence": [
+        "run-2026-05-15T21-29-14-025Z",
+        "run-2026-05-16T06-09-25-010Z",
+        "run-2026-05-16T07-16-41-868Z",
+        "run-2026-05-16T11-30-01-596Z"
+      ],
+      "notes": "Execution runs include explicit human approval gates before external mutation."
+    },
+    {
+      "id": "infra-read-only",
+      "label": "Infrastructure snapshots are read-only",
+      "status": "passed",
+      "evidence": [],
+      "notes": "Infrastructure evidence is limited to manual, manifest, or live_read_only snapshot kinds."
+    },
+    {
+      "id": "governance-drafts-non-submitting",
+      "label": "Governance drafts do not submit",
+      "status": "passed",
+      "evidence": [],
+      "notes": "OpenScorpion activity records are drafts with submit=false."
+    },
+    {
+      "id": "worktree-guard-fixture",
+      "label": "Worktree guard fixture",
+      "status": "passed",
+      "evidence": [
+        "projects/ariadne/execution/run-2026-05-16T11-30-01-596Z-worktree-guard.json"
+      ],
+      "notes": "1 worktree guard record(s) are present."
+    }
+  ]
+}

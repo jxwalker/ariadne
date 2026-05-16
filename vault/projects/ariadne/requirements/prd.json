@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "project": "ariadne",
-  "generatedAt": "2026-05-16T07:16:41.864Z",
+  "generatedAt": "2026-05-16T11:30:01.592Z",
   "title": "Ariadne PRD",
   "goals": [
     "Turn unstructured source material into a source-grounded, test-driven coding workflow.",

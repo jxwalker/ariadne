@@ -141,10 +141,8 @@ Implemented:
 - trend report generation
 - token/cost metrics from Hermes and review tools
 - CLI support for `evaluation`, `evaluation-record`, `evaluation-trends`, `usage-import`, `usage-report`, `artifact-checks`, and `benchmark-pack`
-
-Next:
-
 - mutation and approved-fixture checks for behavior confidence
+- CLI support for `behavior-checks`
 
 ## Milestone 8: Orchestration Visualisation
 
@@ -156,36 +154,45 @@ Implemented:
 - documented gate matrix and infrastructure map concepts
 - read-only console data projection
 - static read-only console HTML
+- project timeline from artifacts
+- infra topology view for Macs, DGX Spark, Proxmox, TrueNAS, runners, Hermes, and model endpoints
+- approval queue backed by review, decision, and control artifacts
+- memory, agent-mail, deployment, and GBrain summary panels
 
 Next:
 
 - console visual regression checks
-- project timeline from artifacts
 - evaluation trend charts
-- infra topology view for Macs, DGX Spark, Proxmox, TrueNAS, runners, Hermes, and model endpoints
-- approval queue backed by decision and control artifacts
 
 ## Milestone 9: Sleep, Memory, And Agent Mail
 
 Goal: let long-running agents coordinate without losing state or hiding decisions.
 
-Next:
+Implemented:
 
 - file-backed sleep routine records
 - memory consolidation proposals with evidence refs
 - agent mail inbox/outbox records scoped to project, task, and run ids
 - interagent lease and ownership records
+- optional GBrain read-only export and report import
+
+Next:
+
 - Hermes cron integration after read-only evidence paths are proven
 
 ## Milestone 10: Live Deployment Adapters
 
 Goal: safely deploy across the local estate.
 
+Implemented:
+
+- read-only Proxmox snapshot import
+- read-only TrueNAS snapshot import
+- DGX Spark model/evaluation endpoint snapshot import
+- Mac workstation capability snapshot import
+- GitHub deployment/check snapshot import
+
 Next:
 
-- read-only Proxmox inventory adapter
-- read-only TrueNAS storage snapshot adapter
-- DGX Spark model/evaluation endpoint registry
-- Mac workstation capability snapshots
-- GitHub live check adapter
+- live read-only inventory collectors for approved hosts
 - explicit approval workflow before any mutation-capable adapter

@@ -1,15 +1,19 @@
 #!/usr/bin/env node
 import path from "node:path";
 import { generateArtifactCheckReport } from "./artifactChecks.js";
+import { generateBehaviorCheckReport } from "./behaviorChecks.js";
 import { benchmarkSets, materializeBenchmarkPack, parseBenchmarkSet } from "./benchmarkPacks.js";
 import { importCiStatus, importCodeRabbitReview } from "./ciImport.js";
 import { generateControlReport, recordCheck, recordReview } from "./controlPlane.js";
 import { generateConsoleData } from "./consoleData.js";
 import { generateConsoleHtml } from "./consoleHtml.js";
+import { recordAgentLease, recordAgentMail, recordMemoryProposal, recordSleepRoutine } from "./coordination.js";
 import { recordDecision } from "./decisions.js";
+import { deploymentSystemOption, importDeploymentSnapshot } from "./deploymentAdapters.js";
 import { generateEvaluationPlan, recordEvaluationRun } from "./evaluation.js";
 import { generateEvaluationTrendReport } from "./evaluationTrends.js";
 import { markRunStatus, planExecution } from "./execution.js";
+import { exportGbrainBundle, importGbrainReport } from "./gbrainAdapter.js";
 import { generateGsd } from "./gsd.js";
 import { exportGsd2Bundle, importGsd2Bundle } from "./gsdAdapter.js";
 import { generateInfrastructureRegistry } from "./infrastructure.js";
@@ -79,6 +83,14 @@ function usage(): string {
     "  ariadne evaluation-trends --project <project>",
     "  ariadne usage-import --project <project> --from <usage.json> [--source <source>]",
     "  ariadne usage-report --project <project>",
+    "  ariadne behavior-checks --project <project> [--approved-fixture <review.json|review.md>]",
+    "  ariadne gbrain-export --project <project>",
+    "  ariadne gbrain-report-import --project <project> --from <report.json>",
+    "  ariadne sleep-record --project <project> --scope <scope> --summary <text> [--evidence <paths>] [--next <items>]",
+    "  ariadne memory-proposal --project <project> --title <title> --proposal <text> [--evidence <paths>]",
+    "  ariadne agent-mail --project <project> --from <agent> --to <agent> --subject <text> --body <text> [--task <id>] [--run <id>]",
+    "  ariadne agent-lease --project <project> --agent <agent> --resource <name> --status <status> [--task <id>] [--run <id>] [--notes <text>]",
+    "  ariadne deployment-snapshot --project <project> --from <snapshot.json> [--system <system>]",
     "  ariadne artifact-checks --project <project>",
     "  ariadne benchmark-pack --set <smoke|realistic|stress|all> [--output <dir>]",
     "  ariadne infra --project <project>",
@@ -99,6 +111,8 @@ function usage(): string {
     "  --project <name>     Project slug or name. Defaults to default.",
     "  --sensitivity <val>  public, internal, confidential, or secret for ingested sources.",
     "  --allow-secret-findings  Allow ingest to continue when high-severity hygiene findings are detected.",
+    "  --system <system>   Deployment snapshot system. Defaults to generic.",
+    "  --notes <text>      Optional lease notes for agent-lease.",
     ""
   ].join("\n");
 }
@@ -344,6 +358,103 @@ async function main(): Promise<void> {
     return;
   }
 
+  if (parsed.command === "behavior-checks") {
+    const result = await generateBehaviorCheckReport({
+      project,
+      vaultRoot,
+      approvedFixturePath: optionString(parsed.options, "approved-fixture", "") || undefined
+    });
+    console.log(`Behavior checks: ${result.markdownPath}`);
+    console.log(`Status: ${result.report.status}`);
+    return;
+  }
+
+  if (parsed.command === "gbrain-export") {
+    const result = await exportGbrainBundle({ project, vaultRoot });
+    console.log(`GBrain export: ${result.markdownPath}`);
+    console.log(`Documents: ${result.bundle.documents.length}`);
+    return;
+  }
+
+  if (parsed.command === "gbrain-report-import") {
+    const result = await importGbrainReport({
+      project,
+      vaultRoot,
+      sourcePath: requiredOption(parsed.options, "from")
+    });
+    console.log(`GBrain report: ${result.markdownPath}`);
+    console.log(`Results: ${result.report.resultCount}`);
+    return;
+  }
+
+  if (parsed.command === "sleep-record") {
+    const result = await recordSleepRoutine({
+      project,
+      vaultRoot,
+      scope: requiredOption(parsed.options, "scope"),
+      summary: requiredOption(parsed.options, "summary"),
+      evidenceRefs: splitList(optionString(parsed.options, "evidence", "")),
+      nextActions: splitList(optionString(parsed.options, "next", ""))
+    });
+    console.log(`Sleep routine: ${result.markdownPath}`);
+    return;
+  }
+
+  if (parsed.command === "memory-proposal") {
+    const result = await recordMemoryProposal({
+      project,
+      vaultRoot,
+      title: requiredOption(parsed.options, "title"),
+      proposal: requiredOption(parsed.options, "proposal"),
+      evidenceRefs: splitList(optionString(parsed.options, "evidence", ""))
+    });
+    console.log(`Memory proposal: ${result.markdownPath}`);
+    return;
+  }
+
+  if (parsed.command === "agent-mail") {
+    const result = await recordAgentMail({
+      project,
+      vaultRoot,
+      from: requiredOption(parsed.options, "from"),
+      to: requiredOption(parsed.options, "to"),
+      subject: requiredOption(parsed.options, "subject"),
+      body: requiredOption(parsed.options, "body"),
+      taskId: optionString(parsed.options, "task", "") || undefined,
+      runId: optionString(parsed.options, "run", "") || undefined
+    });
+    console.log(`Agent mail: ${result.markdownPath}`);
+    return;
+  }
+
+  if (parsed.command === "agent-lease") {
+    const status = agentLeaseStatusOption(parsed.options);
+    const result = await recordAgentLease({
+      project,
+      vaultRoot,
+      agent: requiredOption(parsed.options, "agent"),
+      resource: requiredOption(parsed.options, "resource"),
+      status,
+      taskId: optionString(parsed.options, "task", "") || undefined,
+      runId: optionString(parsed.options, "run", "") || undefined,
+      notes: optionString(parsed.options, "notes", "") || undefined
+    });
+    console.log(`Agent lease: ${result.markdownPath}`);
+    return;
+  }
+
+  if (parsed.command === "deployment-snapshot") {
+    const result = await importDeploymentSnapshot({
+      project,
+      vaultRoot,
+      sourcePath: requiredOption(parsed.options, "from"),
+      system: deploymentSystemOption(optionString(parsed.options, "system", "generic"))
+    });
+    console.log(`Deployment snapshot: ${result.markdownPath}`);
+    console.log(`System: ${result.snapshot.system}`);
+    return;
+  }
+
   if (parsed.command === "artifact-checks") {
     const result = await generateArtifactCheckReport({ project, vaultRoot });
     console.log(`Artifact checks: ${result.markdownPath}`);
@@ -530,6 +641,8 @@ async function main(): Promise<void> {
     });
     const infra = await generateInfrastructureRegistry({ project, vaultRoot });
     const control = await generateControlReport({ project, vaultRoot });
+    const behaviorChecks = await generateBehaviorCheckReport({ project, vaultRoot });
+    const gbrain = await exportGbrainBundle({ project, vaultRoot });
     const artifactChecks = await generateArtifactCheckReport({ project, vaultRoot });
 
     console.log("Roadmap artifacts generated");
@@ -541,6 +654,8 @@ async function main(): Promise<void> {
     console.log(`  Evaluation: ${evaluation.markdownPath}`);
     console.log(`  Infrastructure: ${infra.markdownPath}`);
     console.log(`  Control: ${control.markdownPath}`);
+    console.log(`  Behavior checks: ${behaviorChecks.markdownPath}`);
+    console.log(`  GBrain export: ${gbrain.markdownPath}`);
     console.log(`  Artifact checks: ${artifactChecks.markdownPath}`);
     console.log(`  Readiness: ${control.report.status}`);
     console.log(`  Artifact status: ${artifactChecks.report.status}`);
@@ -608,6 +723,14 @@ function usageSourceOption(
     return value;
   }
   throw new Error("--source must be hermes, coderabbit, openai, ci, or manual.");
+}
+
+function agentLeaseStatusOption(options: Map<string, string | true>): "acquired" | "released" | "expired" {
+  const value = options.get("status");
+  if (value === "acquired" || value === "released" || value === "expired") {
+    return value;
+  }
+  throw new Error("--status must be acquired, released, or expired.");
 }
 
 main().catch((error: unknown) => {

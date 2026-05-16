@@ -13,6 +13,9 @@ The first visualisation should be an operations surface over evidence, not a cha
 - Decisions: accepted decisions and source references.
 - Infrastructure: hosts, runner pools, model endpoints, snapshots.
 - Evaluation: dimension scores, regressions, recommendations.
+- Memory and coordination: sleep routines, memory proposals, agent mail, leases.
+- Deployment: read-only snapshots for Macs, DGX Spark, Proxmox, TrueNAS, GitHub, and generic systems.
+- GBrain: export bundles and imported query/eval reports.
 - Control: merge readiness and missing gates.
 
 ## Views
@@ -43,6 +46,14 @@ Rows are tasks or runs. Columns are gates: source, PRD, GSD, worktree guard, typ
 ### Infrastructure Map
 
 Nodes are Macs, DGX Spark, Proxmox, TrueNAS, runners, Hermes instances, and model endpoints. Edges show artifact flow and trust boundaries.
+
+### Approval Queue
+
+Pending review records, missing readiness gates, and mutation blockers are grouped into one queue so the operator sees what requires human action.
+
+### Memory And Mail
+
+Sleep routines, proposed durable memories, interagent messages, and resource leases show whether long-running work is coordinated or drifting.
 
 ### Evaluation Trends
 

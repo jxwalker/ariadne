@@ -22,6 +22,7 @@ type ArtifactSpec =
       suffix: string;
       excludeSuffixes?: string[];
       minimumCount: number;
+      recursive?: boolean;
     };
 
 const ARTIFACT_SPECS: ArtifactSpec[] = [
@@ -101,6 +102,41 @@ const ARTIFACT_SPECS: ArtifactSpec[] = [
     required: false,
     kind: "file",
     relativePath: "evaluation/usage-report.json"
+  },
+  {
+    id: "behavior-checks",
+    label: "Behavior checks",
+    required: false,
+    kind: "file",
+    relativePath: "evaluation/behavior-checks.json"
+  },
+  {
+    id: "gbrain-export",
+    label: "GBrain export bundle",
+    required: false,
+    kind: "file",
+    relativePath: "integrations/gbrain/gbrain-export.json"
+  },
+  {
+    id: "coordination-records",
+    label: "Sleep, memory, or mail records",
+    required: false,
+    kind: "matching-files",
+    relativePath: "coordination",
+    prefix: "",
+    suffix: ".json",
+    minimumCount: 1,
+    recursive: true
+  },
+  {
+    id: "deployment-snapshots",
+    label: "Deployment snapshots",
+    required: false,
+    kind: "matching-files",
+    relativePath: "deployment",
+    prefix: "deployment-",
+    suffix: ".json",
+    minimumCount: 1
   }
 ];
 
@@ -160,7 +196,7 @@ async function evaluateSpec(
     id: spec.id,
     label: spec.label,
     required: spec.required,
-    path: vaultRelative(vaultRoot, path.join(absoluteDir, `${spec.prefix}*${spec.suffix}`)),
+    path: vaultRelative(vaultRoot, path.join(absoluteDir, spec.recursive ? `**/${spec.prefix}*${spec.suffix}` : `${spec.prefix}*${spec.suffix}`)),
     status: matches.length >= spec.minimumCount ? "present" : "missing",
     count: matches.length,
     matches: matches.map((filePath) => vaultRelative(vaultRoot, filePath))
@@ -168,20 +204,39 @@ async function evaluateSpec(
 }
 
 async function matchingFiles(dir: string, spec: Extract<ArtifactSpec, { kind: "matching-files" }>): Promise<string[]> {
-  let names: string[];
+  let entries: Array<string | import("node:fs").Dirent>;
   try {
-    names = await fs.readdir(dir);
+    entries = spec.recursive ? await fs.readdir(dir, { withFileTypes: true }) : await fs.readdir(dir);
   } catch (error) {
     if ((error as NodeJS.ErrnoException).code === "ENOENT") return [];
     throw error;
   }
 
-  return names
-    .filter((name) => name.startsWith(spec.prefix))
-    .filter((name) => name.endsWith(spec.suffix))
-    .filter((name) => !(spec.excludeSuffixes ?? []).some((suffix) => name.endsWith(suffix)))
+  if (spec.recursive) {
+    const files: string[] = [];
+    for (const entry of entries as import("node:fs").Dirent[]) {
+      const filePath = path.join(dir, entry.name);
+      if (entry.isDirectory()) {
+        files.push(...(await matchingFiles(filePath, spec)));
+      } else if (matchesSpec(entry.name, spec)) {
+        files.push(filePath);
+      }
+    }
+    return files.sort();
+  }
+
+  return (entries as string[])
+    .filter((name) => matchesSpec(name, spec))
     .sort()
     .map((name) => path.join(dir, name));
+}
+
+function matchesSpec(name: string, spec: Extract<ArtifactSpec, { kind: "matching-files" }>): boolean {
+  return (
+    name.startsWith(spec.prefix) &&
+    name.endsWith(spec.suffix) &&
+    !(spec.excludeSuffixes ?? []).some((suffix) => name.endsWith(suffix))
+  );
 }
 
 async function pathExists(filePath: string): Promise<boolean> {

@@ -1,0 +1,12 @@
+{
+  "schemaVersion": 1,
+  "id": "mail-2026-05-16T11-39-24-249Z-92bd4afb",
+  "project": "ariadne",
+  "recordedAt": "2026-05-16T11:39:24.249Z",
+  "from": "planner",
+  "to": "executor",
+  "subject": "Roadmap completion tranche",
+  "body": "Run typecheck, tests, build, behavior checks, artifact checks, console refresh, and review before merge.",
+  "runId": "run-2026-05-16T11-30-01-596Z",
+  "status": "sent"
+}

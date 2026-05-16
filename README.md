@@ -24,6 +24,9 @@ The system starts with source-grounded intake: drawings, white papers, dictated 
 - Write manifests, hot indexes, context dossiers, PRDs, GSD roadmaps, GSD2 bundles, execution plans, decision records, Playwright plans, infrastructure registries, evaluation plans, and merge-readiness reports.
 - Import manual NotebookLM exports, CI status, CodeRabbit review text, read-only infrastructure snapshots, and Playwright evidence.
 - Import token and cost metrics from Hermes, CodeRabbit, OpenAI, CI, or manual JSON exports.
+- Export Ariadne evidence into an optional GBrain import bundle and import GBrain query/eval reports back as evidence.
+- Record behavior-confidence checks for approved review fixtures, mutation gates, read-only infrastructure snapshots, and non-submitting governance drafts.
+- Record file-backed sleep routines, memory proposals, agent mail, interagent leases, and read-only deployment snapshots.
 - Guard worktree creation without mutating by default.
 - Check whether the expected pipeline artifacts exist before scoring or release decisions.
 - Generate smoke, realistic, and stress benchmark source packs for repeatable harness evaluation.
@@ -73,6 +76,9 @@ vault/projects/<project>/
   control/
   decisions/
   infrastructure/
+  integrations/gbrain/
+  coordination/
+  deployment/
   evaluation/
   console/
   manifest.jsonl
@@ -89,9 +95,11 @@ vault/projects/<project>/
 6. Use `worktree-guard` before creating any task worktree.
 7. Record deterministic checks, Playwright evidence, CI, CodeRabbit, and human reviews.
 8. Use `artifact-checks` to verify the expected evidence spine exists.
-9. Use `evaluation` and `evaluation-record` to score the pipeline itself.
-10. Use `console-data` to publish a normalised read-only view for console work.
-11. Use `console-html` to generate a static local console at `console/index.html`.
+9. Use `behavior-checks` to verify approval and no-mutation behavior fixtures.
+10. Use `evaluation` and `evaluation-record` to score the pipeline itself.
+11. Use `gbrain-export` when Ariadne evidence should be indexed by GBrain.
+12. Use `console-data` to publish a normalised read-only view for console work.
+13. Use `console-html` to generate a static local console at `console/index.html`.
 
 ## Adapter Commands
 
@@ -111,6 +119,14 @@ npm run cli -- benchmark-pack --set all
 npm run cli -- evaluation-trends --project ariadne
 npm run cli -- usage-import --project ariadne --from usage.json --source hermes
 npm run cli -- usage-report --project ariadne
+npm run cli -- behavior-checks --project ariadne --approved-fixture coderabbit.md
+npm run cli -- gbrain-export --project ariadne
+npm run cli -- gbrain-report-import --project ariadne --from gbrain-report.json
+npm run cli -- sleep-record --project ariadne --scope nightly --summary "Review stale gates" --evidence control/merge-readiness.md --next "Refresh console data"
+npm run cli -- memory-proposal --project ariadne --title "Lesson" --proposal "Keep GBrain as a derived index" --evidence docs/adapters.md
+npm run cli -- agent-mail --project ariadne --from planner --to executor --subject "Next slice" --body "Run checks before editing"
+npm run cli -- agent-lease --project ariadne --agent executor --resource repo:/ariadne --status acquired
+npm run cli -- deployment-snapshot --project ariadne --system proxmox --from deployment.json
 npm run cli -- import-ci --project ariadne --from checks.json
 npm run cli -- import-coderabbit --project ariadne --from coderabbit.md
 npm run cli -- console-data --project ariadne

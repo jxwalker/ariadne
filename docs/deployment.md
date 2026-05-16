@@ -31,12 +31,21 @@ Deployment should follow the same rule as the rest of the project: observe first
 - Import JSON snapshots from Proxmox, TrueNAS, Macs, and DGX Spark.
 - Record host roles, model endpoints, runner pools, and trust boundaries.
 - Keep snapshots manual or read-only.
+- Use `deployment-snapshot` for estate-specific views:
+
+```bash
+npm run cli -- deployment-snapshot --project ariadne --system proxmox --from proxmox.json
+npm run cli -- deployment-snapshot --project ariadne --system truenas --from truenas.json
+npm run cli -- deployment-snapshot --project ariadne --system dgx-spark --from dgx-spark.json
+npm run cli -- deployment-snapshot --project ariadne --system mac --from mac.json
+```
 
 ### Stage 3: Always-On Orchestration
 
 - Run Hermes and Ariadne Console candidates on the Proxmox Linux host.
 - Keep `ariadne` as the state/control repo.
 - Use Hermes cron or sleep routines to propose reports, not mutate systems.
+- Use `sleep-record`, `memory-proposal`, `agent-mail`, and `agent-lease` as the durable coordination format before wiring live Hermes cron jobs.
 
 ### Stage 4: Runner And Worktree Automation
 
@@ -64,3 +73,7 @@ Deployment should follow the same rule as the rest of the project: observe first
 - OpenClaw Mission Control-style object model for boards, tasks, agents, gateways, approvals, and audit timeline.
 
 The Ariadne Console should not start by cloning any one UI. It should expose the vault's native objects: sources, dossiers, requirements, tasks, runs, checks, reviews, decisions, infra snapshots, evaluations, and readiness.
+
+## GBrain Placement
+
+GBrain is a candidate memory/search substrate. Ariadne should export to it with `gbrain-export` and import reports with `gbrain-report-import`. Do not make GBrain the source of truth for approvals, gates, or deployment state; those stay in Ariadne artifacts.

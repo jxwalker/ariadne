@@ -1,6 +1,6 @@
 # Playwright Evidence Plan: ariadne
 
-Generated: 2026-05-16T07:16:41.868Z
+Generated: 2026-05-16T11:30:01.596Z
 Target URL: http://localhost:3000
 
 ## PW-001: Source evidence intake

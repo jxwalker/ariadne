@@ -1,0 +1,17 @@
+{
+  "schemaVersion": 1,
+  "id": "sleep-2026-05-16T11-39-24-249Z-0f6ad8b1",
+  "project": "ariadne",
+  "recordedAt": "2026-05-16T11:39:24.249Z",
+  "scope": "nightly",
+  "summary": "Review stale gates, usage trends, GBrain reports, and deployment snapshots before proposing the next run.",
+  "evidenceRefs": [
+    "vault/projects/ariadne/control/merge-readiness.md",
+    "vault/projects/ariadne/evaluation/behavior-checks.md"
+  ],
+  "nextActions": [
+    "Refresh console data",
+    "Record evaluation trends",
+    "Escalate missing review gates"
+  ]
+}

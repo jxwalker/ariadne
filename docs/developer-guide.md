@@ -35,7 +35,11 @@ npm run build
 - `src/evaluationTrends.ts`: longitudinal evaluation report generation.
 - `src/usageMetrics.ts`: token/cost metric import and aggregation.
 - `src/artifactChecks.ts`: deterministic artifact contract checks for the evaluation harness.
+- `src/behaviorChecks.ts`: behavior-confidence checks for approved fixtures and no-mutation gates.
 - `src/benchmarkPacks.ts`: repeatable smoke, realistic, and stress source-pack generation.
+- `src/gbrainAdapter.ts`: optional read-only GBrain export and report import.
+- `src/coordination.ts`: sleep routine, memory proposal, agent mail, and lease records.
+- `src/deploymentAdapters.ts`: read-only deployment evidence imports for the local estate.
 - `src/infrastructure.ts` and `src/infraSnapshot.ts`: substrate registry and read-only imports.
 - `src/types.ts`: shared record contracts.
 
@@ -47,6 +51,7 @@ npm run build
 4. Add a CLI command in `src/cli.ts`.
 5. Add a test that proves the artifact path and one failure mode.
 6. Update `docs/adapters.md` and `README.md`.
+7. If console state changes, update `src/consoleData.ts`, `src/consoleHtml.ts`, and a console-data assertion.
 
 ## Testing Standard
 

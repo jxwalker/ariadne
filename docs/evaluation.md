@@ -48,6 +48,13 @@ vault/projects/<project>/evaluation/artifact-checks.json
 vault/projects/<project>/evaluation/artifact-checks.md
 ```
 
+`behavior-checks` writes behavior-confidence checks:
+
+```text
+vault/projects/<project>/evaluation/behavior-checks.json
+vault/projects/<project>/evaluation/behavior-checks.md
+```
+
 `benchmark-pack` writes repeatable input packs:
 
 ```text
@@ -78,6 +85,7 @@ npm run cli -- artifact-checks --project ariadne
 npm run cli -- benchmark-pack --set all
 npm run cli -- evaluation-trends --project ariadne
 npm run cli -- usage-report --project ariadne
+npm run cli -- behavior-checks --project ariadne --approved-fixture coderabbit.md
 npm run cli -- control --project ariadne
 npm run cli -- evaluation-record --project ariadne --plan vault/projects/ariadne/evaluation/evaluation-plan.json --scores D1=80,D2=75,D3=70,D4=65,D5=60 --evidence vault/projects/ariadne/control/merge-readiness.md
 ```
@@ -107,6 +115,7 @@ A run is acceptable when:
 - evaluation records cite the evidence used for scoring,
 - trend reports show whether scores are stable, improving, or declining,
 - token/cost reports make review and model-spend visible,
+- behavior checks prove approved fixtures and no-mutation gates are present,
 - regressions are listed rather than hidden.
 
 ## Future Automation
@@ -114,4 +123,4 @@ A run is acceptable when:
 Next evaluation work should add:
 
 - Playwright screenshot and trace ingestion,
-- mutation or fixture-based tests for behavior harness confidence.
+- live UI visual regression checks for the generated console.
