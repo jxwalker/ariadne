@@ -2,12 +2,12 @@
 
 Project: ariadne
 Status: passed
-Generated: 2026-05-16T23:11:52.931Z
+Generated: 2026-05-16T23:26:58.926Z
 
 ## Summary
 
 - Required checks: 13
-- Optional checks: 29
+- Optional checks: 30
 - Present artifacts: 35
 - Missing required artifacts: 0
 
@@ -49,6 +49,7 @@ Generated: 2026-05-16T23:11:52.931Z
 | live-adapter-readiness | no | present | - | projects/ariadne/control/live-adapter-readiness.json |
 | live-adapter-next-actions | no | present | - | projects/ariadne/control/live-adapter-next-actions.json |
 | live-adapter-approval-pack | no | present | - | projects/ariadne/control/live-adapter-approval-pack.json |
+| live-adapter-approval-reviews | no | missing | 0 | projects/ariadne/control/live-adapter-approval-reviews/approval-review-*.json |
 | mutation-dry-runs | no | missing | 0 | projects/ariadne/control/mutation-dry-runs/mutation-dry-run-*.json |
 | mutation-executions | no | missing | 0 | projects/ariadne/control/mutation-executions/mutation-execution-*.json |
 | extraction-results | no | missing | 0 | projects/ariadne/extractions/extraction-*.json |

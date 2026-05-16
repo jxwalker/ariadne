@@ -430,6 +430,7 @@ export interface LiveAdapterReadinessReport {
     passedPlans: number;
     passedDryRuns: number;
     passedExecutions: number;
+    acceptedApprovalReviews: number;
   };
   targets: Array<{
     target: Exclude<MutationReadinessPlan["target"], "generic">;
@@ -438,7 +439,10 @@ export interface LiveAdapterReadinessReport {
     passedPlanCount: number;
     passedDryRunCount: number;
     passedExecutionCount: number;
+    approvalReviewCount: number;
+    acceptedApprovalReviewCount: number;
     latestReadyPlanId?: string;
+    latestAcceptedApprovalReviewId?: string;
     executeCommand: string;
     blockers: string[];
     evidenceRefs: string[];
@@ -502,6 +506,20 @@ export interface LiveAdapterApprovalPack {
     nextActions: string[];
     evidenceRefs: string[];
   }>;
+}
+
+export interface LiveAdapterApprovalReview {
+  schemaVersion: 1;
+  id: string;
+  project: string;
+  recordedAt: string;
+  target: Exclude<MutationReadinessPlan["target"], "generic">;
+  status: "accepted" | "needs_changes" | "rejected";
+  reviewedBy: string;
+  packetRef: string;
+  evidenceRefs: string[];
+  notes?: string;
+  mutationApproved: false;
 }
 
 export interface InfraRegistry {
@@ -1090,6 +1108,8 @@ export interface ConsoleData {
     liveAdapterBlocked?: number;
     liveAdapterActionItems?: number;
     liveAdapterApprovalPackets?: number;
+    liveAdapterApprovalReviews?: number;
+    acceptedLiveAdapterApprovalReviews?: number;
     recoveryIssues: number;
     consoleBrowserChecks?: ConsoleBrowserCheckReport["status"];
     readinessStatus?: ControlReport["status"];
@@ -1153,6 +1173,7 @@ export interface ConsoleData {
   liveAdapterReadiness?: LiveAdapterReadinessReport;
   liveAdapterNextActions?: LiveAdapterNextActionsReport;
   liveAdapterApprovalPack?: LiveAdapterApprovalPack;
+  liveAdapterApprovalReviews: LiveAdapterApprovalReview[];
   recovery?: RecoveryReport;
   readiness?: ControlReport;
   artifacts: {
@@ -1179,6 +1200,7 @@ export interface ConsoleData {
     liveAdapterReadiness?: string;
     liveAdapterNextActions?: string;
     liveAdapterApprovalPack?: string;
+    liveAdapterApprovalReviews?: string;
     recoveryReport?: string;
     extractionResults?: string;
     healerProposals?: string;

@@ -2,7 +2,7 @@
 
 Project: ariadne
 Status: ready_for_operator_review
-Generated: 2026-05-16T23:08:21.384Z
+Generated: 2026-05-16T23:26:47.752Z
 Next actions: projects/ariadne/control/live-adapter-next-actions.json
 
 ## Summary
@@ -63,12 +63,14 @@ Post-verification: Verify PR/workflow status, check rollup, and repository state
 
 #### Blockers
 
+- no accepted operator review exists for live-adapter approval packet
 - no readiness plan passes audit
 - no passed dry-run evidence exists for an audit-passed plan
 - no passed target-guarded execution evidence exists
 
 #### Next Actions
 
+- pending: Record operator review of the approval packet
 - pending: Resolve existing readiness plan blockers
 - pending: Run the reviewed dry-run command
 - blocked: Capture target-guarded execution evidence
@@ -118,6 +120,7 @@ Post-verification: Verify service state, host health, and affected endpoint beha
 
 #### Blockers
 
+- no accepted operator review exists for live-adapter approval packet
 - no target-specific readiness plan exists
 - no readiness plan passes audit
 - no passed dry-run evidence exists for an audit-passed plan
@@ -125,6 +128,7 @@ Post-verification: Verify service state, host health, and affected endpoint beha
 
 #### Next Actions
 
+- pending: Record operator review of the approval packet
 - pending: Record an operator approval request
 - blocked: Create a target-specific mutation-readiness plan
 - pending: Fix readiness audit blockers
@@ -176,6 +180,7 @@ Post-verification: Verify job state, schedule, next run, and expected enabled/di
 
 #### Blockers
 
+- no accepted operator review exists for live-adapter approval packet
 - no target-specific readiness plan exists
 - no readiness plan passes audit
 - no passed dry-run evidence exists for an audit-passed plan
@@ -183,6 +188,7 @@ Post-verification: Verify job state, schedule, next run, and expected enabled/di
 
 #### Next Actions
 
+- pending: Record operator review of the approval packet
 - pending: Record an operator approval request
 - blocked: Create a target-specific mutation-readiness plan
 - pending: Fix readiness audit blockers
@@ -234,6 +240,7 @@ Post-verification: Verify governed activity status and audit record after execut
 
 #### Blockers
 
+- no accepted operator review exists for live-adapter approval packet
 - no target-specific readiness plan exists
 - no readiness plan passes audit
 - no passed dry-run evidence exists for an audit-passed plan
@@ -241,6 +248,7 @@ Post-verification: Verify governed activity status and audit record after execut
 
 #### Next Actions
 
+- pending: Record operator review of the approval packet
 - pending: Record an operator approval request
 - blocked: Create a target-specific mutation-readiness plan
 - pending: Fix readiness audit blockers
@@ -292,6 +300,7 @@ Post-verification: Verify task/package state and generated workspace effects aft
 
 #### Blockers
 
+- no accepted operator review exists for live-adapter approval packet
 - no target-specific readiness plan exists
 - no readiness plan passes audit
 - no passed dry-run evidence exists for an audit-passed plan
@@ -299,6 +308,7 @@ Post-verification: Verify task/package state and generated workspace effects aft
 
 #### Next Actions
 
+- pending: Record operator review of the approval packet
 - pending: Record an operator approval request
 - blocked: Create a target-specific mutation-readiness plan
 - pending: Fix readiness audit blockers
@@ -350,6 +360,7 @@ Post-verification: Verify notebook/source/export state and saved artifact digest
 
 #### Blockers
 
+- no accepted operator review exists for live-adapter approval packet
 - no target-specific readiness plan exists
 - no readiness plan passes audit
 - no passed dry-run evidence exists for an audit-passed plan
@@ -357,6 +368,7 @@ Post-verification: Verify notebook/source/export state and saved artifact digest
 
 #### Next Actions
 
+- pending: Record operator review of the approval packet
 - pending: Record an operator approval request
 - blocked: Create a target-specific mutation-readiness plan
 - pending: Fix readiness audit blockers

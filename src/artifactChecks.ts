@@ -259,6 +259,16 @@ const ARTIFACT_SPECS: ArtifactSpec[] = [
     relativePath: "control/live-adapter-approval-pack.json"
   },
   {
+    id: "live-adapter-approval-reviews",
+    label: "Live adapter approval reviews",
+    required: false,
+    kind: "matching-files",
+    relativePath: "control/live-adapter-approval-reviews",
+    prefix: "approval-review-",
+    suffix: ".json",
+    minimumCount: 1
+  },
+  {
     id: "mutation-dry-runs",
     label: "Mutation dry-run records",
     required: false,

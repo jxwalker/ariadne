@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "project": "ariadne",
-  "generatedAt": "2026-05-16T23:08:21.384Z",
+  "generatedAt": "2026-05-16T23:26:47.752Z",
   "status": "ready_for_operator_review",
   "summary": {
     "targets": 6,
@@ -32,11 +32,13 @@
       "rollbackRequirement": "Document how to revert or undo the PR/workflow operation and restore manual review flow.",
       "postVerificationRequirement": "Verify PR/workflow status, check rollup, and repository state after execution.",
       "blockers": [
+        "no accepted operator review exists for live-adapter approval packet",
         "no readiness plan passes audit",
         "no passed dry-run evidence exists for an audit-passed plan",
         "no passed target-guarded execution evidence exists"
       ],
       "nextActions": [
+        "pending: Record operator review of the approval packet",
         "pending: Resolve existing readiness plan blockers",
         "pending: Run the reviewed dry-run command",
         "blocked: Capture target-guarded execution evidence"
@@ -66,12 +68,14 @@
       "rollbackRequirement": "Document the exact host-level rollback command or service restore path before execution.",
       "postVerificationRequirement": "Verify service state, host health, and affected endpoint behavior after execution.",
       "blockers": [
+        "no accepted operator review exists for live-adapter approval packet",
         "no target-specific readiness plan exists",
         "no readiness plan passes audit",
         "no passed dry-run evidence exists for an audit-passed plan",
         "no passed target-guarded execution evidence exists"
       ],
       "nextActions": [
+        "pending: Record operator review of the approval packet",
         "pending: Record an operator approval request",
         "blocked: Create a target-specific mutation-readiness plan",
         "pending: Fix readiness audit blockers",
@@ -103,12 +107,14 @@
       "rollbackRequirement": "Document the exact disable or restore command for the scheduler job.",
       "postVerificationRequirement": "Verify job state, schedule, next run, and expected enabled/disabled state after execution.",
       "blockers": [
+        "no accepted operator review exists for live-adapter approval packet",
         "no target-specific readiness plan exists",
         "no readiness plan passes audit",
         "no passed dry-run evidence exists for an audit-passed plan",
         "no passed target-guarded execution evidence exists"
       ],
       "nextActions": [
+        "pending: Record operator review of the approval packet",
         "pending: Record an operator approval request",
         "blocked: Create a target-specific mutation-readiness plan",
         "pending: Fix readiness audit blockers",
@@ -140,12 +146,14 @@
       "rollbackRequirement": "Document the withdraw/update path and governed audit trail for the activity.",
       "postVerificationRequirement": "Verify governed activity status and audit record after execution.",
       "blockers": [
+        "no accepted operator review exists for live-adapter approval packet",
         "no target-specific readiness plan exists",
         "no readiness plan passes audit",
         "no passed dry-run evidence exists for an audit-passed plan",
         "no passed target-guarded execution evidence exists"
       ],
       "nextActions": [
+        "pending: Record operator review of the approval packet",
         "pending: Record an operator approval request",
         "blocked: Create a target-specific mutation-readiness plan",
         "pending: Fix readiness audit blockers",
@@ -177,12 +185,14 @@
       "rollbackRequirement": "Document generated worktree cleanup and task-state restoration.",
       "postVerificationRequirement": "Verify task/package state and generated workspace effects after execution.",
       "blockers": [
+        "no accepted operator review exists for live-adapter approval packet",
         "no target-specific readiness plan exists",
         "no readiness plan passes audit",
         "no passed dry-run evidence exists for an audit-passed plan",
         "no passed target-guarded execution evidence exists"
       ],
       "nextActions": [
+        "pending: Record operator review of the approval packet",
         "pending: Record an operator approval request",
         "blocked: Create a target-specific mutation-readiness plan",
         "pending: Fix readiness audit blockers",
@@ -214,12 +224,14 @@
       "rollbackRequirement": "Document how to remove generated exports or revert source changes and return to manual import.",
       "postVerificationRequirement": "Verify notebook/source/export state and saved artifact digest after execution.",
       "blockers": [
+        "no accepted operator review exists for live-adapter approval packet",
         "no target-specific readiness plan exists",
         "no readiness plan passes audit",
         "no passed dry-run evidence exists for an audit-passed plan",
         "no passed target-guarded execution evidence exists"
       ],
       "nextActions": [
+        "pending: Record operator review of the approval packet",
         "pending: Record an operator approval request",
         "blocked: Create a target-specific mutation-readiness plan",
         "pending: Fix readiness audit blockers",

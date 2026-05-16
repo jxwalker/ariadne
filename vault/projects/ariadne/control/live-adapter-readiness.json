@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "project": "ariadne",
-  "generatedAt": "2026-05-16T23:08:21.379Z",
+  "generatedAt": "2026-05-16T23:26:47.749Z",
   "status": "blocked",
   "summary": {
     "targets": 6,
@@ -9,7 +9,8 @@
     "blocked": 6,
     "passedPlans": 0,
     "passedDryRuns": 0,
-    "passedExecutions": 0
+    "passedExecutions": 0,
+    "acceptedApprovalReviews": 0
   },
   "targets": [
     {
@@ -19,8 +20,11 @@
       "passedPlanCount": 0,
       "passedDryRunCount": 0,
       "passedExecutionCount": 0,
+      "approvalReviewCount": 0,
+      "acceptedApprovalReviewCount": 0,
       "executeCommand": "github-mutation-execute",
       "blockers": [
+        "no accepted operator review exists for live-adapter approval packet",
         "no readiness plan passes audit",
         "no passed dry-run evidence exists for an audit-passed plan",
         "no passed target-guarded execution evidence exists"
@@ -36,8 +40,11 @@
       "passedPlanCount": 0,
       "passedDryRunCount": 0,
       "passedExecutionCount": 0,
+      "approvalReviewCount": 0,
+      "acceptedApprovalReviewCount": 0,
       "executeCommand": "deployment-mutation-execute",
       "blockers": [
+        "no accepted operator review exists for live-adapter approval packet",
         "no target-specific readiness plan exists",
         "no readiness plan passes audit",
         "no passed dry-run evidence exists for an audit-passed plan",
@@ -54,8 +61,11 @@
       "passedPlanCount": 0,
       "passedDryRunCount": 0,
       "passedExecutionCount": 0,
+      "approvalReviewCount": 0,
+      "acceptedApprovalReviewCount": 0,
       "executeCommand": "hermes-cron-mutation-execute",
       "blockers": [
+        "no accepted operator review exists for live-adapter approval packet",
         "no target-specific readiness plan exists",
         "no readiness plan passes audit",
         "no passed dry-run evidence exists for an audit-passed plan",
@@ -72,8 +82,11 @@
       "passedPlanCount": 0,
       "passedDryRunCount": 0,
       "passedExecutionCount": 0,
+      "approvalReviewCount": 0,
+      "acceptedApprovalReviewCount": 0,
       "executeCommand": "openscorpion-mutation-execute",
       "blockers": [
+        "no accepted operator review exists for live-adapter approval packet",
         "no target-specific readiness plan exists",
         "no readiness plan passes audit",
         "no passed dry-run evidence exists for an audit-passed plan",
@@ -90,8 +103,11 @@
       "passedPlanCount": 0,
       "passedDryRunCount": 0,
       "passedExecutionCount": 0,
+      "approvalReviewCount": 0,
+      "acceptedApprovalReviewCount": 0,
       "executeCommand": "gsd2-mutation-execute",
       "blockers": [
+        "no accepted operator review exists for live-adapter approval packet",
         "no target-specific readiness plan exists",
         "no readiness plan passes audit",
         "no passed dry-run evidence exists for an audit-passed plan",
@@ -108,8 +124,11 @@
       "passedPlanCount": 0,
       "passedDryRunCount": 0,
       "passedExecutionCount": 0,
+      "approvalReviewCount": 0,
+      "acceptedApprovalReviewCount": 0,
       "executeCommand": "notebooklm-mutation-execute",
       "blockers": [
+        "no accepted operator review exists for live-adapter approval packet",
         "no target-specific readiness plan exists",
         "no readiness plan passes audit",
         "no passed dry-run evidence exists for an audit-passed plan",

@@ -1,11 +1,11 @@
 {
   "schemaVersion": 1,
   "project": "ariadne",
-  "generatedAt": "2026-05-16T23:11:52.931Z",
+  "generatedAt": "2026-05-16T23:26:58.926Z",
   "status": "passed",
   "summary": {
     "required": 13,
-    "optional": 29,
+    "optional": 30,
     "present": 35,
     "missingRequired": 0
   },
@@ -295,6 +295,15 @@
       "required": false,
       "path": "projects/ariadne/control/live-adapter-approval-pack.json",
       "status": "present"
+    },
+    {
+      "id": "live-adapter-approval-reviews",
+      "label": "Live adapter approval reviews",
+      "required": false,
+      "path": "projects/ariadne/control/live-adapter-approval-reviews/approval-review-*.json",
+      "status": "missing",
+      "count": 0,
+      "matches": []
     },
     {
       "id": "mutation-dry-runs",

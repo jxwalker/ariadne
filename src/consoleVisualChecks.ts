@@ -25,6 +25,7 @@ export async function generateConsoleVisualCheckReport(input: {
     checkContains(html, "approval-queue", "Approval queue section", "Approval Queue"),
     approvalPackMetricCheck(html, embeddedData),
     approvalPackDataCheck(html, embeddedData),
+    checkContains(html, "approval-review-metric", "Approval review metric", "Packet Reviews"),
     trendChartCheck(html, embeddedData),
     checkContains(html, "visual-check-panel", "Visual check panel", "Visual Checks"),
     checkContains(html, "embedded-data", "Embedded console data", 'id="console-data"'),
