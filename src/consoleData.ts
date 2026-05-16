@@ -31,6 +31,8 @@ import type {
   GsdRoadmap,
   InfraRegistry,
   InfraSnapshot,
+  LiveAdapterNextActionsReport,
+  LiveAdapterReadinessReport,
   MemoryProposalRecord,
   MutationDryRunRecord,
   MutationExecutionRecord,
@@ -82,6 +84,18 @@ export async function collectConsoleData(vaultRoot: string, projectInput: string
     project,
     "control",
     "mutation-readiness-audit.json"
+  );
+  const liveAdapterReadiness = await readProjectJson<LiveAdapterReadinessReport>(
+    vaultRoot,
+    project,
+    "control",
+    "live-adapter-readiness.json"
+  );
+  const liveAdapterNextActions = await readProjectJson<LiveAdapterNextActionsReport>(
+    vaultRoot,
+    project,
+    "control",
+    "live-adapter-next-actions.json"
   );
   const recovery = await readProjectJson<RecoveryReport>(vaultRoot, project, "control", "recovery-report.json");
   const gbrainExport = await readProjectJson<GbrainExportBundle>(vaultRoot, project, "integrations/gbrain", "gbrain-export.json");
@@ -189,6 +203,10 @@ export async function collectConsoleData(vaultRoot: string, projectInput: string
       mutationDryRuns: mutationDryRuns.length,
       mutationExecutions: mutationExecutions.length,
       mutationReadinessAuditStatus: mutationReadinessAudit?.status,
+      liveAdapterReadinessStatus: liveAdapterReadiness?.status,
+      liveAdapterReady: liveAdapterReadiness?.summary.ready,
+      liveAdapterBlocked: liveAdapterReadiness?.summary.blocked,
+      liveAdapterActionItems: liveAdapterNextActions?.summary.actionItems,
       recoveryIssues: recovery?.issues.length ?? 0,
       consoleBrowserChecks: consoleBrowserChecks?.status,
       readinessStatus: readiness?.status,
@@ -207,6 +225,8 @@ export async function collectConsoleData(vaultRoot: string, projectInput: string
     mutationDryRuns: mutationDryRunsForConsole,
     mutationExecutions: mutationExecutionsForConsole,
     mutationReadinessAudit,
+    liveAdapterReadiness,
+    liveAdapterNextActions,
     decisions,
     playwrightEvidence,
     healerProposals,
@@ -262,6 +282,8 @@ export async function collectConsoleData(vaultRoot: string, projectInput: string
       mutationDryRuns: await existingPath(vaultRoot, path.join(dir, "control", "mutation-dry-runs")),
       mutationExecutions: await existingPath(vaultRoot, path.join(dir, "control", "mutation-executions")),
       mutationReadinessAudit: await existingPath(vaultRoot, path.join(dir, "control", "mutation-readiness-audit.json")),
+      liveAdapterReadiness: await existingPath(vaultRoot, path.join(dir, "control", "live-adapter-readiness.json")),
+      liveAdapterNextActions: await existingPath(vaultRoot, path.join(dir, "control", "live-adapter-next-actions.json")),
       recoveryReport: await existingPath(vaultRoot, path.join(dir, "control", "recovery-report.json")),
       extractionResults: await existingPath(vaultRoot, path.join(dir, "extractions")),
       healerProposals: await existingPath(vaultRoot, path.join(dir, "verification", "healer-proposals")),
