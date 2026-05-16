@@ -38,6 +38,7 @@ import { hermesCronMutationActionOption, planHermesCronMutation } from "./hermes
 import { generateInfrastructureRegistry } from "./infrastructure.js";
 import { draftOpenScorpionActivity, importInfraSnapshot } from "./infraSnapshot.js";
 import { collectLocalInfraSnapshot, collectSshInfraSnapshot } from "./liveInventory.js";
+import { generateLiveAdapterNextActions } from "./liveAdapterNextActions.js";
 import { generateLiveAdapterReadiness } from "./liveAdapterReadiness.js";
 import { importNotebookLmExport } from "./notebooklm.js";
 import { notebookLmMutationActionOption, planNotebookLmMutation } from "./notebookLmMutation.js";
@@ -159,6 +160,7 @@ function usage(): string {
     "  ariadne mutation-readiness --project <project> --target <target> --scope <text> --auth-evidence <paths> --dry-run <cmd> --live-command <cmd> --post-verify <cmd> --rollback <text> [--approval <id|json>] [--risk <low|medium|high>] [--evidence <paths>] [--notes <text>]",
     "  ariadne mutation-readiness-audit --project <project>",
     "  ariadne live-adapter-readiness --project <project>",
+    "  ariadne live-adapter-next-actions --project <project>",
     "  ariadne mutation-dry-run --project <project> --plan <id|json> [--timeout-ms <ms>]",
     "  ariadne mutation-execute --project <project> --plan <id|json> --confirm-plan <id> [--timeout-ms <ms>]",
     "  ariadne target-mutation-execute --project <project> --target <target> --plan <id|json> --confirm-plan <id> [--timeout-ms <ms>]",
@@ -1068,6 +1070,14 @@ async function main(): Promise<void> {
     console.log(`Status: ${result.report.status}`);
     console.log(`Ready: ${result.report.summary.ready}`);
     console.log(`Blocked: ${result.report.summary.blocked}`);
+    return;
+  }
+
+  if (parsed.command === "live-adapter-next-actions") {
+    const result = await generateLiveAdapterNextActions({ project, vaultRoot });
+    console.log(`Live adapter next actions: ${result.markdownPath}`);
+    console.log(`Status: ${result.report.status}`);
+    console.log(`Action items: ${result.report.summary.actionItems}`);
     return;
   }
 

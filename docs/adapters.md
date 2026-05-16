@@ -210,6 +210,8 @@ Target-specific execute wrappers hard-code that guard for the live adapters: `gi
 
 `live-adapter-readiness` reports whether each target has enough evidence to replace placeholder shell commands with a real adapter. A target is ready only when it has an audit-passed readiness plan, passed dry-run evidence, and passed target-guarded execution evidence. The report is still non-mutating; it writes `control/live-adapter-readiness.json` and `.md`.
 
+`live-adapter-next-actions` turns the readiness blockers into an operator packet. It lists the approval request, target-specific mutation plan, dry-run, target-guarded execution, or placeholder-replacement step still needed for each target. It does not decide approvals or run commands; it writes `control/live-adapter-next-actions.json` and `.md`.
+
 ```bash
 npm run ariadne -- approval-request --project ariadne --by planner --target github --action "Enable PR mutation adapter" --risk medium --reason "Manual gate before live mutation" --rollback "Disable adapter and return to manual PR flow"
 npm run ariadne -- approval-decision --project ariadne --approval approval-... --status approved --by james --notes "Approved for a bounded test only."
@@ -222,6 +224,7 @@ npm run ariadne -- deployment-mutation-plan --project ariadne --system proxmox -
 npm run ariadne -- mutation-readiness-audit --project ariadne
 npm run ariadne -- mutation-dry-run --project ariadne --plan mutation-readiness-github-...
 npm run ariadne -- live-adapter-readiness --project ariadne
+npm run ariadne -- live-adapter-next-actions --project ariadne
 npm run ariadne -- github-mutation-execute --project ariadne --plan mutation-readiness-github-... --confirm-plan mutation-readiness-github-...
 npm run ariadne -- target-mutation-execute --project ariadne --target github --plan mutation-readiness-github-... --confirm-plan mutation-readiness-github-...
 npm run ariadne -- mutation-execute --project ariadne --plan mutation-readiness-github-... --confirm-plan mutation-readiness-github-...
