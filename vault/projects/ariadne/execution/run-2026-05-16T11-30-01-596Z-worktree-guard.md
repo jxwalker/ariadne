@@ -17,7 +17,7 @@ Apply: no
  M docs/roadmap.md
  M docs/user-guide.md
  M src/artifactChecks.ts
- M src/cli.ts
+ M src/ariadne.ts
  M src/consoleData.ts
  M src/consoleHtml.ts
  M src/types.ts
