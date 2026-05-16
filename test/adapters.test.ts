@@ -738,7 +738,7 @@ describe("roadmap adapters", () => {
     expect(nextActions.report.status).toBe("actions_required");
     expect(githubActions?.actions.some((action) => action.id === "github-replace-placeholder" && action.status === "ready")).toBe(true);
     expect(deploymentActions?.actions.some((action) => action.id === "deployment-audit-fix")).toBe(true);
-    expect(deploymentActions?.actions.some((action) => action.id === "deployment-dry-run" && action.status === "blocked")).toBe(true);
+    expect(deploymentActions?.actions.some((action) => action.id === "deployment-dry-run" && action.status === "pending")).toBe(true);
     await expect(
       runMutationDryRun({
         project: "ariadne",
