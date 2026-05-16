@@ -26,6 +26,7 @@ import { generateEvaluationTrendReport } from "../src/evaluationTrends.js";
 import { importNotebookLmExport } from "../src/notebooklm.js";
 import { recordPlaywrightEvidence } from "../src/playwrightEvidence.js";
 import { generatePrd } from "../src/prd.js";
+import { generateRecoveryReport } from "../src/recovery.js";
 import { generateUsageMetricsReport, importUsageMetrics } from "../src/usageMetrics.js";
 import { guardWorktrees } from "../src/worktreeGuard.js";
 import { assembleDossier, ingestFiles } from "../src/vault.js";
@@ -537,6 +538,11 @@ describe("roadmap adapters", () => {
 
     const control = await generateControlReport({ project: "ariadne", vaultRoot });
     expect(control.report.evidence.some((item) => item.includes("Review approved by coderabbit"))).toBe(true);
+    await planExecution({ project: "ariadne", vaultRoot, repoPath: repo, taskId: "TASK-002" });
+    const recovery = await generateRecoveryReport({ project: "ariadne", vaultRoot });
+    expect(recovery.report.summary.executionRuns).toBeGreaterThan(0);
+    expect(recovery.report.summary.missingWorktreeGuards).toBeGreaterThan(0);
+    expect(recovery.report.issues.some((issue) => issue.kind === "check" && issue.severity === "blocking")).toBe(true);
 
     const console = await generateConsoleData({ project: "ariadne", vaultRoot });
     expect(console.data.summary.sources).toBe(1);
@@ -547,6 +553,8 @@ describe("roadmap adapters", () => {
     expect(console.data.infrastructure.registry?.hosts.length).toBeGreaterThan(0);
     expect(console.data.summary.githubSnapshots).toBe(1);
     expect(console.data.github.snapshots[0]?.summary.pendingChecks).toBe(1);
+    expect(console.data.summary.recoveryIssues).toBe(recovery.report.issues.length);
+    expect(console.data.recovery?.status).toBe("attention_required");
     expect(console.data.artifacts.control).toBeTruthy();
 
     const consoleHtml = await generateConsoleHtml({
@@ -559,6 +567,7 @@ describe("roadmap adapters", () => {
     expect(html).toContain("<!doctype html>");
     expect(html).toContain("Gate Matrix");
     expect(html).toContain("Visual Checks");
+    expect(html).toContain("Recovery");
     expect(html).toContain("GitHub");
     expect(html).toContain("console-data");
     expect(html).not.toContain(temp);

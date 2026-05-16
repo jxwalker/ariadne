@@ -104,6 +104,7 @@ function renderConsole(data: ConsoleData): string {
     metric("Runs", data.summary.executionRuns),
     metric("Checks", data.summary.checks, failedChecks > 0 ? `${failedChecks} failed` : "recorded"),
     metric("GitHub", data.summary.githubSnapshots, "snapshots"),
+    metric("Recovery", data.summary.recoveryIssues, "issues"),
     metric(
       "Evaluation",
       data.summary.latestEvaluationScore ?? latestEvaluation?.overallScore ?? "none",
@@ -121,6 +122,7 @@ function renderConsole(data: ConsoleData): string {
     '<aside class="side-column">',
     section("Evidence Chain", evidenceChain(data)),
     section("Visual Checks", visualChecks(data)),
+    section("Recovery", recovery(data)),
     section("Memory And Mail", memoryAndMail(data)),
     section("Infrastructure", infrastructure(data)),
     section("Deployment", deployment(data)),
@@ -254,6 +256,7 @@ function evidenceChain(data: ConsoleData): string {
     ["Reviews", data.summary.reviews],
     ["Decisions", data.summary.decisions],
     ["GitHub snapshots", data.summary.githubSnapshots],
+    ["Recovery issues", data.summary.recoveryIssues],
     ["GBrain reports", data.gbrain?.reports.length ?? 0]
   ];
   return `<div class="chain">${rows.map(([label, value]) => `<div><span>${escapeHtml(String(label))}</span><strong>${escapeHtml(String(value))}</strong></div>`).join("")}</div>`;
@@ -285,6 +288,20 @@ function approvalQueue(data: ConsoleData): string {
     '<div class="table-wrap"><table><thead><tr><th>Kind</th><th>Detail</th></tr></thead><tbody>',
     ...rows.map((row) => `<tr><td>${escapeHtml(row.kind)}</td><td>${escapeHtml(row.detail)}</td></tr>`),
     "</tbody></table></div>"
+  ].join("");
+}
+
+function recovery(data: ConsoleData): string {
+  const report = data.recovery;
+  if (!report) return empty("No recovery report is available.");
+  return [
+    `<div class="visual-status"><strong class="${statusClass(report.status)}">${escapeHtml(report.status)}</strong><span>${escapeHtml(`${report.summary.incompleteRuns} incomplete / ${report.summary.missingGates} missing gates`)}</span></div>`,
+    '<ul class="compact-list">',
+    ...report.issues.slice(0, 6).map(
+      (issue) =>
+        `<li><strong class="${statusClass(issue.severity)}">${escapeHtml(issue.severity)}</strong><span>${escapeHtml(issue.detail)}</span></li>`
+    ),
+    "</ul>"
   ].join("");
 }
 
@@ -361,9 +378,13 @@ function logoMark(): string {
 }
 
 function statusClass(value: string | undefined): string {
-  if (value === "passed" || value === "ready" || value === "approved" || value === "complete") return "ok";
-  if (value === "failed" || value === "blocked" || value === "changes_requested") return "bad";
-  if (value === "review_required" || value === "pending" || value === "skipped" || value === "warning") return "warn";
+  if (value === "passed" || value === "ready" || value === "approved" || value === "complete" || value === "info") {
+    return "ok";
+  }
+  if (value === "failed" || value === "blocked" || value === "changes_requested" || value === "blocking") return "bad";
+  if (value === "review_required" || value === "pending" || value === "skipped" || value === "warning" || value === "attention_required") {
+    return "warn";
+  }
   return "muted";
 }
 

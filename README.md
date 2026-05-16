@@ -21,7 +21,7 @@ The system starts with source-grounded intake: drawings, white papers, dictated 
 
 - Ingest local files into `vault/projects/<project>/raw/`.
 - Extract safe text from Markdown, text, and macOS `.docx` files.
-- Write manifests, hot indexes, context dossiers, PRDs, GSD roadmaps, GSD2 bundles, execution plans, decision records, Playwright plans, infrastructure registries, evaluation plans, and merge-readiness reports.
+- Write manifests, hot indexes, context dossiers, PRDs, GSD roadmaps, GSD2 bundles, execution plans, decision records, Playwright plans, infrastructure registries, evaluation plans, merge-readiness reports, and crash-recovery reports.
 - Import manual NotebookLM exports, CI status, CodeRabbit review text, read-only GitHub PR/check snapshots, read-only infrastructure snapshots, and Playwright evidence.
 - Import token and cost metrics from Hermes, CodeRabbit, OpenAI, CI, or manual JSON exports.
 - Export Ariadne evidence into an optional GBrain import bundle and import GBrain query/eval reports back as evidence.
@@ -59,6 +59,7 @@ npm run cli -- benchmark-pack --set all
 npm run cli -- evaluation-trends --project ariadne
 npm run cli -- usage-report --project ariadne
 npm run cli -- control --project ariadne
+npm run cli -- recovery-report --project ariadne
 npm run cli -- console-data --project ariadne
 npm run cli -- console-html --project ariadne --refresh-data
 npm run cli -- console-visual-checks --project ariadne
@@ -132,6 +133,7 @@ npm run cli -- agent-lease --project ariadne --agent executor --resource repo:/a
 npm run cli -- deployment-snapshot --project ariadne --system proxmox --from deployment.json
 npm run cli -- import-ci --project ariadne --from checks.json
 npm run cli -- import-coderabbit --project ariadne --from coderabbit.md
+npm run cli -- recovery-report --project ariadne
 npm run cli -- console-data --project ariadne
 npm run cli -- console-html --project ariadne --refresh-data
 npm run cli -- console-visual-checks --project ariadne

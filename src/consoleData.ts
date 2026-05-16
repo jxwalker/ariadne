@@ -26,6 +26,7 @@ import type {
   MemoryProposalRecord,
   PlaywrightEvidenceRecord,
   PrdDocument,
+  RecoveryReport,
   ReviewRecord,
   SleepRoutineRecord,
   SourceHygieneReport
@@ -58,6 +59,7 @@ export async function collectConsoleData(vaultRoot: string, projectInput: string
     "visual-checks.json"
   );
   const behaviorChecks = await readProjectJson<BehaviorCheckReport>(vaultRoot, project, "evaluation", "behavior-checks.json");
+  const recovery = await readProjectJson<RecoveryReport>(vaultRoot, project, "control", "recovery-report.json");
   const gbrainExport = await readProjectJson<GbrainExportBundle>(vaultRoot, project, "integrations/gbrain", "gbrain-export.json");
   const checks = await readJsonl<CheckRecord>(path.join(dir, "control", "check-history.jsonl"));
   const reviews = await readJsonl<ReviewRecord>(path.join(dir, "control", "reviews.jsonl"));
@@ -121,6 +123,7 @@ export async function collectConsoleData(vaultRoot: string, projectInput: string
       agentLeases: agentLeases.length,
       deploymentSnapshots: deploymentSnapshots.length,
       githubSnapshots: githubSnapshots.length,
+      recoveryIssues: recovery?.issues.length ?? 0,
       readinessStatus: readiness?.status,
       latestEvaluationScore: evaluations.at(-1)?.overallScore,
       evaluationTrendStatus: evaluationTrends?.status
@@ -157,6 +160,7 @@ export async function collectConsoleData(vaultRoot: string, projectInput: string
     github: {
       snapshots: githubSnapshots
     },
+    recovery,
     readiness,
     artifacts: {
       hotIndex: await existingPath(vaultRoot, path.join(dir, "HOT_INDEX.md")),
@@ -170,7 +174,8 @@ export async function collectConsoleData(vaultRoot: string, projectInput: string
       behaviorChecks: await existingPath(vaultRoot, path.join(dir, "evaluation", "behavior-checks.json")),
       gbrainExport: await existingPath(vaultRoot, path.join(dir, "integrations", "gbrain", "gbrain-export.json")),
       consoleVisualChecks: await existingPath(vaultRoot, path.join(dir, "console", "visual-checks.json")),
-      githubSnapshots: await existingPath(vaultRoot, path.join(dir, "integrations", "github"))
+      githubSnapshots: await existingPath(vaultRoot, path.join(dir, "integrations", "github")),
+      recoveryReport: await existingPath(vaultRoot, path.join(dir, "control", "recovery-report.json"))
     }
   };
   return makePortable(data, vaultRoot);

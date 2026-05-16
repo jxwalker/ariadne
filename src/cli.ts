@@ -25,6 +25,7 @@ import { defaultVaultRoot } from "./paths.js";
 import { recordPlaywrightEvidence } from "./playwrightEvidence.js";
 import { generatePlaywrightPlan } from "./playwrightPlan.js";
 import { generatePrd } from "./prd.js";
+import { generateRecoveryReport } from "./recovery.js";
 import { generateUsageMetricsReport, importUsageMetrics } from "./usageMetrics.js";
 import { assembleDossier, ingestFiles, projectStatus } from "./vault.js";
 import { guardWorktrees } from "./worktreeGuard.js";
@@ -104,6 +105,7 @@ function usage(): string {
     "  ariadne record-check --project <project> --name <name> --status <status> --command <cmd>",
     "  ariadne record-review --project <project> --source <source> --status <status> --summary <text>",
     "  ariadne control --project <project>",
+    "  ariadne recovery-report --project <project>",
     "  ariadne console-data --project <project>",
     "  ariadne console-html --project <project> [--refresh-data]",
     "  ariadne console-visual-checks --project <project> [--html <index.html>]",
@@ -618,6 +620,14 @@ async function main(): Promise<void> {
     if (result.report.missing.length > 0) {
       console.log(`Missing: ${result.report.missing.length}`);
     }
+    return;
+  }
+
+  if (parsed.command === "recovery-report") {
+    const result = await generateRecoveryReport({ project, vaultRoot });
+    console.log(`Recovery report: ${result.markdownPath}`);
+    console.log(`Status: ${result.report.status}`);
+    console.log(`Issues: ${result.report.issues.length}`);
     return;
   }
 

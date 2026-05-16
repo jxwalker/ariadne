@@ -9,6 +9,7 @@ The first visualisation should be an operations surface over evidence, not a cha
 - Requirements: PRD goals, requirements, ambiguities.
 - Tasks: GSD tasks, write scopes, verification commands.
 - Execution: run status, worktree guard checks, stop conditions.
+- Recovery: incomplete runs, missing guards, failed checks, pending reviews, and resume actions.
 - Verification: typecheck, tests, build, Playwright evidence, CI, CodeRabbit, GitHub PR/check snapshots.
 - Decisions: accepted decisions and source references.
 - Infrastructure: hosts, runner pools, model endpoints, snapshots.
@@ -23,6 +24,10 @@ The first visualisation should be an operations surface over evidence, not a cha
 ### Project Timeline
 
 A chronological stream of ingests, generated artifacts, decisions, checks, reviews, GitHub snapshots, and evaluation runs.
+
+### Recovery Queue
+
+Crash recovery reports show whether the next operator should resume a run, rerun a guard, fix failed checks, or resolve review feedback before continuing.
 
 ### Harness Board
 

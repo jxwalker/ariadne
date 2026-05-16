@@ -1,12 +1,12 @@
 {
   "schemaVersion": 1,
   "project": "ariadne",
-  "generatedAt": "2026-05-16T12:25:23.986Z",
+  "generatedAt": "2026-05-16T12:43:06.377Z",
   "status": "passed",
   "summary": {
     "required": 13,
-    "optional": 9,
-    "present": 22,
+    "optional": 10,
+    "present": 23,
     "missingRequired": 0
   },
   "checks": [
@@ -132,6 +132,13 @@
       "label": "Console visual checks",
       "required": false,
       "path": "projects/ariadne/console/visual-checks.json",
+      "status": "present"
+    },
+    {
+      "id": "recovery-report",
+      "label": "Crash recovery report",
+      "required": false,
+      "path": "projects/ariadne/control/recovery-report.json",
       "status": "present"
     },
     {
