@@ -1,7 +1,7 @@
 # Smoke Benchmark Pack
 
 Set: smoke
-Generated: 2026-05-16T09:45:59.627Z
+Generated: 2026-05-16T18:29:06.230Z
 
 Prove the minimum evidence-to-control pipeline on one compact Markdown source.
 
@@ -23,6 +23,6 @@ npm run ariadne -- artifact-checks --project bench-smoke
 
 ## Acceptance
 
-- Artifact checks pass with no missing required artifacts.
-- The generated PRD contains the core evidence, planning, verification, and control requirements.
-- No command requires a live external service.
+- smoke-artifact-contract (artifact_contract): Artifact checks pass with no missing required artifacts.
+- smoke-pipeline-output (pipeline_output): The generated PRD contains the core evidence, planning, verification, and control requirements.
+- smoke-fixture-safety (fixture_safety): No command requires a live external service.

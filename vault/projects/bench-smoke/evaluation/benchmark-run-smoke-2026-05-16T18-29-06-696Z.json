@@ -1,0 +1,188 @@
+{
+  "schemaVersion": 1,
+  "id": "benchmark-run-smoke-2026-05-16T18-29-06-696Z",
+  "project": "bench-smoke",
+  "set": "smoke",
+  "generatedAt": "2026-05-16T18:29:06.696Z",
+  "mode": "local_deterministic",
+  "status": "passed",
+  "packPath": "<PACK_ROOT>/benchmark-pack.json",
+  "packRoot": "<PACK_ROOT>",
+  "targetProjects": [
+    "bench-smoke"
+  ],
+  "summary": {
+    "steps": 13,
+    "passed": 13,
+    "failed": 0,
+    "targetProjects": 1,
+    "missingRequiredArtifacts": 0
+  },
+  "steps": [
+    {
+      "id": "ingest",
+      "project": "bench-smoke",
+      "status": "passed",
+      "detail": "completed",
+      "evidenceRefs": [
+        "<PACK_ROOT>/sources/source.md"
+      ]
+    },
+    {
+      "id": "assemble",
+      "project": "bench-smoke",
+      "status": "passed",
+      "detail": "completed",
+      "evidenceRefs": []
+    },
+    {
+      "id": "prd",
+      "project": "bench-smoke",
+      "status": "passed",
+      "detail": "completed",
+      "evidenceRefs": [
+        "<VAULT_ROOT>/projects/bench-smoke/requirements/prd.json",
+        "<VAULT_ROOT>/projects/bench-smoke/requirements/PRD.md"
+      ]
+    },
+    {
+      "id": "gsd",
+      "project": "bench-smoke",
+      "status": "passed",
+      "detail": "completed",
+      "evidenceRefs": [
+        "<VAULT_ROOT>/projects/bench-smoke/gsd/roadmap.json",
+        "<VAULT_ROOT>/projects/bench-smoke/gsd/TASKS.md",
+        "<VAULT_ROOT>/projects/bench-smoke/verification/commands.json"
+      ]
+    },
+    {
+      "id": "gsd2-export",
+      "project": "bench-smoke",
+      "status": "passed",
+      "detail": "completed",
+      "evidenceRefs": [
+        "<VAULT_ROOT>/projects/bench-smoke/gsd/gsd2-bundle.json",
+        "<VAULT_ROOT>/projects/bench-smoke/gsd/gsd2-bundle.md"
+      ]
+    },
+    {
+      "id": "execution",
+      "project": "bench-smoke",
+      "status": "passed",
+      "detail": "completed",
+      "evidenceRefs": [
+        "<VAULT_ROOT>/projects/bench-smoke/execution/run-2026-05-16T18-29-06-690Z.json",
+        "<VAULT_ROOT>/projects/bench-smoke/execution/run-2026-05-16T18-29-06-690Z.md"
+      ]
+    },
+    {
+      "id": "playwright",
+      "project": "bench-smoke",
+      "status": "passed",
+      "detail": "completed",
+      "evidenceRefs": [
+        "<VAULT_ROOT>/projects/bench-smoke/verification/playwright-plan.json",
+        "<VAULT_ROOT>/projects/bench-smoke/verification/playwright-plan.md",
+        "<VAULT_ROOT>/projects/bench-smoke/verification/generated.playwright.spec.ts"
+      ]
+    },
+    {
+      "id": "evaluation",
+      "project": "bench-smoke",
+      "status": "passed",
+      "detail": "completed",
+      "evidenceRefs": [
+        "<VAULT_ROOT>/projects/bench-smoke/evaluation/evaluation-plan.json",
+        "<VAULT_ROOT>/projects/bench-smoke/evaluation/evaluation-plan.md"
+      ]
+    },
+    {
+      "id": "infra",
+      "project": "bench-smoke",
+      "status": "passed",
+      "detail": "completed",
+      "evidenceRefs": [
+        "<VAULT_ROOT>/projects/bench-smoke/infrastructure/registry.json",
+        "<VAULT_ROOT>/projects/bench-smoke/infrastructure/runner-and-model-plan.md"
+      ]
+    },
+    {
+      "id": "control",
+      "project": "bench-smoke",
+      "status": "passed",
+      "detail": "completed",
+      "evidenceRefs": [
+        "<VAULT_ROOT>/projects/bench-smoke/control/merge-readiness.json",
+        "<VAULT_ROOT>/projects/bench-smoke/control/merge-readiness.md"
+      ]
+    },
+    {
+      "id": "behavior-checks",
+      "project": "bench-smoke",
+      "status": "passed",
+      "detail": "completed",
+      "evidenceRefs": [
+        "<VAULT_ROOT>/projects/bench-smoke/evaluation/behavior-checks.json",
+        "<VAULT_ROOT>/projects/bench-smoke/evaluation/behavior-checks.md"
+      ]
+    },
+    {
+      "id": "gbrain-export",
+      "project": "bench-smoke",
+      "status": "passed",
+      "detail": "completed",
+      "evidenceRefs": [
+        "<VAULT_ROOT>/projects/bench-smoke/integrations/gbrain/gbrain-export.json",
+        "<VAULT_ROOT>/projects/bench-smoke/integrations/gbrain/gbrain-export.md"
+      ]
+    },
+    {
+      "id": "artifact-checks",
+      "project": "bench-smoke",
+      "status": "passed",
+      "detail": "completed",
+      "evidenceRefs": [
+        "<VAULT_ROOT>/projects/bench-smoke/evaluation/artifact-checks.json",
+        "<VAULT_ROOT>/projects/bench-smoke/evaluation/artifact-checks.md"
+      ]
+    }
+  ],
+  "acceptance": [
+    {
+      "id": "smoke-artifact-contract",
+      "type": "artifact_contract",
+      "criterion": "Artifact checks pass with no missing required artifacts.",
+      "status": "passed",
+      "evidenceRefs": [
+        "<VAULT_ROOT>/projects/bench-smoke/evaluation/artifact-checks.md"
+      ]
+    },
+    {
+      "id": "smoke-pipeline-output",
+      "type": "pipeline_output",
+      "criterion": "The generated PRD contains the core evidence, planning, verification, and control requirements.",
+      "status": "passed",
+      "evidenceRefs": [
+        "<VAULT_ROOT>/projects/bench-smoke/evaluation/artifact-checks.md"
+      ]
+    },
+    {
+      "id": "smoke-fixture-safety",
+      "type": "fixture_safety",
+      "criterion": "No command requires a live external service.",
+      "status": "passed",
+      "evidenceRefs": [
+        "<VAULT_ROOT>/projects/bench-smoke/evaluation/artifact-checks.md"
+      ]
+    }
+  ],
+  "artifactChecks": [
+    {
+      "project": "bench-smoke",
+      "status": "passed",
+      "missingRequired": 0,
+      "reportPath": "<VAULT_ROOT>/projects/bench-smoke/evaluation/artifact-checks.md"
+    }
+  ]
+}

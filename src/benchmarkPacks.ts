@@ -6,6 +6,7 @@ interface BenchmarkFileTemplate {
   path: string;
   role: BenchmarkPack["files"][number]["role"];
   description: string;
+  targetProject?: string;
   content: string;
 }
 
@@ -15,7 +16,7 @@ interface BenchmarkPackTemplate {
   purpose: string;
   files: BenchmarkFileTemplate[];
   recommendedCommands: string[];
-  acceptance: string[];
+  acceptance: BenchmarkPack["acceptance"];
 }
 
 const SMOKE: BenchmarkPackTemplate = {
@@ -64,9 +65,21 @@ const SMOKE: BenchmarkPackTemplate = {
     "npm run ariadne -- artifact-checks --project bench-smoke"
   ],
   acceptance: [
-    "Artifact checks pass with no missing required artifacts.",
-    "The generated PRD contains the core evidence, planning, verification, and control requirements.",
-    "No command requires a live external service."
+    {
+      id: "smoke-artifact-contract",
+      type: "artifact_contract",
+      criterion: "Artifact checks pass with no missing required artifacts."
+    },
+    {
+      id: "smoke-pipeline-output",
+      type: "pipeline_output",
+      criterion: "The generated PRD contains the core evidence, planning, verification, and control requirements."
+    },
+    {
+      id: "smoke-fixture-safety",
+      type: "fixture_safety",
+      criterion: "No command requires a live external service."
+    }
   ]
 };
 
@@ -198,9 +211,21 @@ const REALISTIC: BenchmarkPackTemplate = {
     "npm run ariadne -- artifact-checks --project bench-realistic"
   ],
   acceptance: [
-    "Mixed source intake produces three source records.",
-    "Manual NotebookLM, CI, CodeRabbit, usage, and infrastructure imports create evidence records.",
-    "Control and artifact-check reports are generated without live mutations."
+    {
+      id: "realistic-pipeline-output",
+      type: "pipeline_output",
+      criterion: "Mixed source intake produces three source records."
+    },
+    {
+      id: "realistic-adapter-evidence",
+      type: "pipeline_output",
+      criterion: "Manual NotebookLM, CI, CodeRabbit, usage, and infrastructure imports create evidence records."
+    },
+    {
+      id: "realistic-fixture-safety",
+      type: "fixture_safety",
+      criterion: "Control and artifact-check reports are generated without live mutations."
+    }
   ]
 };
 
@@ -237,6 +262,7 @@ const STRESS: BenchmarkPackTemplate = {
       path: "imports/failed-ci.json",
       role: "ci_status",
       description: "Failing CI fixture for control-plane regression tests.",
+      targetProject: "beta",
       content: json([
         { name: "typecheck", conclusion: "success", command: "npm run check" },
         { name: "unit-tests", conclusion: "failure", command: "npm test" },
@@ -247,6 +273,7 @@ const STRESS: BenchmarkPackTemplate = {
       path: "imports/pending-coderabbit-review.md",
       role: "coderabbit_review",
       description: "Pending review fixture with no approval signal.",
+      targetProject: "beta",
       content: [
         "Review pending",
         "",
@@ -258,6 +285,7 @@ const STRESS: BenchmarkPackTemplate = {
       path: "imports/odd-infra-snapshot.json",
       role: "infra_snapshot",
       description: "Valid JSON with unusual shape for snapshot summarisation tests.",
+      targetProject: "beta",
       content: json({
         node: "unknown-lab-host",
         services: [{ name: "runner", status: "degraded" }],
@@ -268,6 +296,7 @@ const STRESS: BenchmarkPackTemplate = {
       path: "stale/interrupted-run.json",
       role: "execution_seed",
       description: "Interrupted execution fixture for future benchmark-run ingestion.",
+      targetProject: "alpha",
       content: json({
         schemaVersion: 1,
         id: "run-stress-interrupted",
@@ -297,9 +326,21 @@ const STRESS: BenchmarkPackTemplate = {
     "npm run ariadne -- infra-snapshot --project bench-stress-beta --from <PACK_ROOT>/imports/odd-infra-snapshot.json"
   ],
   acceptance: [
-    "The benchmark can create more than one project in a vault.",
-    "Failed checks and pending review evidence remain explicit.",
-    "No fixture contains a real credential or requires a live host."
+    {
+      id: "stress-multi-project",
+      type: "pipeline_output",
+      criterion: "The benchmark can create more than one project in a vault."
+    },
+    {
+      id: "stress-regression-signal",
+      type: "pipeline_output",
+      criterion: "Failed checks and pending review evidence remain explicit."
+    },
+    {
+      id: "stress-fixture-safety",
+      type: "fixture_safety",
+      criterion: "No fixture contains a real credential or requires a live host."
+    }
   ]
 };
 
@@ -337,7 +378,8 @@ export async function materializeBenchmarkPack(input: {
     files.push({
       path: path.relative(packDir, filePath),
       role: file.role,
-      description: file.description
+      description: file.description,
+      targetProject: file.targetProject
     });
   }
 
@@ -383,7 +425,7 @@ function renderPack(pack: BenchmarkPack): string {
     "",
     "## Acceptance",
     "",
-    ...pack.acceptance.map((item) => `- ${item}`),
+    ...pack.acceptance.map((item) => `- ${item.id} (${item.type}): ${item.criterion}`),
     ""
   ].join("\n");
 }

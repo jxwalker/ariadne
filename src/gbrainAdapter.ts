@@ -65,7 +65,7 @@ export async function exportGbrainBundle(input: {
           "Verification:",
           ...task.verificationCommands.map((item) => `- ${item}`)
         ].join("\n"),
-        evidenceRefs: task.requirementIds,
+        evidenceRefs: task.requirementIds.map((id) => `requirement/${id.toLowerCase()}`),
         tags: ["ariadne", "task", milestone.id]
       }))
     ) ?? []),

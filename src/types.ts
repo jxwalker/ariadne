@@ -459,6 +459,7 @@ export interface ArtifactCheckReport {
 }
 
 export type BenchmarkSet = "smoke" | "realistic" | "stress";
+export type BenchmarkAcceptanceType = "artifact_contract" | "pipeline_output" | "fixture_safety";
 
 export interface BenchmarkPack {
   schemaVersion: 1;
@@ -479,9 +480,54 @@ export interface BenchmarkPack {
       | "execution_seed"
       | "expected";
     description: string;
+    targetProject?: string;
   }>;
   recommendedCommands: string[];
-  acceptance: string[];
+  acceptance: Array<{
+    id: string;
+    type: BenchmarkAcceptanceType;
+    criterion: string;
+  }>;
+}
+
+export interface BenchmarkRun {
+  schemaVersion: 1;
+  id: string;
+  project: string;
+  set: BenchmarkSet;
+  generatedAt: string;
+  mode: "local_deterministic";
+  status: "passed" | "failed";
+  packPath: string;
+  packRoot: string;
+  targetProjects: string[];
+  summary: {
+    steps: number;
+    passed: number;
+    failed: number;
+    targetProjects: number;
+    missingRequiredArtifacts: number;
+  };
+  steps: Array<{
+    id: string;
+    project: string;
+    status: "passed" | "failed";
+    detail: string;
+    evidenceRefs: string[];
+  }>;
+  acceptance: Array<{
+    id: string;
+    type: BenchmarkAcceptanceType;
+    criterion: string;
+    status: "passed" | "failed";
+    evidenceRefs: string[];
+  }>;
+  artifactChecks: Array<{
+    project: string;
+    status: ArtifactCheckReport["status"];
+    missingRequired: number;
+    reportPath: string;
+  }>;
 }
 
 export interface EvaluationTrendReport {
@@ -887,6 +933,7 @@ export interface ConsoleData {
     reviews: number;
     decisions: number;
     evaluations: number;
+    benchmarkRuns: number;
     infraSnapshots: number;
     gsd2ProcessSnapshots: number;
     sleepRoutines: number;
@@ -929,6 +976,7 @@ export interface ConsoleData {
   playwrightEvidence: PlaywrightEvidenceRecord[];
   healerProposals: HealerProposalRecord[];
   evaluations: EvaluationRun[];
+  benchmarkRuns: BenchmarkRun[];
   evaluationTrends?: EvaluationTrendReport;
   consoleVisualChecks?: ConsoleVisualCheckReport;
   consoleBrowserChecks?: ConsoleBrowserCheckReport;
@@ -967,6 +1015,7 @@ export interface ConsoleData {
     roadmap?: string;
     control?: string;
     evaluationPlan?: string;
+    benchmarkRuns?: string;
     artifactChecks?: string;
     evaluationTrends?: string;
     usageReport?: string;

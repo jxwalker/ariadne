@@ -5,6 +5,7 @@ import path from "node:path";
 import { describe, expect, it } from "vitest";
 import { decideApproval, requestApproval } from "../src/approvals.js";
 import { generateArtifactCheckReport } from "../src/artifactChecks.js";
+import { runBenchmarkPack } from "../src/benchmarkRun.js";
 import { generateBehaviorCheckReport } from "../src/behaviorChecks.js";
 import { materializeBenchmarkPack } from "../src/benchmarkPacks.js";
 import { importCiStatus, importCodeRabbitReview } from "../src/ciImport.js";
@@ -221,6 +222,60 @@ describe("roadmap adapters", () => {
     await assembleDossier({ project: "bench-realistic", vaultRoot, maxCharsPerSource: 4000 });
     const prd = await generatePrd({ project: "bench-realistic", vaultRoot });
     expect(prd.prd.requirements.length).toBeGreaterThan(0);
+  });
+
+  it("runs a deterministic smoke benchmark through the local pipeline", async () => {
+    const temp = await fs.mkdtemp(path.join(os.tmpdir(), "ariadne-benchmark-run-"));
+    const packRoot = path.join(temp, "packs");
+    const vaultRoot = path.join(temp, "vault");
+    await materializeBenchmarkPack({ set: "smoke", outputRoot: packRoot });
+
+    const run = await runBenchmarkPack({
+      project: "bench-smoke",
+      vaultRoot,
+      set: "smoke",
+      packRoot: path.join(packRoot, "smoke")
+    });
+
+    expect(run.run.status).toBe("passed");
+    expect(run.run.summary.failed).toBe(0);
+    expect(run.run.summary.missingRequiredArtifacts).toBe(0);
+    expect(run.run.steps.some((step) => step.id === "gbrain-export" && step.status === "passed")).toBe(true);
+
+    const console = await generateConsoleData({ project: "bench-smoke", vaultRoot });
+    expect(console.data.summary.benchmarkRuns).toBe(1);
+    expect(console.data.benchmarkRuns[0]?.set).toBe("smoke");
+
+    const artifactChecks = await generateArtifactCheckReport({ project: "bench-smoke", vaultRoot });
+    expect(artifactChecks.report.checks.find((check) => check.id === "benchmark-runs")?.status).toBe("present");
+  });
+
+  it("rejects benchmark files that escape the pack root", async () => {
+    const temp = await fs.mkdtemp(path.join(os.tmpdir(), "ariadne-benchmark-escape-"));
+    const packRoot = path.join(temp, "pack");
+    await fs.mkdir(packRoot, { recursive: true });
+    await fs.writeFile(
+      path.join(packRoot, "benchmark-pack.json"),
+      JSON.stringify(
+        {
+          schemaVersion: 1,
+          set: "smoke",
+          title: "Escaping Pack",
+          purpose: "Fixture",
+          generatedAt: new Date().toISOString(),
+          root: "<PACK_ROOT>",
+          files: [{ path: "../escape.md", role: "source", description: "Escapes the pack root." }],
+          recommendedCommands: [],
+          acceptance: [{ id: "escape-path", type: "artifact_contract", criterion: "The runner rejects escaped paths." }]
+        },
+        null,
+        2
+      )
+    );
+
+    await expect(runBenchmarkPack({ project: "bench-escape", vaultRoot: path.join(temp, "vault"), set: "smoke", packRoot })).rejects.toThrow(
+      "Benchmark file escapes pack root"
+    );
   });
 
   it("generates evaluation trend reports across scored runs", async () => {

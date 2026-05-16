@@ -1,0 +1,187 @@
+{
+  "schemaVersion": 1,
+  "project": "bench-smoke",
+  "generatedAt": "2026-05-16T18:29:06.691Z",
+  "target": "benchmark-local",
+  "dimensions": [
+    {
+      "id": "D1",
+      "title": "Evidence fidelity",
+      "weight": 25,
+      "sensors": [
+        "manifest.jsonl",
+        "hygiene.json",
+        "context dossier"
+      ],
+      "successSignals": [
+        "raw sources preserved",
+        "hashes stable",
+        "source references survive into PRD and GSD"
+      ]
+    },
+    {
+      "id": "D2",
+      "title": "Planning quality",
+      "weight": 20,
+      "sensors": [
+        "prd.json",
+        "roadmap.json",
+        "gsd2-bundle.json"
+      ],
+      "successSignals": [
+        "requirements are bounded",
+        "tasks have success criteria",
+        "write scopes are explicit"
+      ]
+    },
+    {
+      "id": "D3",
+      "title": "Execution safety",
+      "weight": 20,
+      "sensors": [
+        "execution run",
+        "worktree guard",
+        "decision records"
+      ],
+      "successSignals": [
+        "external mutation remains gated",
+        "worktrees are isolated",
+        "human approvals are explicit"
+      ]
+    },
+    {
+      "id": "D4",
+      "title": "Verification strength",
+      "weight": 25,
+      "sensors": [
+        "typecheck",
+        "unit tests",
+        "build",
+        "Playwright evidence",
+        "CodeRabbit review"
+      ],
+      "successSignals": [
+        "fast checks run left",
+        "UI evidence is captured",
+        "review feedback is recorded"
+      ]
+    },
+    {
+      "id": "D5",
+      "title": "Operational fit",
+      "weight": 10,
+      "sensors": [
+        "infrastructure registry",
+        "infra snapshots",
+        "control report"
+      ],
+      "successSignals": [
+        "placement is explicit",
+        "runner trust boundary is visible",
+        "readiness report is current"
+      ]
+    }
+  ],
+  "scenarios": [
+    {
+      "id": "EVAL-001",
+      "title": "Source evidence intake",
+      "description": "Evaluate whether TASK-001 can move from source evidence to verified control-plane evidence.",
+      "taskIds": [
+        "TASK-001"
+      ],
+      "expectedEvidence": [
+        "npm run check",
+        "npm test",
+        "src/vault.ts",
+        "src/extract.ts",
+        "docs/source-contract.md"
+      ]
+    },
+    {
+      "id": "EVAL-002",
+      "title": "Source-grounded PRD synthesis",
+      "description": "Evaluate whether TASK-002 can move from source evidence to verified control-plane evidence.",
+      "taskIds": [
+        "TASK-002"
+      ],
+      "expectedEvidence": [
+        "npm run check",
+        "npm test",
+        "src/prd.ts",
+        "vault/projects/<project>/requirements/"
+      ]
+    },
+    {
+      "id": "EVAL-003",
+      "title": "GSD2 task bridge",
+      "description": "Evaluate whether TASK-003 can move from source evidence to verified control-plane evidence.",
+      "taskIds": [
+        "TASK-003"
+      ],
+      "expectedEvidence": [
+        "npm run check",
+        "npm test",
+        "src/gsd.ts",
+        "vault/projects/<project>/gsd/"
+      ]
+    },
+    {
+      "id": "EVAL-004",
+      "title": "Bounded execution loop",
+      "description": "Evaluate whether TASK-004 can move from source evidence to verified control-plane evidence.",
+      "taskIds": [
+        "TASK-004"
+      ],
+      "expectedEvidence": [
+        "npm run check",
+        "npm test",
+        "src/execution.ts",
+        "vault/projects/<project>/execution/"
+      ]
+    },
+    {
+      "id": "EVAL-006",
+      "title": "Review and CI control plane",
+      "description": "Evaluate whether TASK-006 can move from source evidence to verified control-plane evidence.",
+      "taskIds": [
+        "TASK-006"
+      ],
+      "expectedEvidence": [
+        "npm run check",
+        "npm test",
+        "src/controlPlane.ts",
+        "vault/projects/<project>/control/"
+      ]
+    },
+    {
+      "id": "EVAL-007",
+      "title": "Infrastructure substrate registry",
+      "description": "Evaluate whether TASK-007 can move from source evidence to verified control-plane evidence.",
+      "taskIds": [
+        "TASK-007"
+      ],
+      "expectedEvidence": [
+        "npm run check",
+        "npm test",
+        "src/infraSnapshot.ts",
+        "vault/projects/<project>/infrastructure/"
+      ]
+    },
+    {
+      "id": "EVAL-005",
+      "title": "Playwright UI verification evidence",
+      "description": "Evaluate whether TASK-005 can move from source evidence to verified control-plane evidence.",
+      "taskIds": [
+        "TASK-005"
+      ],
+      "expectedEvidence": [
+        "npm run check",
+        "npm test",
+        "npx playwright test --reporter=list",
+        "src/playwrightEvidence.ts",
+        "vault/projects/<project>/verification/"
+      ]
+    }
+  ]
+}

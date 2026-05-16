@@ -176,12 +176,16 @@ Artifacts:
 
 `benchmark-pack` materialises repeatable source packs for smoke, realistic, and stress evaluations. The packs are local files only; they do not ingest sources or call live services by themselves.
 
+`benchmark-run` runs one generated pack through the local deterministic Ariadne pipeline and records the outcome as evaluation evidence. It uses the pack's file roles to ingest sources and import fixtures, then generates planning, verification, control, behavior, GBrain, and artifact-check outputs. It does not call live services or execute mutation-capable commands.
+
 Artifacts:
 
 - `evaluation/evaluation-plan.json`
 - `evaluation/evaluation-plan.md`
 - `evaluation/evaluation-<timestamp>.json`
 - `evaluation/evaluation-<timestamp>.md`
+- `evaluation/benchmark-run-<set>-<timestamp>.json`
+- `evaluation/benchmark-run-<set>-<timestamp>.md`
 - `evaluation/evaluation-trends.json`
 - `evaluation/evaluation-trends.md`
 - `evaluation/usage-metrics.jsonl`

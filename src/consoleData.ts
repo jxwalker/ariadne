@@ -8,6 +8,7 @@ import type {
   AgentLeaseRecord,
   AgentMailRecord,
   ApprovalRecord,
+  BenchmarkRun,
   BehaviorCheckReport,
   ConsoleVisualCheckReport,
   ControlReport,
@@ -101,6 +102,7 @@ export async function collectConsoleData(vaultRoot: string, projectInput: string
     isHealerProposal
   );
   const evaluations = await readJsonFiles<EvaluationRun>(path.join(dir, "evaluation"), isEvaluationRun);
+  const benchmarkRuns = await readJsonFiles<BenchmarkRun>(path.join(dir, "evaluation"), isBenchmarkRun);
   const infraSnapshots = await readJsonFiles<InfraSnapshot>(path.join(dir, "infrastructure"), isInfraSnapshot);
   const gsd2ProcessSnapshots = await readJsonFiles<Gsd2ProcessSnapshot>(path.join(dir, "gsd", "process"), isGsd2ProcessSnapshot);
   const gbrainReports = await readJsonFiles<GbrainReportImport>(path.join(dir, "integrations", "gbrain"), isGbrainReport);
@@ -157,6 +159,7 @@ export async function collectConsoleData(vaultRoot: string, projectInput: string
       reviews: reviews.length,
       decisions: decisions.length,
       evaluations: evaluations.length,
+      benchmarkRuns: benchmarkRuns.length,
       infraSnapshots: infraSnapshots.length,
       gsd2ProcessSnapshots: gsd2ProcessSnapshots.length,
       sleepRoutines: sleepRoutines.length,
@@ -192,6 +195,7 @@ export async function collectConsoleData(vaultRoot: string, projectInput: string
     playwrightEvidence,
     healerProposals,
     evaluations,
+    benchmarkRuns,
     evaluationTrends,
     consoleVisualChecks,
     consoleBrowserChecks,
@@ -227,6 +231,7 @@ export async function collectConsoleData(vaultRoot: string, projectInput: string
       roadmap: await existingPath(vaultRoot, path.join(dir, "gsd", "roadmap.json")),
       control: await existingPath(vaultRoot, path.join(dir, "control", "merge-readiness.json")),
       evaluationPlan: evaluationPlan ? vaultRelative(vaultRoot, path.join(dir, "evaluation", "evaluation-plan.json")) : undefined,
+      benchmarkRuns: await existingPath(vaultRoot, path.join(dir, "evaluation")),
       artifactChecks: await existingPath(vaultRoot, path.join(dir, "evaluation", "artifact-checks.json")),
       evaluationTrends: await existingPath(vaultRoot, path.join(dir, "evaluation", "evaluation-trends.json")),
       usageReport: await existingPath(vaultRoot, path.join(dir, "evaluation", "usage-report.json")),
@@ -367,6 +372,38 @@ function isEvaluationRun(value: unknown): value is EvaluationRun {
     typeof value.id === "string" &&
     value.id.startsWith("evaluation-") &&
     typeof value.overallScore === "number"
+  );
+}
+
+function isBenchmarkRun(value: unknown): value is BenchmarkRun {
+  if (!hasSchema(value)) return false;
+  const summary = value.summary;
+  const steps = value.steps;
+  return (
+    value.schemaVersion === 1 &&
+    typeof value.id === "string" &&
+    value.id.startsWith("benchmark-run-") &&
+    (value.set === "smoke" || value.set === "realistic" || value.set === "stress") &&
+    (value.status === "passed" || value.status === "failed") &&
+    typeof value.generatedAt === "string" &&
+    Array.isArray(value.targetProjects) &&
+    value.targetProjects.every((item) => typeof item === "string") &&
+    hasSchema(summary) &&
+    typeof summary.steps === "number" &&
+    typeof summary.passed === "number" &&
+    typeof summary.failed === "number" &&
+    typeof summary.missingRequiredArtifacts === "number" &&
+    Array.isArray(steps) &&
+    steps.every(
+      (step) =>
+        hasSchema(step) &&
+        typeof step.id === "string" &&
+        typeof step.project === "string" &&
+        (step.status === "passed" || step.status === "failed") &&
+        typeof step.detail === "string" &&
+        Array.isArray(step.evidenceRefs) &&
+        step.evidenceRefs.every((item) => typeof item === "string")
+    )
   );
 }
 

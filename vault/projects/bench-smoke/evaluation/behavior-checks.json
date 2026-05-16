@@ -1,0 +1,59 @@
+{
+  "schemaVersion": 1,
+  "project": "bench-smoke",
+  "generatedAt": "2026-05-16T18:29:06.694Z",
+  "status": "warning",
+  "summary": {
+    "passed": 3,
+    "warnings": 3,
+    "failed": 0
+  },
+  "checks": [
+    {
+      "id": "approved-fixture",
+      "label": "Approved review fixture",
+      "status": "warning",
+      "evidence": [],
+      "notes": "No approved review or approved fixture is present yet."
+    },
+    {
+      "id": "execution-mutation-gates",
+      "label": "Execution mutation gates",
+      "status": "passed",
+      "evidence": [
+        "run-2026-05-16T18-29-06-690Z"
+      ],
+      "notes": "Execution runs include explicit human approval gates before external mutation."
+    },
+    {
+      "id": "approval-workflow-records",
+      "label": "Mutation approval workflow records",
+      "status": "warning",
+      "evidence": [],
+      "notes": "No explicit approval request records exist yet for mutation-capable adapters."
+    },
+    {
+      "id": "infra-read-only",
+      "label": "Infrastructure snapshots are read-only",
+      "status": "passed",
+      "evidence": [],
+      "notes": "Infrastructure evidence is limited to manual, manifest, or live_read_only snapshot kinds."
+    },
+    {
+      "id": "governance-drafts-non-submitting",
+      "label": "Governance drafts do not submit",
+      "status": "passed",
+      "evidence": [],
+      "notes": "OpenScorpion activity records are drafts with submit=false."
+    },
+    {
+      "id": "worktree-guard-fixture",
+      "label": "Worktree guard fixture",
+      "status": "warning",
+      "evidence": [
+        "projects/bench-smoke/execution/run-*-worktree-guard.json"
+      ],
+      "notes": "Worktree guard is available as a behavior fixture; record it for each real execution run before applying worktrees."
+    }
+  ]
+}

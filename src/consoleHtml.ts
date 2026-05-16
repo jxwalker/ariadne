@@ -46,6 +46,11 @@ function renderConsole(data: ConsoleData): string {
       label: `Evaluation score: ${run.overallScore}`,
       detail: `${run.target} / ${run.operator}`
     })),
+    ...data.benchmarkRuns.map((run) => ({
+      time: run.generatedAt,
+      label: `Benchmark ${run.status}: ${run.set}`,
+      detail: `${run.summary.passed} passed / ${run.summary.failed} failed`
+    })),
     ...data.coordination.sleepRoutines.map((record) => ({
       time: record.recordedAt,
       label: `Sleep routine: ${record.scope}`,
@@ -132,11 +137,13 @@ function renderConsole(data: ConsoleData): string {
       data.summary.latestEvaluationScore ?? latestEvaluation?.overallScore ?? "none",
       data.summary.evaluationTrendStatus ?? "latest"
     ),
+    metric("Benchmarks", data.summary.benchmarkRuns, "runs"),
     "</section>",
     '<section class="layout">',
     '<div class="main-column">',
     section("Gate Matrix", gateMatrix(data)),
     section("Evaluation Trends", evaluationTrendChart(data)),
+    section("Benchmark Runs", benchmarkRuns(data)),
     section("Task Flow", taskTable(data)),
     section("Approval Queue", approvalQueue(data)),
     section("Mutation Audit", mutationReadinessAudit(data)),
@@ -258,6 +265,18 @@ function evaluationTrendChart(data: ConsoleData): string {
     ...dimensions,
     "</div>",
     "</div>"
+  ].join("");
+}
+
+function benchmarkRuns(data: ConsoleData): string {
+  if (data.benchmarkRuns.length === 0) return empty("No benchmark run reports are available.");
+  return [
+    '<div class="table-wrap"><table><thead><tr><th>Set</th><th>Status</th><th>Projects</th><th>Steps</th><th>Missing Required</th></tr></thead><tbody>',
+    ...data.benchmarkRuns.slice(-6).map(
+      (run) =>
+        `<tr><td>${escapeHtml(run.set)}</td><td class="${statusClass(run.status)}">${escapeHtml(run.status)}</td><td>${escapeHtml(run.targetProjects.join(", "))}</td><td>${escapeHtml(`${run.summary.passed}/${run.summary.steps}`)}</td><td>${escapeHtml(String(run.summary.missingRequiredArtifacts))}</td></tr>`
+    ),
+    "</tbody></table></div>"
   ].join("");
 }
 

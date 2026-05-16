@@ -1,0 +1,280 @@
+{
+  "schemaVersion": 1,
+  "project": "bench-smoke",
+  "generatedAt": "2026-05-16T18:29:06.695Z",
+  "source": "ariadne",
+  "mode": "read_only_export",
+  "instructions": [
+    "Import this bundle into GBrain as derived memory, not as Ariadne's source of truth.",
+    "Preserve evidenceRefs when returning search or query results.",
+    "Do not write back to Ariadne without an explicit Ariadne import command."
+  ],
+  "documents": [
+    {
+      "slug": "source/2026-05-16T18-29-06-684Z-f93360299695",
+      "title": "source.md",
+      "kind": "source",
+      "content": "Source kind: markdown\nSensitivity: internal\nSHA-256: f9336029969522392c8aa0d21718733fbc1f0af0e330297597c351cfaff753bc\nNotes: none",
+      "evidenceRefs": [
+        "<VAULT_ROOT>/projects/bench-smoke/raw/2026-05-16T18-29-06-684Z-f93360299695/source.md",
+        "<VAULT_ROOT>/projects/bench-smoke/raw/2026-05-16T18-29-06-684Z-f93360299695/extracted.md"
+      ],
+      "tags": [
+        "ariadne",
+        "source",
+        "markdown"
+      ]
+    },
+    {
+      "slug": "requirement/req-001",
+      "title": "Source evidence intake",
+      "kind": "requirement",
+      "content": "Preserve drawings, whitepapers, dictated notes, documents, and related artifacts before any summarisation or automation.\n\n- Raw artifacts are copied into the durable vault.\n- Each artifact has a digest, source path, kind, and timestamp.\n- Extracted text remains linked to the raw evidence.",
+      "evidenceRefs": [
+        "<VAULT_ROOT>/projects/bench-smoke/context/dossier-2026-05-16T18-29-06-687Z.md",
+        "<VAULT_ROOT>/projects/bench-smoke/context/dossier-2026-05-16T18-29-06-687Z.md:7",
+        "<VAULT_ROOT>/projects/bench-smoke/context/dossier-2026-05-16T18-29-06-687Z.md:9",
+        "<VAULT_ROOT>/projects/bench-smoke/context/dossier-2026-05-16T18-29-06-687Z.md:20",
+        "<VAULT_ROOT>/projects/bench-smoke/context/dossier-2026-05-16T18-29-06-687Z.md:35",
+        "<VAULT_ROOT>/projects/bench-smoke/context/dossier-2026-05-16T18-29-06-687Z.md:37"
+      ],
+      "tags": [
+        "ariadne",
+        "requirement",
+        "must",
+        "draft"
+      ]
+    },
+    {
+      "slug": "requirement/req-002",
+      "title": "Source-grounded PRD synthesis",
+      "kind": "requirement",
+      "content": "Convert evidence dossiers and NotebookLM-style grounded exports into requirements, ambiguities, acceptance criteria, and source references.\n\n- PRD records source references for every major claim.\n- Ambiguities are separated from accepted requirements.\n- Manual exports work before automation is attempted.",
+      "evidenceRefs": [
+        "<VAULT_ROOT>/projects/bench-smoke/context/dossier-2026-05-16T18-29-06-687Z.md",
+        "<VAULT_ROOT>/projects/bench-smoke/context/dossier-2026-05-16T18-29-06-687Z.md:7",
+        "<VAULT_ROOT>/projects/bench-smoke/context/dossier-2026-05-16T18-29-06-687Z.md:9",
+        "<VAULT_ROOT>/projects/bench-smoke/context/dossier-2026-05-16T18-29-06-687Z.md:20",
+        "<VAULT_ROOT>/projects/bench-smoke/context/dossier-2026-05-16T18-29-06-687Z.md:35",
+        "<VAULT_ROOT>/projects/bench-smoke/context/dossier-2026-05-16T18-29-06-687Z.md:37"
+      ],
+      "tags": [
+        "ariadne",
+        "requirement",
+        "must",
+        "draft"
+      ]
+    },
+    {
+      "slug": "requirement/req-003",
+      "title": "GSD2 task bridge",
+      "kind": "requirement",
+      "content": "Transform accepted requirements into milestones, vertical slices, tasks, success criteria, and verification commands.\n\n- Tasks are independently inspectable as JSON and Markdown.\n- Each task names expected write areas and verification commands.\n- Tasks preserve requirement traceability.",
+      "evidenceRefs": [
+        "<VAULT_ROOT>/projects/bench-smoke/context/dossier-2026-05-16T18-29-06-687Z.md",
+        "<VAULT_ROOT>/projects/bench-smoke/context/dossier-2026-05-16T18-29-06-687Z.md:7",
+        "<VAULT_ROOT>/projects/bench-smoke/context/dossier-2026-05-16T18-29-06-687Z.md:9",
+        "<VAULT_ROOT>/projects/bench-smoke/context/dossier-2026-05-16T18-29-06-687Z.md:20",
+        "<VAULT_ROOT>/projects/bench-smoke/context/dossier-2026-05-16T18-29-06-687Z.md:35",
+        "<VAULT_ROOT>/projects/bench-smoke/context/dossier-2026-05-16T18-29-06-687Z.md:37"
+      ],
+      "tags": [
+        "ariadne",
+        "requirement",
+        "must",
+        "draft"
+      ]
+    },
+    {
+      "slug": "requirement/req-004",
+      "title": "Bounded execution loop",
+      "kind": "requirement",
+      "content": "Plan isolated worktree execution with explicit branch names, gates, stop conditions, and review points.\n\n- Execution runs are recorded before work begins.\n- The system can identify planned worktrees and gates.\n- External mutations remain blocked unless a later approved adapter is enabled.",
+      "evidenceRefs": [
+        "<VAULT_ROOT>/projects/bench-smoke/context/dossier-2026-05-16T18-29-06-687Z.md",
+        "<VAULT_ROOT>/projects/bench-smoke/context/dossier-2026-05-16T18-29-06-687Z.md:7",
+        "<VAULT_ROOT>/projects/bench-smoke/context/dossier-2026-05-16T18-29-06-687Z.md:9",
+        "<VAULT_ROOT>/projects/bench-smoke/context/dossier-2026-05-16T18-29-06-687Z.md:20",
+        "<VAULT_ROOT>/projects/bench-smoke/context/dossier-2026-05-16T18-29-06-687Z.md:35",
+        "<VAULT_ROOT>/projects/bench-smoke/context/dossier-2026-05-16T18-29-06-687Z.md:37"
+      ],
+      "tags": [
+        "ariadne",
+        "requirement",
+        "must",
+        "draft"
+      ]
+    },
+    {
+      "slug": "requirement/req-005",
+      "title": "Playwright UI verification evidence",
+      "kind": "requirement",
+      "content": "Generate UI test plans and Playwright skeletons from requirements, with room for screenshots, traces, and healer proposals.\n\n- Generated tests use role-oriented locators where possible.\n- Scenario records link back to requirement ids.\n- Evidence paths are recorded separately from claims.",
+      "evidenceRefs": [
+        "<VAULT_ROOT>/projects/bench-smoke/context/dossier-2026-05-16T18-29-06-687Z.md",
+        "<VAULT_ROOT>/projects/bench-smoke/context/dossier-2026-05-16T18-29-06-687Z.md:7",
+        "<VAULT_ROOT>/projects/bench-smoke/context/dossier-2026-05-16T18-29-06-687Z.md:9",
+        "<VAULT_ROOT>/projects/bench-smoke/context/dossier-2026-05-16T18-29-06-687Z.md:20",
+        "<VAULT_ROOT>/projects/bench-smoke/context/dossier-2026-05-16T18-29-06-687Z.md:35",
+        "<VAULT_ROOT>/projects/bench-smoke/context/dossier-2026-05-16T18-29-06-687Z.md:37"
+      ],
+      "tags": [
+        "ariadne",
+        "requirement",
+        "should",
+        "draft"
+      ]
+    },
+    {
+      "slug": "requirement/req-006",
+      "title": "Review and CI control plane",
+      "kind": "requirement",
+      "content": "Collect deterministic checks, CodeRabbit feedback, human review, and merge-readiness state into one evidence surface.\n\n- Merge readiness lists satisfied and missing gates.\n- CI and review records are imported without being treated as hidden authority.\n- Blocked states are explicit.",
+      "evidenceRefs": [
+        "<VAULT_ROOT>/projects/bench-smoke/context/dossier-2026-05-16T18-29-06-687Z.md",
+        "<VAULT_ROOT>/projects/bench-smoke/context/dossier-2026-05-16T18-29-06-687Z.md:7",
+        "<VAULT_ROOT>/projects/bench-smoke/context/dossier-2026-05-16T18-29-06-687Z.md:9",
+        "<VAULT_ROOT>/projects/bench-smoke/context/dossier-2026-05-16T18-29-06-687Z.md:20",
+        "<VAULT_ROOT>/projects/bench-smoke/context/dossier-2026-05-16T18-29-06-687Z.md:35",
+        "<VAULT_ROOT>/projects/bench-smoke/context/dossier-2026-05-16T18-29-06-687Z.md:37"
+      ],
+      "tags": [
+        "ariadne",
+        "requirement",
+        "must",
+        "draft"
+      ]
+    },
+    {
+      "slug": "requirement/req-007",
+      "title": "Infrastructure substrate registry",
+      "kind": "requirement",
+      "content": "Represent Proxmox, DGX Spark, M-series Macs, Hermes, OpenScorpion, local model endpoints, and runner pools as read-only registry records first.\n\n- Infrastructure records are readable without model calls.\n- Runner trust boundaries are explicit.\n- Mutation plans require approval and remain non-executing in this slice.",
+      "evidenceRefs": [
+        "<VAULT_ROOT>/projects/bench-smoke/context/dossier-2026-05-16T18-29-06-687Z.md",
+        "<VAULT_ROOT>/projects/bench-smoke/context/dossier-2026-05-16T18-29-06-687Z.md:7",
+        "<VAULT_ROOT>/projects/bench-smoke/context/dossier-2026-05-16T18-29-06-687Z.md:9",
+        "<VAULT_ROOT>/projects/bench-smoke/context/dossier-2026-05-16T18-29-06-687Z.md:20",
+        "<VAULT_ROOT>/projects/bench-smoke/context/dossier-2026-05-16T18-29-06-687Z.md:35",
+        "<VAULT_ROOT>/projects/bench-smoke/context/dossier-2026-05-16T18-29-06-687Z.md:37"
+      ],
+      "tags": [
+        "ariadne",
+        "requirement",
+        "must",
+        "draft"
+      ]
+    },
+    {
+      "slug": "task/task-001",
+      "title": "Source evidence intake",
+      "kind": "task",
+      "content": "Milestone: Control Spine\nSlice: core\n\nSuccess criteria:\n- Raw artifacts are copied into the durable vault.\n- Each artifact has a digest, source path, kind, and timestamp.\n- Extracted text remains linked to the raw evidence.\n\nVerification:\n- npm run check\n- npm test",
+      "evidenceRefs": [
+        "requirement/req-001"
+      ],
+      "tags": [
+        "ariadne",
+        "task",
+        "M1"
+      ]
+    },
+    {
+      "slug": "task/task-002",
+      "title": "Source-grounded PRD synthesis",
+      "kind": "task",
+      "content": "Milestone: Control Spine\nSlice: core\n\nSuccess criteria:\n- PRD records source references for every major claim.\n- Ambiguities are separated from accepted requirements.\n- Manual exports work before automation is attempted.\n\nVerification:\n- npm run check\n- npm test",
+      "evidenceRefs": [
+        "requirement/req-002"
+      ],
+      "tags": [
+        "ariadne",
+        "task",
+        "M1"
+      ]
+    },
+    {
+      "slug": "task/task-003",
+      "title": "GSD2 task bridge",
+      "kind": "task",
+      "content": "Milestone: Control Spine\nSlice: core\n\nSuccess criteria:\n- Tasks are independently inspectable as JSON and Markdown.\n- Each task names expected write areas and verification commands.\n- Tasks preserve requirement traceability.\n\nVerification:\n- npm run check\n- npm test",
+      "evidenceRefs": [
+        "requirement/req-003"
+      ],
+      "tags": [
+        "ariadne",
+        "task",
+        "M1"
+      ]
+    },
+    {
+      "slug": "task/task-004",
+      "title": "Bounded execution loop",
+      "kind": "task",
+      "content": "Milestone: Control Spine\nSlice: core\n\nSuccess criteria:\n- Execution runs are recorded before work begins.\n- The system can identify planned worktrees and gates.\n- External mutations remain blocked unless a later approved adapter is enabled.\n\nVerification:\n- npm run check\n- npm test",
+      "evidenceRefs": [
+        "requirement/req-004"
+      ],
+      "tags": [
+        "ariadne",
+        "task",
+        "M1"
+      ]
+    },
+    {
+      "slug": "task/task-006",
+      "title": "Review and CI control plane",
+      "kind": "task",
+      "content": "Milestone: Control Spine\nSlice: core\n\nSuccess criteria:\n- Merge readiness lists satisfied and missing gates.\n- CI and review records are imported without being treated as hidden authority.\n- Blocked states are explicit.\n\nVerification:\n- npm run check\n- npm test",
+      "evidenceRefs": [
+        "requirement/req-006"
+      ],
+      "tags": [
+        "ariadne",
+        "task",
+        "M1"
+      ]
+    },
+    {
+      "slug": "task/task-007",
+      "title": "Infrastructure substrate registry",
+      "kind": "task",
+      "content": "Milestone: Control Spine\nSlice: core\n\nSuccess criteria:\n- Infrastructure records are readable without model calls.\n- Runner trust boundaries are explicit.\n- Mutation plans require approval and remain non-executing in this slice.\n\nVerification:\n- npm run check\n- npm test",
+      "evidenceRefs": [
+        "requirement/req-007"
+      ],
+      "tags": [
+        "ariadne",
+        "task",
+        "M1"
+      ]
+    },
+    {
+      "slug": "task/task-005",
+      "title": "Playwright UI verification evidence",
+      "kind": "task",
+      "content": "Milestone: Verification Surface\nSlice: verification\n\nSuccess criteria:\n- Generated tests use role-oriented locators where possible.\n- Scenario records link back to requirement ids.\n- Evidence paths are recorded separately from claims.\n\nVerification:\n- npm run check\n- npm test\n- npx playwright test --reporter=list",
+      "evidenceRefs": [
+        "requirement/req-005"
+      ],
+      "tags": [
+        "ariadne",
+        "task",
+        "M2"
+      ]
+    },
+    {
+      "slug": "infrastructure/registry",
+      "title": "Infrastructure Registry",
+      "kind": "infrastructure",
+      "content": "m1-hermes: M1 Mac mini / always-on Hermes supervisor / Control-plane host for long-running supervision; verify live details before automation.\nm1-max: M1 Max / local development and testing / Apple Silicon development machine; use for local validation where available.\nm5-max: M5 Max / high-memory local agent workstation / Primary Mac-class local execution surface mentioned by user.\ndgx-spark: DGX Spark / local inference and memory-heavy workloads / Treat as planned/observed only until live endpoint inventory exists.\nbeast: Proxmox dev server / runners, services, model endpoints, infrastructure substrate / Read-only inventory first; Proxmox live state is authoritative at execution time.\nopenscorpion-router: governed model route / planned\ndgx-local-models: local inference / planned\ntrusted-private-runners: private jxwalker project repositories / persistent self-hosted runners only for trusted private repositories\npublic-repo-safe-path: public repositories / manual or ephemeral approval path; no untrusted public PRs on persistent runners",
+      "evidenceRefs": [
+        "infrastructure/registry.json"
+      ],
+      "tags": [
+        "ariadne",
+        "infrastructure"
+      ]
+    }
+  ]
+}
