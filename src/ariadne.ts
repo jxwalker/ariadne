@@ -30,6 +30,7 @@ import { collectGithubSnapshot, importGithubSnapshot } from "./githubAdapter.js"
 import { githubMutationActionOption, planGithubMutation } from "./githubMutation.js";
 import { generateGsd } from "./gsd.js";
 import { exportGsd2Bundle, importGsd2Bundle } from "./gsdAdapter.js";
+import { gsd2MutationModeOption, planGsd2Mutation } from "./gsdMutation.js";
 import { collectGsd2ProcessSnapshot } from "./gsdProcess.js";
 import { generateHealerProposal } from "./healerProposals.js";
 import { generateHermesCronProposal, importHermesCronSnapshot } from "./hermesCron.js";
@@ -102,6 +103,7 @@ function usage(): string {
     "  ariadne gsd2-export --project <project>",
     "  ariadne gsd2-import --project <project> --from <bundle.json>",
     "  ariadne gsd2-process --project <project> [--binary <path-or-name>]",
+    "  ariadne gsd2-mutation-plan --project <project> --task <id> --mode <headless|auto|worktree> --scope <text> --auth-evidence <paths> --dry-run <cmd> --live-command <cmd> --post-verify <cmd> --rollback <text> [--package <name>] [--approval <id|json>] [--risk <low|medium|high>] [--evidence <paths>] [--notes <text>]",
     "  ariadne decision --project <project> --title <title> --context <text> --decision <text>",
     "  ariadne execution --project <project> [--task <id>] [--repo <path>]",
     "  ariadne execution-status --project <project> --run <run.json> --status <status>",
@@ -318,6 +320,30 @@ async function main(): Promise<void> {
     console.log(`GSD2 process snapshot: ${result.markdownPath}`);
     console.log(`Version: ${result.snapshot.version}`);
     console.log(`Mode: ${result.snapshot.mode}`);
+    return;
+  }
+
+  if (parsed.command === "gsd2-mutation-plan") {
+    const result = await planGsd2Mutation({
+      project,
+      vaultRoot,
+      task: requiredOption(parsed.options, "task"),
+      mode: gsd2MutationModeOption(requiredOption(parsed.options, "mode")),
+      packageName: optionString(parsed.options, "package", "") || undefined,
+      scope: requiredOption(parsed.options, "scope"),
+      authEvidenceRefs: splitList(requiredOption(parsed.options, "auth-evidence")),
+      evidenceRefs: splitList(optionString(parsed.options, "evidence", "")),
+      dryRunCommand: requiredOption(parsed.options, "dry-run"),
+      liveCommand: requiredOption(parsed.options, "live-command"),
+      postVerificationCommand: requiredOption(parsed.options, "post-verify"),
+      rollback: requiredOption(parsed.options, "rollback"),
+      approvalRef: optionString(parsed.options, "approval", "") || undefined,
+      risk: approvalRiskOption(parsed.options, "medium"),
+      notes: optionString(parsed.options, "notes", "") || undefined
+    });
+    console.log(`GSD2 mutation plan: ${result.markdownPath}`);
+    console.log(`Status: ${result.plan.status}`);
+    console.log(`Execute: ${result.plan.execute}`);
     return;
   }
 

@@ -23,6 +23,7 @@ import { importGithubSnapshot } from "../src/githubAdapter.js";
 import { planGithubMutation } from "../src/githubMutation.js";
 import { generateGsd } from "../src/gsd.js";
 import { exportGsd2Bundle, importGsd2Bundle } from "../src/gsdAdapter.js";
+import { planGsd2Mutation } from "../src/gsdMutation.js";
 import { collectGsd2ProcessSnapshot } from "../src/gsdProcess.js";
 import { generateHealerProposal } from "../src/healerProposals.js";
 import { generateHermesCronProposal, importHermesCronSnapshot } from "../src/hermesCron.js";
@@ -1260,6 +1261,106 @@ describe("roadmap adapters", () => {
         risk: "medium"
       })
     ).rejects.toThrow(/--job/);
+  });
+
+  it("builds GSD2-specific mutation readiness plans", async () => {
+    const { temp, vaultRoot } = await preparedProject();
+    const authEvidence = path.join(temp, "gsd2-auth.json");
+    await fs.writeFile(authEvidence, JSON.stringify({ gsd: "installed", taskSource: "reviewed" }));
+    const approval = await requestApproval({
+      project: "ariadne",
+      vaultRoot,
+      requestedBy: "planner",
+      target: "gsd2",
+      action: "Enable bounded GSD2 headless task planning.",
+      risk: "medium",
+      reason: "Exercise target-specific GSD2 mutation command capture.",
+      rollback: "Close generated worktree and return task to planned state.",
+      evidenceRefs: [authEvidence]
+    });
+    const approved = await decideApproval({
+      project: "ariadne",
+      vaultRoot,
+      approval: approval.record.id,
+      status: "approved",
+      decisionBy: "james",
+      decisionNotes: "Fixture GSD2 approval."
+    });
+    const relativeAuthEvidence = path.join("control", "approvals", `${approval.record.id}.json`);
+
+    const plan = await planGsd2Mutation({
+      project: "ariadne",
+      vaultRoot,
+      task: "TASK-001",
+      mode: "headless",
+      packageName: "ariadne-roadmap",
+      scope: "Submit one reviewed Ariadne task to GSD2 headless mode.",
+      authEvidenceRefs: [relativeAuthEvidence],
+      evidenceRefs: [approved.jsonPath],
+      dryRunCommand: "gsd task show TASK-001 --package ariadne-roadmap",
+      liveCommand: "gsd headless TASK-001 --package ariadne-roadmap",
+      postVerificationCommand: "gsd task show TASK-001 --package ariadne-roadmap",
+      rollback: "Remove generated worktree and mark TASK-001 planned.",
+      approvalRef: approval.record.id,
+      risk: "medium",
+      notes: "Fixture plan only; GSD2 is not invoked."
+    });
+    expect(plan.plan.status).toBe("ready_for_bounded_review");
+    expect(plan.plan.target).toBe("gsd2");
+    expect(plan.plan.scope).toContain("gsd2/ariadne-roadmap/headless/TASK-001");
+    expect(plan.plan.proposedLiveCommand).toBe("gsd headless TASK-001 --package ariadne-roadmap");
+    expect(plan.plan.requiredGates).toContain("local GSD2 process path and file contract verified");
+    expect(plan.plan.execute).toBe(false);
+
+    const defaultPackagePlan = await planGsd2Mutation({
+      project: "ariadne",
+      vaultRoot,
+      task: "TASK-002",
+      mode: "worktree",
+      scope: "Create a reviewed GSD2 worktree task.",
+      authEvidenceRefs: [relativeAuthEvidence],
+      evidenceRefs: [],
+      dryRunCommand: "gsd task show TASK-002",
+      liveCommand: "gsd worktree TASK-002",
+      postVerificationCommand: "gsd task show TASK-002",
+      rollback: "Remove generated worktree.",
+      approvalRef: approval.record.id,
+      risk: "low"
+    });
+    expect(defaultPackagePlan.plan.scope).toContain("gsd2/default/worktree/TASK-002");
+
+    await expect(
+      planGsd2Mutation({
+        project: "ariadne",
+        vaultRoot,
+        task: "TASK-001",
+        mode: "daemon" as "headless",
+        scope: "Invalid GSD2 mode.",
+        authEvidenceRefs: [authEvidence],
+        evidenceRefs: [],
+        dryRunCommand: "gsd task show TASK-001",
+        liveCommand: "gsd daemon TASK-001",
+        postVerificationCommand: "gsd task show TASK-001",
+        rollback: "Remove generated worktree.",
+        risk: "medium"
+      })
+    ).rejects.toThrow(/--mode/);
+    await expect(
+      planGsd2Mutation({
+        project: "ariadne",
+        vaultRoot,
+        task: "../TASK-001",
+        mode: "headless",
+        scope: "Invalid GSD2 task identifier.",
+        authEvidenceRefs: [authEvidence],
+        evidenceRefs: [],
+        dryRunCommand: "gsd task show TASK-001",
+        liveCommand: "gsd headless TASK-001",
+        postVerificationCommand: "gsd task show TASK-001",
+        rollback: "Remove generated worktree.",
+        risk: "medium"
+      })
+    ).rejects.toThrow(/--task/);
   });
 
   it("builds deployment-specific mutation readiness plans", async () => {

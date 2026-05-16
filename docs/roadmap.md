@@ -48,11 +48,12 @@ Implemented:
 - verification command registry
 - GSD2-compatible bundle export/import
 - read-only local GSD process snapshot from the selected `gsd` executable
+- target-specific GSD2 mutation-readiness plan generation for reviewed task execution
 - decision log records
 
 Next:
 
-- GSD2 headless task submission only after a mutation-readiness plan is approved
+- live GSD2 headless task submission only after approved readiness, dry-run, rollback, and post-verification evidence
 
 ## Milestone 3: Execution Loop
 
@@ -106,6 +107,7 @@ Implemented:
 - CodeRabbit feedback ingestion
 - GitHub PR/check snapshot ingestion
 - target-specific GitHub mutation-readiness plan generation for PR merges and workflow reruns
+- target-specific GSD2 mutation-readiness plan generation for reviewed task execution
 - target-specific Hermes cron mutation-readiness plan generation for scheduler actions and jobs
 - target-specific deployment mutation-readiness plan generation for Proxmox, TrueNAS, DGX Spark, and Mac hosts
 - explicit approval workflow records
@@ -117,7 +119,7 @@ Implemented:
 
 Next:
 
-- target-specific GSD2, NotebookLM, and OpenScorpion adapters on top of the generic audited execution substrate
+- target-specific NotebookLM and OpenScorpion adapters on top of the generic audited execution substrate
 
 ## Milestone 6: Infrastructure Substrate
 
