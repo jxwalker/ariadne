@@ -2,12 +2,12 @@
 
 Project: ariadne
 Status: passed
-Generated: 2026-05-16T14:47:48.112Z
+Generated: 2026-05-16T16:20:46.800Z
 
 ## Summary
 
 - Required checks: 13
-- Optional checks: 17
+- Optional checks: 19
 - Present artifacts: 29
 - Missing required artifacts: 0
 
@@ -43,5 +43,7 @@ Generated: 2026-05-16T14:47:48.112Z
 | github-snapshots | no | present | 1 | projects/ariadne/integrations/github/github-snapshot-*.json |
 | approval-records | no | present | 1 | projects/ariadne/control/approvals/approval-*.json |
 | extraction-results | no | missing | 0 | projects/ariadne/extractions/extraction-*.json |
+| extraction-runner-plans | no | missing | 0 | projects/ariadne/extractions/plans/extraction-plan-*.json |
 | coordination-records | no | present | 4 | projects/ariadne/coordination/**/*.json |
+| hermes-cron-snapshots | no | missing | 0 | projects/ariadne/coordination/hermes/hermes-cron-*.json |
 | deployment-snapshots | no | present | 1 | projects/ariadne/deployment/deployment-*.json |

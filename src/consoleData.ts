@@ -23,6 +23,7 @@ import type {
   GbrainExportBundle,
   GbrainReportImport,
   HealerProposalRecord,
+  HermesCronSnapshot,
   GithubSnapshot,
   GsdRoadmap,
   InfraRegistry,
@@ -93,6 +94,10 @@ export async function collectConsoleData(vaultRoot: string, projectInput: string
   const memoryProposals = await readJsonFiles<MemoryProposalRecord>(path.join(dir, "coordination"), isMemoryProposal);
   const agentMail = await readJsonFiles<AgentMailRecord>(path.join(dir, "coordination", "mail"), isAgentMail);
   const agentLeases = await readJsonFiles<AgentLeaseRecord>(path.join(dir, "coordination", "leases"), isAgentLease);
+  const hermesCronSnapshots = await readJsonFiles<HermesCronSnapshot>(
+    path.join(dir, "coordination", "hermes"),
+    isHermesCronSnapshot
+  );
   const deploymentSnapshots = await readJsonFiles<DeploymentSnapshot>(path.join(dir, "deployment"), isDeploymentSnapshot);
   const sources = await Promise.all(
     records.map(async (record) => ({
@@ -138,6 +143,7 @@ export async function collectConsoleData(vaultRoot: string, projectInput: string
       memoryProposals: memoryProposals.length,
       agentMail: agentMail.length,
       agentLeases: agentLeases.length,
+      hermesCronSnapshots: hermesCronSnapshots.length,
       deploymentSnapshots: deploymentSnapshots.length,
       healerProposals: healerProposals.length,
       githubSnapshots: githubSnapshots.length,
@@ -173,7 +179,8 @@ export async function collectConsoleData(vaultRoot: string, projectInput: string
       sleepRoutines,
       memoryProposals,
       agentMail,
-      agentLeases
+      agentLeases,
+      hermesCronSnapshots
     },
     infrastructure: {
       registry,
@@ -204,7 +211,8 @@ export async function collectConsoleData(vaultRoot: string, projectInput: string
       approvals: await existingPath(vaultRoot, path.join(dir, "control", "approvals")),
       recoveryReport: await existingPath(vaultRoot, path.join(dir, "control", "recovery-report.json")),
       extractionResults: await existingPath(vaultRoot, path.join(dir, "extractions")),
-      healerProposals: await existingPath(vaultRoot, path.join(dir, "verification", "healer-proposals"))
+      healerProposals: await existingPath(vaultRoot, path.join(dir, "verification", "healer-proposals")),
+      hermesCronSnapshots: await existingPath(vaultRoot, path.join(dir, "coordination", "hermes"))
     }
   };
   return makePortable(data, vaultRoot);
@@ -363,6 +371,57 @@ function isAgentLease(value: unknown): value is AgentLeaseRecord {
   return hasSchema(value) && value.schemaVersion === 1 && typeof value.id === "string" && value.id.startsWith("lease-");
 }
 
+function isHermesCronSnapshot(value: unknown): value is HermesCronSnapshot {
+  if (!hasSchema(value) || value.schemaVersion !== 1 || value.mode !== "read_only") {
+    return false;
+  }
+  const summary = value.summary;
+  const jobs = value.jobs;
+  return (
+    typeof value.importedAt === "string" &&
+    isHermesCronSummary(summary) &&
+    Array.isArray(jobs) &&
+    jobs.every(isHermesCronJob)
+  );
+}
+
 function isDeploymentSnapshot(value: unknown): value is DeploymentSnapshot {
   return hasSchema(value) && value.schemaVersion === 1 && value.mode === "read_only" && "system" in value;
+}
+
+function isHermesCronSummary(value: unknown): value is HermesCronSnapshot["summary"] {
+  return (
+    hasSchema(value) &&
+    typeof value.jobs === "number" &&
+    typeof value.enabled === "number" &&
+    typeof value.disabled === "number" &&
+    Array.isArray(value.schedules) &&
+    value.schedules.every((item) => typeof item === "string") &&
+    Array.isArray(value.nextRuns) &&
+    value.nextRuns.every((item) => typeof item === "string") &&
+    Array.isArray(value.warnings) &&
+    value.warnings.every((item) => typeof item === "string")
+  );
+}
+
+function isHermesCronJob(value: unknown): value is HermesCronSnapshot["jobs"][number] {
+  return (
+    hasSchema(value) &&
+    optionalString(value.id) &&
+    typeof value.name === "string" &&
+    optionalString(value.schedule) &&
+    optionalBoolean(value.enabled) &&
+    optionalString(value.status) &&
+    optionalString(value.nextRun) &&
+    optionalString(value.lastRun) &&
+    optionalString(value.intent)
+  );
+}
+
+function optionalString(value: unknown): boolean {
+  return value === undefined || typeof value === "string";
+}
+
+function optionalBoolean(value: unknown): boolean {
+  return value === undefined || typeof value === "boolean";
 }

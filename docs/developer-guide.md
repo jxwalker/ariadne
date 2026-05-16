@@ -46,6 +46,7 @@ npm run build
 - `src/benchmarkPacks.ts`: repeatable smoke, realistic, and stress source-pack generation.
 - `src/gbrainAdapter.ts`: optional read-only GBrain export and report import.
 - `src/githubAdapter.ts`: read-only GitHub PR and check snapshot import or `gh` collection.
+- `src/hermesCron.ts`: read-only Hermes cron/job snapshot import for sleep and memory automation evidence.
 - `src/coordination.ts`: sleep routine, memory proposal, agent mail, and lease records.
 - `src/deploymentAdapters.ts`: read-only deployment evidence imports and SSH-derived host profiles for the local estate.
 - `src/infrastructure.ts` and `src/infraSnapshot.ts`: substrate registry and read-only imports.

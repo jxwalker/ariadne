@@ -21,6 +21,7 @@ import { importGithubSnapshot } from "../src/githubAdapter.js";
 import { generateGsd } from "../src/gsd.js";
 import { exportGsd2Bundle, importGsd2Bundle } from "../src/gsdAdapter.js";
 import { generateHealerProposal } from "../src/healerProposals.js";
+import { importHermesCronSnapshot } from "../src/hermesCron.js";
 import { generateInfrastructureRegistry } from "../src/infrastructure.js";
 import { draftOpenScorpionActivity, importInfraSnapshot } from "../src/infraSnapshot.js";
 import { collectLocalInfraSnapshot, collectSshInfraSnapshot, parseSshInventory } from "../src/liveInventory.js";
@@ -395,7 +396,7 @@ describe("roadmap adapters", () => {
     expect(imported.report.metrics.latencyMs).toBe(42);
   });
 
-  it("records behavior checks, sleep routines, memory proposals, agent mail, leases, and deployment snapshots", async () => {
+  it("records behavior checks, sleep routines, memory proposals, agent mail, leases, Hermes cron, and deployment snapshots", async () => {
     const { temp, vaultRoot } = await preparedProject();
     const repo = path.join(temp, "repo");
     await fs.mkdir(repo);
@@ -477,6 +478,42 @@ describe("roadmap adapters", () => {
       runId: execution.run.id
     });
 
+    const hermesCronPath = path.join(temp, "hermes-cron.json");
+    await fs.writeFile(
+      hermesCronPath,
+      JSON.stringify({
+        jobs: [
+          {
+            id: "nightly-memory",
+            name: "Nightly memory consolidation",
+            schedule: "0 2 * * *",
+            enabled: true,
+            prompt: "Summarise evidence and write a memory proposal.",
+            apiKey: "fixture-token-should-be-redacted"
+          },
+          {
+            id: "stale-gates",
+            name: "Stale gate report",
+            cron: "30 8 * * 1-5",
+            disabled: true,
+            command: "npm run ariadne -- control --project ariadne"
+          }
+        ]
+      })
+    );
+    const hermesCron = await importHermesCronSnapshot({
+      project: "ariadne",
+      vaultRoot,
+      sourcePath: hermesCronPath,
+      host: "beast"
+    });
+    expect(hermesCron.snapshot.mode).toBe("read_only");
+    expect(hermesCron.snapshot.summary.jobs).toBe(2);
+    expect(hermesCron.snapshot.summary.enabled).toBe(1);
+    expect(hermesCron.snapshot.summary.disabled).toBe(1);
+    expect(hermesCron.snapshot.sourcePath).toBe("<WORKSPACE_ROOT>/hermes-cron.json");
+    expect(JSON.stringify(hermesCron.snapshot.raw)).not.toContain("fixture-token-should-be-redacted");
+
     const deploymentPath = path.join(temp, "deployment.json");
     await fs.writeFile(
       deploymentPath,
@@ -502,9 +539,17 @@ describe("roadmap adapters", () => {
     expect(console.data.summary.memoryProposals).toBe(1);
     expect(console.data.summary.agentMail).toBe(1);
     expect(console.data.summary.agentLeases).toBe(1);
+    expect(console.data.summary.hermesCronSnapshots).toBe(1);
+    expect(console.data.coordination.hermesCronSnapshots[0]?.summary.jobs).toBe(2);
     expect(console.data.summary.deploymentSnapshots).toBe(1);
     expect(console.data.summary.approvals).toBe(1);
     expect(console.data.behaviorChecks?.status).toBe("passed");
+
+    const artifactChecks = await generateArtifactCheckReport({ project: "ariadne", vaultRoot });
+    const coordinationCheck = artifactChecks.report.checks.find((check) => check.id === "coordination-records");
+    const hermesCheck = artifactChecks.report.checks.find((check) => check.id === "hermes-cron-snapshots");
+    expect(coordinationCheck?.matches?.some((match) => match.includes("coordination/hermes"))).toBe(false);
+    expect(hermesCheck?.count).toBe(1);
   });
 
   it("records CI, CodeRabbit, Playwright, infra, OpenScorpion, and guarded worktree evidence", async () => {

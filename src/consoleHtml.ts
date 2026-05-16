@@ -56,6 +56,11 @@ function renderConsole(data: ConsoleData): string {
       label: `Agent mail: ${record.subject}`,
       detail: `${record.from} to ${record.to}`
     })),
+    ...data.coordination.hermesCronSnapshots.map((snapshot) => ({
+      time: snapshot.importedAt,
+      label: `Hermes cron snapshot${snapshot.host ? `: ${snapshot.host}` : ""}`,
+      detail: `${snapshot.summary.jobs} jobs / ${snapshot.summary.enabled} enabled`
+    })),
     ...data.deployment.snapshots.map((snapshot) => ({
       time: snapshot.importedAt,
       label: `Deployment snapshot: ${snapshot.system}`,
@@ -107,6 +112,7 @@ function renderConsole(data: ConsoleData): string {
     metric("Healer", data.summary.healerProposals, "proposals"),
     metric("GitHub", data.summary.githubSnapshots, "snapshots"),
     metric("Approvals", data.summary.pendingApprovals, `${data.summary.approvals} total`),
+    metric("Hermes", data.summary.hermesCronSnapshots, "cron snapshots"),
     metric("Recovery", data.summary.recoveryIssues, "issues"),
     metric("Browser", data.summary.consoleBrowserChecks ?? "none", "console"),
     metric(
@@ -268,6 +274,7 @@ function evidenceChain(data: ConsoleData): string {
     ["Pending approvals", data.summary.pendingApprovals],
     ["Recovery issues", data.summary.recoveryIssues],
     ["Browser checks", data.summary.consoleBrowserChecks ?? "none"],
+    ["Hermes cron", data.summary.hermesCronSnapshots],
     ["GBrain reports", data.gbrain?.reports.length ?? 0]
   ];
   return `<div class="chain">${rows.map(([label, value]) => `<div><span>${escapeHtml(String(label))}</span><strong>${escapeHtml(String(value))}</strong></div>`).join("")}</div>`;
@@ -370,9 +377,14 @@ function memoryAndMail(data: ConsoleData): string {
     ["Sleep routines", data.summary.sleepRoutines],
     ["Memory proposals", data.summary.memoryProposals],
     ["Agent mail", data.summary.agentMail],
-    ["Agent leases", data.summary.agentLeases]
+    ["Agent leases", data.summary.agentLeases],
+    ["Hermes cron snapshots", data.summary.hermesCronSnapshots]
   ];
-  return `<div class="chain">${rows.map(([label, value]) => `<div><span>${escapeHtml(String(label))}</span><strong>${escapeHtml(String(value))}</strong></div>`).join("")}</div>`;
+  const latest = data.coordination.hermesCronSnapshots.at(-1);
+  const summary = latest
+    ? `<div class="metadata">Latest Hermes snapshot: ${escapeHtml(`${latest.summary.jobs} jobs / ${latest.summary.enabled} enabled`)}</div>`
+    : "";
+  return `<div class="chain">${rows.map(([label, value]) => `<div><span>${escapeHtml(String(label))}</span><strong>${escapeHtml(String(value))}</strong></div>`).join("")}</div>${summary}`;
 }
 
 function infrastructure(data: ConsoleData): string {

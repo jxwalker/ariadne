@@ -654,6 +654,34 @@ export interface AgentLeaseRecord {
   notes?: string;
 }
 
+export interface HermesCronSnapshot {
+  schemaVersion: 1;
+  project: string;
+  importedAt: string;
+  sourcePath: string;
+  host?: string;
+  mode: "read_only";
+  summary: {
+    jobs: number;
+    enabled: number;
+    disabled: number;
+    schedules: string[];
+    nextRuns: string[];
+    warnings: string[];
+  };
+  jobs: Array<{
+    id?: string;
+    name: string;
+    schedule?: string;
+    enabled?: boolean;
+    status?: string;
+    nextRun?: string;
+    lastRun?: string;
+    intent?: string;
+  }>;
+  raw: unknown;
+}
+
 export interface DeploymentSnapshot {
   schemaVersion: 1;
   project: string;
@@ -770,6 +798,7 @@ export interface ConsoleData {
     memoryProposals: number;
     agentMail: number;
     agentLeases: number;
+    hermesCronSnapshots: number;
     deploymentSnapshots: number;
     healerProposals: number;
     githubSnapshots: number;
@@ -815,6 +844,7 @@ export interface ConsoleData {
     memoryProposals: MemoryProposalRecord[];
     agentMail: AgentMailRecord[];
     agentLeases: AgentLeaseRecord[];
+    hermesCronSnapshots: HermesCronSnapshot[];
   };
   infrastructure: {
     registry?: InfraRegistry;
@@ -847,5 +877,6 @@ export interface ConsoleData {
     recoveryReport?: string;
     extractionResults?: string;
     healerProposals?: string;
+    hermesCronSnapshots?: string;
   };
 }

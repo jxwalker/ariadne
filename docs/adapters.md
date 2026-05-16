@@ -193,8 +193,20 @@ The coordination adapters are append-only file records:
 - `memory-proposal`: durable lessons proposed from evidence, not silently written into global memory.
 - `agent-mail`: interagent inbox/outbox messages tied to optional task and run ids.
 - `agent-lease`: ownership records for worktrees, repos, hosts, or other contested resources.
+- `hermes-cron-import`: read-only evidence imports from Hermes cron/job snapshots.
 
-Artifacts are written under `coordination/`, `coordination/mail/`, and `coordination/leases/`.
+Artifacts are written under `coordination/`, `coordination/mail/`, `coordination/leases/`, and `coordination/hermes/`.
+
+`hermes-cron-import` normalises common cron export shapes such as `jobs`, `cronJobs`, `scheduledJobs`, or `tasks`. It records job names, schedules, enabled state, last/next run hints, and a short intent summary. It redacts obvious secret-like fields and never creates, enables, disables, or runs Hermes jobs.
+
+```bash
+npm run ariadne -- hermes-cron-import --project ariadne --from hermes-cron.json --host beast
+```
+
+Artifacts:
+
+- `coordination/hermes/hermes-cron-<timestamp>.json`
+- `coordination/hermes/hermes-cron-<timestamp>.md`
 
 ## Console Data
 
