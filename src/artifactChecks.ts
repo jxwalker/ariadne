@@ -62,6 +62,26 @@ const ARTIFACT_SPECS: ArtifactSpec[] = [
     relativePath: "verification/playwright-plan.json"
   },
   {
+    id: "playwright-captures",
+    label: "Target app Playwright screenshots",
+    required: false,
+    kind: "matching-files",
+    relativePath: "verification/playwright-captures",
+    prefix: "target-",
+    suffix: ".png",
+    minimumCount: 1
+  },
+  {
+    id: "playwright-traces",
+    label: "Target app Playwright traces",
+    required: false,
+    kind: "matching-files",
+    relativePath: "verification/playwright-captures",
+    prefix: "target-",
+    suffix: ".zip",
+    minimumCount: 1
+  },
+  {
     id: "evaluation-plan",
     label: "Evaluation plan",
     required: true,

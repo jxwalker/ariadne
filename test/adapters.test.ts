@@ -29,6 +29,7 @@ import { importNotebookLmExport } from "../src/notebooklm.js";
 import { recordPlaywrightEvidence } from "../src/playwrightEvidence.js";
 import { generatePrd } from "../src/prd.js";
 import { generateRecoveryReport } from "../src/recovery.js";
+import { captureTargetAppEvidence } from "../src/targetAppCapture.js";
 import { generateUsageMetricsReport, importUsageMetrics } from "../src/usageMetrics.js";
 import { guardWorktrees } from "../src/worktreeGuard.js";
 import { assembleDossier, ingestFiles } from "../src/vault.js";
@@ -228,6 +229,47 @@ describe("roadmap adapters", () => {
     const visual = await generateConsoleVisualCheckReport({ project: "ariadne", vaultRoot });
     expect(visual.report.status).toBe("passed");
     expect(visual.report.checks.find((check) => check.id === "trend-chart")?.status).toBe("passed");
+  });
+
+  it("captures target app screenshots and traces as Playwright evidence", async () => {
+    const { vaultRoot } = await preparedProject();
+    const html = encodeURIComponent("<!doctype html><main><h1>Ariadne target app</h1></main>");
+    const capture = await captureTargetAppEvidence({
+      project: "ariadne",
+      vaultRoot,
+      targetUrl: `data:text/html,${html}`,
+      selector: "text=Ariadne target app",
+      width: 640,
+      height: 480
+    });
+
+    expect(capture.evidence.status).toBe("passed");
+    expect(capture.evidence.screenshotPath).toMatch(/verification\/playwright-captures\/target-.*\.png/);
+    expect(capture.evidence.tracePath).toMatch(/verification\/playwright-captures\/target-.*\.zip/);
+    await expect(fs.stat(path.join(vaultRoot, capture.evidence.screenshotPath!))).resolves.toBeTruthy();
+    await expect(fs.stat(path.join(vaultRoot, capture.evidence.tracePath!))).resolves.toBeTruthy();
+
+    const evidenceMarkdown = await fs.readFile(capture.markdownPath, "utf8");
+    expect(evidenceMarkdown).toContain("Status: passed");
+    expect(evidenceMarkdown).toContain("Selector visible: text=Ariadne target app");
+
+    const artifactChecks = await generateArtifactCheckReport({ project: "ariadne", vaultRoot });
+    expect(artifactChecks.report.checks.find((check) => check.id === "playwright-captures")?.status).toBe("present");
+    expect(artifactChecks.report.checks.find((check) => check.id === "playwright-traces")?.status).toBe("present");
+  });
+
+  it("generates the default console before visual and browser checks when missing", async () => {
+    const { vaultRoot } = await preparedProject();
+    const htmlPath = path.join(vaultRoot, "projects", "ariadne", "console", "index.html");
+
+    const visual = await generateConsoleVisualCheckReport({ project: "ariadne", vaultRoot });
+    expect(visual.report.status).toBe("passed");
+    await expect(fs.stat(htmlPath)).resolves.toBeTruthy();
+
+    await fs.rm(htmlPath);
+    const browser = await generateConsoleBrowserCheckReport({ project: "ariadne", vaultRoot, width: 640, height: 480 });
+    expect(browser.report.status).toBe("passed");
+    await expect(fs.stat(htmlPath)).resolves.toBeTruthy();
   });
 
   it("imports and reports token and cost metrics", async () => {

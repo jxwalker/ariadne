@@ -78,6 +78,15 @@ benchmarks/source-packs/<set>/README.md
 benchmarks/source-packs/<set>/...
 ```
 
+`playwright-capture` writes browser artifacts and a companion evidence record:
+
+```text
+vault/projects/<project>/verification/playwright-captures/target-<timestamp>.png
+vault/projects/<project>/verification/playwright-captures/target-<timestamp>.zip
+vault/projects/<project>/verification/playwright-<timestamp>.json
+vault/projects/<project>/verification/playwright-<timestamp>.md
+```
+
 ## Dimensions
 
 | Id | Dimension | Sensors |
@@ -100,6 +109,7 @@ npm run ariadne -- artifact-checks --project ariadne
 npm run ariadne -- benchmark-pack --set all
 npm run ariadne -- evaluation-trends --project ariadne
 npm run ariadne -- usage-report --project ariadne
+npm run ariadne -- playwright-capture --project ariadne --target-url http://localhost:3000 --selector "text=Dashboard"
 npm run ariadne -- behavior-checks --project ariadne --approved-fixture coderabbit.md
 npm run ariadne -- console-html --project ariadne --refresh-data
 npm run ariadne -- console-visual-checks --project ariadne
@@ -142,5 +152,5 @@ A run is acceptable when:
 
 Next evaluation work should add:
 
-- Playwright screenshot and trace ingestion,
-- browser-backed screenshot comparison once Playwright is installed for the console target.
+- browser-backed screenshot comparison for target apps,
+- healer proposals tied to captured failure traces.

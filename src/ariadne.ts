@@ -29,6 +29,7 @@ import { recordPlaywrightEvidence } from "./playwrightEvidence.js";
 import { generatePlaywrightPlan } from "./playwrightPlan.js";
 import { generatePrd } from "./prd.js";
 import { generateRecoveryReport } from "./recovery.js";
+import { captureTargetAppEvidence, waitUntilOption } from "./targetAppCapture.js";
 import { generateUsageMetricsReport, importUsageMetrics } from "./usageMetrics.js";
 import { assembleDossier, ingestFiles, projectStatus } from "./vault.js";
 import { guardWorktrees } from "./worktreeGuard.js";
@@ -84,6 +85,7 @@ function usage(): string {
     "  ariadne execution-status --project <project> --run <run.json> --status <status>",
     "  ariadne worktree-guard --project <project> --run <run.json> [--apply]",
     "  ariadne playwright --project <project> [--target-url <url>]",
+    "  ariadne playwright-capture --project <project> --target-url <url> [--selector <css-or-text>] [--width <number>] [--height <number>] [--wait-until <load|domcontentloaded|networkidle>] [--wait-ms <number>]",
     "  ariadne playwright-evidence --project <project> --target-url <url> --status <status>",
     "  ariadne evaluation --project <project> [--target <name>]",
     "  ariadne evaluation-record --project <project> --plan <plan.json> --scores <D1=80,D2=75> [--evidence <paths>]",
@@ -325,6 +327,29 @@ async function main(): Promise<void> {
       notes: optionString(parsed.options, "notes", "") || undefined
     });
     console.log(`Playwright evidence: ${result.markdownPath}`);
+    return;
+  }
+
+  if (parsed.command === "playwright-capture") {
+    const result = await captureTargetAppEvidence({
+      project,
+      vaultRoot,
+      targetUrl: requiredOption(parsed.options, "target-url"),
+      selector: optionString(parsed.options, "selector", "") || undefined,
+      width: optionalNumber(parsed.options, "width"),
+      height: optionalNumber(parsed.options, "height"),
+      waitUntil: waitUntilOption(optionString(parsed.options, "wait-until", "")),
+      waitMs: optionalNumber(parsed.options, "wait-ms"),
+      notes: optionString(parsed.options, "notes", "") || undefined
+    });
+    console.log(`Playwright capture evidence: ${result.markdownPath}`);
+    console.log(`Status: ${result.evidence.status}`);
+    if (result.evidence.screenshotPath) {
+      console.log(`Screenshot: ${result.evidence.screenshotPath}`);
+    }
+    if (result.evidence.tracePath) {
+      console.log(`Trace: ${result.evidence.tracePath}`);
+    }
     return;
   }
 
