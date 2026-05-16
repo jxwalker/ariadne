@@ -285,6 +285,14 @@ npm run ariadne -- infra-live-ssh --project ariadne --host beast --target james@
 
 The saved snapshot keeps the host label, hashes the SSH target and reported hostname, omits network and MAC addresses, and records OS, CPU, memory, filesystem count, and common platform capabilities. The command runs only a fixed read-only POSIX inventory script.
 
+Plan a governed OpenScorpion activity mutation without submitting it:
+
+```bash
+npm run ariadne -- openscorpion-mutation-plan --project ariadne --activity activity-001 --type ariadne.evidence --action submit-activity --route governed --scope "Submit reviewed evidence package" --auth-evidence control/approvals/approval-...json --dry-run "openscorpion activity validate activity-001 --route governed" --live-command "openscorpion activity submit activity-001 --route governed" --post-verify "openscorpion activity status activity-001 --route governed" --rollback "openscorpion activity withdraw activity-001 --route governed" --approval approval-...
+```
+
+This writes an OpenScorpion mutation-readiness plan for one activity id, activity type, action, and route. Supported routes are `governed` and `staging`; public submission is intentionally not supported by the planning wrapper.
+
 ## Import GitHub PR And Check Evidence
 
 Use `github-snapshot` when Ariadne needs durable PR and check-state evidence:
@@ -312,6 +320,8 @@ For Hermes scheduler plans, prefer `hermes-cron-mutation-plan` because it forces
 For GSD2 plans, prefer `gsd2-mutation-plan` because it forces the task id, package, and execution mode into the reviewed scope.
 
 For NotebookLM plans, prefer `notebooklm-mutation-plan` because it forces the notebook label and supported action into the reviewed scope.
+
+For OpenScorpion plans, prefer `openscorpion-mutation-plan` because it forces the activity id, activity type, action, and governed route into the reviewed scope.
 
 ## Request Mutation Approval
 

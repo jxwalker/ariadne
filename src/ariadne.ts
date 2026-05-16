@@ -44,6 +44,11 @@ import { mutationTargetOption, planMutationReadiness } from "./mutationReadiness
 import { generateMutationReadinessAudit } from "./mutationReadinessAudit.js";
 import { runMutationDryRun } from "./mutationDryRun.js";
 import { runMutationExecution } from "./mutationExecute.js";
+import {
+  openScorpionMutationActionOption,
+  openScorpionMutationRouteOption,
+  planOpenScorpionMutation
+} from "./openScorpionMutation.js";
 import { defaultVaultRoot } from "./paths.js";
 import { recordPlaywrightEvidence } from "./playwrightEvidence.js";
 import { generatePlaywrightPlan } from "./playwrightPlan.js";
@@ -142,6 +147,7 @@ function usage(): string {
     "  ariadne infra-live-local --project <project> [--notes <text>]",
     "  ariadne infra-live-ssh --project <project> --host <id> --target <ssh-target> [--ssh-binary <path>] [--notes <text>]",
     "  ariadne openscorpion-draft --project <project> --title <title> --type <type> --evidence <paths>",
+    "  ariadne openscorpion-mutation-plan --project <project> --activity <id> --type <type> --action <submit-activity|update-activity|withdraw-activity> --route <governed|staging> --scope <text> --auth-evidence <paths> --dry-run <cmd> --live-command <cmd> --post-verify <cmd> --rollback <text> [--approval <id|json>] [--risk <low|medium|high>] [--evidence <paths>] [--notes <text>]",
     "  ariadne import-ci --project <project> --from <checks.json>",
     "  ariadne import-coderabbit --project <project> --from <review.md>",
     "  ariadne record-check --project <project> --name <name> --status <status> --command <cmd>",
@@ -883,6 +889,31 @@ async function main(): Promise<void> {
       evidenceRefs: splitList(requiredOption(parsed.options, "evidence"))
     });
     console.log(`OpenScorpion activity draft: ${result.markdownPath}`);
+    return;
+  }
+
+  if (parsed.command === "openscorpion-mutation-plan") {
+    const result = await planOpenScorpionMutation({
+      project,
+      vaultRoot,
+      activity: requiredOption(parsed.options, "activity"),
+      activityType: requiredOption(parsed.options, "type"),
+      action: openScorpionMutationActionOption(requiredOption(parsed.options, "action")),
+      route: openScorpionMutationRouteOption(requiredOption(parsed.options, "route")),
+      scope: requiredOption(parsed.options, "scope"),
+      authEvidenceRefs: splitList(requiredOption(parsed.options, "auth-evidence")),
+      evidenceRefs: splitList(optionString(parsed.options, "evidence", "")),
+      dryRunCommand: requiredOption(parsed.options, "dry-run"),
+      liveCommand: requiredOption(parsed.options, "live-command"),
+      postVerificationCommand: requiredOption(parsed.options, "post-verify"),
+      rollback: requiredOption(parsed.options, "rollback"),
+      approvalRef: optionString(parsed.options, "approval", "") || undefined,
+      risk: approvalRiskOption(parsed.options, "medium"),
+      notes: optionString(parsed.options, "notes", "") || undefined
+    });
+    console.log(`OpenScorpion mutation plan: ${result.markdownPath}`);
+    console.log(`Status: ${result.plan.status}`);
+    console.log(`Execute: ${result.plan.execute}`);
     return;
   }
 

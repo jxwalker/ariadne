@@ -62,6 +62,7 @@ npm run build
 - `src/infrastructure.ts` and `src/infraSnapshot.ts`: substrate registry and read-only imports.
 - `src/liveInventory.ts`: sanitized live read-only local and SSH host inventory collection.
 - `src/notebookLmMutation.ts`: target-specific NotebookLM mutation-readiness plan generation for notebook actions.
+- `src/openScorpionMutation.ts`: target-specific OpenScorpion mutation-readiness plan generation for governed activity routes.
 - `src/types.ts`: shared record contracts.
 
 ## Adding A New Adapter
@@ -112,4 +113,4 @@ A live adapter must start read-only. Mutation requires a separate approved plan 
 
 Use `approval-request` and `approval-decision` to capture that checkpoint before adding a mutation-capable command. The approval record does not grant execution by itself; the adapter still needs its own narrow implementation, tests, rollback notes, and review.
 
-Use `mutation-readiness` to bind those pieces into one reviewable artifact before adding a live adapter. Prefer target-specific wrappers such as `github-mutation-plan`, `notebooklm-mutation-plan`, `gsd2-mutation-plan`, `hermes-cron-mutation-plan`, and `deployment-mutation-plan` when they exist, because they force the target's required identifiers into the reviewed scope. The plan must keep `execute=false`, include a post-action verification command, and pass `mutation-readiness-audit`; live commands belong in later adapters only after the readiness plan has been reviewed.
+Use `mutation-readiness` to bind those pieces into one reviewable artifact before adding a live adapter. Prefer target-specific wrappers such as `github-mutation-plan`, `notebooklm-mutation-plan`, `gsd2-mutation-plan`, `hermes-cron-mutation-plan`, `openscorpion-mutation-plan`, and `deployment-mutation-plan` when they exist, because they force the target's required identifiers into the reviewed scope. The plan must keep `execute=false`, include a post-action verification command, and pass `mutation-readiness-audit`; live commands belong in later adapters only after the readiness plan has been reviewed.

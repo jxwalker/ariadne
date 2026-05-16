@@ -35,6 +35,7 @@ import { planMutationReadiness } from "../src/mutationReadiness.js";
 import { generateMutationReadinessAudit } from "../src/mutationReadinessAudit.js";
 import { runMutationDryRun } from "../src/mutationDryRun.js";
 import { runMutationExecution } from "../src/mutationExecute.js";
+import { planOpenScorpionMutation } from "../src/openScorpionMutation.js";
 import { generatePlaywrightPlan } from "../src/playwrightPlan.js";
 import { generateEvaluationPlan, recordEvaluationRun } from "../src/evaluation.js";
 import { generateEvaluationTrendReport } from "../src/evaluationTrends.js";
@@ -1444,6 +1445,112 @@ describe("roadmap adapters", () => {
         risk: "medium"
       })
     ).rejects.toThrow(/--notebook/);
+  });
+
+  it("builds OpenScorpion-specific mutation readiness plans", async () => {
+    const { temp, vaultRoot } = await preparedProject();
+    const authEvidence = path.join(temp, "openscorpion-auth.json");
+    await fs.writeFile(authEvidence, JSON.stringify({ route: "governed", payloadPolicy: "non-public" }));
+    const approval = await requestApproval({
+      project: "ariadne",
+      vaultRoot,
+      requestedBy: "planner",
+      target: "openscorpion",
+      action: "Enable bounded OpenScorpion governed activity submission planning.",
+      risk: "medium",
+      reason: "Exercise target-specific OpenScorpion mutation command capture.",
+      rollback: "Withdraw submitted activity through the governed route.",
+      evidenceRefs: [authEvidence]
+    });
+    const approved = await decideApproval({
+      project: "ariadne",
+      vaultRoot,
+      approval: approval.record.id,
+      status: "approved",
+      decisionBy: "james",
+      decisionNotes: "Fixture OpenScorpion approval."
+    });
+    const relativeAuthEvidence = path.join("control", "approvals", `${approval.record.id}.json`);
+
+    const plan = await planOpenScorpionMutation({
+      project: "ariadne",
+      vaultRoot,
+      activity: "activity-001",
+      activityType: "ariadne.evidence",
+      action: "submit-activity",
+      route: "governed",
+      scope: "Submit reviewed Ariadne evidence package through governed OpenScorpion route.",
+      authEvidenceRefs: [relativeAuthEvidence],
+      evidenceRefs: [approved.jsonPath],
+      dryRunCommand: "openscorpion activity validate activity-001 --route governed",
+      liveCommand: "openscorpion activity submit activity-001 --route governed",
+      postVerificationCommand: "openscorpion activity status activity-001 --route governed",
+      rollback: "openscorpion activity withdraw activity-001 --route governed",
+      approvalRef: approval.record.id,
+      risk: "medium",
+      notes: "Fixture plan only; OpenScorpion is not called."
+    });
+    expect(plan.plan.status).toBe("ready_for_bounded_review");
+    expect(plan.plan.target).toBe("openscorpion");
+    expect(plan.plan.scope).toContain("openscorpion/governed/submit-activity/ariadne.evidence/activity-001");
+    expect(plan.plan.proposedLiveCommand).toBe("openscorpion activity submit activity-001 --route governed");
+    expect(plan.plan.requiredGates).toContain("governed submission route and non-public payload policy verified");
+    expect(plan.plan.execute).toBe(false);
+
+    await expect(
+      planOpenScorpionMutation({
+        project: "ariadne",
+        vaultRoot,
+        activity: "activity-001",
+        activityType: "ariadne.evidence",
+        action: "publish-public" as "submit-activity",
+        route: "governed",
+        scope: "Invalid OpenScorpion action.",
+        authEvidenceRefs: [authEvidence],
+        evidenceRefs: [],
+        dryRunCommand: "openscorpion activity validate activity-001",
+        liveCommand: "openscorpion activity publish-public activity-001",
+        postVerificationCommand: "openscorpion activity status activity-001",
+        rollback: "openscorpion activity withdraw activity-001",
+        risk: "medium"
+      })
+    ).rejects.toThrow(/--action/);
+    await expect(
+      planOpenScorpionMutation({
+        project: "ariadne",
+        vaultRoot,
+        activity: "activity-001",
+        activityType: "ariadne.evidence",
+        action: "submit-activity",
+        route: "public" as "governed",
+        scope: "Invalid OpenScorpion route.",
+        authEvidenceRefs: [authEvidence],
+        evidenceRefs: [],
+        dryRunCommand: "openscorpion activity validate activity-001",
+        liveCommand: "openscorpion activity submit activity-001",
+        postVerificationCommand: "openscorpion activity status activity-001",
+        rollback: "openscorpion activity withdraw activity-001",
+        risk: "medium"
+      })
+    ).rejects.toThrow(/--route/);
+    await expect(
+      planOpenScorpionMutation({
+        project: "ariadne",
+        vaultRoot,
+        activity: "../activity-001",
+        activityType: "ariadne.evidence",
+        action: "submit-activity",
+        route: "governed",
+        scope: "Invalid OpenScorpion activity identifier.",
+        authEvidenceRefs: [authEvidence],
+        evidenceRefs: [],
+        dryRunCommand: "openscorpion activity validate activity-001",
+        liveCommand: "openscorpion activity submit activity-001",
+        postVerificationCommand: "openscorpion activity status activity-001",
+        rollback: "openscorpion activity withdraw activity-001",
+        risk: "medium"
+      })
+    ).rejects.toThrow(/--activity/);
   });
 
   it("builds deployment-specific mutation readiness plans", async () => {
