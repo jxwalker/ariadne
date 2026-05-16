@@ -626,6 +626,25 @@ export interface GbrainReportImport {
   notes: string[];
 }
 
+export interface Gsd2ProcessSnapshot {
+  schemaVersion: 1;
+  project: string;
+  importedAt: string;
+  mode: "read_only";
+  binary: string;
+  version: string;
+  packageCount: number;
+  packages: string[];
+  supportedModes: string[];
+  subcommands: string[];
+  warnings: string[];
+  raw: {
+    version: string;
+    list: string;
+    help: string;
+  };
+}
+
 export interface SleepRoutineRecord {
   schemaVersion: 1;
   id: string;
@@ -841,6 +860,7 @@ export interface ConsoleData {
     decisions: number;
     evaluations: number;
     infraSnapshots: number;
+    gsd2ProcessSnapshots: number;
     sleepRoutines: number;
     memoryProposals: number;
     agentMail: number;
@@ -884,6 +904,7 @@ export interface ConsoleData {
   consoleVisualChecks?: ConsoleVisualCheckReport;
   consoleBrowserChecks?: ConsoleBrowserCheckReport;
   behaviorChecks?: BehaviorCheckReport;
+  gsd2ProcessSnapshots: Gsd2ProcessSnapshot[];
   gbrain?: {
     exportBundle?: GbrainExportBundle;
     reports: GbrainReportImport[];
@@ -920,6 +941,7 @@ export interface ConsoleData {
     evaluationTrends?: string;
     usageReport?: string;
     behaviorChecks?: string;
+    gsd2ProcessSnapshots?: string;
     gbrainExport?: string;
     consoleVisualChecks?: string;
     consoleBrowserChecks?: string;

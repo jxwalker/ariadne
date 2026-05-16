@@ -8,6 +8,7 @@ The first visualisation should be an operations surface over evidence, not a cha
 - Dossiers: assembled context and source coverage.
 - Requirements: PRD goals, requirements, ambiguities.
 - Tasks: GSD tasks, write scopes, verification commands.
+- GSD2 process: selected local `gsd` version, modes, packages, and available subcommands.
 - Execution: run status, worktree guard checks, stop conditions.
 - Recovery: incomplete runs, missing guards, failed checks, pending reviews, and resume actions.
 - Approvals: requested, approved, rejected, or expired mutation gates with risk and rollback notes.

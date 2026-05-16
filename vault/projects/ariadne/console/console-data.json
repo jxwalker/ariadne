@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "project": "ariadne",
-  "generatedAt": "2026-05-16T17:01:35.321Z",
+  "generatedAt": "2026-05-16T17:16:42.041Z",
   "projectDir": "projects/ariadne",
   "summary": {
     "sources": 3,
@@ -14,6 +14,7 @@
     "decisions": 1,
     "evaluations": 1,
     "infraSnapshots": 1,
+    "gsd2ProcessSnapshots": 2,
     "sleepRoutines": 1,
     "memoryProposals": 1,
     "agentMail": 1,
@@ -1019,7 +1020,7 @@
   "consoleVisualChecks": {
     "schemaVersion": 1,
     "project": "ariadne",
-    "generatedAt": "2026-05-16T17:01:33.565Z",
+    "generatedAt": "2026-05-16T17:16:40.319Z",
     "htmlPath": "projects/ariadne/console/index.html",
     "status": "passed",
     "summary": {
@@ -1092,9 +1093,9 @@
   "consoleBrowserChecks": {
     "schemaVersion": 1,
     "project": "ariadne",
-    "generatedAt": "2026-05-16T17:01:34.494Z",
+    "generatedAt": "2026-05-16T17:16:41.231Z",
     "htmlPath": "projects/ariadne/console/index.html",
-    "screenshotPath": "projects/ariadne/console/screenshots/console-2026-05-16T17-01-34-494Z.png",
+    "screenshotPath": "projects/ariadne/console/screenshots/console-2026-05-16T17-16-41-231Z.png",
     "status": "passed",
     "viewport": {
       "width": 1440,
@@ -1145,7 +1146,7 @@
         "id": "screenshot",
         "label": "Screenshot captured",
         "status": "passed",
-        "detail": "793133 bytes captured."
+        "detail": "805454 bytes captured."
       }
     ]
   },
@@ -1215,6 +1216,78 @@
       }
     ]
   },
+  "gsd2ProcessSnapshots": [
+    {
+      "schemaVersion": 1,
+      "project": "ariadne",
+      "importedAt": "2026-05-16T17:13:27.231Z",
+      "mode": "read_only",
+      "binary": "gsd",
+      "version": "2.59.0",
+      "packageCount": 0,
+      "packages": [],
+      "supportedModes": [
+        "text",
+        "json",
+        "rpc",
+        "mcp"
+      ],
+      "subcommands": [
+        "config",
+        "install",
+        "remove",
+        "list",
+        "update",
+        "sessions",
+        "worktree",
+        "auto",
+        "headless"
+      ],
+      "warnings": [
+        "Snapshot is read-only; Ariadne did not run GSD headless, auto, install, update, worktree, or model commands."
+      ],
+      "raw": {
+        "version": "2.59.0",
+        "list": "No packages installed.",
+        "help": "GSD v2.59.0 — Get Shit Done\n\nUsage: gsd [options] [message...]\n\nOptions:\n  --mode <text|json|rpc|mcp> Output mode (default: interactive)\n  --print, -p              Single-shot print mode\n  --continue, -c           Resume the most recent session\n  --worktree, -w [name]    Start in an isolated worktree (auto-named if omitted)\n  --model <id>             Override model (e.g. claude-opus-4-6)\n  --no-session             Disable session persistence\n  --extension <path>       Load additional extension\n  --tools <a,b,c>          Restrict available tools\n  --list-models [search]   List available models and exit\n  --version, -v            Print version and exit\n  --help, -h               Print this help and exit\n\nSubcommands:\n  config                   Re-run the setup wizard\n  install <source>         Install a package/extension source\n  remove <source>          Remove an installed package source\n  list                     List installed package sources\n  update                   Update GSD to the latest version\n  sessions                 List and resume a past session\n  worktree <cmd>           Manage worktrees (list, merge, clean, remove)\n  auto [args]              Run auto-mode without TUI (pipeable)\n  headless [cmd] [args]    Run /gsd commands without TUI (default: auto)\n\nRun gsd <subcommand> --help for subcommand-specific help.\n"
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "project": "ariadne",
+      "importedAt": "2026-05-16T17:16:38.666Z",
+      "mode": "read_only",
+      "binary": "gsd",
+      "version": "2.59.0",
+      "packageCount": 0,
+      "packages": [],
+      "supportedModes": [
+        "text",
+        "json",
+        "rpc",
+        "mcp"
+      ],
+      "subcommands": [
+        "config",
+        "install",
+        "remove",
+        "list",
+        "update",
+        "sessions",
+        "worktree",
+        "auto",
+        "headless"
+      ],
+      "warnings": [
+        "Snapshot is read-only; Ariadne did not run GSD headless, auto, install, update, worktree, or model commands."
+      ],
+      "raw": {
+        "version": "2.59.0",
+        "list": "No packages installed.",
+        "help": "GSD v2.59.0 — Get Shit Done\n\nUsage: gsd [options] [message...]\n\nOptions:\n  --mode <text|json|rpc|mcp> Output mode (default: interactive)\n  --print, -p              Single-shot print mode\n  --continue, -c           Resume the most recent session\n  --worktree, -w [name]    Start in an isolated worktree (auto-named if omitted)\n  --model <id>             Override model (e.g. claude-opus-4-6)\n  --no-session             Disable session persistence\n  --extension <path>       Load additional extension\n  --tools <a,b,c>          Restrict available tools\n  --list-models [search]   List available models and exit\n  --version, -v            Print version and exit\n  --help, -h               Print this help and exit\n\nSubcommands:\n  config                   Re-run the setup wizard\n  install <source>         Install a package/extension source\n  remove <source>          Remove an installed package source\n  list                     List installed package sources\n  update                   Update GSD to the latest version\n  sessions                 List and resume a past session\n  worktree <cmd>           Manage worktrees (list, merge, clean, remove)\n  auto [args]              Run auto-mode without TUI (pipeable)\n  headless [cmd] [args]    Run /gsd commands without TUI (default: auto)\n\nRun gsd <subcommand> --help for subcommand-specific help.\n"
+      }
+    }
+  ],
   "gbrain": {
     "exportBundle": {
       "schemaVersion": 1,
@@ -2178,6 +2251,7 @@
     "evaluationTrends": "projects/ariadne/evaluation/evaluation-trends.json",
     "usageReport": "projects/ariadne/evaluation/usage-report.json",
     "behaviorChecks": "projects/ariadne/evaluation/behavior-checks.json",
+    "gsd2ProcessSnapshots": "projects/ariadne/gsd/process",
     "gbrainExport": "projects/ariadne/integrations/gbrain/gbrain-export.json",
     "consoleVisualChecks": "projects/ariadne/console/visual-checks.json",
     "consoleBrowserChecks": "projects/ariadne/console/browser-checks.json",

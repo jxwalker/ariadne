@@ -26,6 +26,7 @@ npm run build
 - `src/extractionRunnerPlan.ts` and `src/extractionResults.ts`: explicit OCR/transcription runner selection and reviewed extraction imports.
 - `src/prd.ts`: requirements generation from dossier evidence.
 - `src/gsd.ts`: roadmap and task export.
+- `src/gsdProcess.ts`: read-only local `gsd` process snapshot collection.
 - `src/execution.ts`: non-mutating execution run records.
 - `src/worktreeGuard.ts`: git readiness checks and optional guarded worktree creation.
 - `src/playwrightPlan.ts` and `src/playwrightEvidence.ts`: UI verification planning and evidence.

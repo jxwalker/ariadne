@@ -46,6 +46,16 @@ const ARTIFACT_SPECS: ArtifactSpec[] = [
   { id: "gsd-tasks", label: "GSD task list", required: true, kind: "file", relativePath: "gsd/TASKS.md" },
   { id: "gsd2-bundle", label: "GSD2 bundle", required: true, kind: "file", relativePath: "gsd/gsd2-bundle.json" },
   {
+    id: "gsd2-process-snapshots",
+    label: "GSD2 process snapshots",
+    required: false,
+    kind: "matching-files",
+    relativePath: "gsd/process",
+    prefix: "gsd2-process-",
+    suffix: ".json",
+    minimumCount: 1
+  },
+  {
     id: "execution-runs",
     label: "Execution run JSON",
     required: true,

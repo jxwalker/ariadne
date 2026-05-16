@@ -1,12 +1,12 @@
 {
   "schemaVersion": 1,
   "project": "ariadne",
-  "generatedAt": "2026-05-16T17:01:34.042Z",
+  "generatedAt": "2026-05-16T17:16:40.775Z",
   "status": "passed",
   "summary": {
     "required": 13,
-    "optional": 21,
-    "present": 30,
+    "optional": 22,
+    "present": 31,
     "missingRequired": 0
   },
   "checks": [
@@ -70,6 +70,18 @@
       "required": true,
       "path": "projects/ariadne/gsd/gsd2-bundle.json",
       "status": "present"
+    },
+    {
+      "id": "gsd2-process-snapshots",
+      "label": "GSD2 process snapshots",
+      "required": false,
+      "path": "projects/ariadne/gsd/process/gsd2-process-*.json",
+      "status": "present",
+      "count": 2,
+      "matches": [
+        "projects/ariadne/gsd/process/gsd2-process-2026-05-16T17-13-27-231Z.json",
+        "projects/ariadne/gsd/process/gsd2-process-2026-05-16T17-16-38-666Z.json"
+      ]
     },
     {
       "id": "execution-runs",

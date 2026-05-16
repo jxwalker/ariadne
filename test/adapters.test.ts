@@ -20,6 +20,7 @@ import { exportGbrainBundle, importGbrainReport } from "../src/gbrainAdapter.js"
 import { importGithubSnapshot } from "../src/githubAdapter.js";
 import { generateGsd } from "../src/gsd.js";
 import { exportGsd2Bundle, importGsd2Bundle } from "../src/gsdAdapter.js";
+import { collectGsd2ProcessSnapshot } from "../src/gsdProcess.js";
 import { generateHealerProposal } from "../src/healerProposals.js";
 import { generateHermesCronProposal, importHermesCronSnapshot } from "../src/hermesCron.js";
 import { generateInfrastructureRegistry } from "../src/infrastructure.js";
@@ -99,6 +100,32 @@ describe("roadmap adapters", () => {
     });
     expect(roundTrip.roadmap.milestones.length).toBeGreaterThan(0);
 
+    const fakeGsd = path.join(temp, "gsd");
+    await fs.writeFile(
+      fakeGsd,
+      [
+        "#!/bin/sh",
+        "if [ \"$1\" = \"--version\" ]; then echo '2.59.0'; exit 0; fi",
+        "if [ \"$1\" = \"list\" ]; then echo 'No packages installed.'; exit 0; fi",
+        "cat <<'EOF'",
+        "GSD v2.59.0",
+        "Options:",
+        "  --mode <text|json|rpc|mcp> Output mode",
+        "Subcommands:",
+        "  headless [cmd]",
+        "  auto [args]",
+        "EOF"
+      ].join("\n")
+    );
+    await fs.chmod(fakeGsd, 0o755);
+    const processSnapshot = await collectGsd2ProcessSnapshot({ project: "ariadne", vaultRoot, binary: fakeGsd });
+    expect(processSnapshot.snapshot.mode).toBe("read_only");
+    expect(processSnapshot.snapshot.version).toBe("2.59.0");
+    expect(processSnapshot.snapshot.supportedModes).toContain("json");
+    expect(processSnapshot.snapshot.subcommands).toContain("headless");
+    const consoleData = await generateConsoleData({ project: "ariadne", vaultRoot });
+    expect(consoleData.data.summary.gsd2ProcessSnapshots).toBe(1);
+
     const evaluation = await generateEvaluationPlan({
       project: "ariadne",
       vaultRoot,
@@ -134,6 +161,19 @@ describe("roadmap adapters", () => {
         sourcePath: invalidBundle
       })
     ).rejects.toThrow(/task 0 is missing required fields/);
+  });
+
+  it("rejects valueless GSD2 process binary flags", async () => {
+    const { temp } = await preparedProject();
+    const tsx = path.join(process.cwd(), "node_modules", ".bin", "tsx");
+
+    expect(() =>
+      execFileSync(tsx, ["src/ariadne.ts", "gsd2-process", "--project", "ariadne", "--vault", temp, "--binary"], {
+        cwd: process.cwd(),
+        encoding: "utf8",
+        stdio: ["ignore", "pipe", "pipe"]
+      })
+    ).toThrow(/--binary requires a value/);
   });
 
   it("reports missing and complete pipeline artifact contracts", async () => {

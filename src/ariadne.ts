@@ -27,6 +27,7 @@ import { exportGbrainBundle, importGbrainReport } from "./gbrainAdapter.js";
 import { collectGithubSnapshot, importGithubSnapshot } from "./githubAdapter.js";
 import { generateGsd } from "./gsd.js";
 import { exportGsd2Bundle, importGsd2Bundle } from "./gsdAdapter.js";
+import { collectGsd2ProcessSnapshot } from "./gsdProcess.js";
 import { generateHealerProposal } from "./healerProposals.js";
 import { generateHermesCronProposal, importHermesCronSnapshot } from "./hermesCron.js";
 import { generateInfrastructureRegistry } from "./infrastructure.js";
@@ -93,6 +94,7 @@ function usage(): string {
     "  ariadne gsd --project <project>",
     "  ariadne gsd2-export --project <project>",
     "  ariadne gsd2-import --project <project> --from <bundle.json>",
+    "  ariadne gsd2-process --project <project> [--binary <path-or-name>]",
     "  ariadne decision --project <project> --title <title> --context <text> --decision <text>",
     "  ariadne execution --project <project> [--task <id>] [--repo <path>]",
     "  ariadne execution-status --project <project> --run <run.json> --status <status>",
@@ -286,6 +288,22 @@ async function main(): Promise<void> {
     const result = await importGsd2Bundle({ project, vaultRoot, sourcePath });
     console.log(`Imported GSD roadmap: ${result.jsonPath}`);
     console.log(`Imported GSD tasks: ${result.markdownPath}`);
+    return;
+  }
+
+  if (parsed.command === "gsd2-process") {
+    const binaryOption = parsed.options.get("binary");
+    if (binaryOption === true) {
+      throw new Error("--binary requires a value.");
+    }
+    const result = await collectGsd2ProcessSnapshot({
+      project,
+      vaultRoot,
+      binary: typeof binaryOption === "string" && binaryOption.trim() ? binaryOption : undefined
+    });
+    console.log(`GSD2 process snapshot: ${result.markdownPath}`);
+    console.log(`Version: ${result.snapshot.version}`);
+    console.log(`Mode: ${result.snapshot.mode}`);
     return;
   }
 

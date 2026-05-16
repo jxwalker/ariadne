@@ -1,0 +1,35 @@
+{
+  "schemaVersion": 1,
+  "project": "ariadne",
+  "importedAt": "2026-05-16T17:16:38.666Z",
+  "mode": "read_only",
+  "binary": "gsd",
+  "version": "2.59.0",
+  "packageCount": 0,
+  "packages": [],
+  "supportedModes": [
+    "text",
+    "json",
+    "rpc",
+    "mcp"
+  ],
+  "subcommands": [
+    "config",
+    "install",
+    "remove",
+    "list",
+    "update",
+    "sessions",
+    "worktree",
+    "auto",
+    "headless"
+  ],
+  "warnings": [
+    "Snapshot is read-only; Ariadne did not run GSD headless, auto, install, update, worktree, or model commands."
+  ],
+  "raw": {
+    "version": "2.59.0",
+    "list": "No packages installed.",
+    "help": "GSD v2.59.0 — Get Shit Done\n\nUsage: gsd [options] [message...]\n\nOptions:\n  --mode <text|json|rpc|mcp> Output mode (default: interactive)\n  --print, -p              Single-shot print mode\n  --continue, -c           Resume the most recent session\n  --worktree, -w [name]    Start in an isolated worktree (auto-named if omitted)\n  --model <id>             Override model (e.g. claude-opus-4-6)\n  --no-session             Disable session persistence\n  --extension <path>       Load additional extension\n  --tools <a,b,c>          Restrict available tools\n  --list-models [search]   List available models and exit\n  --version, -v            Print version and exit\n  --help, -h               Print this help and exit\n\nSubcommands:\n  config                   Re-run the setup wizard\n  install <source>         Install a package/extension source\n  remove <source>          Remove an installed package source\n  list                     List installed package sources\n  update                   Update GSD to the latest version\n  sessions                 List and resume a past session\n  worktree <cmd>           Manage worktrees (list, merge, clean, remove)\n  auto [args]              Run auto-mode without TUI (pipeable)\n  headless [cmd] [args]    Run /gsd commands without TUI (default: auto)\n\nRun gsd <subcommand> --help for subcommand-specific help.\n"
+  }
+}

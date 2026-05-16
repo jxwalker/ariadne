@@ -47,11 +47,12 @@ Implemented:
 - task success criteria
 - verification command registry
 - GSD2-compatible bundle export/import
+- read-only local GSD process snapshot from the selected `gsd` executable
 - decision log records
 
 Next:
 
-- actual GSD2 process adapter if a local GSD2 install is selected
+- GSD2 headless task submission only after a mutation-readiness plan is approved
 
 ## Milestone 3: Execution Loop
 

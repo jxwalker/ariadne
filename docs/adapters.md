@@ -45,6 +45,19 @@ Automation is intentionally not implemented yet. Manual import remains the fallb
 
 `gsd2-export` writes `gsd/gsd2-bundle.json`, a flattened task bundle with milestone metadata. `gsd2-import` can rebuild a roadmap from that bundle.
 
+`gsd2-process` collects a read-only snapshot from the selected local `gsd` executable:
+
+```bash
+npm run ariadne -- gsd2-process --project ariadne --binary gsd
+```
+
+It runs `gsd --version`, `gsd list`, and `gsd --help`, then records version, package list, supported output modes, and subcommands. It does not run `gsd headless`, `gsd auto`, model commands, package install/update, or worktree mutation.
+
+Artifacts:
+
+- `gsd/process/gsd2-process-<timestamp>.json`
+- `gsd/process/gsd2-process-<timestamp>.md`
+
 ## Decision Logging
 
 `decision` records timestamped architectural decisions in the project decisions directory. It builds a `DecisionRecord` through `recordDecision`, renders the companion Markdown with `renderDecision`, and writes both:

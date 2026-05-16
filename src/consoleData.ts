@@ -22,6 +22,7 @@ import type {
   ExtractionResultRecord,
   GbrainExportBundle,
   GbrainReportImport,
+  Gsd2ProcessSnapshot,
   HealerProposalRecord,
   HermesCronProposal,
   HermesCronSnapshot,
@@ -94,6 +95,7 @@ export async function collectConsoleData(vaultRoot: string, projectInput: string
   );
   const evaluations = await readJsonFiles<EvaluationRun>(path.join(dir, "evaluation"), isEvaluationRun);
   const infraSnapshots = await readJsonFiles<InfraSnapshot>(path.join(dir, "infrastructure"), isInfraSnapshot);
+  const gsd2ProcessSnapshots = await readJsonFiles<Gsd2ProcessSnapshot>(path.join(dir, "gsd", "process"), isGsd2ProcessSnapshot);
   const gbrainReports = await readJsonFiles<GbrainReportImport>(path.join(dir, "integrations", "gbrain"), isGbrainReport);
   const githubSnapshots = await readJsonFiles<GithubSnapshot>(path.join(dir, "integrations", "github"), isGithubSnapshot);
   const sleepRoutines = await readJsonFiles<SleepRoutineRecord>(path.join(dir, "coordination"), isSleepRoutine);
@@ -149,6 +151,7 @@ export async function collectConsoleData(vaultRoot: string, projectInput: string
       decisions: decisions.length,
       evaluations: evaluations.length,
       infraSnapshots: infraSnapshots.length,
+      gsd2ProcessSnapshots: gsd2ProcessSnapshots.length,
       sleepRoutines: sleepRoutines.length,
       memoryProposals: memoryProposals.length,
       agentMail: agentMail.length,
@@ -184,6 +187,7 @@ export async function collectConsoleData(vaultRoot: string, projectInput: string
     consoleVisualChecks,
     consoleBrowserChecks,
     behaviorChecks,
+    gsd2ProcessSnapshots,
     gbrain: {
       exportBundle: gbrainExport,
       reports: gbrainReports
@@ -218,6 +222,7 @@ export async function collectConsoleData(vaultRoot: string, projectInput: string
       evaluationTrends: await existingPath(vaultRoot, path.join(dir, "evaluation", "evaluation-trends.json")),
       usageReport: await existingPath(vaultRoot, path.join(dir, "evaluation", "usage-report.json")),
       behaviorChecks: await existingPath(vaultRoot, path.join(dir, "evaluation", "behavior-checks.json")),
+      gsd2ProcessSnapshots: await existingPath(vaultRoot, path.join(dir, "gsd", "process")),
       gbrainExport: await existingPath(vaultRoot, path.join(dir, "integrations", "gbrain", "gbrain-export.json")),
       consoleVisualChecks: await existingPath(vaultRoot, path.join(dir, "console", "visual-checks.json")),
       consoleBrowserChecks: await existingPath(vaultRoot, path.join(dir, "console", "browser-checks.json")),
@@ -357,6 +362,16 @@ function isEvaluationRun(value: unknown): value is EvaluationRun {
 
 function isInfraSnapshot(value: unknown): value is InfraSnapshot {
   return hasSchema(value) && value.schemaVersion === 1 && "snapshotKind" in value && "summary" in value;
+}
+
+function isGsd2ProcessSnapshot(value: unknown): value is Gsd2ProcessSnapshot {
+  return (
+    hasSchema(value) &&
+    value.schemaVersion === 1 &&
+    value.mode === "read_only" &&
+    typeof value.version === "string" &&
+    Array.isArray(value.subcommands)
+  );
 }
 
 function isGbrainReport(value: unknown): value is GbrainReportImport {

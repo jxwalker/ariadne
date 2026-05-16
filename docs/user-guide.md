@@ -35,7 +35,10 @@ vault/projects/ariadne/HOT_INDEX.md
 npm run ariadne -- prd --project ariadne
 npm run ariadne -- gsd --project ariadne
 npm run ariadne -- gsd2-export --project ariadne
+npm run ariadne -- gsd2-process --project ariadne --binary gsd
 ```
+
+`gsd2-process` records the selected local `gsd` executable version, package list, output modes, and subcommands. It is read-only and does not invoke headless execution, models, package install/update, or worktree mutation.
 
 For a complete local planning pass:
 
