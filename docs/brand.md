@@ -5,7 +5,7 @@ Ariadne is the product name for this control layer.
 ## Naming
 
 - Product: Ariadne
-- CLI command: `ariadne`
+- runner command: `ariadne`
 - Static operations surface: Ariadne Console
 - Evaluation harness: Ariadne Trials
 - Memory and sleep routines: Ariadne Loom

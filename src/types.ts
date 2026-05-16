@@ -14,6 +14,7 @@ export interface IngestRecord {
   sourcePath: string;
   storedPath: string;
   extractedTextPath?: string;
+  extractionResultPaths?: string[];
   handoffPath?: string;
   hygieneReportPath?: string;
   fileName: string;
@@ -22,6 +23,20 @@ export interface IngestRecord {
   sha256: string;
   bytes: number;
   ingestedAt: string;
+  notes?: string;
+}
+
+export interface ExtractionResultRecord {
+  schemaVersion: 1;
+  id: string;
+  project: string;
+  sourceRecordId: string;
+  importedAt: string;
+  extractionKind: "ocr" | "transcription" | "pdf-text" | "visual-description";
+  tool: string;
+  confidence?: number;
+  sourcePath: string;
+  extractedTextPath: string;
   notes?: string;
 }
 
@@ -693,6 +708,7 @@ export interface ConsoleData {
   projectDir: string;
   summary: {
     sources: number;
+    extractionResults: number;
     requirements: number;
     tasks: number;
     executionRuns: number;
@@ -726,6 +742,7 @@ export interface ConsoleData {
     hasHandoff: boolean;
     hygieneStatus?: SourceHygieneReport["status"];
   }>;
+  extractionResults: ExtractionResultRecord[];
   requirements: Requirement[];
   tasks: Array<GsdTask & { milestoneId: string; milestoneTitle: string }>;
   executionRuns: ExecutionRun[];
@@ -777,5 +794,6 @@ export interface ConsoleData {
     githubSnapshots?: string;
     approvals?: string;
     recoveryReport?: string;
+    extractionResults?: string;
   };
 }

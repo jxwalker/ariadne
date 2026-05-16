@@ -1,6 +1,6 @@
 # Developer Guide
 
-This repo is a TypeScript CLI that writes typed artifacts to a local vault. It should stay boring, inspectable, and evidence-first.
+This repo is a TypeScript runner that writes typed artifacts to a local vault. It should stay boring, inspectable, and evidence-first.
 
 ## Setup
 
@@ -21,8 +21,9 @@ npm run build
 
 ## Code Layout
 
-- `src/cli.ts`: command routing and argument parsing.
+- `src/ariadne.ts`: command routing and argument parsing.
 - `src/vault.ts`: source intake, manifest, hot index, dossier.
+- `src/extractionResults.ts`: reviewed OCR, transcription, PDF text, and visual-description imports.
 - `src/prd.ts`: requirements generation from dossier evidence.
 - `src/gsd.ts`: roadmap and task export.
 - `src/execution.ts`: non-mutating execution run records.
@@ -53,7 +54,7 @@ npm run build
 1. Add types in `src/types.ts`.
 2. Add a small module in `src/<adapter>.ts`.
 3. Write JSON and Markdown artifacts with `writeJsonArtifact` and `writeTextArtifact`.
-4. Add a CLI command in `src/cli.ts`.
+4. Add a runner command in `src/ariadne.ts`.
 5. Add a test that proves the artifact path and one failure mode.
 6. Update `docs/adapters.md` and `README.md`.
 7. If console state changes, update `src/consoleData.ts`, `src/consoleHtml.ts`, and a console-data assertion.

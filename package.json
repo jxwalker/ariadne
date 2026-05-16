@@ -4,12 +4,12 @@
   "private": true,
   "type": "module",
   "bin": {
-    "ariadne": "./dist/cli.js"
+    "ariadne": "./dist/src/ariadne.js"
   },
   "scripts": {
     "build": "tsc -p tsconfig.json",
     "check": "tsc -p tsconfig.json --noEmit",
-    "cli": "tsx src/cli.ts",
+    "ariadne": "tsx src/ariadne.ts",
     "test": "vitest run"
   },
   "engines": {

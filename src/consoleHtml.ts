@@ -99,6 +99,7 @@ function renderConsole(data: ConsoleData): string {
     "</section>",
     '<section class="metrics" aria-label="Project metrics">',
     metric("Sources", data.summary.sources),
+    metric("Extractions", data.summary.extractionResults, "results"),
     metric("Requirements", data.summary.requirements),
     metric("Tasks", data.summary.tasks),
     metric("Runs", data.summary.executionRuns),
@@ -123,6 +124,7 @@ function renderConsole(data: ConsoleData): string {
     "</div>",
     '<aside class="side-column">',
     section("Evidence Chain", evidenceChain(data)),
+    section("Extraction Results", extractionResults(data)),
     section("Visual Checks", visualChecks(data)),
     section("Browser Checks", browserChecks(data)),
     section("Recovery", recovery(data)),
@@ -253,6 +255,7 @@ function timelineList(items: Array<{ time: string; label: string; detail: string
 function evidenceChain(data: ConsoleData): string {
   const rows = [
     ["Raw sources", data.summary.sources],
+    ["Extraction results", data.summary.extractionResults],
     ["Requirements", data.summary.requirements],
     ["Tasks", data.summary.tasks],
     ["Checks", data.summary.checks],
@@ -278,6 +281,18 @@ function visualChecks(data: ConsoleData): string {
         `<li><strong class="${statusClass(check.status)}">${escapeHtml(check.status)}</strong><span>${escapeHtml(check.label)}</span></li>`
     ),
     "</ul>"
+  ].join("");
+}
+
+function extractionResults(data: ConsoleData): string {
+  if (data.extractionResults.length === 0) return empty("No OCR, transcription, or PDF extraction results are available.");
+  return [
+    '<div class="infra">',
+    ...data.extractionResults.slice(-5).map(
+      (result) =>
+        `<div><strong>${escapeHtml(result.extractionKind)}</strong><span>${escapeHtml(result.tool)}</span><small>${escapeHtml(`${result.sourceRecordId} -> ${result.extractedTextPath}`)}</small></div>`
+    ),
+    "</div>"
   ].join("");
 }
 

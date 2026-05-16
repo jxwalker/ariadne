@@ -58,10 +58,10 @@ const SMOKE: BenchmarkPackTemplate = {
     }
   ],
   recommendedCommands: [
-    "npm run cli -- ingest --project bench-smoke <PACK_ROOT>/sources/source.md",
-    "npm run cli -- assemble --project bench-smoke",
-    "npm run cli -- roadmap --project bench-smoke --target-url http://localhost:3000",
-    "npm run cli -- artifact-checks --project bench-smoke"
+    "npm run ariadne -- ingest --project bench-smoke <PACK_ROOT>/sources/source.md",
+    "npm run ariadne -- assemble --project bench-smoke",
+    "npm run ariadne -- roadmap --project bench-smoke --target-url http://localhost:3000",
+    "npm run ariadne -- artifact-checks --project bench-smoke"
   ],
   acceptance: [
     "Artifact checks pass with no missing required artifacts.",
@@ -186,16 +186,16 @@ const REALISTIC: BenchmarkPackTemplate = {
     }
   ],
   recommendedCommands: [
-    "npm run cli -- ingest --project bench-realistic <PACK_ROOT>/sources/whitepaper.md <PACK_ROOT>/sources/dictated-notes.txt <PACK_ROOT>/sources/sketch-handoff.md",
-    "npm run cli -- assemble --project bench-realistic",
-    "npm run cli -- roadmap --project bench-realistic --target-url http://localhost:3000",
-    "npm run cli -- notebooklm-import --project bench-realistic --from <PACK_ROOT>/imports/notebooklm-export.md",
-    "npm run cli -- import-ci --project bench-realistic --from <PACK_ROOT>/imports/ci-checks.json",
-    "npm run cli -- import-coderabbit --project bench-realistic --from <PACK_ROOT>/imports/coderabbit-review.md",
-    "npm run cli -- usage-import --project bench-realistic --from <PACK_ROOT>/imports/usage-metrics.json",
-    "npm run cli -- usage-report --project bench-realistic",
-    "npm run cli -- infra-snapshot --project bench-realistic --from <PACK_ROOT>/imports/infra-snapshot.json",
-    "npm run cli -- artifact-checks --project bench-realistic"
+    "npm run ariadne -- ingest --project bench-realistic <PACK_ROOT>/sources/whitepaper.md <PACK_ROOT>/sources/dictated-notes.txt <PACK_ROOT>/sources/sketch-handoff.md",
+    "npm run ariadne -- assemble --project bench-realistic",
+    "npm run ariadne -- roadmap --project bench-realistic --target-url http://localhost:3000",
+    "npm run ariadne -- notebooklm-import --project bench-realistic --from <PACK_ROOT>/imports/notebooklm-export.md",
+    "npm run ariadne -- import-ci --project bench-realistic --from <PACK_ROOT>/imports/ci-checks.json",
+    "npm run ariadne -- import-coderabbit --project bench-realistic --from <PACK_ROOT>/imports/coderabbit-review.md",
+    "npm run ariadne -- usage-import --project bench-realistic --from <PACK_ROOT>/imports/usage-metrics.json",
+    "npm run ariadne -- usage-report --project bench-realistic",
+    "npm run ariadne -- infra-snapshot --project bench-realistic --from <PACK_ROOT>/imports/infra-snapshot.json",
+    "npm run ariadne -- artifact-checks --project bench-realistic"
   ],
   acceptance: [
     "Mixed source intake produces three source records.",
@@ -290,11 +290,11 @@ const STRESS: BenchmarkPackTemplate = {
     }
   ],
   recommendedCommands: [
-    "npm run cli -- ingest --project bench-stress-alpha <PACK_ROOT>/project-alpha/source.md",
-    "npm run cli -- ingest --project bench-stress-beta <PACK_ROOT>/project-beta/source.md",
-    "npm run cli -- import-ci --project bench-stress-beta --from <PACK_ROOT>/imports/failed-ci.json",
-    "npm run cli -- import-coderabbit --project bench-stress-beta --from <PACK_ROOT>/imports/pending-coderabbit-review.md",
-    "npm run cli -- infra-snapshot --project bench-stress-beta --from <PACK_ROOT>/imports/odd-infra-snapshot.json"
+    "npm run ariadne -- ingest --project bench-stress-alpha <PACK_ROOT>/project-alpha/source.md",
+    "npm run ariadne -- ingest --project bench-stress-beta <PACK_ROOT>/project-beta/source.md",
+    "npm run ariadne -- import-ci --project bench-stress-beta --from <PACK_ROOT>/imports/failed-ci.json",
+    "npm run ariadne -- import-coderabbit --project bench-stress-beta --from <PACK_ROOT>/imports/pending-coderabbit-review.md",
+    "npm run ariadne -- infra-snapshot --project bench-stress-beta --from <PACK_ROOT>/imports/odd-infra-snapshot.json"
   ],
   acceptance: [
     "The benchmark can create more than one project in a vault.",

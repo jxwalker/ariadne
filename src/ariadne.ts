@@ -16,6 +16,7 @@ import { deploymentSystemOption, importDeploymentSnapshot } from "./deploymentAd
 import { generateEvaluationPlan, recordEvaluationRun } from "./evaluation.js";
 import { generateEvaluationTrendReport } from "./evaluationTrends.js";
 import { markRunStatus, planExecution } from "./execution.js";
+import { importExtractionResult } from "./extractionResults.js";
 import { exportGbrainBundle, importGbrainReport } from "./gbrainAdapter.js";
 import { collectGithubSnapshot, importGithubSnapshot } from "./githubAdapter.js";
 import { generateGsd } from "./gsd.js";
@@ -71,6 +72,7 @@ function usage(): string {
   return [
     "Usage:",
     "  ariadne ingest --project <project> [--notes <text>] [--allow-secret-findings] <files...>",
+    "  ariadne extraction-import --project <project> --record <id> --from <text.md> --kind <ocr|transcription|pdf-text|visual-description> --tool <name> [--confidence <0-1>] [--notes <text>]",
     "  ariadne assemble --project <project> [--max-chars <number>]",
     "  ariadne prd --project <project> [--from <dossier.md>]",
     "  ariadne notebooklm-import --project <project> --from <export.md>",
@@ -159,6 +161,23 @@ async function main(): Promise<void> {
         console.log(`  Handoff: ${record.handoffPath}`);
       }
     }
+    return;
+  }
+
+  if (parsed.command === "extraction-import") {
+    const result = await importExtractionResult({
+      project,
+      vaultRoot,
+      recordId: requiredOption(parsed.options, "record"),
+      sourcePath: requiredOption(parsed.options, "from"),
+      extractionKind: extractionKindOption(parsed.options),
+      tool: requiredOption(parsed.options, "tool"),
+      confidence: optionalDecimal(parsed.options, "confidence"),
+      notes: optionString(parsed.options, "notes", "") || undefined
+    });
+    console.log(`Extraction result: ${result.markdownPath}`);
+    console.log(`Source record: ${result.result.sourceRecordId}`);
+    console.log(`Extracted text: ${result.result.extractedTextPath}`);
     return;
   }
 
@@ -810,6 +829,29 @@ function optionalNumber(options: Map<string, string | true>, key: string): numbe
     throw new Error(`--${key} must be a positive integer.`);
   }
   return parsed;
+}
+
+function optionalDecimal(options: Map<string, string | true>, key: string): number | undefined {
+  const value = options.get(key);
+  if (value === undefined) return undefined;
+  if (typeof value !== "string") {
+    throw new Error(`--${key} requires a number.`);
+  }
+  const parsed = Number(value);
+  if (!Number.isFinite(parsed) || parsed < 0 || parsed > 1) {
+    throw new Error(`--${key} must be a number between 0 and 1.`);
+  }
+  return parsed;
+}
+
+function extractionKindOption(
+  options: Map<string, string | true>
+): "ocr" | "transcription" | "pdf-text" | "visual-description" {
+  const value = options.get("kind");
+  if (value === "ocr" || value === "transcription" || value === "pdf-text" || value === "visual-description") {
+    return value;
+  }
+  throw new Error("--kind must be ocr, transcription, pdf-text, or visual-description.");
 }
 
 function sensitivityOption(

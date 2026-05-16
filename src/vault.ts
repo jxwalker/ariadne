@@ -21,6 +21,20 @@ async function appendManifest(projectDirectory: string, record: IngestRecord): P
   await fs.appendFile(path.join(projectDirectory, "manifest.jsonl"), `${JSON.stringify(record)}\n`);
 }
 
+export async function updateIngestRecord(vaultRoot: string, projectInput: string, record: IngestRecord): Promise<void> {
+  const project = slugifyProject(projectInput);
+  const dir = projectDir(vaultRoot, project);
+  const records = await loadRecords(vaultRoot, project);
+  const index = records.findIndex((item) => item.id === record.id);
+  if (index === -1) {
+    throw new Error(`Cannot update missing ingest record ${record.id}.`);
+  }
+  records[index] = record;
+  await fs.writeFile(path.join(dir, "manifest.jsonl"), records.map((item) => JSON.stringify(item)).join("\n") + "\n");
+  await fs.writeFile(path.join(path.dirname(record.storedPath), "metadata.json"), `${JSON.stringify(record, null, 2)}\n`);
+  await writeHotIndex(vaultRoot, project);
+}
+
 export async function loadRecords(vaultRoot: string, project: string): Promise<IngestRecord[]> {
   const dir = projectDir(vaultRoot, project);
   const manifestPath = path.join(dir, "manifest.jsonl");
@@ -68,8 +82,8 @@ export async function writeHotIndex(vaultRoot: string, project: string): Promise
     "## Commands",
     "",
     "```bash",
-    `npm run cli -- status --project ${slugifyProject(project)}`,
-    `npm run cli -- assemble --project ${slugifyProject(project)}`,
+    `npm run ariadne -- status --project ${slugifyProject(project)}`,
+    `npm run ariadne -- assemble --project ${slugifyProject(project)}`,
     "```",
     ""
   ];
