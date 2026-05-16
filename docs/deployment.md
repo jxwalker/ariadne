@@ -8,14 +8,14 @@ Deployment should follow the same rule as the rest of the project: observe first
 | --- | --- | --- |
 | Mac laptops/workstations | local development, docs, UI verification, quick tests | local CLI |
 | DGX Spark | GPU and high-memory model/evaluation workloads | read-only model endpoint registry |
-| Proxmox dev Linux machine | always-on orchestration, runners, Hermes, dashboards | read-only host inventory |
+| Proxmox dev Linux machine | always-on orchestration, runners, Hermes, consoles | read-only host inventory |
 | TrueNAS | durable vault backup and artifact storage | read-only storage manifest |
 
 ## Staged Rollout
 
 ### Stage 0: Local Mac
 
-- Keep `dev-pipeline` as a local TypeScript CLI.
+- Keep `ariadne` as a local TypeScript CLI.
 - Store project artifacts under the repo `vault/`.
 - Use local `npm run check`, `npm test`, `npm run build`.
 - Record manual evaluation runs.
@@ -34,8 +34,8 @@ Deployment should follow the same rule as the rest of the project: observe first
 
 ### Stage 3: Always-On Orchestration
 
-- Run Hermes and dashboard candidates on the Proxmox Linux host.
-- Keep `dev-pipeline` as the state/control repo.
+- Run Hermes and Ariadne Console candidates on the Proxmox Linux host.
+- Keep `ariadne` as the state/control repo.
 - Use Hermes cron or sleep routines to propose reports, not mutate systems.
 
 ### Stage 4: Runner And Worktree Automation
@@ -52,15 +52,15 @@ Deployment should follow the same rule as the rest of the project: observe first
 
 ## Network And Security Notes
 
-- Dashboards should bind to localhost first.
+- Consoles should bind to localhost first.
 - LAN exposure needs explicit auth, reverse proxy, TLS, and backup access path.
 - Secrets belong in host secret stores or tool-specific auth files, not generated artifacts.
 - Infrastructure mutation requires a separate approved plan and rollback notes.
 
-## Dashboard Candidates
+## Console Candidates
 
-- Hermes built-in dashboard and gateway for sessions, memory, cron, and multi-backend execution.
+- Hermes built-in console and gateway for sessions, memory, cron, and multi-backend execution.
 - Hermes Web UI for chat, sessions, scheduled jobs, usage analytics, skills, memory, logs, profiles, and web terminal.
 - OpenClaw Mission Control-style object model for boards, tasks, agents, gateways, approvals, and audit timeline.
 
-The dev-pipeline dashboard should not start by cloning any one UI. It should expose the vault's native objects: sources, dossiers, requirements, tasks, runs, checks, reviews, decisions, infra snapshots, evaluations, and readiness.
+The Ariadne Console should not start by cloning any one UI. It should expose the vault's native objects: sources, dossiers, requirements, tasks, runs, checks, reviews, decisions, infra snapshots, evaluations, and readiness.

@@ -1,10 +1,10 @@
 {
-  "name": "dev-pipeline",
+  "name": "ariadne",
   "version": "0.1.0",
   "private": true,
   "type": "module",
   "bin": {
-    "dev-pipeline": "./dist/cli.js"
+    "ariadne": "./dist/cli.js"
   },
   "scripts": {
     "build": "tsc -p tsconfig.json",

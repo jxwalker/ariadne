@@ -1,6 +1,10 @@
-# Dev Pipeline
+# Ariadne
 
-`dev-pipeline` is the control layer for an end-to-end agentic coding system. It is not a replacement coding assistant. It is the outer harness around assistants, dashboards, memory systems, testing tools, CI, review bots, and local infrastructure.
+![Ariadne logo](assets/ariadne-logo.svg)
+
+`ariadne` is the control layer for an end-to-end agentic coding system. It is not a replacement coding assistant. It is the outer harness around assistants, consoles, memory systems, testing tools, CI, review bots, and local infrastructure.
+
+Tagline: evidence-threaded agentic engineering.
 
 The system starts with source-grounded intake: drawings, white papers, dictated notes, screenshots, architecture documents, and exported research are preserved as raw evidence before any summary is trusted. From that evidence it generates dossiers, PRDs, GSD task bundles, execution plans, Playwright plans, evaluation records, and control reports.
 
@@ -38,13 +42,14 @@ Those live paths are roadmap items. The current job is to make state, evidence, 
 npm install
 npm run check
 npm test
-npm run cli -- ingest --project agentic-coding /path/to/source.md /path/to/source.docx
-npm run cli -- assemble --project agentic-coding
-npm run cli -- roadmap --project agentic-coding --target-url http://localhost:3000 --repo /path/to/repo
-npm run cli -- evaluation --project agentic-coding --target mac-local
-npm run cli -- control --project agentic-coding
-npm run cli -- dashboard-data --project agentic-coding
-npm run cli -- status --project agentic-coding
+npm run cli -- ingest --project ariadne /path/to/source.md /path/to/source.docx
+npm run cli -- assemble --project ariadne
+npm run cli -- roadmap --project ariadne --target-url http://localhost:3000 --repo /path/to/repo
+npm run cli -- evaluation --project ariadne --target mac-local
+npm run cli -- control --project ariadne
+npm run cli -- console-data --project ariadne
+npm run cli -- console-html --project ariadne --refresh-data
+npm run cli -- status --project ariadne
 ```
 
 ## Vault Layout
@@ -75,27 +80,29 @@ vault/projects/<project>/
 6. Use `worktree-guard` before creating any task worktree.
 7. Record deterministic checks, Playwright evidence, CI, CodeRabbit, and human reviews.
 8. Use `evaluation` and `evaluation-record` to score the pipeline itself.
-9. Use `dashboard-data` to publish a normalised read-only view for dashboard work.
+9. Use `console-data` to publish a normalised read-only view for console work.
+10. Use `console-html` to generate a static local console at `console/index.html`.
 
 ## Adapter Commands
 
 ```bash
-npm run cli -- notebooklm-import --project agentic-coding --from notebooklm-export.md
-npm run cli -- gsd2-export --project agentic-coding
-npm run cli -- gsd2-import --project agentic-coding --from gsd2-bundle.json
-npm run cli -- decision --project agentic-coding --title "Decision" --context "Context" --decision "Choice"
-npm run cli -- execution --project agentic-coding --repo /path/to/repo
-npm run cli -- worktree-guard --project agentic-coding --run run.json
-npm run cli -- playwright --project agentic-coding --target-url http://localhost:3000
-npm run cli -- playwright-evidence --project agentic-coding --target-url http://localhost:3000 --status skipped
-npm run cli -- evaluation --project agentic-coding --target mac-local
-npm run cli -- evaluation-record --project agentic-coding --plan evaluation-plan.json --scores D1=80,D2=75,D3=60
-npm run cli -- import-ci --project agentic-coding --from checks.json
-npm run cli -- import-coderabbit --project agentic-coding --from coderabbit.md
-npm run cli -- dashboard-data --project agentic-coding
-npm run cli -- infra --project agentic-coding
-npm run cli -- infra-snapshot --project agentic-coding --from manifest.json
-npm run cli -- openscorpion-draft --project agentic-coding --title "Evidence package" --type dev-pipeline.evidence --evidence path-a,path-b
+npm run cli -- notebooklm-import --project ariadne --from notebooklm-export.md
+npm run cli -- gsd2-export --project ariadne
+npm run cli -- gsd2-import --project ariadne --from gsd2-bundle.json
+npm run cli -- decision --project ariadne --title "Decision" --context "Context" --decision "Choice"
+npm run cli -- execution --project ariadne --repo /path/to/repo
+npm run cli -- worktree-guard --project ariadne --run run.json
+npm run cli -- playwright --project ariadne --target-url http://localhost:3000
+npm run cli -- playwright-evidence --project ariadne --target-url http://localhost:3000 --status skipped
+npm run cli -- evaluation --project ariadne --target mac-local
+npm run cli -- evaluation-record --project ariadne --plan evaluation-plan.json --scores D1=80,D2=75,D3=60
+npm run cli -- import-ci --project ariadne --from checks.json
+npm run cli -- import-coderabbit --project ariadne --from coderabbit.md
+npm run cli -- console-data --project ariadne
+npm run cli -- console-html --project ariadne --refresh-data
+npm run cli -- infra --project ariadne
+npm run cli -- infra-snapshot --project ariadne --from manifest.json
+npm run cli -- openscorpion-draft --project ariadne --title "Evidence package" --type ariadne.evidence --evidence path-a,path-b
 ```
 
 ## Documentation
@@ -110,6 +117,7 @@ npm run cli -- openscorpion-draft --project agentic-coding --title "Evidence pac
 - [Roadmap](docs/roadmap.md)
 - [Source contract](docs/source-contract.md)
 - [Research notes](docs/research-notes.md)
+- [Brand](docs/brand.md)
 
 ## Harness Engineering Model
 

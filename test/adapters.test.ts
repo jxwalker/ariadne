@@ -5,7 +5,8 @@ import path from "node:path";
 import { describe, expect, it } from "vitest";
 import { importCiStatus, importCodeRabbitReview } from "../src/ciImport.js";
 import { generateControlReport } from "../src/controlPlane.js";
-import { generateDashboardData } from "../src/dashboardData.js";
+import { generateConsoleData } from "../src/consoleData.js";
+import { generateConsoleHtml } from "../src/consoleHtml.js";
 import { planExecution } from "../src/execution.js";
 import { generateGsd } from "../src/gsd.js";
 import { exportGsd2Bundle, importGsd2Bundle } from "../src/gsdAdapter.js";
@@ -19,29 +20,29 @@ import { guardWorktrees } from "../src/worktreeGuard.js";
 import { assembleDossier, ingestFiles } from "../src/vault.js";
 
 async function preparedProject(): Promise<{ temp: string; vaultRoot: string }> {
-  const temp = await fs.mkdtemp(path.join(os.tmpdir(), "dev-pipeline-adapters-"));
+  const temp = await fs.mkdtemp(path.join(os.tmpdir(), "ariadne-adapters-"));
   const vaultRoot = path.join(temp, "vault");
   const source = path.join(temp, "source.md");
   await fs.writeFile(source, "# Source\n\nNotebookLM GSD2 Playwright CodeRabbit OpenScorpion Proxmox.\n");
-  await ingestFiles([source], { project: "agentic-coding", vaultRoot });
-  await assembleDossier({ project: "agentic-coding", vaultRoot, maxCharsPerSource: 4000 });
-  await generatePrd({ project: "agentic-coding", vaultRoot });
-  await generateGsd({ project: "agentic-coding", vaultRoot });
+  await ingestFiles([source], { project: "ariadne", vaultRoot });
+  await assembleDossier({ project: "ariadne", vaultRoot, maxCharsPerSource: 4000 });
+  await generatePrd({ project: "ariadne", vaultRoot });
+  await generateGsd({ project: "ariadne", vaultRoot });
   return { temp, vaultRoot };
 }
 
 describe("roadmap adapters", () => {
   it("blocks likely secrets before vault promotion unless explicitly allowed", async () => {
-    const temp = await fs.mkdtemp(path.join(os.tmpdir(), "dev-pipeline-secret-"));
+    const temp = await fs.mkdtemp(path.join(os.tmpdir(), "ariadne-secret-"));
     const source = path.join(temp, "secret.md");
     await fs.writeFile(source, "OPENAI_API_KEY=sk-1234567890abcdefghijklmnopqrstuvwxyz\n");
 
     await expect(
-      ingestFiles([source], { project: "agentic-coding", vaultRoot: path.join(temp, "vault") })
+      ingestFiles([source], { project: "ariadne", vaultRoot: path.join(temp, "vault") })
     ).rejects.toThrow(/Source hygiene blocked/);
 
     const records = await ingestFiles([source], {
-      project: "agentic-coding",
+      project: "ariadne",
       vaultRoot: path.join(temp, "vault-allowed"),
       allowSecretFindings: true
     });
@@ -50,7 +51,7 @@ describe("roadmap adapters", () => {
     const emptySource = path.join(temp, "empty.md");
     await fs.writeFile(emptySource, "");
     const emptyRecords = await ingestFiles([emptySource], {
-      project: "agentic-coding",
+      project: "ariadne",
       vaultRoot: path.join(temp, "vault-empty")
     });
     expect(emptyRecords[0]?.hygieneReportPath).toBeTruthy();
@@ -65,29 +66,29 @@ describe("roadmap adapters", () => {
     const notebook = path.join(temp, "notebook.md");
     await fs.writeFile(notebook, "# Briefing Doc\n\n## Requirement\n\nBuild it. [1]\n\nSource: manifesto\n");
 
-    const imported = await importNotebookLmExport({ project: "agentic-coding", vaultRoot, sourcePath: notebook });
+    const imported = await importNotebookLmExport({ project: "ariadne", vaultRoot, sourcePath: notebook });
     expect(imported.imported.sections.some((section) => section.heading === "Requirement")).toBe(true);
     expect(imported.imported.citations.length).toBeGreaterThan(0);
 
-    const exported = await exportGsd2Bundle({ project: "agentic-coding", vaultRoot });
+    const exported = await exportGsd2Bundle({ project: "ariadne", vaultRoot });
     expect(exported.bundle.tasks.length).toBeGreaterThan(0);
 
     const roundTrip = await importGsd2Bundle({
-      project: "agentic-coding",
+      project: "ariadne",
       vaultRoot,
       sourcePath: exported.jsonPath
     });
     expect(roundTrip.roadmap.milestones.length).toBeGreaterThan(0);
 
     const evaluation = await generateEvaluationPlan({
-      project: "agentic-coding",
+      project: "ariadne",
       vaultRoot,
       target: "mac-local"
     });
     expect(evaluation.plan.scenarios.length).toBeGreaterThan(0);
 
     const evaluationRun = await recordEvaluationRun({
-      project: "agentic-coding",
+      project: "ariadne",
       vaultRoot,
       planPath: evaluation.jsonPath,
       target: "mac-local",
@@ -98,18 +99,18 @@ describe("roadmap adapters", () => {
       ],
       evidenceRefs: [exported.jsonPath],
       regressions: [],
-      recommendations: ["Add live dashboard adapter."]
+      recommendations: ["Add live console adapter."]
     });
     expect(evaluationRun.run.overallScore).toBe(76);
 
     const invalidBundle = path.join(temp, "invalid-bundle.json");
     await fs.writeFile(
       invalidBundle,
-      JSON.stringify({ schemaVersion: 1, format: "dev-pipeline-gsd2-bundle", tasks: [{ id: "TASK-BAD" }] })
+      JSON.stringify({ schemaVersion: 1, format: "ariadne-gsd2-bundle", tasks: [{ id: "TASK-BAD" }] })
     );
     await expect(
       importGsd2Bundle({
-        project: "agentic-coding",
+        project: "ariadne",
         vaultRoot,
         sourcePath: invalidBundle
       })
@@ -122,9 +123,9 @@ describe("roadmap adapters", () => {
     await fs.mkdir(repo);
     execFileSync("git", ["init", "-b", "main"], { cwd: repo });
 
-    const execution = await planExecution({ project: "agentic-coding", vaultRoot, repoPath: repo, taskId: "TASK-001" });
+    const execution = await planExecution({ project: "ariadne", vaultRoot, repoPath: repo, taskId: "TASK-001" });
     const guard = await guardWorktrees({
-      project: "agentic-coding",
+      project: "ariadne",
       vaultRoot,
       runFile: execution.jsonPath,
       apply: false
@@ -137,7 +138,7 @@ describe("roadmap adapters", () => {
       JSON.stringify({
         schemaVersion: 1,
         id: "run-invalid",
-        project: "agentic-coding",
+        project: "ariadne",
         createdAt: new Date().toISOString(),
         taskIds: ["TASK-001"],
         repoPath: path.join(temp, "not-a-repo"),
@@ -149,7 +150,7 @@ describe("roadmap adapters", () => {
       })
     );
     const invalidGuard = await guardWorktrees({
-      project: "agentic-coding",
+      project: "ariadne",
       vaultRoot,
       runFile: invalidRun,
       apply: false
@@ -157,8 +158,34 @@ describe("roadmap adapters", () => {
     expect(invalidGuard.report.status).toBe("blocked");
     expect(invalidGuard.report.checks.some((check) => check.name === "working-tree-clean")).toBe(true);
 
+    const placeholderRun = path.join(temp, "placeholder-run.json");
+    await fs.writeFile(
+      placeholderRun,
+      JSON.stringify({
+        schemaVersion: 1,
+        id: "run-placeholder",
+        project: "ariadne",
+        createdAt: new Date().toISOString(),
+        taskIds: ["TASK-001"],
+        repoPath: "<REPO_ROOT>",
+        branchPrefix: "codex",
+        status: "planned",
+        gates: [],
+        worktrees: [{ taskId: "TASK-001", branch: "codex/task-001", worktreePath: "<REPO_ROOT>-task-001" }],
+        stopConditions: []
+      })
+    );
+    const placeholderGuard = await guardWorktrees({
+      project: "ariadne",
+      vaultRoot,
+      runFile: placeholderRun,
+      apply: true
+    });
+    expect(placeholderGuard.report.status).toBe("blocked");
+    expect(placeholderGuard.report.checks.find((check) => check.name === "repoPath")?.detail).toContain("placeholder");
+
     await recordPlaywrightEvidence({
-      project: "agentic-coding",
+      project: "ariadne",
       vaultRoot,
       targetUrl: "http://localhost:3000",
       status: "skipped",
@@ -173,53 +200,64 @@ describe("roadmap adapters", () => {
         { name: "deploy", conclusion: "error" }
       ])
     );
-    expect(await importCiStatus({ project: "agentic-coding", vaultRoot, sourcePath: ci })).toBe(2);
-    const checks = await readJsonl(path.join(vaultRoot, "projects", "agentic-coding", "control", "check-history.jsonl"));
+    expect(await importCiStatus({ project: "ariadne", vaultRoot, sourcePath: ci })).toBe(2);
+    const checks = await readJsonl(path.join(vaultRoot, "projects", "ariadne", "control", "check-history.jsonl"));
     expect(checks.find((check) => check.name === "deploy")?.status).toBe("failed");
 
     const coderabbit = path.join(temp, "coderabbit.md");
     await fs.writeFile(coderabbit, "Approved\n\nNo issues found.\n");
-    await importCodeRabbitReview({ project: "agentic-coding", vaultRoot, sourcePath: coderabbit });
+    await importCodeRabbitReview({ project: "ariadne", vaultRoot, sourcePath: coderabbit });
     const negatedCoderabbit = path.join(temp, "coderabbit-negated.md");
     await fs.writeFile(negatedCoderabbit, "I have not approved these changes.\n");
-    await importCodeRabbitReview({ project: "agentic-coding", vaultRoot, sourcePath: negatedCoderabbit });
-    const reviews = await readJsonl(path.join(vaultRoot, "projects", "agentic-coding", "control", "reviews.jsonl"));
+    await importCodeRabbitReview({ project: "ariadne", vaultRoot, sourcePath: negatedCoderabbit });
+    const reviews = await readJsonl(path.join(vaultRoot, "projects", "ariadne", "control", "reviews.jsonl"));
     expect(reviews.at(-1)?.status).toBe("pending");
 
     const infra = path.join(temp, "manifest.json");
     await fs.writeFile(infra, JSON.stringify({ host: { short_name: "beast" }, guests: { vms: [], lxc: [] } }));
-    await generateInfrastructureRegistry({ project: "agentic-coding", vaultRoot });
-    const snapshot = await importInfraSnapshot({ project: "agentic-coding", vaultRoot, sourcePath: infra });
+    await generateInfrastructureRegistry({ project: "ariadne", vaultRoot });
+    const snapshot = await importInfraSnapshot({ project: "ariadne", vaultRoot, sourcePath: infra });
     expect(snapshot.snapshot.summary.host).toBe("beast");
 
     const activity = await draftOpenScorpionActivity({
-      project: "agentic-coding",
+      project: "ariadne",
       vaultRoot,
       title: "Adapter evidence",
-      activityType: "dev-pipeline.adapter",
+      activityType: "ariadne.adapter",
       evidenceRefs: [snapshot.jsonPath]
     });
     expect(activity.draft.submit).toBe(false);
     const secondActivity = await draftOpenScorpionActivity({
-      project: "agentic-coding",
+      project: "ariadne",
       vaultRoot,
       title: "Adapter evidence",
-      activityType: "dev-pipeline.adapter",
+      activityType: "ariadne.adapter",
       evidenceRefs: [snapshot.jsonPath]
     });
     expect(secondActivity.jsonPath).not.toBe(activity.jsonPath);
 
-    const control = await generateControlReport({ project: "agentic-coding", vaultRoot });
+    const control = await generateControlReport({ project: "ariadne", vaultRoot });
     expect(control.report.evidence.some((item) => item.includes("Review approved by coderabbit"))).toBe(true);
 
-    const dashboard = await generateDashboardData({ project: "agentic-coding", vaultRoot });
-    expect(dashboard.data.summary.sources).toBe(1);
-    expect(dashboard.data.summary.tasks).toBeGreaterThan(0);
-    expect(dashboard.data.summary.executionRuns).toBeGreaterThan(0);
-    expect(dashboard.data.summary.readinessStatus).toBe(control.report.status);
-    expect(dashboard.data.sources[0]?.hygieneStatus).toBe("clean");
-    expect(dashboard.data.infrastructure.registry?.hosts.length).toBeGreaterThan(0);
-    expect(dashboard.data.artifacts.control).toBeTruthy();
+    const console = await generateConsoleData({ project: "ariadne", vaultRoot });
+    expect(console.data.summary.sources).toBe(1);
+    expect(console.data.summary.tasks).toBeGreaterThan(0);
+    expect(console.data.summary.executionRuns).toBeGreaterThan(0);
+    expect(console.data.summary.readinessStatus).toBe(control.report.status);
+    expect(console.data.sources[0]?.hygieneStatus).toBe("clean");
+    expect(console.data.infrastructure.registry?.hosts.length).toBeGreaterThan(0);
+    expect(console.data.artifacts.control).toBeTruthy();
+
+    const consoleHtml = await generateConsoleHtml({
+      project: "ariadne",
+      vaultRoot,
+      refreshData: true
+    });
+    const html = await fs.readFile(consoleHtml.htmlPath, "utf8");
+    expect(html).toContain("<!doctype html>");
+    expect(html).toContain("Gate Matrix");
+    expect(html).toContain("console-data");
+    expect(html).not.toContain(temp);
   });
 });
 

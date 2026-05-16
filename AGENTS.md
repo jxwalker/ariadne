@@ -1,6 +1,6 @@
 # Agent Operating Instructions
 
-This repository implements the control layer for an end-to-end agentic coding system.
+This repository implements Ariadne, the control layer for an end-to-end agentic coding system.
 
 ## Doctrine
 
@@ -30,4 +30,3 @@ It must not:
 - call GitHub
 - execute generated plans
 - change external repos
-

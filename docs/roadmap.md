@@ -152,13 +152,14 @@ Goal: make the harness inspectable as a live operations surface.
 
 Implemented:
 
-- documented dashboard object model
+- documented console object model
 - documented gate matrix and infrastructure map concepts
-- read-only dashboard data projection
+- read-only console data projection
+- static read-only console HTML
 
 Next:
 
-- read-only vault dashboard
+- console visual regression checks
 - project timeline from artifacts
 - evaluation trend charts
 - infra topology view for Macs, DGX Spark, Proxmox, TrueNAS, runners, Hermes, and model endpoints

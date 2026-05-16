@@ -1,0 +1,323 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ariadne Console</title>
+<style>
+
+:root {
+  color-scheme: light;
+  --bg: #f7f8f8;
+  --ink: #1e2324;
+  --muted: #697170;
+  --line: #d8ddda;
+  --panel: #ffffff;
+  --accent: #2f6f5e;
+  --warn: #8a641f;
+  --bad: #9d3e35;
+  --mono: "SFMono-Regular", "JetBrains Mono", ui-monospace, monospace;
+  --sans: "Geist", "Aptos", "Helvetica Neue", Arial, sans-serif;
+}
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--sans);
+  letter-spacing: 0;
+}
+.shell {
+  width: min(1440px, calc(100vw - 40px));
+  margin: 0 auto;
+  padding: 32px 0 56px;
+}
+.hero {
+  display: grid;
+  grid-template-columns: minmax(0, 1.8fr) minmax(260px, 0.7fr);
+  gap: 28px;
+  align-items: end;
+  min-height: 220px;
+  border-bottom: 1px solid var(--line);
+  padding-bottom: 28px;
+}
+.hero-copy {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+.brand-lockup {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 18px;
+}
+.logo-mark {
+  width: 44px;
+  height: 44px;
+  flex: 0 0 auto;
+}
+.logo-mark rect { fill: var(--ink); }
+.logo-mark path {
+  fill: none;
+  stroke: var(--bg);
+  stroke-width: 10;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.logo-mark .thread {
+  stroke: #9c6f2f;
+  stroke-width: 5;
+}
+.logo-mark .start { fill: var(--accent); }
+.logo-mark .end { fill: var(--bad); }
+.logo-mark .frame {
+  stroke: var(--muted);
+  stroke-width: 4;
+}
+.eyebrow, .label {
+  margin: 0;
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+}
+h1 {
+  margin: 0;
+  font-size: clamp(38px, 6vw, 82px);
+  line-height: .92;
+  letter-spacing: 0;
+}
+.lead {
+  max-width: 760px;
+  margin: 18px 0 0;
+  color: var(--muted);
+  font-size: 17px;
+  line-height: 1.55;
+  overflow-wrap: anywhere;
+}
+.stamp {
+  margin: 6px 0 0;
+  color: var(--muted);
+  font-family: var(--mono);
+  font-size: 13px;
+  line-height: 1.45;
+  overflow-wrap: anywhere;
+}
+.status-panel {
+  border: 1px solid var(--line);
+  background: var(--panel);
+  padding: 18px;
+  min-height: 142px;
+  min-width: 0;
+  display: grid;
+  align-content: space-between;
+}
+.status-panel strong {
+  font-family: var(--mono);
+  font-size: 22px;
+}
+.metrics {
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  border-bottom: 1px solid var(--line);
+}
+.metric {
+  min-height: 116px;
+  padding: 18px 16px;
+  border-right: 1px solid var(--line);
+  display: grid;
+  align-content: space-between;
+}
+.metric:last-child { border-right: 0; }
+.metric span, .metric small {
+  color: var(--muted);
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: .08em;
+}
+.metric strong {
+  font-family: var(--mono);
+  font-size: clamp(28px, 3vw, 44px);
+  line-height: 1;
+}
+.layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1.55fr) minmax(320px, .8fr);
+  gap: 34px;
+  padding-top: 34px;
+}
+.block {
+  border-top: 1px solid var(--line);
+  padding: 20px 0 30px;
+}
+.block h2 {
+  margin: 0 0 18px;
+  font-size: 15px;
+  text-transform: uppercase;
+  letter-spacing: .08em;
+}
+.gate-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  border: 1px solid var(--line);
+  background: var(--panel);
+}
+.gate {
+  min-height: 86px;
+  padding: 14px;
+  border-right: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+  display: grid;
+  align-content: space-between;
+}
+.gate:nth-child(3n) { border-right: 0; }
+.gate span, td span, .timeline span, .infra span, .infra small {
+  display: block;
+  color: var(--muted);
+}
+.gate strong, .status {
+  font-family: var(--mono);
+  font-size: 13px;
+}
+.ok { color: var(--accent); }
+.warn { color: var(--warn); }
+.bad { color: var(--bad); }
+.muted { color: var(--muted); }
+.table-wrap {
+  overflow-x: auto;
+  border: 1px solid var(--line);
+  background: var(--panel);
+}
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+}
+th, td {
+  padding: 13px 14px;
+  border-bottom: 1px solid var(--line);
+  text-align: left;
+  vertical-align: top;
+}
+th {
+  color: var(--muted);
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: .08em;
+}
+td:first-child strong {
+  font-family: var(--mono);
+  margin-bottom: 4px;
+  display: block;
+}
+.timeline {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  border-top: 1px solid var(--line);
+}
+.timeline li {
+  display: grid;
+  grid-template-columns: minmax(180px, .35fr) minmax(0, 1fr);
+  gap: 18px;
+  padding: 14px 0;
+  border-bottom: 1px solid var(--line);
+}
+time, .artifacts dt, .chain strong {
+  font-family: var(--mono);
+}
+time {
+  color: var(--muted);
+  font-size: 12px;
+}
+.chain, .infra, .artifacts {
+  display: grid;
+  gap: 10px;
+}
+.chain div, .infra div, .artifacts div {
+  border: 1px solid var(--line);
+  background: var(--panel);
+  padding: 13px;
+}
+.chain div {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+}
+.infra strong { display: block; margin-bottom: 4px; }
+.infra small { margin-top: 6px; line-height: 1.35; }
+.artifacts {
+  margin: 0;
+}
+.artifacts dt {
+  margin-bottom: 6px;
+  color: var(--muted);
+  font-size: 12px;
+}
+.artifacts dd {
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+.empty {
+  margin: 0;
+  border: 1px dashed var(--line);
+  padding: 18px;
+  color: var(--muted);
+}
+@media (max-width: 980px) {
+  .shell { width: min(calc(100vw - 28px), 760px); }
+  .hero, .layout { grid-template-columns: 1fr; }
+  .metrics { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .metric:nth-child(2n) { border-right: 0; }
+  .gate-grid { grid-template-columns: 1fr; }
+  .gate, .gate:nth-child(3n) { border-right: 0; }
+  .timeline li { grid-template-columns: 1fr; gap: 6px; }
+}
+
+</style>
+</head>
+<body>
+<main class="shell">
+<section class="hero">
+<div class="hero-copy">
+<div class="brand-lockup">
+<svg class="logo-mark" viewBox="0 0 128 128" aria-hidden="true"><rect width="128" height="128" rx="24"></rect><path d="M28 100 64 24l36 76"></path><path d="M43 72h42"></path><path class="thread" d="M32 98c22-8 28-24 37-44 6-13 12-23 27-28"></path><circle class="start" cx="32" cy="98" r="6"></circle><circle class="end" cx="96" cy="26" r="6"></circle><path class="frame" d="M24 24h18M86 24h18M24 104h18M86 104h18"></path></svg>
+<p class="eyebrow">Ariadne Console</p>
+</div>
+<h1>ariadne</h1>
+<p class="lead">Vault-backed orchestration view.</p>
+<p class="stamp">Last refreshed 2026-05-16T07:16:47.071Z.</p>
+</div>
+<div class="status-panel">
+<span class="label">Merge readiness</span>
+<strong class="status warn">review_required</strong>
+<span>2 missing gates</span>
+</div>
+</section>
+<section class="metrics" aria-label="Project metrics">
+<div class="metric"><span>Sources</span><strong>3</strong><small>total</small></div>
+<div class="metric"><span>Requirements</span><strong>7</strong><small>total</small></div>
+<div class="metric"><span>Tasks</span><strong>7</strong><small>total</small></div>
+<div class="metric"><span>Runs</span><strong>3</strong><small>total</small></div>
+<div class="metric"><span>Checks</span><strong>3</strong><small>recorded</small></div>
+<div class="metric"><span>Evaluation</span><strong>none</strong><small>total</small></div>
+</section>
+<section class="layout">
+<div class="main-column">
+<section class="block"><h2>Gate Matrix</h2><div class="gate-grid"><div class="gate"><span>Source</span><strong class="ok">passed</strong></div><div class="gate"><span>PRD</span><strong class="ok">passed</strong></div><div class="gate"><span>GSD</span><strong class="ok">passed</strong></div><div class="gate"><span>Execution</span><strong class="ok">passed</strong></div><div class="gate"><span>Typecheck</span><strong class="ok">passed</strong></div><div class="gate"><span>Unit tests</span><strong class="ok">passed</strong></div><div class="gate"><span>Build</span><strong class="ok">passed</strong></div><div class="gate"><span>Review</span><strong class="muted">missing</strong></div><div class="gate"><span>Readiness</span><strong class="warn">review_required</strong></div></div></section>
+<section class="block"><h2>Task Flow</h2><div class="table-wrap"><table><thead><tr><th>Task</th><th>Milestone</th><th>Slice</th><th>Writes</th></tr></thead><tbody><tr><td><strong>TASK-001</strong><span>Source evidence intake</span></td><td>Control Spine</td><td>core</td><td>src/vault.ts, src/extract.ts</td></tr><tr><td><strong>TASK-002</strong><span>Source-grounded PRD synthesis</span></td><td>Control Spine</td><td>core</td><td>src/prd.ts, vault/projects/&lt;project&gt;/requirements/</td></tr><tr><td><strong>TASK-003</strong><span>GSD2 task bridge</span></td><td>Control Spine</td><td>core</td><td>src/gsd.ts, vault/projects/&lt;project&gt;/gsd/</td></tr><tr><td><strong>TASK-004</strong><span>Bounded execution loop</span></td><td>Control Spine</td><td>core</td><td>src/execution.ts, vault/projects/&lt;project&gt;/execution/</td></tr><tr><td><strong>TASK-006</strong><span>Review and CI control plane</span></td><td>Control Spine</td><td>core</td><td>src/controlPlane.ts, vault/projects/&lt;project&gt;/control/</td></tr><tr><td><strong>TASK-007</strong><span>Infrastructure substrate registry</span></td><td>Control Spine</td><td>core</td><td>src/infraSnapshot.ts, vault/projects/&lt;project&gt;/infrastructure/</td></tr><tr><td><strong>TASK-005</strong><span>Playwright UI verification evidence</span></td><td>Verification Surface</td><td>verification</td><td>src/playwrightEvidence.ts, vault/projects/&lt;project&gt;/verification/</td></tr></tbody></table></div></section>
+<section class="block"><h2>Timeline</h2><ol class="timeline"><li><time>2026-05-16T07:16:41.868Z</time><strong>Execution run: run-2026-05-16T07-16-41-868Z</strong><span>planned / 7 tasks</span></li><li><time>2026-05-16T06:09:25.010Z</time><strong>Execution run: run-2026-05-16T06-09-25-010Z</strong><span>planned / 7 tasks</span></li><li><time>2026-05-15T21:32:09.295Z</time><strong>Review passed: local</strong><span>Local implementation self-review completed; external CodeRabbit or human approval still required before merge-ready.</span></li><li><time>2026-05-15T21:31:55.859Z</time><strong>Check passed: build</strong><span>npm run build</span></li><li><time>2026-05-15T21:31:55.825Z</time><strong>Check passed: typecheck</strong><span>npm run check</span></li><li><time>2026-05-15T21:31:55.825Z</time><strong>Check passed: unit-tests</strong><span>npm test</span></li><li><time>2026-05-15T21:29:14.025Z</time><strong>Execution run: run-2026-05-15T21-29-14-025Z</strong><span>complete / 7 tasks</span></li><li><time>2026-05-15T21:07:25.535Z</time><strong>Source ingested: codex_hermes_infra_spec.md</strong><span>markdown / 16aa520c50e0</span></li><li><time>2026-05-15T21:07:25.534Z</time><strong>Source ingested: ars_memoriae_whitepaper_revised.md</strong><span>markdown / bd098aacf200</span></li><li><time>2026-05-15T21:07:25.476Z</time><strong>Source ingested: Designing the Ultimate Ariadne.docx</strong><span>docx / 7d15cd2e4d21</span></li></ol></section>
+</div>
+<aside class="side-column">
+<section class="block"><h2>Evidence Chain</h2><div class="chain"><div><span>Raw sources</span><strong>3</strong></div><div><span>Requirements</span><strong>7</strong></div><div><span>Tasks</span><strong>7</strong></div><div><span>Checks</span><strong>3</strong></div><div><span>Reviews</span><strong>1</strong></div><div><span>Decisions</span><strong>1</strong></div></div></section>
+<section class="block"><h2>Infrastructure</h2><div class="infra"><div><strong>M1 Mac mini</strong><span>always-on Hermes supervisor</span><small>Control-plane host for long-running supervision; verify live details before automation.</small></div><div><strong>M1 Max</strong><span>local development and testing</span><small>Apple Silicon development machine; use for local validation where available.</small></div><div><strong>M5 Max</strong><span>high-memory local agent workstation</span><small>Primary Mac-class local execution surface mentioned by user.</small></div><div><strong>DGX Spark</strong><span>local inference and memory-heavy workloads</span><small>Treat as planned/observed only until live endpoint inventory exists.</small></div><div><strong>Proxmox dev server</strong><span>runners, services, model endpoints, infrastructure substrate</span><small>Read-only inventory first; Proxmox live state is authoritative at execution time.</small></div></div></section>
+<section class="block"><h2>Artifacts</h2><dl class="artifacts"><div><dt>hotIndex</dt><dd>projects/ariadne/HOT_INDEX.md</dd></div><div><dt>prd</dt><dd>projects/ariadne/requirements/prd.json</dd></div><div><dt>roadmap</dt><dd>projects/ariadne/gsd/roadmap.json</dd></div><div><dt>control</dt><dd>projects/ariadne/control/merge-readiness.json</dd></div><div><dt>evaluationPlan</dt><dd>projects/ariadne/evaluation/evaluation-plan.json</dd></div></dl></section>
+</aside>
+</section>
+<script type="application/json" id="console-data">
+{"schemaVersion":1,"project":"ariadne","generatedAt":"2026-05-16T07:16:47.071Z","projectDir":"projects/ariadne","summary":{"sources":3,"requirements":7,"tasks":7,"executionRuns":3,"checks":3,"reviews":1,"decisions":1,"evaluations":0,"infraSnapshots":0,"readinessStatus":"review_required"},"sources":[{"id":"2026-05-15T21-07-25-476Z-7d15cd2e4d21","fileName":"Designing the Ultimate Ariadne.docx","kind":"docx","sensitivity":"internal","sha256":"7d15cd2e4d215c7007b98e1b37e472d94e2bb69d423dea3d8b15315e318f833c","ingestedAt":"2026-05-15T21:07:25.476Z","hasExtractedText":true,"hasHandoff":false},{"id":"2026-05-15T21-07-25-534Z-bd098aacf200","fileName":"ars_memoriae_whitepaper_revised.md","kind":"markdown","sensitivity":"internal","sha256":"bd098aacf200cb51eb880fdeb6d41f01b3be5e4090e535ed403028250e16acc4","ingestedAt":"2026-05-15T21:07:25.534Z","hasExtractedText":true,"hasHandoff":false},{"id":"2026-05-15T21-07-25-535Z-16aa520c50e0","fileName":"codex_hermes_infra_spec.md","kind":"markdown","sensitivity":"internal","sha256":"16aa520c50e02e3f6871372b49a1ffc69da31e6f8f445ce43f1a7a4063377da5","ingestedAt":"2026-05-15T21:07:25.535Z","hasExtractedText":true,"hasHandoff":false}],"requirements":[{"id":"REQ-001","title":"Source evidence intake","description":"Preserve drawings, whitepapers, dictated notes, documents, and related artifacts before any summarisation or automation.","acceptance":["Raw artifacts are copied into the durable vault.","Each artifact has a digest, source path, kind, and timestamp.","Extracted text remains linked to the raw evidence."],"priority":"must","status":"draft","sourceRefs":["\u003cVAULT_ROOT>/projects/ariadne/context/dossier-2026-05-15T21-29-09-496Z.md","\u003cVAULT_ROOT>/projects/ariadne/context/dossier-2026-05-15T21-29-09-496Z.md:7","\u003cVAULT_ROOT>/projects/ariadne/context/dossier-2026-05-15T21-29-09-496Z.md:9","\u003cVAULT_ROOT>/projects/ariadne/context/dossier-2026-05-15T21-29-09-496Z.md:16","\u003cVAULT_ROOT>/projects/ariadne/context/dossier-2026-05-15T21-29-09-496Z.md:22","\u003cVAULT_ROOT>/projects/ariadne/context/dossier-2026-05-15T21-29-09-496Z.md:34","\u003cVAULT_ROOT>/projects/ariadne/context/dossier-2026-05-15T21-29-09-496Z.md:35","\u003cVAULT_ROOT>/projects/ariadne/context/dossier-2026-05-15T21-29-09-496Z.md:36","\u003cVAULT_ROOT>/projects/ariadne/context/dossier-2026-05-15T21-29-09-496Z.md:37","\u003cVAULT_ROOT>/projects/ariadne/context/dossier-2026-05-15T21-29-09-496Z.md:39","\u003cVAULT_ROOT>/projects/ariadne/context/dossier-2026-05-15T21-29-09-496Z.md:41","\u003cVAULT_ROOT>/projects/ariadne/context/dossier-2026-05-15T21-29-09-496Z.md:60"]},{"id":"REQ-002","title":"Source-grounded PRD synthesis","description":"Convert evidence dossiers and NotebookLM-style grounded exports into requirements, ambiguities, acceptance criteria, and source references.","acceptance":["PRD records source references for every major claim.","Ambiguities are separated from accepted requirements.","Manual exports work before automation is attempted."],"priority":"must","status":"draft","sourceRefs":["\u003cVAULT_ROOT>/projects/ariadne/context/dossier-2026-05-15T21-29-09-496Z.md","\u003cVAULT_ROOT>/projects/ariadne/context/dossier-2026-05-15T21-29-09-496Z.md:7","\u003cVAULT_ROOT>/projects/ariadne/context/dossier-2026-05-15T21-29-09-496Z.md:9","\u003cVAULT_ROOT>/projects/ariadne/context/dossier-2026-05-15T21-29-09-496Z.md:16","\u003cVAULT_ROOT>/projects/ariadne/context/dossier-2026-05-15T21-29-09-496Z.md:22","\u003cVAULT_ROOT>/projects/ariadne/context/dossier-2026-05-15T21-29-09-496Z.md:34","\u003cVAULT_ROOT>/projects/ariadne/context/dossier-2026-05-15T21-29-09-496Z.md:35","\u003cVAULT_ROOT>/projects/ariadne/context/dossier-2026-05-15T21-29-09-496Z.md:36","\u003cVAULT_ROOT>/projects/ariadne/context/dossier-2026-05-15T21-29-09-496Z.md:37","\u003cVAULT_ROOT>/projects/ariadne/context/dossier-2026-05-15T21-29-09-496Z.md:39","\u003cVAULT_ROOT>/projects/ariadne/context/dossier-2026-05-15T21-29-09-496Z.md:41","\u003cVAULT_ROOT>/projects/ariadne/context/dossier-2026-05-15T21-29-09-496Z.md:60"]},{"id":"REQ-003","title":"GSD2 task bridge","description":"Transform accepted requirements into milestones, vertical slices, tasks, success criteria, and verification commands.","acceptance":["Tasks are independently inspectable as JSON and Markdown.","Each task names expected write areas and verification commands.","Tasks preserve requirement traceability."],"priority":"must","status":"draft","sourceRefs":["\u003cVAULT_ROOT>/projects/ariadne/context/dossier-2026-05-15T21-29-09-496Z.md","\u003cVAULT_ROOT>/projects/ariadne/context/dossier-2026-05-15T21-29-09-496Z.md:7","\u003cVAULT_ROOT>/projects/ariadne/context/dossier-2026-05-15T21-29-09-496Z.md:9","\u003cVAULT_ROOT>/projects/ariadne/context/dossier-2026-05-15T21-29-09-496Z.md:16","\u003cVAULT_ROOT>/projects/ariadne/context/dossier-2026-05-15T21-29-09-496Z.md:22","\u003cVAULT_ROOT>/projects/ariadne/context/dossier-2026-05-15T21-29-09-496Z.md:34","\u003cVAULT_ROOT>/projects/ariadne/context/dossier-2026-05-15T21-29-09-496Z.md:35","\u003cVAULT_ROOT>/projects/ariadne/context/dossier-2026-05-15T21-29-09-496Z.md:36","\u003cVAULT_ROOT>/projects/ariadne/context/dossier-2026-05-15T21-29-09-496Z.md:37","\u003cVAULT_ROOT>/projects/ariadne/context/dossier-2026-05-15T21-29-09-496Z.md:39","\u003cVAULT_ROOT>/projects/ariadne/context/dossier-2026-05-15T21-29-09-496Z.md:41","\u003cVAULT_ROOT>/projects/ariadne/context/dossier-2026-05-15T21-29-09-496Z.md:60"]},{"id":"REQ-004","title":"Bounded execution loop","description":"Plan isolated worktree execution with explicit branch names, gates, stop conditions, and review points.","acceptance":["Execution runs are recorded before work begins.","The system can identify planned worktrees and gates.","External mutations remain blocked unless a later approved adapter is enabled."],"priority":"must","status":"draft","sourceRefs":["\u003cVAULT_ROOT>/projects/ariadne/context/dossier-2026-05-15T21-29-09-496Z.md","\u003cVAULT_ROOT>/projects/ariadne/context/dossier-2026-05-15T21-29-09-496Z.md:7","\u003cVAULT_ROOT>/projects/ariadne/context/dossier-2026-05-15T21-29-09-496Z.md:9","\u003cVAULT_ROOT>/projects/ariadne/context/dossier-2026-05-15T21-29-09-496Z.md:16","\u003cVAULT_ROOT>/projects/ariadne/context/dossier-2026-05-15T21-29-09-496Z.md:22","\u003cVAULT_ROOT>/projects/ariadne/context/dossier-2026-05-15T21-29-09-496Z.md:34","\u003cVAULT_ROOT>/projects/ariadne/context/dossier-2026-05-15T21-29-09-496Z.md:35","\u003cVAULT_ROOT>/projects/ariadne/context/dossier-2026-05-15T21-29-09-496Z.md:36","\u003cVAULT_ROOT>/projects/ariadne/context/dossier-2026-05-15T21-29-09-496Z.md:37","\u003cVAULT_ROOT>/projects/ariadne/context/dossier-2026-05-15T21-29-09-496Z.md:39","\u003cVAULT_ROOT>/projects/ariadne/context/dossier-2026-05-15T21-29-09-496Z.md:41","\u003cVAULT_ROOT>/projects/ariadne/context/dossier-2026-05-15T21-29-09-496Z.md:60"]},{"id":"REQ-005","title":"Playwright UI verification evidence","description":"Generate UI test plans and Playwright skeletons from requirements, with room for screenshots, traces, and healer proposals.","acceptance":["Generated tests use role-oriented locators where possible.","Scenario records link back to requirement ids.","Evidence paths are recorded separately from claims."],"priority":"should","status":"draft","sourceRefs":["\u003cVAULT_ROOT>/projects/ariadne/context/dossier-2026-05-15T21-29-09-496Z.md","\u003cVAULT_ROOT>/projects/ariadne/context/dossier-2026-05-15T21-29-09-496Z.md:7","\u003cVAULT_ROOT>/projects/ariadne/context/dossier-2026-05-15T21-29-09-496Z.md:9","\u003cVAULT_ROOT>/projects/ariadne/context/dossier-2026-05-15T21-29-09-496Z.md:16","\u003cVAULT_ROOT>/projects/ariadne/context/dossier-2026-05-15T21-29-09-496Z.md:22","\u003cVAULT_ROOT>/projects/ariadne/context/dossier-2026-05-15T21-29-09-496Z.md:34","\u003cVAULT_ROOT>/projects/ariadne/context/dossier-2026-05-15T21-29-09-496Z.md:35","\u003cVAULT_ROOT>/projects/ariadne/context/dossier-2026-05-15T21-29-09-496Z.md:36","\u003cVAULT_ROOT>/projects/ariadne/context/dossier-2026-05-15T21-29-09-496Z.md:37","\u003cVAULT_ROOT>/projects/ariadne/context/dossier-2026-05-15T21-29-09-496Z.md:39","\u003cVAULT_ROOT>/projects/ariadne/context/dossier-2026-05-15T21-29-09-496Z.md:41","\u003cVAULT_ROOT>/projects/ariadne/context/dossier-2026-05-15T21-29-09-496Z.md:60"]},{"id":"REQ-006","title":"Review and CI control plane","description":"Collect deterministic checks, CodeRabbit feedback, human review, and merge-readiness state into one evidence surface.","acceptance":["Merge readiness lists satisfied and missing gates.","CI and review records are imported without being treated as hidden authority.","Blocked states are explicit."],"priority":"must","status":"draft","sourceRefs":["\u003cVAULT_ROOT>/projects/ariadne/context/dossier-2026-05-15T21-29-09-496Z.md","\u003cVAULT_ROOT>/projects/ariadne/context/dossier-2026-05-15T21-29-09-496Z.md:7","\u003cVAULT_ROOT>/projects/ariadne/context/dossier-2026-05-15T21-29-09-496Z.md:9","\u003cVAULT_ROOT>/projects/ariadne/context/dossier-2026-05-15T21-29-09-496Z.md:16","\u003cVAULT_ROOT>/projects/ariadne/context/dossier-2026-05-15T21-29-09-496Z.md:22","\u003cVAULT_ROOT>/projects/ariadne/context/dossier-2026-05-15T21-29-09-496Z.md:34","\u003cVAULT_ROOT>/projects/ariadne/context/dossier-2026-05-15T21-29-09-496Z.md:35","\u003cVAULT_ROOT>/projects/ariadne/context/dossier-2026-05-15T21-29-09-496Z.md:36","\u003cVAULT_ROOT>/projects/ariadne/context/dossier-2026-05-15T21-29-09-496Z.md:37","\u003cVAULT_ROOT>/projects/ariadne/context/dossier-2026-05-15T21-29-09-496Z.md:39","\u003cVAULT_ROOT>/projects/ariadne/context/dossier-2026-05-15T21-29-09-496Z.md:41","\u003cVAULT_ROOT>/projects/ariadne/context/dossier-2026-05-15T21-29-09-496Z.md:60"]},{"id":"REQ-007","title":"Infrastructure substrate registry","description":"Represent Proxmox, DGX Spark, M-series Macs, Hermes, OpenScorpion, local model endpoints, and runner pools as read-only registry records first.","acceptance":["Infrastructure records are readable without model calls.","Runner trust boundaries are explicit.","Mutation plans require approval and remain non-executing in this slice."],"priority":"must","status":"draft","sourceRefs":["\u003cVAULT_ROOT>/projects/ariadne/context/dossier-2026-05-15T21-29-09-496Z.md","\u003cVAULT_ROOT>/projects/ariadne/context/dossier-2026-05-15T21-29-09-496Z.md:7","\u003cVAULT_ROOT>/projects/ariadne/context/dossier-2026-05-15T21-29-09-496Z.md:9","\u003cVAULT_ROOT>/projects/ariadne/context/dossier-2026-05-15T21-29-09-496Z.md:16","\u003cVAULT_ROOT>/projects/ariadne/context/dossier-2026-05-15T21-29-09-496Z.md:22","\u003cVAULT_ROOT>/projects/ariadne/context/dossier-2026-05-15T21-29-09-496Z.md:34","\u003cVAULT_ROOT>/projects/ariadne/context/dossier-2026-05-15T21-29-09-496Z.md:35","\u003cVAULT_ROOT>/projects/ariadne/context/dossier-2026-05-15T21-29-09-496Z.md:36","\u003cVAULT_ROOT>/projects/ariadne/context/dossier-2026-05-15T21-29-09-496Z.md:37","\u003cVAULT_ROOT>/projects/ariadne/context/dossier-2026-05-15T21-29-09-496Z.md:39","\u003cVAULT_ROOT>/projects/ariadne/context/dossier-2026-05-15T21-29-09-496Z.md:41","\u003cVAULT_ROOT>/projects/ariadne/context/dossier-2026-05-15T21-29-09-496Z.md:60"]}],"tasks":[{"id":"TASK-001","title":"Source evidence intake","requirementIds":["REQ-001"],"slice":"core","successCriteria":["Raw artifacts are copied into the durable vault.","Each artifact has a digest, source path, kind, and timestamp.","Extracted text remains linked to the raw evidence."],"verificationCommands":["npm run check","npm test"],"canRunInParallel":true,"writes":["src/vault.ts","src/extract.ts","docs/source-contract.md"],"milestoneId":"M1","milestoneTitle":"Control Spine"},{"id":"TASK-002","title":"Source-grounded PRD synthesis","requirementIds":["REQ-002"],"slice":"core","successCriteria":["PRD records source references for every major claim.","Ambiguities are separated from accepted requirements.","Manual exports work before automation is attempted."],"verificationCommands":["npm run check","npm test"],"canRunInParallel":true,"writes":["src/prd.ts","vault/projects/\u003cproject>/requirements/"],"milestoneId":"M1","milestoneTitle":"Control Spine"},{"id":"TASK-003","title":"GSD2 task bridge","requirementIds":["REQ-003"],"slice":"core","successCriteria":["Tasks are independently inspectable as JSON and Markdown.","Each task names expected write areas and verification commands.","Tasks preserve requirement traceability."],"verificationCommands":["npm run check","npm test"],"canRunInParallel":false,"writes":["src/gsd.ts","vault/projects/\u003cproject>/gsd/"],"milestoneId":"M1","milestoneTitle":"Control Spine"},{"id":"TASK-004","title":"Bounded execution loop","requirementIds":["REQ-004"],"slice":"core","successCriteria":["Execution runs are recorded before work begins.","The system can identify planned worktrees and gates.","External mutations remain blocked unless a later approved adapter is enabled."],"verificationCommands":["npm run check","npm test"],"canRunInParallel":false,"writes":["src/execution.ts","vault/projects/\u003cproject>/execution/"],"milestoneId":"M1","milestoneTitle":"Control Spine"},{"id":"TASK-006","title":"Review and CI control plane","requirementIds":["REQ-006"],"slice":"core","successCriteria":["Merge readiness lists satisfied and missing gates.","CI and review records are imported without being treated as hidden authority.","Blocked states are explicit."],"verificationCommands":["npm run check","npm test"],"canRunInParallel":true,"writes":["src/controlPlane.ts","vault/projects/\u003cproject>/control/"],"milestoneId":"M1","milestoneTitle":"Control Spine"},{"id":"TASK-007","title":"Infrastructure substrate registry","requirementIds":["REQ-007"],"slice":"core","successCriteria":["Infrastructure records are readable without model calls.","Runner trust boundaries are explicit.","Mutation plans require approval and remain non-executing in this slice."],"verificationCommands":["npm run check","npm test"],"canRunInParallel":true,"writes":["src/infraSnapshot.ts","vault/projects/\u003cproject>/infrastructure/"],"milestoneId":"M1","milestoneTitle":"Control Spine"},{"id":"TASK-005","title":"Playwright UI verification evidence","requirementIds":["REQ-005"],"slice":"verification","successCriteria":["Generated tests use role-oriented locators where possible.","Scenario records link back to requirement ids.","Evidence paths are recorded separately from claims."],"verificationCommands":["npm run check","npm test","npx playwright test --reporter=list"],"canRunInParallel":true,"writes":["src/playwrightEvidence.ts","vault/projects/\u003cproject>/verification/"],"milestoneId":"M2","milestoneTitle":"Verification Surface"}],"executionRuns":[{"schemaVersion":1,"id":"run-2026-05-15T21-29-14-025Z","project":"ariadne","createdAt":"2026-05-15T21:29:14.025Z","taskIds":["TASK-001","TASK-002","TASK-003","TASK-004","TASK-006","TASK-007","TASK-005"],"repoPath":"\u003cREPO_ROOT>","branchPrefix":"jxw/ariadne","status":"complete","gates":["npm run check","npm test","npm run build","review evidence","human approval before external mutation"],"worktrees":[{"taskId":"TASK-001","branch":"jxw/ariadne-task-001","worktreePath":"\u003cREPO_ROOT>-task-001"},{"taskId":"TASK-002","branch":"jxw/ariadne-task-002","worktreePath":"\u003cREPO_ROOT>-task-002"},{"taskId":"TASK-003","branch":"jxw/ariadne-task-003","worktreePath":"\u003cREPO_ROOT>-task-003"},{"taskId":"TASK-004","branch":"jxw/ariadne-task-004","worktreePath":"\u003cREPO_ROOT>-task-004"},{"taskId":"TASK-006","branch":"jxw/ariadne-task-006","worktreePath":"\u003cREPO_ROOT>-task-006"},{"taskId":"TASK-007","branch":"jxw/ariadne-task-007","worktreePath":"\u003cREPO_ROOT>-task-007"},{"taskId":"TASK-005","branch":"jxw/ariadne-task-005","worktreePath":"\u003cREPO_ROOT>-task-005"}],"stopConditions":["A verification command fails twice for the same reason.","A task requires credentials or external mutation not represented by an approved plan.","The working tree contains unrelated user changes in a write scope.","Generated tests cannot identify a target URL or stable user workflow."]},{"schemaVersion":1,"id":"run-2026-05-16T06-09-25-010Z","project":"ariadne","createdAt":"2026-05-16T06:09:25.010Z","taskIds":["TASK-001","TASK-002","TASK-003","TASK-004","TASK-006","TASK-007","TASK-005"],"repoPath":"\u003cREPO_ROOT>","branchPrefix":"jxw/ariadne","status":"planned","gates":["npm run check","npm test","npm run build","review evidence","human approval before external mutation"],"worktrees":[{"taskId":"TASK-001","branch":"jxw/ariadne-task-001","worktreePath":"\u003cREPO_ROOT>-task-001"},{"taskId":"TASK-002","branch":"jxw/ariadne-task-002","worktreePath":"\u003cREPO_ROOT>-task-002"},{"taskId":"TASK-003","branch":"jxw/ariadne-task-003","worktreePath":"\u003cREPO_ROOT>-task-003"},{"taskId":"TASK-004","branch":"jxw/ariadne-task-004","worktreePath":"\u003cREPO_ROOT>-task-004"},{"taskId":"TASK-006","branch":"jxw/ariadne-task-006","worktreePath":"\u003cREPO_ROOT>-task-006"},{"taskId":"TASK-007","branch":"jxw/ariadne-task-007","worktreePath":"\u003cREPO_ROOT>-task-007"},{"taskId":"TASK-005","branch":"jxw/ariadne-task-005","worktreePath":"\u003cREPO_ROOT>-task-005"}],"stopConditions":["A verification command fails twice for the same reason.","A task requires credentials or external mutation not represented by an approved plan.","The working tree contains unrelated user changes in a write scope.","Generated tests cannot identify a target URL or stable user workflow."]},{"schemaVersion":1,"id":"run-2026-05-16T07-16-41-868Z","project":"ariadne","createdAt":"2026-05-16T07:16:41.868Z","taskIds":["TASK-001","TASK-002","TASK-003","TASK-004","TASK-006","TASK-007","TASK-005"],"repoPath":"\u003cREPO_ROOT>","branchPrefix":"jxw/ariadne","status":"planned","gates":["npm run check","npm test","npm run build","review evidence","human approval before external mutation"],"worktrees":[{"taskId":"TASK-001","branch":"jxw/ariadne-task-001","worktreePath":"\u003cREPO_ROOT>-task-001"},{"taskId":"TASK-002","branch":"jxw/ariadne-task-002","worktreePath":"\u003cREPO_ROOT>-task-002"},{"taskId":"TASK-003","branch":"jxw/ariadne-task-003","worktreePath":"\u003cREPO_ROOT>-task-003"},{"taskId":"TASK-004","branch":"jxw/ariadne-task-004","worktreePath":"\u003cREPO_ROOT>-task-004"},{"taskId":"TASK-006","branch":"jxw/ariadne-task-006","worktreePath":"\u003cREPO_ROOT>-task-006"},{"taskId":"TASK-007","branch":"jxw/ariadne-task-007","worktreePath":"\u003cREPO_ROOT>-task-007"},{"taskId":"TASK-005","branch":"jxw/ariadne-task-005","worktreePath":"\u003cREPO_ROOT>-task-005"}],"stopConditions":["A verification command fails twice for the same reason.","A task requires credentials or external mutation not represented by an approved plan.","The working tree contains unrelated user changes in a write scope.","Generated tests cannot identify a target URL or stable user workflow."]}],"checks":[{"schemaVersion":1,"id":"check-typecheck-2026-05-15T21-31-55-824Z","project":"ariadne","recordedAt":"2026-05-15T21:31:55.825Z","name":"typecheck","command":"npm run check","status":"passed"},{"schemaVersion":1,"id":"check-unit-tests-2026-05-15T21-31-55-824Z","project":"ariadne","recordedAt":"2026-05-15T21:31:55.825Z","name":"unit-tests","command":"npm test","status":"passed"},{"schemaVersion":1,"id":"check-build-2026-05-15T21-31-55-859Z","project":"ariadne","recordedAt":"2026-05-15T21:31:55.859Z","name":"build","command":"npm run build","status":"passed"}],"reviews":[{"schemaVersion":1,"id":"review-local-2026-05-15T21-32-09-295Z","project":"ariadne","recordedAt":"2026-05-15T21:32:09.295Z","source":"local","status":"passed","summary":"Local implementation self-review completed; external CodeRabbit or human approval still required before merge-ready."}],"decisions":[{"schemaVersion":1,"id":"decision-2026-05-15T22-38-53-515Z","project":"ariadne","recordedAt":"2026-05-15T22:38:53.515Z","title":"Keep live adapters evidence-first","status":"accepted","context":"Roadmap adapters now cover NotebookLM, GSD2, worktree, Playwright, CI, CodeRabbit, infrastructure, and OpenScorpion surfaces.","decision":"Keep adapters as file-contract and evidence-record producers until each live integration has an approved mutation or submission path.","consequences":["External systems are not mutated by default","Humans can inspect artifacts before enabling live adapters","Future work can add narrow approved live connectors"],"sourceRefs":["docs/roadmap.md","docs/adapters.md"]}],"playwrightEvidence":[],"evaluations":[],"infrastructure":{"registry":{"schemaVersion":1,"project":"ariadne","generatedAt":"2026-05-16T07:16:41.870Z","hosts":[{"id":"m1-hermes","label":"M1 Mac mini","role":"always-on Hermes supervisor","notes":"Control-plane host for long-running supervision; verify live details before automation."},{"id":"m1-max","label":"M1 Max","role":"local development and testing","notes":"Apple Silicon development machine; use for local validation where available."},{"id":"m5-max","label":"M5 Max","role":"high-memory local agent workstation","notes":"Primary Mac-class local execution surface mentioned by user."},{"id":"dgx-spark","label":"DGX Spark","role":"local inference and memory-heavy workloads","notes":"Treat as planned/observed only until live endpoint inventory exists."},{"id":"beast","label":"Proxmox dev server","role":"runners, services, model endpoints, infrastructure substrate","notes":"Read-only inventory first; Proxmox live state is authoritative at execution time."}],"modelEndpoints":[{"id":"openscorpion-router","hostId":"beast","kind":"governed model route","url":"http://localhost:8080","status":"planned"},{"id":"dgx-local-models","hostId":"dgx-spark","kind":"local inference","status":"planned"}],"runnerPools":[{"id":"trusted-private-runners","hostId":"beast","scope":"private jxwalker project repositories","trustBoundary":"persistent self-hosted runners only for trusted private repositories","status":"planned"},{"id":"public-repo-safe-path","hostId":"beast","scope":"public repositories","trustBoundary":"manual or ephemeral approval path; no untrusted public PRs on persistent runners","status":"planned"}]},"snapshots":[]},"readiness":{"schemaVersion":1,"project":"ariadne","generatedAt":"2026-05-16T07:16:41.872Z","status":"review_required","evidence":["requirements/prd.json","gsd/roadmap.json","verification/commands.json","Playwright plan: 7 scenarios for http://localhost:3000","Execution run run-2026-05-16T07-16-41-868Z: planned","GSD tasks: 7","Check typecheck: passed (npm run check)","Check unit-tests: passed (npm test)","Check build: passed (npm run build)"],"missing":["Execution run run-2026-05-16T07-16-41-868Z is not complete","CodeRabbit or human review approval"],"mergeGates":["typecheck passed","unit tests passed","build passed","Playwright evidence captured for UI work","CodeRabbit or human review completed","human approval present for infrastructure or external repo mutation"]},"artifacts":{"hotIndex":"projects/ariadne/HOT_INDEX.md","prd":"projects/ariadne/requirements/prd.json","roadmap":"projects/ariadne/gsd/roadmap.json","control":"projects/ariadne/control/merge-readiness.json","evaluationPlan":"projects/ariadne/evaluation/evaluation-plan.json"}}
+</script>
+</main>
+</body>
+</html>

@@ -13,7 +13,7 @@ export async function generateEvaluationPlan(input: {
     schemaVersion: 1,
     project,
     generatedAt: new Date().toISOString(),
-    target: input.target ?? "local-dev-pipeline",
+    target: input.target ?? "local-ariadne",
     dimensions: [
       {
         id: "D1",
@@ -85,7 +85,7 @@ export async function recordEvaluationRun(input: {
     project,
     recordedAt: new Date().toISOString(),
     planPath: input.planPath,
-    target: input.target ?? "local-dev-pipeline",
+    target: input.target ?? "local-ariadne",
     operator: input.operator ?? "manual",
     overallScore: weightedAverage(input.dimensionScores),
     dimensionScores: input.dimensionScores,

@@ -7,7 +7,7 @@ import type { GsdRoadmap, GsdTask } from "./types.js";
 
 interface Gsd2Bundle {
   schemaVersion: 1;
-  format: "dev-pipeline-gsd2-bundle";
+  format: "ariadne-gsd2-bundle";
   exportedAt: string;
   project: string;
   tasks: Array<GsdTask & { milestoneId: string; milestoneTitle: string }>;
@@ -21,7 +21,7 @@ export async function exportGsd2Bundle(options: {
   const roadmap = await readJsonArtifact<GsdRoadmap>(options.vaultRoot, project, "gsd", "roadmap.json");
   const bundle: Gsd2Bundle = {
     schemaVersion: 1,
-    format: "dev-pipeline-gsd2-bundle",
+    format: "ariadne-gsd2-bundle",
     exportedAt: new Date().toISOString(),
     project,
     tasks: roadmap.milestones.flatMap((milestone) =>
@@ -91,11 +91,11 @@ function parseGsd2Bundle(sourcePath: string, text: string): Gsd2Bundle {
 
   if (
     parsed.schemaVersion !== 1 ||
-    parsed.format !== "dev-pipeline-gsd2-bundle" ||
+    parsed.format !== "ariadne-gsd2-bundle" ||
     !Array.isArray(parsed.tasks)
   ) {
     throw new Error(
-      `Invalid GSD2 bundle ${sourcePath}: expected schemaVersion=1, format=dev-pipeline-gsd2-bundle, and tasks[].`
+      `Invalid GSD2 bundle ${sourcePath}: expected schemaVersion=1, format=ariadne-gsd2-bundle, and tasks[].`
     );
   }
 

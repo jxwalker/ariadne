@@ -1,3 +1,0 @@
-{"schemaVersion":1,"id":"check-typecheck-2026-05-15T21-31-55-824Z","project":"agentic-coding","recordedAt":"2026-05-15T21:31:55.825Z","name":"typecheck","command":"npm run check","status":"passed"}
-{"schemaVersion":1,"id":"check-unit-tests-2026-05-15T21-31-55-824Z","project":"agentic-coding","recordedAt":"2026-05-15T21:31:55.825Z","name":"unit-tests","command":"npm test","status":"passed"}
-{"schemaVersion":1,"id":"check-build-2026-05-15T21-31-55-859Z","project":"agentic-coding","recordedAt":"2026-05-15T21:31:55.859Z","name":"build","command":"npm run build","status":"passed"}

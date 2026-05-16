@@ -106,7 +106,7 @@ function renderPlaywrightSpec(plan: PlaywrightEvidencePlan): string {
   return [
     "import { expect, test } from '@playwright/test';",
     "",
-    "// Generated from dev-pipeline requirements. Refine selectors against the real app before using as a hard gate.",
+    "// Generated from ariadne requirements. Refine selectors against the real app before using as a hard gate.",
     "",
     ...tests
   ].join("\n");

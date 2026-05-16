@@ -14,7 +14,7 @@ Those pillars are implemented through six layers:
 - context assembler: task-specific dossier generation
 - loop and sleep: recurring review, consolidation, and cautious speculation
 - evidence and control plane: tests, CI, reviews, policies, approvals, and metrics
-- human surface: dashboards, docs, review screens, and command output
+- human surface: consoles, docs, review screens, and command output
 
 ## Adapter Model
 
@@ -45,7 +45,7 @@ The goal is to keep cheap, deterministic sensors as far left as possible and res
 
 ## Operational Surfaces
 
-The first dashboard should read the vault instead of becoming another source of truth. It should visualise evidence lineage, task state, gates, reviews, infrastructure placement, and evaluation trends. Hermes, Hermes Web UI, and Mission Control-style systems are integration candidates, but the durable object model remains this repo's artifact contracts.
+The first console should read the vault instead of becoming another source of truth. It should visualise evidence lineage, task state, gates, reviews, infrastructure placement, and evaluation trends. Hermes, Hermes Web UI, and Mission Control-style systems are integration candidates, but the durable object model remains this repo's artifact contracts.
 
 ## Sleep, Memory, And Interagent State
 
@@ -56,4 +56,4 @@ Long-running automation should be represented as records before it becomes behav
 - agent mail: append-only messages between agents, tied to task/run ids
 - interagent state: leases, ownership, worktree paths, current blockers, and handoff notes
 
-These should land as file-backed adapters first, then live Hermes or dashboard integrations later.
+These should land as file-backed adapters first, then live Hermes or console integrations later.

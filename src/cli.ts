@@ -2,7 +2,8 @@
 import path from "node:path";
 import { importCiStatus, importCodeRabbitReview } from "./ciImport.js";
 import { generateControlReport, recordCheck, recordReview } from "./controlPlane.js";
-import { generateDashboardData } from "./dashboardData.js";
+import { generateConsoleData } from "./consoleData.js";
+import { generateConsoleHtml } from "./consoleHtml.js";
 import { recordDecision } from "./decisions.js";
 import { generateEvaluationPlan, recordEvaluationRun } from "./evaluation.js";
 import { markRunStatus, planExecution } from "./execution.js";
@@ -56,32 +57,33 @@ function optionString(options: Map<string, string | true>, key: string, fallback
 function usage(): string {
   return [
     "Usage:",
-    "  dev-pipeline ingest --project <project> [--notes <text>] [--allow-secret-findings] <files...>",
-    "  dev-pipeline assemble --project <project> [--max-chars <number>]",
-    "  dev-pipeline prd --project <project> [--from <dossier.md>]",
-    "  dev-pipeline notebooklm-import --project <project> --from <export.md>",
-    "  dev-pipeline gsd --project <project>",
-    "  dev-pipeline gsd2-export --project <project>",
-    "  dev-pipeline gsd2-import --project <project> --from <bundle.json>",
-    "  dev-pipeline decision --project <project> --title <title> --context <text> --decision <text>",
-    "  dev-pipeline execution --project <project> [--task <id>] [--repo <path>]",
-    "  dev-pipeline execution-status --project <project> --run <run.json> --status <status>",
-    "  dev-pipeline worktree-guard --project <project> --run <run.json> [--apply]",
-    "  dev-pipeline playwright --project <project> [--target-url <url>]",
-    "  dev-pipeline playwright-evidence --project <project> --target-url <url> --status <status>",
-    "  dev-pipeline evaluation --project <project> [--target <name>]",
-    "  dev-pipeline evaluation-record --project <project> --plan <plan.json> --scores <D1=80,D2=75> [--evidence <paths>]",
-    "  dev-pipeline infra --project <project>",
-    "  dev-pipeline infra-snapshot --project <project> --from <manifest.json>",
-    "  dev-pipeline openscorpion-draft --project <project> --title <title> --type <type> --evidence <paths>",
-    "  dev-pipeline import-ci --project <project> --from <checks.json>",
-    "  dev-pipeline import-coderabbit --project <project> --from <review.md>",
-    "  dev-pipeline record-check --project <project> --name <name> --status <status> --command <cmd>",
-    "  dev-pipeline record-review --project <project> --source <source> --status <status> --summary <text>",
-    "  dev-pipeline control --project <project>",
-    "  dev-pipeline dashboard-data --project <project>",
-    "  dev-pipeline roadmap --project <project> [--target-url <url>] [--repo <path>]",
-    "  dev-pipeline status --project <project>",
+    "  ariadne ingest --project <project> [--notes <text>] [--allow-secret-findings] <files...>",
+    "  ariadne assemble --project <project> [--max-chars <number>]",
+    "  ariadne prd --project <project> [--from <dossier.md>]",
+    "  ariadne notebooklm-import --project <project> --from <export.md>",
+    "  ariadne gsd --project <project>",
+    "  ariadne gsd2-export --project <project>",
+    "  ariadne gsd2-import --project <project> --from <bundle.json>",
+    "  ariadne decision --project <project> --title <title> --context <text> --decision <text>",
+    "  ariadne execution --project <project> [--task <id>] [--repo <path>]",
+    "  ariadne execution-status --project <project> --run <run.json> --status <status>",
+    "  ariadne worktree-guard --project <project> --run <run.json> [--apply]",
+    "  ariadne playwright --project <project> [--target-url <url>]",
+    "  ariadne playwright-evidence --project <project> --target-url <url> --status <status>",
+    "  ariadne evaluation --project <project> [--target <name>]",
+    "  ariadne evaluation-record --project <project> --plan <plan.json> --scores <D1=80,D2=75> [--evidence <paths>]",
+    "  ariadne infra --project <project>",
+    "  ariadne infra-snapshot --project <project> --from <manifest.json>",
+    "  ariadne openscorpion-draft --project <project> --title <title> --type <type> --evidence <paths>",
+    "  ariadne import-ci --project <project> --from <checks.json>",
+    "  ariadne import-coderabbit --project <project> --from <review.md>",
+    "  ariadne record-check --project <project> --name <name> --status <status> --command <cmd>",
+    "  ariadne record-review --project <project> --source <source> --status <status> --summary <text>",
+    "  ariadne control --project <project>",
+    "  ariadne console-data --project <project>",
+    "  ariadne console-html --project <project> [--refresh-data]",
+    "  ariadne roadmap --project <project> [--target-url <url>] [--repo <path>]",
+    "  ariadne status --project <project>",
     "",
     "Options:",
     "  --vault <path>       Override the vault root. Defaults to ./vault.",
@@ -419,11 +421,25 @@ async function main(): Promise<void> {
     return;
   }
 
-  if (parsed.command === "dashboard-data") {
-    const result = await generateDashboardData({ project, vaultRoot });
-    console.log(`Dashboard data: ${result.jsonPath}`);
+  if (parsed.command === "console-data") {
+    const result = await generateConsoleData({ project, vaultRoot });
+    console.log(`Console data: ${result.jsonPath}`);
     console.log(`Sources: ${result.data.summary.sources}`);
     console.log(`Tasks: ${result.data.summary.tasks}`);
+    console.log(`Readiness: ${result.data.summary.readinessStatus ?? "unknown"}`);
+    return;
+  }
+
+  if (parsed.command === "console-html") {
+    const result = await generateConsoleHtml({
+      project,
+      vaultRoot,
+      refreshData: parsed.options.has("refresh-data")
+    });
+    console.log(`Console HTML: ${result.htmlPath}`);
+    if (result.dataPath) {
+      console.log(`Console data: ${result.dataPath}`);
+    }
     console.log(`Readiness: ${result.data.summary.readinessStatus ?? "unknown"}`);
     return;
   }
