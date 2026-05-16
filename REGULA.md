@@ -1,6 +1,6 @@
 # Regula
 
-Rules for the dev-pipeline control system.
+Rules for the Ariadne control system.
 
 1. Raw evidence is preserved before compression.
 2. Source-derived claims must point back to an artifact path.
@@ -12,4 +12,3 @@ Rules for the dev-pipeline control system.
 8. The hot index must stay small enough to orient a new session.
 9. Secrets must not be copied into the vault.
 10. External automation must fail closed when approval or config is missing.
-

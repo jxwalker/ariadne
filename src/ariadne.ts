@@ -24,7 +24,7 @@ import { exportGsd2Bundle, importGsd2Bundle } from "./gsdAdapter.js";
 import { generateHealerProposal } from "./healerProposals.js";
 import { generateInfrastructureRegistry } from "./infrastructure.js";
 import { draftOpenScorpionActivity, importInfraSnapshot } from "./infraSnapshot.js";
-import { collectLocalInfraSnapshot } from "./liveInventory.js";
+import { collectLocalInfraSnapshot, collectSshInfraSnapshot } from "./liveInventory.js";
 import { importNotebookLmExport } from "./notebooklm.js";
 import { defaultVaultRoot } from "./paths.js";
 import { recordPlaywrightEvidence } from "./playwrightEvidence.js";
@@ -109,6 +109,7 @@ function usage(): string {
     "  ariadne infra --project <project>",
     "  ariadne infra-snapshot --project <project> --from <manifest.json>",
     "  ariadne infra-live-local --project <project> [--notes <text>]",
+    "  ariadne infra-live-ssh --project <project> --host <id> --target <ssh-target> [--ssh-binary <path>] [--notes <text>]",
     "  ariadne openscorpion-draft --project <project> --title <title> --type <type> --evidence <paths>",
     "  ariadne import-ci --project <project> --from <checks.json>",
     "  ariadne import-coderabbit --project <project> --from <review.md>",
@@ -601,6 +602,22 @@ async function main(): Promise<void> {
       notes: optionString(parsed.options, "notes", "") || undefined
     });
     console.log(`Live read-only infrastructure snapshot: ${result.markdownPath}`);
+    console.log(`Collector: ${String(result.snapshot.summary.collector ?? "unknown")}`);
+    console.log(`Mode: ${result.snapshot.snapshotKind}`);
+    return;
+  }
+
+  if (parsed.command === "infra-live-ssh") {
+    const result = await collectSshInfraSnapshot({
+      project,
+      vaultRoot,
+      hostId: requiredOption(parsed.options, "host"),
+      target: requiredOption(parsed.options, "target"),
+      sshBinary: optionString(parsed.options, "ssh-binary", "") || undefined,
+      notes: optionString(parsed.options, "notes", "") || undefined
+    });
+    console.log(`Live SSH read-only infrastructure snapshot: ${result.markdownPath}`);
+    console.log(`Host: ${String(result.snapshot.summary.host ?? "unknown")}`);
     console.log(`Collector: ${String(result.snapshot.summary.collector ?? "unknown")}`);
     console.log(`Mode: ${result.snapshot.snapshotKind}`);
     return;

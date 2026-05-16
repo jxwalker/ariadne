@@ -1,6 +1,6 @@
 # Hot Index
 
-This is the working doorway into the dev-pipeline repository.
+This is the working doorway into the Ariadne repository.
 
 ## Current State
 
@@ -16,12 +16,14 @@ This is the working doorway into the dev-pipeline repository.
 
 ## Commands
 
+Set `REPO_PATH` to the repository you want Ariadne to plan against, or replace it with a relative path such as `.`.
+
 ```bash
-npm run cli -- ingest --project agentic-coding <files...>
-npm run cli -- assemble --project agentic-coding
-npm run cli -- roadmap --project agentic-coding --target-url http://localhost:3000 --repo /Users/james/Documents/dev/dev-pipeline
-npm run cli -- control --project agentic-coding
-npm run cli -- status --project agentic-coding
+npm run ariadne -- ingest --project agentic-coding <files...>
+npm run ariadne -- assemble --project agentic-coding
+npm run ariadne -- roadmap --project agentic-coding --target-url http://localhost:3000 --repo "$REPO_PATH"
+npm run ariadne -- control --project agentic-coding
+npm run ariadne -- status --project agentic-coding
 npm run check
 npm test
 ```

@@ -23,7 +23,7 @@ import { exportGsd2Bundle, importGsd2Bundle } from "../src/gsdAdapter.js";
 import { generateHealerProposal } from "../src/healerProposals.js";
 import { generateInfrastructureRegistry } from "../src/infrastructure.js";
 import { draftOpenScorpionActivity, importInfraSnapshot } from "../src/infraSnapshot.js";
-import { collectLocalInfraSnapshot } from "../src/liveInventory.js";
+import { collectLocalInfraSnapshot, collectSshInfraSnapshot, parseSshInventory } from "../src/liveInventory.js";
 import { generatePlaywrightPlan } from "../src/playwrightPlan.js";
 import { generateEvaluationPlan, recordEvaluationRun } from "../src/evaluation.js";
 import { generateEvaluationTrendReport } from "../src/evaluationTrends.js";
@@ -651,6 +651,75 @@ describe("roadmap adapters", () => {
     expect(liveSnapshot.snapshot.summary.collector).toBe("local-node-os");
     expect(JSON.stringify(liveSnapshot.snapshot.raw)).not.toContain(os.hostname());
     expect(JSON.stringify(liveSnapshot.snapshot.raw)).toContain("networkAddresses");
+
+    const parsedSsh = parseSshInventory(
+      [
+        "hostname=beast-secret.lan",
+        "uname_s=Linux",
+        "uname_m=x86_64",
+        "uname_r=6.8.0",
+        "cpu_count=24",
+        "memory_total_kib=131072000",
+        "filesystem_count=8",
+        "has_docker=yes",
+        "has_pve=yes",
+        "has_zfs=yes",
+        "has_nvidia_smi=no"
+      ].join("\n"),
+      "beast",
+      "james@beast.lan"
+    );
+    expect(parsedSsh.target.hostId).toBe("beast");
+    expect(parsedSsh.capabilities.proxmox).toBe(true);
+    expect(JSON.stringify(parsedSsh)).not.toContain("beast-secret.lan");
+    expect(JSON.stringify(parsedSsh)).not.toContain("james@beast.lan");
+
+    const fakeSsh = path.join(temp, "fake-ssh.sh");
+    await fs.writeFile(
+      fakeSsh,
+      [
+        "#!/bin/sh",
+        "cat <<'OUT'",
+        "hostname=beast-secret.lan",
+        "uname_s=Linux",
+        "uname_m=x86_64",
+        "uname_r=6.8.0",
+        "cpu_count=24",
+        "memory_total_kib=131072000",
+        "filesystem_count=8",
+        "has_docker=yes",
+        "has_pve=yes",
+        "has_zfs=yes",
+        "has_nvidia_smi=yes",
+        "OUT"
+      ].join("\n")
+    );
+    await fs.chmod(fakeSsh, 0o755);
+    const sshSnapshot = await collectSshInfraSnapshot({
+      project: "ariadne",
+      vaultRoot,
+      hostId: "DGX Spark",
+      target: "james@beast.lan",
+      sshBinary: fakeSsh,
+      notes: "vitest fake ssh collector"
+    });
+    expect(sshSnapshot.snapshot.snapshotKind).toBe("live_read_only");
+    expect(sshSnapshot.snapshot.sourcePath).toBe("<LIVE_READ_ONLY>/ssh/dgx-spark");
+    expect(sshSnapshot.snapshot.summary.collector).toBe("ssh-posix-read-only");
+    expect(sshSnapshot.snapshot.summary.host).toBe("DGX Spark");
+    expect(sshSnapshot.snapshot.summary.proxmox).toBe(true);
+    expect(JSON.stringify(sshSnapshot.snapshot.raw)).not.toContain("beast-secret.lan");
+    expect(JSON.stringify(sshSnapshot.snapshot.raw)).not.toContain("james@beast.lan");
+    expect(JSON.stringify(sshSnapshot.snapshot.raw)).toContain("targetHash");
+    await expect(
+      collectSshInfraSnapshot({
+        project: "ariadne",
+        vaultRoot,
+        hostId: "bad",
+        target: "-oProxyCommand=touch /tmp/ariadne-bad",
+        sshBinary: fakeSsh
+      })
+    ).rejects.toThrow(/Unsafe SSH target/);
 
     const activity = await draftOpenScorpionActivity({
       project: "ariadne",

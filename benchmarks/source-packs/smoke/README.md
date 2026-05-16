@@ -15,10 +15,10 @@ Prove the minimum evidence-to-control pipeline on one compact Markdown source.
 ## Recommended Commands
 
 ```bash
-npm run cli -- ingest --project bench-smoke <PACK_ROOT>/sources/source.md
-npm run cli -- assemble --project bench-smoke
-npm run cli -- roadmap --project bench-smoke --target-url http://localhost:3000
-npm run cli -- artifact-checks --project bench-smoke
+npm run ariadne -- ingest --project bench-smoke <PACK_ROOT>/sources/source.md
+npm run ariadne -- assemble --project bench-smoke
+npm run ariadne -- roadmap --project bench-smoke --target-url http://localhost:3000
+npm run ariadne -- artifact-checks --project bench-smoke
 ```
 
 ## Acceptance

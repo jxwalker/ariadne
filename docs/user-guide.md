@@ -216,6 +216,14 @@ npm run ariadne -- infra-live-local --project ariadne --notes "Mac workstation r
 
 This uses local Node.js OS APIs only. It hashes the hostname and omits network and MAC addresses before writing `infrastructure/infra-snapshot-live-local-...json`.
 
+For an approved remote host reachable over SSH, collect a sanitized read-only inventory:
+
+```bash
+npm run ariadne -- infra-live-ssh --project ariadne --host beast --target james@beast.lan --notes "Approved read-only remote snapshot"
+```
+
+The saved snapshot keeps the host label, hashes the SSH target and reported hostname, omits network and MAC addresses, and records OS, CPU, memory, filesystem count, and common platform capabilities. The command runs only a fixed read-only POSIX inventory script.
+
 ## Import GitHub PR And Check Evidence
 
 Use `github-snapshot` when Ariadne needs durable PR and check-state evidence:
