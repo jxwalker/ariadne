@@ -1,0 +1,123 @@
+{
+  "schemaVersion": 1,
+  "project": "ariadne",
+  "generatedAt": "2026-05-16T21:54:17.057Z",
+  "status": "blocked",
+  "summary": {
+    "targets": 6,
+    "ready": 0,
+    "blocked": 6,
+    "passedPlans": 0,
+    "passedDryRuns": 0,
+    "passedExecutions": 0
+  },
+  "targets": [
+    {
+      "target": "github",
+      "status": "blocked",
+      "planCount": 1,
+      "passedPlanCount": 0,
+      "passedDryRunCount": 0,
+      "passedExecutionCount": 0,
+      "executeCommand": "github-mutation-execute",
+      "blockers": [
+        "no readiness plan passes audit",
+        "no passed dry-run evidence exists for an audit-passed plan",
+        "no passed target-guarded execution evidence exists"
+      ],
+      "evidenceRefs": [
+        "control/mutation-readiness-audit.json"
+      ]
+    },
+    {
+      "target": "deployment",
+      "status": "blocked",
+      "planCount": 0,
+      "passedPlanCount": 0,
+      "passedDryRunCount": 0,
+      "passedExecutionCount": 0,
+      "executeCommand": "deployment-mutation-execute",
+      "blockers": [
+        "no target-specific readiness plan exists",
+        "no readiness plan passes audit",
+        "no passed dry-run evidence exists for an audit-passed plan",
+        "no passed target-guarded execution evidence exists"
+      ],
+      "evidenceRefs": [
+        "control/mutation-readiness-audit.json"
+      ]
+    },
+    {
+      "target": "hermes-cron",
+      "status": "blocked",
+      "planCount": 0,
+      "passedPlanCount": 0,
+      "passedDryRunCount": 0,
+      "passedExecutionCount": 0,
+      "executeCommand": "hermes-cron-mutation-execute",
+      "blockers": [
+        "no target-specific readiness plan exists",
+        "no readiness plan passes audit",
+        "no passed dry-run evidence exists for an audit-passed plan",
+        "no passed target-guarded execution evidence exists"
+      ],
+      "evidenceRefs": [
+        "control/mutation-readiness-audit.json"
+      ]
+    },
+    {
+      "target": "openscorpion",
+      "status": "blocked",
+      "planCount": 0,
+      "passedPlanCount": 0,
+      "passedDryRunCount": 0,
+      "passedExecutionCount": 0,
+      "executeCommand": "openscorpion-mutation-execute",
+      "blockers": [
+        "no target-specific readiness plan exists",
+        "no readiness plan passes audit",
+        "no passed dry-run evidence exists for an audit-passed plan",
+        "no passed target-guarded execution evidence exists"
+      ],
+      "evidenceRefs": [
+        "control/mutation-readiness-audit.json"
+      ]
+    },
+    {
+      "target": "gsd2",
+      "status": "blocked",
+      "planCount": 0,
+      "passedPlanCount": 0,
+      "passedDryRunCount": 0,
+      "passedExecutionCount": 0,
+      "executeCommand": "gsd2-mutation-execute",
+      "blockers": [
+        "no target-specific readiness plan exists",
+        "no readiness plan passes audit",
+        "no passed dry-run evidence exists for an audit-passed plan",
+        "no passed target-guarded execution evidence exists"
+      ],
+      "evidenceRefs": [
+        "control/mutation-readiness-audit.json"
+      ]
+    },
+    {
+      "target": "notebooklm",
+      "status": "blocked",
+      "planCount": 0,
+      "passedPlanCount": 0,
+      "passedDryRunCount": 0,
+      "passedExecutionCount": 0,
+      "executeCommand": "notebooklm-mutation-execute",
+      "blockers": [
+        "no target-specific readiness plan exists",
+        "no readiness plan passes audit",
+        "no passed dry-run evidence exists for an audit-passed plan",
+        "no passed target-guarded execution evidence exists"
+      ],
+      "evidenceRefs": [
+        "control/mutation-readiness-audit.json"
+      ]
+    }
+  ]
+}
