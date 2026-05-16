@@ -31,6 +31,7 @@ Deployment should follow the same rule as the rest of the project: observe first
 - Import JSON snapshots from Proxmox, TrueNAS, Macs, and DGX Spark.
 - Record host roles, model endpoints, runner pools, and trust boundaries.
 - Keep snapshots manual or read-only.
+- Use `infra-live-local` for the current Mac or Linux host before adding remote collectors.
 - Use `deployment-snapshot` for estate-specific views:
 
 ```bash
@@ -38,6 +39,7 @@ npm run ariadne -- deployment-snapshot --project ariadne --system proxmox --from
 npm run ariadne -- deployment-snapshot --project ariadne --system truenas --from truenas.json
 npm run ariadne -- deployment-snapshot --project ariadne --system dgx-spark --from dgx-spark.json
 npm run ariadne -- deployment-snapshot --project ariadne --system mac --from mac.json
+npm run ariadne -- infra-live-local --project ariadne --notes "current host read-only inventory"
 ```
 
 ### Stage 3: Always-On Orchestration

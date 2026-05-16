@@ -2,13 +2,13 @@
 
 Project: ariadne
 Status: passed
-Generated: 2026-05-16T14:29:21.522Z
+Generated: 2026-05-16T14:47:48.112Z
 
 ## Summary
 
 - Required checks: 13
-- Optional checks: 16
-- Present artifacts: 28
+- Optional checks: 17
+- Present artifacts: 29
 - Missing required artifacts: 0
 
 ## Checks
@@ -30,6 +30,7 @@ Generated: 2026-05-16T14:29:21.522Z
 | healer-proposals | no | present | 1 | projects/ariadne/verification/healer-proposals/healer-*.json |
 | evaluation-plan | yes | present | - | projects/ariadne/evaluation/evaluation-plan.json |
 | infra-registry | yes | present | - | projects/ariadne/infrastructure/registry.json |
+| infra-snapshots | no | present | 1 | projects/ariadne/infrastructure/infra-snapshot-*.json |
 | control-report | yes | present | - | projects/ariadne/control/merge-readiness.json |
 | console-data | no | present | - | projects/ariadne/console/console-data.json |
 | console-html | no | present | - | projects/ariadne/console/index.html |

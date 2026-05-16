@@ -24,6 +24,7 @@ import { exportGsd2Bundle, importGsd2Bundle } from "./gsdAdapter.js";
 import { generateHealerProposal } from "./healerProposals.js";
 import { generateInfrastructureRegistry } from "./infrastructure.js";
 import { draftOpenScorpionActivity, importInfraSnapshot } from "./infraSnapshot.js";
+import { collectLocalInfraSnapshot } from "./liveInventory.js";
 import { importNotebookLmExport } from "./notebooklm.js";
 import { defaultVaultRoot } from "./paths.js";
 import { recordPlaywrightEvidence } from "./playwrightEvidence.js";
@@ -107,6 +108,7 @@ function usage(): string {
     "  ariadne benchmark-pack --set <smoke|realistic|stress|all> [--output <dir>]",
     "  ariadne infra --project <project>",
     "  ariadne infra-snapshot --project <project> --from <manifest.json>",
+    "  ariadne infra-live-local --project <project> [--notes <text>]",
     "  ariadne openscorpion-draft --project <project> --title <title> --type <type> --evidence <paths>",
     "  ariadne import-ci --project <project> --from <checks.json>",
     "  ariadne import-coderabbit --project <project> --from <review.md>",
@@ -589,6 +591,18 @@ async function main(): Promise<void> {
       snapshotKind: kind
     });
     console.log(`Infrastructure snapshot: ${result.markdownPath}`);
+    return;
+  }
+
+  if (parsed.command === "infra-live-local") {
+    const result = await collectLocalInfraSnapshot({
+      project,
+      vaultRoot,
+      notes: optionString(parsed.options, "notes", "") || undefined
+    });
+    console.log(`Live read-only infrastructure snapshot: ${result.markdownPath}`);
+    console.log(`Collector: ${String(result.snapshot.summary.collector ?? "unknown")}`);
+    console.log(`Mode: ${result.snapshot.snapshotKind}`);
     return;
   }
 

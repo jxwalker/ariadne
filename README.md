@@ -24,6 +24,7 @@ The system starts with source-grounded intake: drawings, white papers, dictated 
 - Import OCR, transcription, PDF text, and visual-description results back onto the original source record.
 - Write manifests, hot indexes, context dossiers, PRDs, GSD roadmaps, GSD2 bundles, execution plans, decision records, Playwright plans, infrastructure registries, evaluation plans, merge-readiness reports, and crash-recovery reports.
 - Import manual NotebookLM exports, CI status, CodeRabbit review text, read-only GitHub PR/check snapshots, read-only infrastructure snapshots, and Playwright evidence.
+- Collect a sanitized live read-only local host inventory snapshot.
 - Capture target-app screenshots and Playwright traces from a URL before recording the evidence.
 - Generate review-gated healer proposals from failed Playwright evidence without applying repairs automatically.
 - Import token and cost metrics from Hermes, CodeRabbit, OpenAI, CI, or manual JSON exports.
@@ -67,6 +68,7 @@ npm run ariadne -- console-data --project ariadne
 npm run ariadne -- console-html --project ariadne --refresh-data
 npm run ariadne -- console-visual-checks --project ariadne
 npm run ariadne -- console-browser-checks --project ariadne
+npm run ariadne -- infra-live-local --project ariadne
 npm run ariadne -- status --project ariadne
 ```
 
@@ -150,6 +152,7 @@ npm run ariadne -- console-visual-checks --project ariadne
 npm run ariadne -- console-browser-checks --project ariadne
 npm run ariadne -- infra --project ariadne
 npm run ariadne -- infra-snapshot --project ariadne --from manifest.json
+npm run ariadne -- infra-live-local --project ariadne --notes "Mac workstation read-only snapshot"
 npm run ariadne -- openscorpion-draft --project ariadne --title "Evidence package" --type ariadne.evidence --evidence path-a,path-b
 ```
 

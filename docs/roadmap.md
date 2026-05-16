@@ -124,12 +124,13 @@ Implemented:
 - local model endpoint registry contract
 - explicit no-mutation rules
 - read-only infrastructure snapshot imports
+- sanitized live read-only local host inventory collector
 - OpenScorpion governed activity drafts
 - explicit approval records before mutation-capable adapters
 
 Next:
 
-- live read-only infrastructure inventory from approved hosts
+- live read-only remote host inventory from approved hosts
 - OpenScorpion governed activity submission after approval
 - mutation implementation only after a bounded approval record is accepted
 
@@ -194,10 +195,11 @@ Implemented:
 - read-only TrueNAS snapshot import
 - DGX Spark model/evaluation endpoint snapshot import
 - Mac workstation capability snapshot import
+- sanitized live read-only local host inventory collector
 - GitHub deployment/check snapshot import
 - explicit approval workflow before mutation-capable adapters
 
 Next:
 
-- live read-only inventory collectors for approved hosts
+- live read-only remote inventory collectors for approved hosts
 - mutation-capable deployment adapters only after approved rollback plans

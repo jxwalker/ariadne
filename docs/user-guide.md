@@ -208,6 +208,14 @@ npm run ariadne -- deployment-snapshot --project ariadne --system proxmox --from
 
 Snapshots are read-only evidence. They are used by the console and evaluation system to make deployment posture visible without granting mutation capability.
 
+For the current machine, collect a sanitized live read-only local inventory:
+
+```bash
+npm run ariadne -- infra-live-local --project ariadne --notes "Mac workstation read-only snapshot"
+```
+
+This uses local Node.js OS APIs only. It hashes the hostname and omits network and MAC addresses before writing `infrastructure/infra-snapshot-live-local-...json`.
+
 ## Import GitHub PR And Check Evidence
 
 Use `github-snapshot` when Ariadne needs durable PR and check-state evidence:
