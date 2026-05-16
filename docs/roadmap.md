@@ -111,6 +111,7 @@ Implemented:
 - target-specific NotebookLM mutation-readiness plan generation for notebook actions
 - target-specific GSD2 mutation-readiness plan generation for reviewed task execution
 - target-specific Hermes cron mutation-readiness plan generation for scheduler actions and jobs
+- target-specific OpenScorpion mutation-readiness plan generation for activity routes
 - target-specific deployment mutation-readiness plan generation for Proxmox, TrueNAS, DGX Spark, and Mac hosts
 - explicit approval workflow records
 - test history through check records
@@ -121,7 +122,7 @@ Implemented:
 
 Next:
 
-- target-specific OpenScorpion adapter on top of the generic audited execution substrate
+- live target adapters only after target-specific readiness plans pass audit, dry-run, rollback, and post-verification review
 
 ## Milestone 6: Infrastructure Substrate
 
@@ -138,12 +139,12 @@ Implemented:
 - sanitized live read-only SSH remote host inventory collector
 - host-specific read-only SSH deployment collectors for Proxmox, TrueNAS, DGX Spark, and Macs
 - OpenScorpion governed activity drafts
+- target-specific OpenScorpion mutation-readiness plan generation for activity routes
 - explicit approval records before mutation-capable adapters
 
 Next:
 
-- OpenScorpion governed activity submission after approval
-- mutation implementation only after a bounded approval record is accepted
+- live OpenScorpion governed activity submission after approved readiness, dry-run, rollback, post-verification, and non-public payload evidence
 
 ## Milestone 7: Evaluation Harness
 
