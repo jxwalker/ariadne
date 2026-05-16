@@ -370,6 +370,25 @@ export interface MutationReadinessAudit {
   }>;
 }
 
+export interface MutationDryRunRecord {
+  schemaVersion: 1;
+  id: string;
+  project: string;
+  planId: string;
+  target: MutationReadinessPlan["target"];
+  startedAt: string;
+  finishedAt: string;
+  status: "passed" | "failed" | "timed_out";
+  command: string;
+  exitCode?: number;
+  signal?: string;
+  durationMs: number;
+  stdout: string;
+  stderr: string;
+  auditRef: string;
+  execute: false;
+}
+
 export interface InfraRegistry {
   schemaVersion: 1;
   project: string;
@@ -948,6 +967,7 @@ export interface ConsoleData {
     approvals: number;
     pendingApprovals: number;
     mutationReadinessPlans: number;
+    mutationDryRuns: number;
     mutationReadinessAuditStatus?: MutationReadinessAudit["status"];
     recoveryIssues: number;
     consoleBrowserChecks?: ConsoleBrowserCheckReport["status"];
@@ -1006,6 +1026,7 @@ export interface ConsoleData {
   };
   approvals: ApprovalRecord[];
   mutationReadinessPlans: MutationReadinessPlan[];
+  mutationDryRuns: MutationDryRunRecord[];
   mutationReadinessAudit?: MutationReadinessAudit;
   recovery?: RecoveryReport;
   readiness?: ControlReport;
@@ -1027,6 +1048,7 @@ export interface ConsoleData {
     githubSnapshots?: string;
     approvals?: string;
     mutationReadinessPlans?: string;
+    mutationDryRuns?: string;
     mutationReadinessAudit?: string;
     recoveryReport?: string;
     extractionResults?: string;

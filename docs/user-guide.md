@@ -296,6 +296,14 @@ npm run ariadne -- mutation-readiness-audit --project ariadne
 
 The audit reports blocked plans, missing evidence, unsafe dry-run commands, missing post-action verification, and accidental executable plans. It never runs the dry-run or live command.
 
+Run the approved dry-run command for a plan:
+
+```bash
+npm run ariadne -- mutation-dry-run --project ariadne --plan mutation-readiness-github-...
+```
+
+This command first regenerates the readiness audit and refuses blocked plans. It records stdout, stderr, exit status, and the audit reference under `control/mutation-dry-runs/`. It does not run the live command.
+
 ## Check Readiness
 
 ```bash

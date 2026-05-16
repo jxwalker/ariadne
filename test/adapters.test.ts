@@ -29,6 +29,7 @@ import { draftOpenScorpionActivity, importInfraSnapshot } from "../src/infraSnap
 import { collectLocalInfraSnapshot, collectSshInfraSnapshot, parseSshInventory } from "../src/liveInventory.js";
 import { planMutationReadiness } from "../src/mutationReadiness.js";
 import { generateMutationReadinessAudit } from "../src/mutationReadinessAudit.js";
+import { runMutationDryRun } from "../src/mutationDryRun.js";
 import { generatePlaywrightPlan } from "../src/playwrightPlan.js";
 import { generateEvaluationPlan, recordEvaluationRun } from "../src/evaluation.js";
 import { generateEvaluationTrendReport } from "../src/evaluationTrends.js";
@@ -547,7 +548,7 @@ describe("roadmap adapters", () => {
       scope: "Enable mutation-capable PR adapter for a single Ariadne branch.",
       authEvidenceRefs: [approval.jsonPath],
       evidenceRefs: [behavior.jsonPath],
-      dryRunCommand: "gh pr view 1 --json statusCheckRollup",
+      dryRunCommand: "node -e \"console.log('mutation dry run ok')\"",
       proposedLiveCommand: "gh pr merge 1 --squash --delete-branch",
       postVerificationCommand: "gh pr view 1 --json mergeStateStatus,statusCheckRollup",
       rollback: "Revert the merge commit and disable the mutation adapter.",
@@ -612,6 +613,23 @@ describe("roadmap adapters", () => {
     expect(audit.audit.checks.find((check) => check.planId === mismatchedMutationReadiness.plan.id)?.blockers).toContain(
       "approval state is approval_required"
     );
+    const dryRun = await runMutationDryRun({
+      project: "ariadne",
+      vaultRoot,
+      plan: mutationReadiness.plan.id,
+      timeoutMs: 10_000
+    });
+    expect(dryRun.record.status).toBe("passed");
+    expect(dryRun.record.command).toBe(mutationReadiness.plan.dryRunCommand);
+    expect(dryRun.record.execute).toBe(false);
+    await expect(
+      runMutationDryRun({
+        project: "ariadne",
+        vaultRoot,
+        plan: mismatchedMutationReadiness.plan.id,
+        timeoutMs: 10_000
+      })
+    ).rejects.toThrow(/is blocked/);
 
     await recordSleepRoutine({
       project: "ariadne",
@@ -736,11 +754,13 @@ describe("roadmap adapters", () => {
     const hermesProposalCheck = artifactChecks.report.checks.find((check) => check.id === "hermes-cron-proposals");
     const readinessCheck = artifactChecks.report.checks.find((check) => check.id === "mutation-readiness-plans");
     const readinessAuditCheck = artifactChecks.report.checks.find((check) => check.id === "mutation-readiness-audit");
+    const mutationDryRunCheck = artifactChecks.report.checks.find((check) => check.id === "mutation-dry-runs");
     expect(coordinationCheck?.matches?.some((match) => match.includes("coordination/hermes"))).toBe(false);
     expect(hermesCheck?.count).toBe(1);
     expect(hermesProposalCheck?.count).toBe(2);
     expect(readinessCheck?.count).toBe(2);
     expect(readinessAuditCheck?.status).toBe("present");
+    expect(mutationDryRunCheck?.status).toBe("present");
   });
 
   it("records CI, CodeRabbit, Playwright, infra, OpenScorpion, and guarded worktree evidence", async () => {

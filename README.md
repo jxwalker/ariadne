@@ -66,6 +66,7 @@ npm run ariadne -- evaluation --project ariadne --target mac-local
 npm run ariadne -- artifact-checks --project ariadne
 npm run ariadne -- benchmark-pack --set all
 npm run ariadne -- benchmark-run --project bench-smoke --set smoke
+npm run ariadne -- mutation-dry-run --project ariadne --plan mutation-readiness-github-...
 npm run ariadne -- evaluation-trends --project ariadne
 npm run ariadne -- usage-report --project ariadne
 npm run ariadne -- control --project ariadne
