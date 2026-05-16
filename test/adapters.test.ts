@@ -163,6 +163,19 @@ describe("roadmap adapters", () => {
     ).rejects.toThrow(/task 0 is missing required fields/);
   });
 
+  it("rejects valueless GSD2 process binary flags", async () => {
+    const { temp } = await preparedProject();
+    const tsx = path.join(process.cwd(), "node_modules", ".bin", "tsx");
+
+    expect(() =>
+      execFileSync(tsx, ["src/ariadne.ts", "gsd2-process", "--project", "ariadne", "--vault", temp, "--binary"], {
+        cwd: process.cwd(),
+        encoding: "utf8",
+        stdio: ["ignore", "pipe", "pipe"]
+      })
+    ).toThrow(/--binary requires a value/);
+  });
+
   it("reports missing and complete pipeline artifact contracts", async () => {
     const { vaultRoot } = await preparedProject();
 

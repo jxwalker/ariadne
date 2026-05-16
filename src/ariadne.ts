@@ -292,10 +292,14 @@ async function main(): Promise<void> {
   }
 
   if (parsed.command === "gsd2-process") {
+    const binaryOption = parsed.options.get("binary");
+    if (binaryOption === true) {
+      throw new Error("--binary requires a value.");
+    }
     const result = await collectGsd2ProcessSnapshot({
       project,
       vaultRoot,
-      binary: optionString(parsed.options, "binary", "") || undefined
+      binary: typeof binaryOption === "string" && binaryOption.trim() ? binaryOption : undefined
     });
     console.log(`GSD2 process snapshot: ${result.markdownPath}`);
     console.log(`Version: ${result.snapshot.version}`);
