@@ -321,6 +321,27 @@ export interface OpenScorpionActivityDraft {
   submit: false;
 }
 
+export interface MutationReadinessPlan {
+  schemaVersion: 1;
+  id: string;
+  project: string;
+  generatedAt: string;
+  target: "github" | "deployment" | "hermes-cron" | "openscorpion" | "gsd2" | "notebooklm" | "generic";
+  status: "approval_required" | "approval_rejected" | "ready_for_bounded_review";
+  risk: "low" | "medium" | "high";
+  scope: string;
+  approvalRef?: string;
+  approvalStatus?: ApprovalRecord["status"];
+  authEvidenceRefs: string[];
+  evidenceRefs: string[];
+  dryRunCommand: string;
+  proposedLiveCommand: string;
+  rollback: string;
+  requiredGates: string[];
+  notes?: string;
+  execute: false;
+}
+
 export interface InfraRegistry {
   schemaVersion: 1;
   project: string;
@@ -831,6 +852,7 @@ export interface ConsoleData {
     githubSnapshots: number;
     approvals: number;
     pendingApprovals: number;
+    mutationReadinessPlans: number;
     recoveryIssues: number;
     consoleBrowserChecks?: ConsoleBrowserCheckReport["status"];
     readinessStatus?: ControlReport["status"];
@@ -885,6 +907,7 @@ export interface ConsoleData {
     snapshots: GithubSnapshot[];
   };
   approvals: ApprovalRecord[];
+  mutationReadinessPlans: MutationReadinessPlan[];
   recovery?: RecoveryReport;
   readiness?: ControlReport;
   artifacts: {
@@ -902,6 +925,7 @@ export interface ConsoleData {
     consoleBrowserChecks?: string;
     githubSnapshots?: string;
     approvals?: string;
+    mutationReadinessPlans?: string;
     recoveryReport?: string;
     extractionResults?: string;
     healerProposals?: string;

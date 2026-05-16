@@ -30,6 +30,7 @@ import type {
   InfraRegistry,
   InfraSnapshot,
   MemoryProposalRecord,
+  MutationReadinessPlan,
   PlaywrightEvidenceRecord,
   PrdDocument,
   RecoveryReport,
@@ -76,6 +77,10 @@ export async function collectConsoleData(vaultRoot: string, projectInput: string
   const checks = await readJsonl<CheckRecord>(path.join(dir, "control", "check-history.jsonl"));
   const reviews = await readJsonl<ReviewRecord>(path.join(dir, "control", "reviews.jsonl"));
   const approvals = await readJsonFiles<ApprovalRecord>(path.join(dir, "control", "approvals"), isApprovalRecord);
+  const mutationReadinessPlans = await readJsonFiles<MutationReadinessPlan>(
+    path.join(dir, "control", "mutation-readiness"),
+    isMutationReadinessPlan
+  );
   const extractionResults = await readJsonFiles<ExtractionResultRecord>(path.join(dir, "extractions"), isExtractionResult);
   const executionRuns = await readJsonFiles<ExecutionRun>(path.join(dir, "execution"), isExecutionRun);
   const decisions = await readJsonFiles<DecisionRecord>(path.join(dir, "decisions"), isDecisionRecord);
@@ -155,6 +160,7 @@ export async function collectConsoleData(vaultRoot: string, projectInput: string
       githubSnapshots: githubSnapshots.length,
       approvals: approvals.length,
       pendingApprovals: approvals.filter((approval) => approval.status === "requested").length,
+      mutationReadinessPlans: mutationReadinessPlans.length,
       recoveryIssues: recovery?.issues.length ?? 0,
       consoleBrowserChecks: consoleBrowserChecks?.status,
       readinessStatus: readiness?.status,
@@ -169,6 +175,7 @@ export async function collectConsoleData(vaultRoot: string, projectInput: string
     checks,
     reviews,
     approvals,
+    mutationReadinessPlans,
     decisions,
     playwrightEvidence,
     healerProposals,
@@ -216,6 +223,7 @@ export async function collectConsoleData(vaultRoot: string, projectInput: string
       consoleBrowserChecks: await existingPath(vaultRoot, path.join(dir, "console", "browser-checks.json")),
       githubSnapshots: await existingPath(vaultRoot, path.join(dir, "integrations", "github")),
       approvals: await existingPath(vaultRoot, path.join(dir, "control", "approvals")),
+      mutationReadinessPlans: await existingPath(vaultRoot, path.join(dir, "control", "mutation-readiness")),
       recoveryReport: await existingPath(vaultRoot, path.join(dir, "control", "recovery-report.json")),
       extractionResults: await existingPath(vaultRoot, path.join(dir, "extractions")),
       healerProposals: await existingPath(vaultRoot, path.join(dir, "verification", "healer-proposals")),
@@ -361,6 +369,56 @@ function isGithubSnapshot(value: unknown): value is GithubSnapshot {
 
 function isApprovalRecord(value: unknown): value is ApprovalRecord {
   return hasSchema(value) && value.schemaVersion === 1 && typeof value.id === "string" && value.id.startsWith("approval-");
+}
+
+function isMutationReadinessPlan(value: unknown): value is MutationReadinessPlan {
+  return (
+    hasSchema(value) &&
+    value.schemaVersion === 1 &&
+    typeof value.id === "string" &&
+    value.id.startsWith("mutation-readiness-") &&
+    typeof value.generatedAt === "string" &&
+    isMutationTarget(value.target) &&
+    (value.status === "approval_required" ||
+      value.status === "approval_rejected" ||
+      value.status === "ready_for_bounded_review") &&
+    (value.risk === "low" || value.risk === "medium" || value.risk === "high") &&
+    typeof value.scope === "string" &&
+    optionalString(value.approvalRef) &&
+    isApprovalStatus(value.approvalStatus) &&
+    Array.isArray(value.authEvidenceRefs) &&
+    value.authEvidenceRefs.every((item) => typeof item === "string") &&
+    Array.isArray(value.evidenceRefs) &&
+    value.evidenceRefs.every((item) => typeof item === "string") &&
+    typeof value.dryRunCommand === "string" &&
+    typeof value.proposedLiveCommand === "string" &&
+    typeof value.rollback === "string" &&
+    value.execute === false &&
+    Array.isArray(value.requiredGates) &&
+    value.requiredGates.every((item) => typeof item === "string")
+  );
+}
+
+function isApprovalStatus(value: unknown): value is ApprovalRecord["status"] | undefined {
+  return (
+    value === undefined ||
+    value === "requested" ||
+    value === "approved" ||
+    value === "rejected" ||
+    value === "expired"
+  );
+}
+
+function isMutationTarget(value: unknown): value is MutationReadinessPlan["target"] {
+  return (
+    value === "github" ||
+    value === "deployment" ||
+    value === "hermes-cron" ||
+    value === "openscorpion" ||
+    value === "gsd2" ||
+    value === "notebooklm" ||
+    value === "generic"
+  );
 }
 
 function isSleepRoutine(value: unknown): value is SleepRoutineRecord {

@@ -112,6 +112,7 @@ function renderConsole(data: ConsoleData): string {
     metric("Healer", data.summary.healerProposals, "proposals"),
     metric("GitHub", data.summary.githubSnapshots, "snapshots"),
     metric("Approvals", data.summary.pendingApprovals, `${data.summary.approvals} total`),
+    metric("Mutation", data.summary.mutationReadinessPlans, "readiness"),
     metric("Hermes", data.summary.hermesCronSnapshots, `${data.summary.hermesCronProposals} proposals`),
     metric("Recovery", data.summary.recoveryIssues, "issues"),
     metric("Browser", data.summary.consoleBrowserChecks ?? "none", "console"),
@@ -337,6 +338,7 @@ function approvalQueue(data: ConsoleData): string {
   const missing = data.readiness?.missing ?? [];
   const pendingReviews = data.reviews.filter((review) => review.status === "pending" || review.status === "changes_requested");
   const pendingApprovals = data.approvals.filter((approval) => approval.status === "requested");
+  const blockedMutation = data.mutationReadinessPlans.filter((plan) => plan.status !== "ready_for_bounded_review");
   const healerReviews = data.healerProposals.filter((proposal) => proposal.status === "review_required");
   const rows = [
     ...missing.map((item) => ({ kind: "missing gate", detail: item })),
@@ -348,6 +350,10 @@ function approvalQueue(data: ConsoleData): string {
     ...pendingApprovals.map((approval) => ({
       kind: `approval ${approval.risk}`,
       detail: `${approval.target}: ${approval.action}`
+    })),
+    ...blockedMutation.map((plan) => ({
+      kind: `mutation ${plan.status}`,
+      detail: `${plan.target}: ${plan.scope}`
     }))
   ];
   if (rows.length === 0) return empty("No approval queue items are available.");

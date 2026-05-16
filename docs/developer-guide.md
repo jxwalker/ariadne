@@ -43,6 +43,7 @@ npm run build
 - `src/usageMetrics.ts`: token/cost metric import and aggregation.
 - `src/artifactChecks.ts`: deterministic artifact contract checks for the evaluation harness.
 - `src/behaviorChecks.ts`: behavior-confidence checks for approved fixtures and no-mutation gates.
+- `src/mutationReadiness.ts`: non-executing readiness plans for future mutation-capable adapters.
 - `src/benchmarkPacks.ts`: repeatable smoke, realistic, and stress source-pack generation.
 - `src/gbrainAdapter.ts`: optional read-only GBrain export and report import.
 - `src/githubAdapter.ts`: read-only GitHub PR and check snapshot import or `gh` collection.
@@ -100,3 +101,5 @@ A live adapter must start read-only. Mutation requires a separate approved plan 
 - human approval checkpoint
 
 Use `approval-request` and `approval-decision` to capture that checkpoint before adding a mutation-capable command. The approval record does not grant execution by itself; the adapter still needs its own narrow implementation, tests, rollback notes, and review.
+
+Use `mutation-readiness` to bind those pieces into one reviewable artifact before adding a live adapter. The plan must keep `execute=false`; live commands belong in later adapters only after the readiness plan has been reviewed.

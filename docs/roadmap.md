@@ -68,10 +68,11 @@ Implemented:
 - read-only GitHub PR/check snapshot records
 - crash recovery reports from recorded state files
 - explicit approval request and decision records before mutation-capable adapters
+- non-executing mutation-readiness plans with auth evidence, dry run, live command, rollback, and approval state
 
 Next:
 
-- mutation-capable commit/PR/check/review loop after an approval record is reviewed and accepted
+- mutation-capable commit/PR/check/review loop after a mutation-readiness plan is reviewed and accepted
 
 ## Milestone 4: UI Verification
 
@@ -105,10 +106,11 @@ Implemented:
 - GitHub PR/check snapshot ingestion
 - explicit approval workflow records
 - test history through check records
+- mutation-readiness artifacts for future live adapters
 
 Next:
 
-- GitHub mutation and check-retry adapter only after approval
+- GitHub mutation and check-retry adapter only after an approved readiness plan
 
 ## Milestone 6: Infrastructure Substrate
 
@@ -200,7 +202,8 @@ Implemented:
 - host-specific read-only SSH deployment collectors for Proxmox, TrueNAS, DGX Spark, and Macs
 - GitHub deployment/check snapshot import
 - explicit approval workflow before mutation-capable adapters
+- mutation-readiness artifacts before deployment mutation
 
 Next:
 
-- mutation-capable deployment adapters only after approved rollback plans
+- mutation-capable deployment adapters only after approved readiness and rollback plans

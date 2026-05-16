@@ -25,6 +25,7 @@ import { generateHermesCronProposal, importHermesCronSnapshot } from "../src/her
 import { generateInfrastructureRegistry } from "../src/infrastructure.js";
 import { draftOpenScorpionActivity, importInfraSnapshot } from "../src/infraSnapshot.js";
 import { collectLocalInfraSnapshot, collectSshInfraSnapshot, parseSshInventory } from "../src/liveInventory.js";
+import { planMutationReadiness } from "../src/mutationReadiness.js";
 import { generatePlaywrightPlan } from "../src/playwrightPlan.js";
 import { generateEvaluationPlan, recordEvaluationRun } from "../src/evaluation.js";
 import { generateEvaluationTrendReport } from "../src/evaluationTrends.js";
@@ -442,6 +443,64 @@ describe("roadmap adapters", () => {
       approvedFixturePath: coderabbit
     });
     expect(behavior.report.status).toBe("passed");
+    const mutationReadiness = await planMutationReadiness({
+      project: "ariadne",
+      vaultRoot,
+      target: "github",
+      risk: "medium",
+      scope: "Enable mutation-capable PR adapter for a single Ariadne branch.",
+      authEvidenceRefs: [approval.jsonPath],
+      evidenceRefs: [behavior.jsonPath],
+      dryRunCommand: "gh pr view 1 --json statusCheckRollup",
+      proposedLiveCommand: "gh pr merge 1 --squash --delete-branch",
+      rollback: "Revert the merge commit and disable the mutation adapter.",
+      approvalRef: approval.record.id
+    });
+    expect(mutationReadiness.plan.status).toBe("ready_for_bounded_review");
+    expect(mutationReadiness.plan.execute).toBe(false);
+    const mismatchedMutationReadiness = await planMutationReadiness({
+      project: "ariadne",
+      vaultRoot,
+      target: "deployment",
+      risk: "medium",
+      scope: "Do not let a GitHub approval unlock deployment mutation.",
+      authEvidenceRefs: [approval.jsonPath],
+      evidenceRefs: [behavior.jsonPath],
+      dryRunCommand: "ssh host true",
+      proposedLiveCommand: "ssh host deploy",
+      rollback: "Disable deployment adapter.",
+      approvalRef: approval.record.id
+    });
+    expect(mismatchedMutationReadiness.plan.status).toBe("approval_required");
+    expect(mismatchedMutationReadiness.plan.approvalRef).toBeUndefined();
+    await expect(
+      planMutationReadiness({
+        project: "ariadne",
+        vaultRoot,
+        target: "github",
+        risk: "medium",
+        scope: "Missing auth evidence fixture.",
+        authEvidenceRefs: [],
+        evidenceRefs: [],
+        dryRunCommand: "gh pr view 1",
+        proposedLiveCommand: "gh pr merge 1",
+        rollback: "Disable adapter."
+      })
+    ).rejects.toThrow(/--auth-evidence is required/);
+    await expect(
+      planMutationReadiness({
+        project: "ariadne",
+        vaultRoot,
+        target: "github",
+        risk: "medium",
+        scope: "Missing auth evidence file fixture.",
+        authEvidenceRefs: [path.join(temp, "missing-auth.json")],
+        evidenceRefs: [],
+        dryRunCommand: "gh pr view 1",
+        proposedLiveCommand: "gh pr merge 1",
+        rollback: "Disable adapter."
+      })
+    ).rejects.toThrow(/Missing auth evidence/);
 
     await recordSleepRoutine({
       project: "ariadne",
@@ -555,15 +614,18 @@ describe("roadmap adapters", () => {
     expect(console.data.coordination.hermesCronProposals[0]?.summary.proposedActions).toBe(2);
     expect(console.data.summary.deploymentSnapshots).toBe(1);
     expect(console.data.summary.approvals).toBe(1);
+    expect(console.data.summary.mutationReadinessPlans).toBe(2);
     expect(console.data.behaviorChecks?.status).toBe("passed");
 
     const artifactChecks = await generateArtifactCheckReport({ project: "ariadne", vaultRoot });
     const coordinationCheck = artifactChecks.report.checks.find((check) => check.id === "coordination-records");
     const hermesCheck = artifactChecks.report.checks.find((check) => check.id === "hermes-cron-snapshots");
     const hermesProposalCheck = artifactChecks.report.checks.find((check) => check.id === "hermes-cron-proposals");
+    const readinessCheck = artifactChecks.report.checks.find((check) => check.id === "mutation-readiness-plans");
     expect(coordinationCheck?.matches?.some((match) => match.includes("coordination/hermes"))).toBe(false);
     expect(hermesCheck?.count).toBe(1);
     expect(hermesProposalCheck?.count).toBe(2);
+    expect(readinessCheck?.count).toBe(2);
   });
 
   it("records CI, CodeRabbit, Playwright, infra, OpenScorpion, and guarded worktree evidence", async () => {
