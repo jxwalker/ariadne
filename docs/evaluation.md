@@ -82,7 +82,7 @@ benchmarks/source-packs/<set>/...
 
 | Id | Dimension | Sensors |
 | --- | --- | --- |
-| D1 | Evidence fidelity | manifest, hashes, hygiene reports, dossier source refs |
+| D1 | Evidence fidelity | manifest, hashes, hygiene reports, extraction records, dossier source refs |
 | D2 | Planning quality | PRD, roadmap, GSD2 bundle, write scopes |
 | D3 | Execution safety | execution run, worktree guard, decision records |
 | D4 | Verification strength | typecheck, unit tests, build, Playwright, CodeRabbit |
@@ -91,21 +91,21 @@ benchmarks/source-packs/<set>/...
 ## Standard Evaluation Flow
 
 ```bash
-npm run cli -- roadmap --project ariadne --target-url http://localhost:3000 --repo /path/to/repo
-npm run cli -- evaluation --project ariadne --target mac-local
+npm run ariadne -- roadmap --project ariadne --target-url http://localhost:3000 --repo /path/to/repo
+npm run ariadne -- evaluation --project ariadne --target mac-local
 npm run check
 npm test
 npm run build
-npm run cli -- artifact-checks --project ariadne
-npm run cli -- benchmark-pack --set all
-npm run cli -- evaluation-trends --project ariadne
-npm run cli -- usage-report --project ariadne
-npm run cli -- behavior-checks --project ariadne --approved-fixture coderabbit.md
-npm run cli -- console-html --project ariadne --refresh-data
-npm run cli -- console-visual-checks --project ariadne
-npm run cli -- console-browser-checks --project ariadne
-npm run cli -- control --project ariadne
-npm run cli -- evaluation-record --project ariadne --plan vault/projects/ariadne/evaluation/evaluation-plan.json --scores D1=80,D2=75,D3=70,D4=65,D5=60 --evidence vault/projects/ariadne/control/merge-readiness.md
+npm run ariadne -- artifact-checks --project ariadne
+npm run ariadne -- benchmark-pack --set all
+npm run ariadne -- evaluation-trends --project ariadne
+npm run ariadne -- usage-report --project ariadne
+npm run ariadne -- behavior-checks --project ariadne --approved-fixture coderabbit.md
+npm run ariadne -- console-html --project ariadne --refresh-data
+npm run ariadne -- console-visual-checks --project ariadne
+npm run ariadne -- console-browser-checks --project ariadne
+npm run ariadne -- control --project ariadne
+npm run ariadne -- evaluation-record --project ariadne --plan vault/projects/ariadne/evaluation/evaluation-plan.json --scores D1=80,D2=75,D3=70,D4=65,D5=60 --evidence vault/projects/ariadne/control/merge-readiness.md
 ```
 
 ## Benchmark Sets
@@ -119,7 +119,7 @@ Use three benchmark sets:
 Generate them with:
 
 ```bash
-npm run cli -- benchmark-pack --set all
+npm run ariadne -- benchmark-pack --set all
 ```
 
 ## Pass Criteria
@@ -129,6 +129,7 @@ A run is acceptable when:
 - deterministic checks pass,
 - evidence paths exist,
 - artifact checks have no missing required artifacts,
+- optional extraction result checks are understood when the source packet includes drawings, audio, or PDFs,
 - control report has no unexplained missing gates,
 - evaluation records cite the evidence used for scoring,
 - trend reports show whether scores are stable, improving, or declining,

@@ -159,6 +159,16 @@ const ARTIFACT_SPECS: ArtifactSpec[] = [
     minimumCount: 1
   },
   {
+    id: "extraction-results",
+    label: "OCR/transcription extraction results",
+    required: false,
+    kind: "matching-files",
+    relativePath: "extractions",
+    prefix: "extraction-",
+    suffix: ".json",
+    minimumCount: 1
+  },
+  {
     id: "coordination-records",
     label: "Sleep, memory, or mail records",
     required: false,

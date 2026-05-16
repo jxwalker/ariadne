@@ -15,12 +15,13 @@ The system starts with source-grounded intake: drawings, white papers, dictated 
 - Keep work in small, reviewable slices.
 - Treat tests, Playwright evidence, CI, CodeRabbit, and human approval as stronger than memory.
 - Keep live adapters read-only until the evidence path is proven.
-- Integrate existing tools through explicit file and CLI contracts.
+- Integrate existing tools through explicit file and command contracts.
 
 ## Current Capabilities
 
 - Ingest local files into `vault/projects/<project>/raw/`.
 - Extract safe text from Markdown, text, and macOS `.docx` files.
+- Import OCR, transcription, PDF text, and visual-description results back onto the original source record.
 - Write manifests, hot indexes, context dossiers, PRDs, GSD roadmaps, GSD2 bundles, execution plans, decision records, Playwright plans, infrastructure registries, evaluation plans, merge-readiness reports, and crash-recovery reports.
 - Import manual NotebookLM exports, CI status, CodeRabbit review text, read-only GitHub PR/check snapshots, read-only infrastructure snapshots, and Playwright evidence.
 - Import token and cost metrics from Hermes, CodeRabbit, OpenAI, CI, or manual JSON exports.
@@ -50,21 +51,21 @@ Those live paths are roadmap items. The current job is to make state, evidence, 
 npm install
 npm run check
 npm test
-npm run cli -- ingest --project ariadne /path/to/source.md /path/to/source.docx
-npm run cli -- assemble --project ariadne
-npm run cli -- roadmap --project ariadne --target-url http://localhost:3000 --repo /path/to/repo
-npm run cli -- evaluation --project ariadne --target mac-local
-npm run cli -- artifact-checks --project ariadne
-npm run cli -- benchmark-pack --set all
-npm run cli -- evaluation-trends --project ariadne
-npm run cli -- usage-report --project ariadne
-npm run cli -- control --project ariadne
-npm run cli -- recovery-report --project ariadne
-npm run cli -- console-data --project ariadne
-npm run cli -- console-html --project ariadne --refresh-data
-npm run cli -- console-visual-checks --project ariadne
-npm run cli -- console-browser-checks --project ariadne
-npm run cli -- status --project ariadne
+npm run ariadne -- ingest --project ariadne /path/to/source.md /path/to/source.docx
+npm run ariadne -- assemble --project ariadne
+npm run ariadne -- roadmap --project ariadne --target-url http://localhost:3000 --repo /path/to/repo
+npm run ariadne -- evaluation --project ariadne --target mac-local
+npm run ariadne -- artifact-checks --project ariadne
+npm run ariadne -- benchmark-pack --set all
+npm run ariadne -- evaluation-trends --project ariadne
+npm run ariadne -- usage-report --project ariadne
+npm run ariadne -- control --project ariadne
+npm run ariadne -- recovery-report --project ariadne
+npm run ariadne -- console-data --project ariadne
+npm run ariadne -- console-html --project ariadne --refresh-data
+npm run ariadne -- console-visual-checks --project ariadne
+npm run ariadne -- console-browser-checks --project ariadne
+npm run ariadne -- status --project ariadne
 ```
 
 ## Vault Layout
@@ -74,6 +75,7 @@ vault/projects/<project>/
   raw/
   context/
   requirements/
+  extractions/
   gsd/
   execution/
   verification/
@@ -108,42 +110,43 @@ vault/projects/<project>/
 ## Adapter Commands
 
 ```bash
-npm run cli -- notebooklm-import --project ariadne --from notebooklm-export.md
-npm run cli -- gsd2-export --project ariadne
-npm run cli -- gsd2-import --project ariadne --from gsd2-bundle.json
-npm run cli -- decision --project ariadne --title "Decision" --context "Context" --decision "Choice"
-npm run cli -- execution --project ariadne --repo /path/to/repo
-npm run cli -- worktree-guard --project ariadne --run run.json
-npm run cli -- playwright --project ariadne --target-url http://localhost:3000
-npm run cli -- playwright-evidence --project ariadne --target-url http://localhost:3000 --status skipped
-npm run cli -- evaluation --project ariadne --target mac-local
-npm run cli -- evaluation-record --project ariadne --plan evaluation-plan.json --scores D1=80,D2=75,D3=60
-npm run cli -- artifact-checks --project ariadne
-npm run cli -- benchmark-pack --set all
-npm run cli -- evaluation-trends --project ariadne
-npm run cli -- usage-import --project ariadne --from usage.json --source hermes
-npm run cli -- usage-report --project ariadne
-npm run cli -- behavior-checks --project ariadne --approved-fixture coderabbit.md
-npm run cli -- gbrain-export --project ariadne
-npm run cli -- gbrain-report-import --project ariadne --from gbrain-report.json
-npm run cli -- github-snapshot --project ariadne --repo jxwalker/ariadne --pr 10
-npm run cli -- approval-request --project ariadne --by planner --target github --action "Enable PR mutation adapter" --risk medium --reason "Manual gate before live mutation" --rollback "Disable adapter and return to manual PR flow"
-npm run cli -- sleep-record --project ariadne --scope nightly --summary "Review stale gates" --evidence control/merge-readiness.md --next "Refresh console data"
-npm run cli -- memory-proposal --project ariadne --title "Lesson" --proposal "Keep GBrain as a derived index" --evidence docs/adapters.md
-npm run cli -- agent-mail --project ariadne --from planner --to executor --subject "Next slice" --body "Run checks before editing"
-npm run cli -- agent-lease --project ariadne --agent executor --resource repo:/ariadne --status acquired
-npm run cli -- deployment-snapshot --project ariadne --system proxmox --from deployment.json
-npm run cli -- import-ci --project ariadne --from checks.json
-npm run cli -- import-coderabbit --project ariadne --from coderabbit.md
-npm run cli -- approval-request --project ariadne --by planner --target github --action "Enable PR mutation adapter" --risk medium --reason "Manual gate before live mutation" --rollback "Disable adapter and return to manual PR flow"
-npm run cli -- recovery-report --project ariadne
-npm run cli -- console-data --project ariadne
-npm run cli -- console-html --project ariadne --refresh-data
-npm run cli -- console-visual-checks --project ariadne
-npm run cli -- console-browser-checks --project ariadne
-npm run cli -- infra --project ariadne
-npm run cli -- infra-snapshot --project ariadne --from manifest.json
-npm run cli -- openscorpion-draft --project ariadne --title "Evidence package" --type ariadne.evidence --evidence path-a,path-b
+npm run ariadne -- notebooklm-import --project ariadne --from notebooklm-export.md
+npm run ariadne -- extraction-import --project ariadne --record <record-id> --from extracted.md --kind visual-description --tool manual-review
+npm run ariadne -- gsd2-export --project ariadne
+npm run ariadne -- gsd2-import --project ariadne --from gsd2-bundle.json
+npm run ariadne -- decision --project ariadne --title "Decision" --context "Context" --decision "Choice"
+npm run ariadne -- execution --project ariadne --repo /path/to/repo
+npm run ariadne -- worktree-guard --project ariadne --run run.json
+npm run ariadne -- playwright --project ariadne --target-url http://localhost:3000
+npm run ariadne -- playwright-evidence --project ariadne --target-url http://localhost:3000 --status skipped
+npm run ariadne -- evaluation --project ariadne --target mac-local
+npm run ariadne -- evaluation-record --project ariadne --plan evaluation-plan.json --scores D1=80,D2=75,D3=60
+npm run ariadne -- artifact-checks --project ariadne
+npm run ariadne -- benchmark-pack --set all
+npm run ariadne -- evaluation-trends --project ariadne
+npm run ariadne -- usage-import --project ariadne --from usage.json --source hermes
+npm run ariadne -- usage-report --project ariadne
+npm run ariadne -- behavior-checks --project ariadne --approved-fixture coderabbit.md
+npm run ariadne -- gbrain-export --project ariadne
+npm run ariadne -- gbrain-report-import --project ariadne --from gbrain-report.json
+npm run ariadne -- github-snapshot --project ariadne --repo jxwalker/ariadne --pr 10
+npm run ariadne -- approval-request --project ariadne --by planner --target github --action "Enable PR mutation adapter" --risk medium --reason "Manual gate before live mutation" --rollback "Disable adapter and return to manual PR flow"
+npm run ariadne -- sleep-record --project ariadne --scope nightly --summary "Review stale gates" --evidence control/merge-readiness.md --next "Refresh console data"
+npm run ariadne -- memory-proposal --project ariadne --title "Lesson" --proposal "Keep GBrain as a derived index" --evidence docs/adapters.md
+npm run ariadne -- agent-mail --project ariadne --from planner --to executor --subject "Next slice" --body "Run checks before editing"
+npm run ariadne -- agent-lease --project ariadne --agent executor --resource repo:/ariadne --status acquired
+npm run ariadne -- deployment-snapshot --project ariadne --system proxmox --from deployment.json
+npm run ariadne -- import-ci --project ariadne --from checks.json
+npm run ariadne -- import-coderabbit --project ariadne --from coderabbit.md
+npm run ariadne -- approval-request --project ariadne --by planner --target github --action "Enable PR mutation adapter" --risk medium --reason "Manual gate before live mutation" --rollback "Disable adapter and return to manual PR flow"
+npm run ariadne -- recovery-report --project ariadne
+npm run ariadne -- console-data --project ariadne
+npm run ariadne -- console-html --project ariadne --refresh-data
+npm run ariadne -- console-visual-checks --project ariadne
+npm run ariadne -- console-browser-checks --project ariadne
+npm run ariadne -- infra --project ariadne
+npm run ariadne -- infra-snapshot --project ariadne --from manifest.json
+npm run ariadne -- openscorpion-draft --project ariadne --title "Evidence package" --type ariadne.evidence --evidence path-a,path-b
 ```
 
 ## Documentation

@@ -1,10 +1,11 @@
 {
   "schemaVersion": 1,
   "project": "ariadne",
-  "generatedAt": "2026-05-16T13:21:49.775Z",
+  "generatedAt": "2026-05-16T13:44:05.123Z",
   "projectDir": "projects/ariadne",
   "summary": {
     "sources": 3,
+    "extractionResults": 0,
     "requirements": 7,
     "tasks": 7,
     "executionRuns": 4,
@@ -59,6 +60,7 @@
       "hasHandoff": false
     }
   ],
+  "extractionResults": [],
   "requirements": [
     {
       "id": "REQ-001",

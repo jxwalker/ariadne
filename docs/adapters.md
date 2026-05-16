@@ -6,6 +6,22 @@ The roadmap adapters are file-contract surfaces first. They produce evidence and
 
 `ingest` scans text-bearing sources for common secret patterns before copying them into the vault. High-severity findings block promotion unless `--allow-secret-findings` is passed.
 
+## Source Extraction Results
+
+`extraction-import` imports reviewed output from OCR, transcription, PDF extraction, or visual-description tools and attaches it to the original source record:
+
+```bash
+npm run ariadne -- extraction-import --project ariadne --record <record-id> --from extracted.md --kind ocr --tool tesseract
+```
+
+Artifacts:
+
+- `raw/<record-id>/extracted-<extraction-id>.md`
+- `extractions/extraction-<timestamp>.json`
+- `extractions/extraction-<timestamp>.md`
+
+The command preserves the raw evidence, records the external tool and optional confidence, and updates the manifest with both the latest extracted text path and the full list of imported extraction paths.
+
 ## NotebookLM
 
 `notebooklm-import` normalises a manual NotebookLM markdown/text export into:
@@ -46,8 +62,8 @@ Typical fields include status, context, consequences, and source references so l
 `github-snapshot` records read-only pull request and check state from either a saved GitHub JSON export or the `gh` CLI:
 
 ```bash
-npm run cli -- github-snapshot --project ariadne --from github-pr.json --repo jxwalker/ariadne
-npm run cli -- github-snapshot --project ariadne --repo jxwalker/ariadne --pr 10
+npm run ariadne -- github-snapshot --project ariadne --from github-pr.json --repo jxwalker/ariadne
+npm run ariadne -- github-snapshot --project ariadne --repo jxwalker/ariadne --pr 10
 ```
 
 The live mode only runs read operations through `gh pr view` or `gh pr list`. It does not create branches, update PRs, approve reviews, retry checks, or merge.
@@ -71,8 +87,8 @@ Artifacts:
 `approval-request` records an explicit human approval request before any mutation-capable adapter can be enabled. `approval-decision` records the decision. These commands only write evidence; they do not execute the requested action.
 
 ```bash
-npm run cli -- approval-request --project ariadne --by planner --target github --action "Enable PR mutation adapter" --risk medium --reason "Manual gate before live mutation" --rollback "Disable adapter and return to manual PR flow"
-npm run cli -- approval-decision --project ariadne --approval approval-... --status approved --by james --notes "Approved for a bounded test only."
+npm run ariadne -- approval-request --project ariadne --by planner --target github --action "Enable PR mutation adapter" --risk medium --reason "Manual gate before live mutation" --rollback "Disable adapter and return to manual PR flow"
+npm run ariadne -- approval-decision --project ariadne --approval approval-... --status approved --by james --notes "Approved for a bounded test only."
 ```
 
 Artifacts:

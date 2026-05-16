@@ -2,7 +2,8 @@ import fs from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
 import { describe, expect, it } from "vitest";
-import { assembleDossier, ingestFiles, projectStatus } from "../src/vault.js";
+import { importExtractionResult } from "../src/extractionResults.js";
+import { assembleDossier, ingestFiles, loadRecords, projectStatus } from "../src/vault.js";
 
 describe("source intake", () => {
   it("preserves a raw source, extracts text, and assembles a dossier", async () => {
@@ -60,5 +61,105 @@ describe("source intake", () => {
     const handoff = await fs.readFile(records[0]!.handoffPath!, "utf8");
     expect(handoff).toContain("Run OCR or visual description");
     expect(handoff).toContain("Do not replace the raw evidence");
+  });
+
+  it("imports OCR or transcription output back onto the source record", async () => {
+    const temp = await fs.mkdtemp(path.join(os.tmpdir(), "ariadne-"));
+    const source = path.join(temp, "whiteboard.png");
+    const extracted = path.join(temp, "whiteboard-extraction.md");
+    const vaultRoot = path.join(temp, "vault");
+
+    await fs.writeFile(source, "not a real png, but enough for source-kind routing");
+    await fs.writeFile(extracted, "Thread diagram: intake, memory, execution, Playwright evidence.");
+
+    const records = await ingestFiles([source], {
+      project: "Ariadne",
+      vaultRoot
+    });
+    expect(records[0]?.extractedTextPath).toBeUndefined();
+
+    const result = await importExtractionResult({
+      project: "ariadne",
+      vaultRoot,
+      recordId: records[0]!.id,
+      sourcePath: extracted,
+      extractionKind: "visual-description",
+      tool: "manual-review",
+      confidence: 0.92,
+      notes: "Operator-checked drawing description."
+    });
+
+    expect(result.result.extractionKind).toBe("visual-description");
+    expect(result.result.sourceRecordId).toBe(records[0]!.id);
+    expect(result.result.extractedTextPath).toContain("raw/");
+
+    const updatedRecords = await loadRecords(vaultRoot, "ariadne");
+    expect(updatedRecords[0]?.extractedTextPath).toBeTruthy();
+    expect(updatedRecords[0]?.extractionResultPaths).toHaveLength(1);
+    expect(updatedRecords[0]?.notes).toContain("manual-review");
+
+    const storedExtraction = await fs.readFile(updatedRecords[0]!.extractedTextPath!, "utf8");
+    expect(storedExtraction).toContain("Thread diagram");
+    expect(storedExtraction).toContain("Tool: manual-review");
+    expect(storedExtraction).toContain(`Extraction id: ${result.result.id}`);
+
+    const dossier = await assembleDossier({
+      project: "ariadne",
+      vaultRoot,
+      maxCharsPerSource: 2000
+    });
+    const dossierText = await fs.readFile(dossier, "utf8");
+    expect(dossierText).toContain("Thread diagram");
+
+    const status = await projectStatus(vaultRoot, "ariadne");
+    expect(status.extracted).toBe(1);
+  });
+
+  it("keeps multiple imported extraction outputs for the same source record", async () => {
+    const temp = await fs.mkdtemp(path.join(os.tmpdir(), "ariadne-"));
+    const source = path.join(temp, "meeting-audio.wav");
+    const first = path.join(temp, "first-transcript.md");
+    const second = path.join(temp, "second-transcript.md");
+    const vaultRoot = path.join(temp, "vault");
+
+    await fs.writeFile(source, "not a real wav, but enough for source-kind routing");
+    await fs.writeFile(first, "First transcript pass.");
+    await fs.writeFile(second, "Corrected transcript pass.");
+
+    const records = await ingestFiles([source], {
+      project: "Ariadne",
+      vaultRoot
+    });
+
+    const firstImport = await importExtractionResult({
+      project: "ariadne",
+      vaultRoot,
+      recordId: records[0]!.id,
+      sourcePath: first,
+      extractionKind: "transcription",
+      tool: "whisper"
+    });
+    await new Promise((resolve) => setTimeout(resolve, 2));
+    const secondImport = await importExtractionResult({
+      project: "ariadne",
+      vaultRoot,
+      recordId: records[0]!.id,
+      sourcePath: second,
+      extractionKind: "transcription",
+      tool: "whisper-review"
+    });
+
+    expect(firstImport.result.extractedTextPath).not.toBe(secondImport.result.extractedTextPath);
+
+    const updatedRecords = await loadRecords(vaultRoot, "ariadne");
+    expect(updatedRecords[0]?.extractionResultPaths).toHaveLength(2);
+    expect(updatedRecords[0]?.extractedTextPath).toBe(updatedRecords[0]?.extractionResultPaths?.[1]);
+
+    await expect(fs.readFile(updatedRecords[0]!.extractionResultPaths![0]!, "utf8")).resolves.toContain(
+      "First transcript pass."
+    );
+    await expect(fs.readFile(updatedRecords[0]!.extractionResultPaths![1]!, "utf8")).resolves.toContain(
+      "Corrected transcript pass."
+    );
   });
 });

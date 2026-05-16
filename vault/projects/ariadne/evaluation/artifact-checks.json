@@ -1,11 +1,11 @@
 {
   "schemaVersion": 1,
   "project": "ariadne",
-  "generatedAt": "2026-05-16T13:21:46.681Z",
+  "generatedAt": "2026-05-16T13:44:05.104Z",
   "status": "passed",
   "summary": {
     "required": 13,
-    "optional": 12,
+    "optional": 13,
     "present": 25,
     "missingRequired": 0
   },
@@ -190,6 +190,15 @@
       "matches": [
         "projects/ariadne/control/approvals/approval-2026-05-16T13-21-33-834Z.json"
       ]
+    },
+    {
+      "id": "extraction-results",
+      "label": "OCR/transcription extraction results",
+      "required": false,
+      "path": "projects/ariadne/extractions/extraction-*.json",
+      "status": "missing",
+      "count": 0,
+      "matches": []
     },
     {
       "id": "coordination-records",

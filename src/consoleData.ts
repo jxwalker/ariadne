@@ -19,6 +19,7 @@ import type {
   EvaluationRun,
   EvaluationTrendReport,
   ExecutionRun,
+  ExtractionResultRecord,
   GbrainExportBundle,
   GbrainReportImport,
   GithubSnapshot,
@@ -72,6 +73,7 @@ export async function collectConsoleData(vaultRoot: string, projectInput: string
   const checks = await readJsonl<CheckRecord>(path.join(dir, "control", "check-history.jsonl"));
   const reviews = await readJsonl<ReviewRecord>(path.join(dir, "control", "reviews.jsonl"));
   const approvals = await readJsonFiles<ApprovalRecord>(path.join(dir, "control", "approvals"), isApprovalRecord);
+  const extractionResults = await readJsonFiles<ExtractionResultRecord>(path.join(dir, "extractions"), isExtractionResult);
   const executionRuns = await readJsonFiles<ExecutionRun>(path.join(dir, "execution"), isExecutionRun);
   const decisions = await readJsonFiles<DecisionRecord>(path.join(dir, "decisions"), isDecisionRecord);
   const playwrightEvidence = await readJsonFiles<PlaywrightEvidenceRecord>(
@@ -118,6 +120,7 @@ export async function collectConsoleData(vaultRoot: string, projectInput: string
     projectDir: vaultRelative(vaultRoot, dir),
     summary: {
       sources: sources.length,
+      extractionResults: extractionResults.length,
       requirements: prd?.requirements.length ?? 0,
       tasks: tasks.length,
       executionRuns: executionRuns.length,
@@ -141,6 +144,7 @@ export async function collectConsoleData(vaultRoot: string, projectInput: string
       evaluationTrendStatus: evaluationTrends?.status
     },
     sources,
+    extractionResults,
     requirements: prd?.requirements ?? [],
     tasks,
     executionRuns,
@@ -191,7 +195,8 @@ export async function collectConsoleData(vaultRoot: string, projectInput: string
       consoleBrowserChecks: await existingPath(vaultRoot, path.join(dir, "console", "browser-checks.json")),
       githubSnapshots: await existingPath(vaultRoot, path.join(dir, "integrations", "github")),
       approvals: await existingPath(vaultRoot, path.join(dir, "control", "approvals")),
-      recoveryReport: await existingPath(vaultRoot, path.join(dir, "control", "recovery-report.json"))
+      recoveryReport: await existingPath(vaultRoot, path.join(dir, "control", "recovery-report.json")),
+      extractionResults: await existingPath(vaultRoot, path.join(dir, "extractions"))
     }
   };
   return makePortable(data, vaultRoot);
@@ -290,6 +295,10 @@ function hasSchema(value: unknown): value is Record<string, unknown> {
 
 function isExecutionRun(value: unknown): value is ExecutionRun {
   return hasSchema(value) && value.schemaVersion === 1 && typeof value.id === "string" && Array.isArray(value.taskIds);
+}
+
+function isExtractionResult(value: unknown): value is ExtractionResultRecord {
+  return hasSchema(value) && value.schemaVersion === 1 && typeof value.id === "string" && value.id.startsWith("extraction-");
 }
 
 function isDecisionRecord(value: unknown): value is DecisionRecord {

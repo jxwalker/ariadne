@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "project": "ariadne",
-  "generatedAt": "2026-05-16T11:45:59.097Z",
+  "generatedAt": "2026-05-16T13:44:14.169Z",
   "status": "ready",
   "evidence": [
     "requirements/prd.json",

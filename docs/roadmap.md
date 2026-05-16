@@ -13,14 +13,14 @@ Implemented:
 - context dossier generation
 - OCR handoff contracts for drawings/images
 - audio transcription handoff contracts
+- OCR, transcription, PDF text, and visual-description result imports
 - source sensitivity labels
 - manifest schema versioning
 - secret scanning before vault promotion
 
 Next:
 
-- optional OCR adapter implementation
-- optional transcription adapter implementation
+- live OCR/transcription runner selection after tool choice and host placement are explicit
 
 ## Milestone 1: Source-Grounded PRD
 
@@ -145,9 +145,9 @@ Implemented:
 - benchmark source packs for smoke, realistic, and stress runs
 - trend report generation
 - token/cost metrics from Hermes and review tools
-- CLI support for `evaluation`, `evaluation-record`, `evaluation-trends`, `usage-import`, `usage-report`, `artifact-checks`, and `benchmark-pack`
+- runner support for `evaluation`, `evaluation-record`, `evaluation-trends`, `usage-import`, `usage-report`, `artifact-checks`, and `benchmark-pack`
 - mutation and approved-fixture checks for behavior confidence
-- CLI support for `behavior-checks`
+- runner support for `behavior-checks`
 
 ## Milestone 8: Orchestration Visualisation
 

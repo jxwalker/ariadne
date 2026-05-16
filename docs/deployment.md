@@ -6,7 +6,7 @@ Deployment should follow the same rule as the rest of the project: observe first
 
 | System | Role | First adapter mode |
 | --- | --- | --- |
-| Mac laptops/workstations | local development, docs, UI verification, quick tests | local CLI |
+| Mac laptops/workstations | local development, docs, UI verification, quick tests | local runner |
 | DGX Spark | GPU and high-memory model/evaluation workloads | read-only model endpoint registry |
 | Proxmox dev Linux machine | always-on orchestration, runners, Hermes, consoles | read-only host inventory |
 | TrueNAS | durable vault backup and artifact storage | read-only storage manifest |
@@ -15,7 +15,7 @@ Deployment should follow the same rule as the rest of the project: observe first
 
 ### Stage 0: Local Mac
 
-- Keep `ariadne` as a local TypeScript CLI.
+- Keep `ariadne` as a local TypeScript runner.
 - Store project artifacts under the repo `vault/`.
 - Use local `npm run check`, `npm test`, `npm run build`.
 - Record manual evaluation runs.
@@ -34,10 +34,10 @@ Deployment should follow the same rule as the rest of the project: observe first
 - Use `deployment-snapshot` for estate-specific views:
 
 ```bash
-npm run cli -- deployment-snapshot --project ariadne --system proxmox --from proxmox.json
-npm run cli -- deployment-snapshot --project ariadne --system truenas --from truenas.json
-npm run cli -- deployment-snapshot --project ariadne --system dgx-spark --from dgx-spark.json
-npm run cli -- deployment-snapshot --project ariadne --system mac --from mac.json
+npm run ariadne -- deployment-snapshot --project ariadne --system proxmox --from proxmox.json
+npm run ariadne -- deployment-snapshot --project ariadne --system truenas --from truenas.json
+npm run ariadne -- deployment-snapshot --project ariadne --system dgx-spark --from dgx-spark.json
+npm run ariadne -- deployment-snapshot --project ariadne --system mac --from mac.json
 ```
 
 ### Stage 3: Always-On Orchestration
