@@ -648,6 +648,12 @@ export interface DeploymentSnapshot {
     modelEndpoints: number;
     runnerPools: number;
     storagePools: number;
+    collector?: string;
+    sourceSnapshotKind?: InfraSnapshot["snapshotKind"];
+    confidence?: "low" | "medium" | "high";
+    capabilities?: string[];
+    evidence?: string[];
+    warnings?: string[];
   };
   raw: unknown;
 }

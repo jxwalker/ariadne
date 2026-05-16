@@ -14,7 +14,7 @@ import { generateConsoleBrowserCheckReport } from "../src/consoleBrowserChecks.j
 import { generateConsoleHtml } from "../src/consoleHtml.js";
 import { generateConsoleVisualCheckReport } from "../src/consoleVisualChecks.js";
 import { recordAgentLease, recordAgentMail, recordMemoryProposal, recordSleepRoutine } from "../src/coordination.js";
-import { importDeploymentSnapshot } from "../src/deploymentAdapters.js";
+import { collectSshDeploymentSnapshot, importDeploymentSnapshot } from "../src/deploymentAdapters.js";
 import { planExecution } from "../src/execution.js";
 import { exportGbrainBundle, importGbrainReport } from "../src/gbrainAdapter.js";
 import { importGithubSnapshot } from "../src/githubAdapter.js";
@@ -720,6 +720,26 @@ describe("roadmap adapters", () => {
         sshBinary: fakeSsh
       })
     ).rejects.toThrow(/Unsafe SSH target/);
+
+    const deploymentSnapshot = await collectSshDeploymentSnapshot({
+      project: "ariadne",
+      vaultRoot,
+      system: "dgx-spark",
+      hostId: "DGX Spark",
+      target: "james@beast.lan",
+      sshBinary: fakeSsh,
+      notes: "vitest fake deployment collector"
+    });
+    expect(deploymentSnapshot.snapshot.mode).toBe("read_only");
+    expect(deploymentSnapshot.snapshot.system).toBe("dgx-spark");
+    expect(deploymentSnapshot.snapshot.summary.host).toBe("DGX Spark");
+    expect(deploymentSnapshot.snapshot.summary.modelEndpoints).toBe(1);
+    expect(deploymentSnapshot.snapshot.summary.runnerPools).toBe(1);
+    expect(deploymentSnapshot.snapshot.summary.confidence).toBe("high");
+    expect(deploymentSnapshot.snapshot.summary.capabilities).toContain("nvidia-smi");
+    expect(deploymentSnapshot.snapshot.raw).toMatchObject({ source: "infra-live-ssh" });
+    expect(JSON.stringify(deploymentSnapshot.snapshot.raw)).not.toContain("beast-secret.lan");
+    expect(JSON.stringify(deploymentSnapshot.snapshot.raw)).not.toContain("james@beast.lan");
 
     const activity = await draftOpenScorpionActivity({
       project: "ariadne",

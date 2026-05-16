@@ -143,6 +143,7 @@ npm run ariadne -- memory-proposal --project ariadne --title "Lesson" --proposal
 npm run ariadne -- agent-mail --project ariadne --from planner --to executor --subject "Next slice" --body "Run checks before editing"
 npm run ariadne -- agent-lease --project ariadne --agent executor --resource repo:/ariadne --status acquired
 npm run ariadne -- deployment-snapshot --project ariadne --system proxmox --from deployment.json
+npm run ariadne -- deployment-live-ssh --project ariadne --system dgx-spark --host "DGX Spark" --target james@dgx-spark.lan
 npm run ariadne -- import-ci --project ariadne --from checks.json
 npm run ariadne -- import-coderabbit --project ariadne --from coderabbit.md
 npm run ariadne -- approval-request --project ariadne --by planner --target github --action "Enable PR mutation adapter" --risk medium --reason "Manual gate before live mutation" --rollback "Disable adapter and return to manual PR flow"
