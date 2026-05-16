@@ -86,11 +86,11 @@ Implemented:
 - generated role-oriented test skeleton
 - trace/screenshot/accessibility evidence contract
 - Playwright evidence records
+- target-app screenshot and trace evidence capture
 - browser-backed console screenshot checks with Playwright Chromium
 
 Next:
 
-- target-app screenshot and trace evidence capture
 - healer loop that proposes repairs, with review gates
 
 ## Milestone 5: Control Plane

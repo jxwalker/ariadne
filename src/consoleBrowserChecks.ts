@@ -3,6 +3,7 @@ import path from "node:path";
 import { pathToFileURL } from "node:url";
 import { chromium, type Page } from "playwright";
 import { ensureArtifactDir, timestampFile, writeJsonArtifact, writeTextArtifact } from "./artifacts.js";
+import { generateConsoleHtml } from "./consoleHtml.js";
 import { projectDir, slugifyProject } from "./paths.js";
 import type { ConsoleBrowserCheckReport } from "./types.js";
 
@@ -14,6 +15,9 @@ export async function generateConsoleBrowserCheckReport(input: {
   height?: number;
 }): Promise<{ jsonPath: string; markdownPath: string; report: ConsoleBrowserCheckReport }> {
   const project = slugifyProject(input.project);
+  if (!input.htmlPath) {
+    await generateConsoleHtml({ project, vaultRoot: input.vaultRoot, refreshData: true });
+  }
   const htmlPath = path.resolve(input.htmlPath ?? path.join(projectDir(input.vaultRoot, project), "console", "index.html"));
   await fs.access(htmlPath);
   const width = input.width ?? 1440;
@@ -62,6 +66,9 @@ export async function generateConsoleBrowserCheckReport(input: {
     "browser-checks.md",
     renderReport(report)
   );
+  if (!input.htmlPath) {
+    await generateConsoleHtml({ project, vaultRoot: input.vaultRoot, refreshData: true });
+  }
   return { jsonPath, markdownPath, report };
 }
 

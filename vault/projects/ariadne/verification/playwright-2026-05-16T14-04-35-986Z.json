@@ -1,0 +1,11 @@
+{
+  "schemaVersion": 1,
+  "id": "playwright-2026-05-16T14-04-35-986Z",
+  "project": "ariadne",
+  "recordedAt": "2026-05-16T14:04:35.986Z",
+  "targetUrl": "file://<VAULT_ROOT>/projects/ariadne/console/index.html",
+  "status": "passed",
+  "tracePath": "projects/ariadne/verification/playwright-captures/target-2026-05-16T14-04-35-649Z.zip",
+  "screenshotPath": "projects/ariadne/verification/playwright-captures/target-2026-05-16T14-04-35-649Z.png",
+  "notes": "Captured target app screenshot and Playwright trace.\nViewport: 1280x900\nWait until: domcontentloaded\nSelector visible: text=Ariadne Console"
+}

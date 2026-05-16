@@ -100,8 +100,11 @@ npm run ariadne -- record-check --project ariadne --name build --status passed -
 Record UI evidence when a target exists:
 
 ```bash
+npm run ariadne -- playwright-capture --project ariadne --target-url http://localhost:3000 --selector "text=Dashboard"
 npm run ariadne -- playwright-evidence --project ariadne --target-url http://localhost:3000 --status passed --screenshot path/to/screenshot.png --trace path/to/trace.zip
 ```
+
+Use `playwright-capture` when Ariadne should create the screenshot and trace itself. It writes artifacts under `vault/projects/ariadne/verification/playwright-captures/` and records a standard Playwright evidence file under `verification/`. Use `playwright-evidence` when the screenshot and trace already came from another test runner.
 
 ## Evaluate The Pipeline
 

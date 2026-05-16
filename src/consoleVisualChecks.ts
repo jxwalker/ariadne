@@ -1,6 +1,7 @@
 import fs from "node:fs/promises";
 import path from "node:path";
 import { writeJsonArtifact, writeTextArtifact } from "./artifacts.js";
+import { generateConsoleHtml } from "./consoleHtml.js";
 import { projectDir, slugifyProject } from "./paths.js";
 import type { ConsoleData, ConsoleVisualCheckReport } from "./types.js";
 
@@ -10,6 +11,9 @@ export async function generateConsoleVisualCheckReport(input: {
   htmlPath?: string;
 }): Promise<{ jsonPath: string; markdownPath: string; report: ConsoleVisualCheckReport }> {
   const project = slugifyProject(input.project);
+  if (!input.htmlPath) {
+    await generateConsoleHtml({ project, vaultRoot: input.vaultRoot, refreshData: true });
+  }
   const htmlPath = path.resolve(input.htmlPath ?? path.join(projectDir(input.vaultRoot, project), "console", "index.html"));
   const html = await fs.readFile(htmlPath, "utf8");
   const embeddedData = parseEmbeddedConsoleData(html);
@@ -47,6 +51,9 @@ export async function generateConsoleVisualCheckReport(input: {
     "visual-checks.md",
     renderReport(report)
   );
+  if (!input.htmlPath) {
+    await generateConsoleHtml({ project, vaultRoot: input.vaultRoot, refreshData: true });
+  }
   return { jsonPath, markdownPath, report };
 }
 

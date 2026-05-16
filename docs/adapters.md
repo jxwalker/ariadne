@@ -57,6 +57,19 @@ Typical fields include status, context, consequences, and source references so l
 
 ## Verification And Review
 
+`playwright-capture` opens a target URL with Playwright Chromium, captures a screenshot and trace archive, and records them as Playwright evidence:
+
+```bash
+npm run ariadne -- playwright-capture --project ariadne --target-url http://localhost:3000 --selector "text=Dashboard"
+```
+
+Artifacts:
+
+- `verification/playwright-captures/target-<timestamp>.png`
+- `verification/playwright-captures/target-<timestamp>.zip`
+- `verification/playwright-<timestamp>.json`
+- `verification/playwright-<timestamp>.md`
+
 `playwright-evidence`, `import-ci`, and `import-coderabbit` write evidence records into the project control plane. They do not mark the project ready unless the required gates are satisfied.
 
 `github-snapshot` records read-only pull request and check state from either a saved GitHub JSON export or the `gh` CLI:
