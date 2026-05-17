@@ -49,6 +49,7 @@ import { generateLiveAdapterCutoverAudit } from "./liveAdapterCutoverAudit.js";
 import { generateLiveAdapterEvidenceTemplates } from "./liveAdapterEvidenceTemplates.js";
 import { generateLiveAdapterNextActions } from "./liveAdapterNextActions.js";
 import {
+  checkLiveAdapterOperatorEvidence,
   generateLiveAdapterOperatorEvidenceAudit,
   liveAdapterOperatorEvidenceTargetOption,
   recordLiveAdapterOperatorEvidence
@@ -186,6 +187,7 @@ function usage(): string {
     "  ariadne live-adapter-cutover-audit --project <project>",
     "  ariadne live-adapter-review-session --project <project>",
     "  ariadne live-adapter-evidence-templates --project <project>",
+    "  ariadne live-adapter-operator-evidence-check --project <project> --target <github|deployment|hermes-cron|openscorpion|gsd2|notebooklm> --from <filled-template.md> [--notes <text>]",
     "  ariadne live-adapter-operator-evidence --project <project> --target <github|deployment|hermes-cron|openscorpion|gsd2|notebooklm> --from <filled-template.md> --by <operator> [--notes <text>]",
     "  ariadne live-adapter-operator-evidence-audit --project <project>",
     "  ariadne live-adapter-operator-evidence-workplan --project <project>",
@@ -1207,6 +1209,23 @@ async function main(): Promise<void> {
     return;
   }
 
+  if (parsed.command === "live-adapter-operator-evidence-check") {
+    const result = await checkLiveAdapterOperatorEvidence({
+      project,
+      vaultRoot,
+      target: liveAdapterOperatorEvidenceTargetOption(requiredOption(parsed.options, "target")),
+      sourcePath: requiredOption(parsed.options, "from"),
+      notes: optionString(parsed.options, "notes", "") || undefined
+    });
+    console.log(`Live adapter operator evidence check: ${result.markdownPath}`);
+    console.log(`Target: ${result.check.target}`);
+    console.log(`Status: ${result.check.status}`);
+    console.log(`Missing sections: ${result.check.summary.missingSections}`);
+    console.log(`Recorded: ${result.check.recorded}`);
+    console.log(`Mutation approved: ${result.check.mutationApproved}`);
+    return;
+  }
+
   if (parsed.command === "live-adapter-operator-evidence-audit") {
     const result = await generateLiveAdapterOperatorEvidenceAudit({ project, vaultRoot });
     console.log(`Live adapter operator evidence audit: ${result.markdownPath}`);
@@ -1222,6 +1241,7 @@ async function main(): Promise<void> {
     console.log(`Live adapter operator evidence workplan: ${result.markdownPath}`);
     console.log(`Status: ${result.workplan.status}`);
     console.log(`Complete targets: ${result.workplan.summary.completeTargets}`);
+    console.log(`Check commands: ${result.workplan.summary.checkCommands}`);
     console.log(`Import commands: ${result.workplan.summary.importCommands}`);
     console.log(`Mutation approved: ${result.workplan.mutationApproved}`);
     return;

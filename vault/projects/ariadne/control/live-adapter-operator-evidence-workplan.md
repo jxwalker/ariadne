@@ -2,7 +2,7 @@
 
 Project: ariadne
 Status: evidence_required
-Generated: 2026-05-17T06:04:26.677Z
+Generated: 2026-05-17T06:36:21.380Z
 Mutation approved: false
 
 ## Rule
@@ -22,6 +22,7 @@ This workplan collects the evidence still needed from an operator. It does not a
 - Complete targets: 0
 - Missing targets: 6
 - Incomplete targets: 0
+- Check commands: 6
 - Import commands: 6
 - GBrain queries: 18
 
@@ -32,6 +33,12 @@ This workplan collects the evidence still needed from an operator. It does not a
 Status: needs_evidence
 Template: projects/ariadne/control/live-adapter-evidence-templates/live-adapter-evidence-template-github.md
 First action: Fill and import operator evidence
+
+#### Check Command
+
+```bash
+npm run ariadne -- live-adapter-operator-evidence-check --project ariadne --target github --from vault/projects/ariadne/control/live-adapter-evidence-templates/live-adapter-evidence-template-github.md
+```
 
 #### Import Command
 
@@ -102,6 +109,12 @@ Status: needs_evidence
 Template: projects/ariadne/control/live-adapter-evidence-templates/live-adapter-evidence-template-deployment.md
 First action: Fill and import operator evidence
 
+#### Check Command
+
+```bash
+npm run ariadne -- live-adapter-operator-evidence-check --project ariadne --target deployment --from vault/projects/ariadne/control/live-adapter-evidence-templates/live-adapter-evidence-template-deployment.md
+```
+
 #### Import Command
 
 ```bash
@@ -170,6 +183,12 @@ npm run ariadne -- live-adapter-approval-review --project ariadne --target deplo
 Status: needs_evidence
 Template: projects/ariadne/control/live-adapter-evidence-templates/live-adapter-evidence-template-hermes-cron.md
 First action: Fill and import operator evidence
+
+#### Check Command
+
+```bash
+npm run ariadne -- live-adapter-operator-evidence-check --project ariadne --target hermes-cron --from vault/projects/ariadne/control/live-adapter-evidence-templates/live-adapter-evidence-template-hermes-cron.md
+```
 
 #### Import Command
 
@@ -240,6 +259,12 @@ Status: needs_evidence
 Template: projects/ariadne/control/live-adapter-evidence-templates/live-adapter-evidence-template-openscorpion.md
 First action: Fill and import operator evidence
 
+#### Check Command
+
+```bash
+npm run ariadne -- live-adapter-operator-evidence-check --project ariadne --target openscorpion --from vault/projects/ariadne/control/live-adapter-evidence-templates/live-adapter-evidence-template-openscorpion.md
+```
+
 #### Import Command
 
 ```bash
@@ -309,6 +334,12 @@ Status: needs_evidence
 Template: projects/ariadne/control/live-adapter-evidence-templates/live-adapter-evidence-template-gsd2.md
 First action: Fill and import operator evidence
 
+#### Check Command
+
+```bash
+npm run ariadne -- live-adapter-operator-evidence-check --project ariadne --target gsd2 --from vault/projects/ariadne/control/live-adapter-evidence-templates/live-adapter-evidence-template-gsd2.md
+```
+
 #### Import Command
 
 ```bash
@@ -377,6 +408,12 @@ npm run ariadne -- live-adapter-approval-review --project ariadne --target gsd2 
 Status: needs_evidence
 Template: projects/ariadne/control/live-adapter-evidence-templates/live-adapter-evidence-template-notebooklm.md
 First action: Fill and import operator evidence
+
+#### Check Command
+
+```bash
+npm run ariadne -- live-adapter-operator-evidence-check --project ariadne --target notebooklm --from vault/projects/ariadne/control/live-adapter-evidence-templates/live-adapter-evidence-template-notebooklm.md
+```
 
 #### Import Command
 

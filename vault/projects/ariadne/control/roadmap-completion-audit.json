@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "project": "ariadne",
-  "generatedAt": "2026-05-17T06:04:27.589Z",
+  "generatedAt": "2026-05-17T06:36:35.990Z",
   "status": "blocked",
   "summary": {
     "requirements": 9,
@@ -14,7 +14,7 @@
       "id": "core-artifact-contracts",
       "title": "Core pipeline artifacts are present",
       "status": "passed",
-      "detail": "43 artifacts present; 0 required missing.",
+      "detail": "44 artifacts present; 0 required missing.",
       "evidenceRefs": [
         "projects/ariadne/evaluation/artifact-checks.json"
       ],
@@ -80,7 +80,7 @@
       "id": "operator-evidence",
       "title": "All live-adapter targets have complete operator evidence",
       "status": "blocked",
-      "detail": "0/6 targets complete; 6 missing evidence. Workplan status is evidence_required with 6 import command(s).",
+      "detail": "0/6 targets complete; 6 missing evidence. Workplan status is evidence_required with 6 check command(s) and 6 import command(s).",
       "evidenceRefs": [
         "projects/ariadne/control/live-adapter-operator-evidence-audit.json",
         "projects/ariadne/control/live-adapter-operator-evidence-workplan.json"
@@ -88,6 +88,7 @@
       "nextCommands": [
         "npm run ariadne -- live-adapter-operator-evidence-workplan --project ariadne",
         "npm run ariadne -- live-adapter-evidence-templates --project ariadne",
+        "npm run ariadne -- live-adapter-operator-evidence-check --project ariadne --target <target> --from vault/projects/ariadne/control/live-adapter-evidence-templates/live-adapter-evidence-template-<target>.md",
         "npm run ariadne -- live-adapter-operator-evidence --project ariadne --target <target> --from vault/projects/ariadne/control/live-adapter-evidence-templates/live-adapter-evidence-template-<target>.md --by <operator>",
         "npm run ariadne -- live-adapter-operator-evidence-audit --project ariadne"
       ]

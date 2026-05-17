@@ -4,9 +4,15 @@ import { timestampFile, writeJsonArtifact, writeTextArtifact } from "./artifacts
 import { sha256File } from "./hash.js";
 import { isLiveAdapterTarget, LIVE_ADAPTER_TARGETS, type LiveAdapterTarget } from "./liveAdapterTargets.js";
 import { projectDir, slugifyProject } from "./paths.js";
-import type { LiveAdapterOperatorEvidenceAudit, LiveAdapterOperatorEvidenceRecord } from "./types.js";
+import type {
+  LiveAdapterOperatorEvidenceAudit,
+  LiveAdapterOperatorEvidenceCheck,
+  LiveAdapterOperatorEvidenceRecord
+} from "./types.js";
 
 type EvidenceSection = LiveAdapterOperatorEvidenceRecord["sections"][number];
+type EvidenceSummary = LiveAdapterOperatorEvidenceRecord["summary"];
+type GbrainEvaluation = LiveAdapterOperatorEvidenceRecord["gbrain"];
 
 const REQUIRED_SECTIONS: Array<{
   id: string;
@@ -79,13 +85,10 @@ export async function recordLiveAdapterOperatorEvidence(input: {
   notes?: string;
 }): Promise<{ jsonPath: string; markdownPath: string; record: LiveAdapterOperatorEvidenceRecord }> {
   const project = slugifyProject(input.project);
-  const sourcePath = path.resolve(input.sourcePath);
-  const text = await fs.readFile(sourcePath, "utf8");
-  const sourceStats = await fs.stat(sourcePath);
-  const checkboxes = parseCheckboxes(text);
-  const sections = evaluateSections(text, checkboxes);
-  const missingSections = sections.filter((section) => section.status === "missing");
-  const gbrain = evaluateGbrain(text, checkboxes);
+  const evaluation = await evaluateOperatorEvidenceSource({
+    vaultRoot: input.vaultRoot,
+    sourcePath: input.sourcePath
+  });
   const recordedAt = new Date();
   const record: LiveAdapterOperatorEvidenceRecord = {
     schemaVersion: 1,
@@ -94,20 +97,15 @@ export async function recordLiveAdapterOperatorEvidence(input: {
     recordedAt: recordedAt.toISOString(),
     target: input.target,
     reviewedBy: input.reviewedBy,
-    sourceRef: portableSourceRef(input.vaultRoot, sourcePath),
-    sourceSha256: await sha256File(sourcePath),
-    sourceBytes: sourceStats.size,
-    status: missingSections.length === 0 ? "complete" : "incomplete",
+    sourceRef: evaluation.sourceRef,
+    sourceSha256: evaluation.sourceSha256,
+    sourceBytes: evaluation.sourceBytes,
+    status: evaluation.status,
     mutationApproved: false,
     approvalGranted: false,
-    summary: {
-      requiredSections: sections.length,
-      completeSections: sections.length - missingSections.length,
-      missingSections: missingSections.length,
-      advisoryWarnings: gbrain.status === "missing" ? 1 : 0
-    },
-    sections,
-    gbrain,
+    summary: evaluation.summary,
+    sections: evaluation.sections,
+    gbrain: evaluation.gbrain,
     notes: input.notes
   };
 
@@ -120,6 +118,56 @@ export async function recordLiveAdapterOperatorEvidence(input: {
     renderRecord(record)
   );
   return { jsonPath, markdownPath, record };
+}
+
+export async function checkLiveAdapterOperatorEvidence(input: {
+  project: string;
+  vaultRoot: string;
+  target: LiveAdapterTarget;
+  sourcePath: string;
+  notes?: string;
+}): Promise<{ jsonPath: string; markdownPath: string; check: LiveAdapterOperatorEvidenceCheck }> {
+  const project = slugifyProject(input.project);
+  const evaluation = await evaluateOperatorEvidenceSource({
+    vaultRoot: input.vaultRoot,
+    sourcePath: input.sourcePath
+  });
+  const checkedAt = new Date();
+  const check: LiveAdapterOperatorEvidenceCheck = {
+    schemaVersion: 1,
+    id: `operator-evidence-check-${input.target}-${timestampFile(checkedAt)}`,
+    project,
+    checkedAt: checkedAt.toISOString(),
+    target: input.target,
+    sourceRef: evaluation.sourceRef,
+    sourceSha256: evaluation.sourceSha256,
+    sourceBytes: evaluation.sourceBytes,
+    status: evaluation.status,
+    recorded: false,
+    operatorEvidenceRecordCreated: false,
+    mutationApproved: false,
+    approvalGranted: false,
+    summary: evaluation.summary,
+    sections: evaluation.sections,
+    gbrain: evaluation.gbrain,
+    notes: input.notes
+  };
+
+  const jsonPath = await writeJsonArtifact(
+    input.vaultRoot,
+    project,
+    "control/live-adapter-operator-evidence-checks",
+    `${check.id}.json`,
+    check
+  );
+  const markdownPath = await writeTextArtifact(
+    input.vaultRoot,
+    project,
+    "control/live-adapter-operator-evidence-checks",
+    `${check.id}.md`,
+    renderCheck(check)
+  );
+  return { jsonPath, markdownPath, check };
 }
 
 export async function generateLiveAdapterOperatorEvidenceAudit(input: {
@@ -194,6 +242,41 @@ export function liveAdapterOperatorEvidenceTargetOption(value: string): LiveAdap
   throw new Error(`--target must be ${LIVE_ADAPTER_TARGETS.join(", ")}.`);
 }
 
+async function evaluateOperatorEvidenceSource(input: {
+  vaultRoot: string;
+  sourcePath: string;
+}): Promise<{
+  sourceRef: string;
+  sourceSha256: string;
+  sourceBytes: number;
+  status: LiveAdapterOperatorEvidenceRecord["status"];
+  summary: EvidenceSummary;
+  sections: EvidenceSection[];
+  gbrain: GbrainEvaluation;
+}> {
+  const sourcePath = path.resolve(input.sourcePath);
+  const text = await fs.readFile(sourcePath, "utf8");
+  const sourceStats = await fs.stat(sourcePath);
+  const checkboxes = parseCheckboxes(text);
+  const sections = evaluateSections(text, checkboxes);
+  const missingSections = sections.filter((section) => section.status === "missing");
+  const gbrain = evaluateGbrain(text, checkboxes);
+  return {
+    sourceRef: portableSourceRef(input.vaultRoot, sourcePath),
+    sourceSha256: await sha256File(sourcePath),
+    sourceBytes: sourceStats.size,
+    status: missingSections.length === 0 ? "complete" : "incomplete",
+    summary: {
+      requiredSections: sections.length,
+      completeSections: sections.length - missingSections.length,
+      missingSections: missingSections.length,
+      advisoryWarnings: gbrain.status === "missing" ? 1 : 0
+    },
+    sections,
+    gbrain
+  };
+}
+
 function evaluateSections(text: string, checkboxes: Checkbox[]): EvidenceSection[] {
   return REQUIRED_SECTIONS.map((section) => {
     const complete = section.detector(text, checkboxes);
@@ -225,7 +308,7 @@ function hasCheckedItem(checkboxes: Checkbox[], needles: string[]): boolean {
 
 function hasNonEmptyField(text: string, label: string): boolean {
   const escaped = label.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-  const pattern = new RegExp(`^\\s*-?\\s*${escaped}:\\s*(.+?)\\s*$`, "im");
+  const pattern = new RegExp(`^[ \\t]*-?[ \\t]*${escaped}:[ \\t]*(.*?)[ \\t]*$`, "im");
   const match = text.match(pattern);
   if (!match?.[1]) return false;
   const value = match[1].trim();
@@ -246,7 +329,7 @@ function evaluateGbrain(text: string, checkboxes: Checkbox[]): LiveAdapterOperat
   }
   return {
     status: "missing",
-    detail: "No GBrain advisory notes were recorded. This is advisory context, not an approval gate."
+    detail: "No GBrain advisory notes were recorded. This is advisory context only, not an approval gate."
   };
 }
 
@@ -295,7 +378,7 @@ function portableSourceRef(vaultRoot: string, absolutePath: string): string {
 
 function renderRecord(record: LiveAdapterOperatorEvidenceRecord): string {
   return [
-    `# Live Adapter Operator Evidence: ${record.target}`,
+    `# Live Adapter Operator Evidence: ${targetLabel(record.target)}`,
     "",
     `Id: ${record.id}`,
     `Status: ${record.status}`,
@@ -326,6 +409,54 @@ function renderRecord(record: LiveAdapterOperatorEvidenceRecord): string {
     "This record captures operator evidence only. It does not approve mutation and does not grant live-adapter authority.",
     ""
   ].join("\n");
+}
+
+function renderCheck(check: LiveAdapterOperatorEvidenceCheck): string {
+  return [
+    `# Live Adapter Operator Evidence Check: ${targetLabel(check.target)}`,
+    "",
+    `Id: ${check.id}`,
+    `Status: ${check.status}`,
+    `Checked: ${check.checkedAt}`,
+    `Source: ${check.sourceRef}`,
+    `Recorded: ${check.recorded}`,
+    `Operator evidence record created: ${check.operatorEvidenceRecordCreated}`,
+    `Mutation approved: ${check.mutationApproved}`,
+    `Approval granted: ${check.approvalGranted}`,
+    "",
+    "## Summary",
+    "",
+    `- Required sections: ${check.summary.requiredSections}`,
+    `- Complete sections: ${check.summary.completeSections}`,
+    `- Missing sections: ${check.summary.missingSections}`,
+    `- Advisory warnings: ${check.summary.advisoryWarnings}`,
+    "",
+    "## Sections",
+    "",
+    "| Section | Status | Detail |",
+    "| --- | --- | --- |",
+    ...check.sections.map((section) => `| ${section.label} | ${section.status} | ${section.detail} |`),
+    "",
+    "## GBrain",
+    "",
+    `${check.gbrain.status}: ${check.gbrain.detail}`,
+    ...(check.notes ? ["", "## Notes", "", check.notes] : []),
+    "",
+    "This is a preflight check only. It does not create an operator evidence record, approve mutation, or grant live-adapter authority.",
+    ""
+  ].join("\n");
+}
+
+function targetLabel(target: LiveAdapterTarget): string {
+  const labels: Record<LiveAdapterTarget, string> = {
+    github: "GitHub",
+    deployment: "Deployment",
+    "hermes-cron": "Hermes Cron",
+    openscorpion: "OpenScorpion",
+    gsd2: "GSD2",
+    notebooklm: "NotebookLM"
+  };
+  return labels[target];
 }
 
 function renderAudit(audit: LiveAdapterOperatorEvidenceAudit): string {

@@ -35,6 +35,8 @@ export async function generateConsoleVisualCheckReport(input: {
     evidenceTemplateDataCheck(html, embeddedData),
     checkContains(html, "adapter-operator-evidence-workplan-metric", "Adapter operator-evidence workplan metric", "Evidence Workplan"),
     operatorEvidenceWorkplanDataCheck(html, embeddedData),
+    checkContains(html, "adapter-operator-evidence-checks-metric", "Adapter operator-evidence checks metric", "Evidence Checks"),
+    operatorEvidenceCheckCommandDataCheck(html, embeddedData),
     checkContains(html, "adapter-operator-evidence-metric", "Adapter operator-evidence metric", "Operator Evidence"),
     operatorEvidenceDataCheck(html, embeddedData),
     cutoverQueueCheck(html, embeddedData),
@@ -198,6 +200,22 @@ function operatorEvidenceWorkplanDataCheck(html: string, data: ConsoleData | und
   return {
     id: "live-adapter-operator-evidence-workplan",
     label: "Live adapter operator evidence workplan data",
+    status: present ? "passed" : "failed",
+    detail: detailSentence(present ? "Found" : "Missing", expected)
+  };
+}
+
+function operatorEvidenceCheckCommandDataCheck(
+  html: string,
+  data: ConsoleData | undefined
+): ConsoleVisualCheckReport["checks"][number] {
+  const expected = data?.liveAdapterOperatorEvidenceWorkplan
+    ? "live-adapter-operator-evidence-check"
+    : "No live adapter operator evidence check command required.";
+  const present = expected === "No live adapter operator evidence check command required." || html.includes(expected);
+  return {
+    id: "live-adapter-operator-evidence-check-command",
+    label: "Live adapter operator evidence check command",
     status: present ? "passed" : "failed",
     detail: detailSentence(present ? "Found" : "Missing", expected)
   };

@@ -1,12 +1,12 @@
 {
   "schemaVersion": 1,
   "project": "ariadne",
-  "generatedAt": "2026-05-17T06:04:27.137Z",
+  "generatedAt": "2026-05-17T06:36:35.989Z",
   "status": "passed",
   "summary": {
     "required": 13,
-    "optional": 39,
-    "present": 43,
+    "optional": 40,
+    "present": 44,
     "missingRequired": 0
   },
   "checks": [
@@ -348,6 +348,17 @@
       "required": false,
       "path": "projects/ariadne/control/live-adapter-evidence-templates.json",
       "status": "present"
+    },
+    {
+      "id": "live-adapter-operator-evidence-checks",
+      "label": "Live adapter operator evidence checks",
+      "required": false,
+      "path": "projects/ariadne/control/live-adapter-operator-evidence-checks/operator-evidence-check-*.json",
+      "status": "present",
+      "count": 1,
+      "matches": [
+        "projects/ariadne/control/live-adapter-operator-evidence-checks/operator-evidence-check-github-2026-05-17T06-36-28-110Z.json"
+      ]
     },
     {
       "id": "live-adapter-operator-evidence",
