@@ -279,6 +279,14 @@ npm run ariadne -- infra-live-local --project ariadne --notes "Mac workstation r
 
 This uses local Node.js OS APIs only. It hashes the hostname and omits network and MAC addresses before writing `infrastructure/infra-snapshot-live-local-...json`.
 
+Probe the local runtime surface:
+
+```bash
+npm run ariadne -- local-runtime-probe --project ariadne --canary
+```
+
+This checks the Hermes dashboard, Hermes CLI status/doctor/gateway commands, Ollama, DS4/OpenAI-compatible, and LM Studio endpoints. `--canary` sends short local model prompts and appends any observed token counts as `local-llm` usage metrics. The command writes `infrastructure/runtime/local-runtime-probe-...json` and a matching `.md` human-readable report. It does not start services, load models, edit scheduler state, or mutate infrastructure.
+
 For an approved remote host reachable over SSH, collect a sanitized read-only inventory:
 
 ```bash

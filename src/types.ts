@@ -1146,7 +1146,7 @@ export interface UsageMetricRecord {
   id: string;
   project: string;
   recordedAt: string;
-  source: "hermes" | "coderabbit" | "openai" | "ci" | "manual";
+  source: "hermes" | "coderabbit" | "openai" | "ci" | "local-llm" | "manual";
   model?: string;
   operation?: string;
   inputTokens?: number;
@@ -1183,6 +1183,67 @@ export interface UsageMetricsReport {
     costUsd: number;
   }>;
   latest?: UsageMetricRecord;
+}
+
+export interface LocalRuntimeProbe {
+  schemaVersion: 1;
+  project: string;
+  generatedAt: string;
+  mode: "read_only" | "read_only_with_canary";
+  summary: {
+    services: number;
+    reachable: number;
+    degraded: number;
+    unreachable: number;
+    models: number;
+    usageRecords: number;
+    warnings: string[];
+  };
+  hermes: {
+    dashboard: RuntimeServiceProbe;
+    statusCommand: RuntimeCommandProbe;
+    doctorCommand: RuntimeCommandProbe;
+    gatewayCommand: RuntimeCommandProbe;
+  };
+  modelEndpoints: RuntimeModelEndpointProbe[];
+  usageRecords: UsageMetricRecord[];
+}
+
+export interface RuntimeServiceProbe {
+  id: string;
+  url?: string;
+  status: "reachable" | "degraded" | "unreachable";
+  httpStatus?: number;
+  detail: string;
+}
+
+export interface RuntimeCommandProbe {
+  command: string;
+  status: "reachable" | "degraded" | "unreachable";
+  exitCode?: number;
+  stdoutPreview?: string;
+  stderrPreview?: string;
+  detail: string;
+}
+
+export interface RuntimeModelEndpointProbe {
+  id: string;
+  kind: "ollama" | "openai-compatible";
+  url: string;
+  status: "reachable" | "degraded" | "unreachable";
+  models: string[];
+  detail: string;
+  canary?: {
+    status: "passed" | "degraded" | "failed" | "skipped";
+    model?: string;
+    responsePreview?: string;
+    usage?: {
+      inputTokens?: number;
+      outputTokens?: number;
+      totalTokens?: number;
+      durationMs?: number;
+    };
+  };
 }
 
 export interface ConsoleVisualCheckReport {

@@ -73,6 +73,7 @@ Do not add `npm run cli`, `src/cli.ts`, or docs that describe the main runner as
 - `src/deploymentMutation.ts`: target-specific deployment mutation-readiness plan generation for one estate system and host.
 - `src/infrastructure.ts` and `src/infraSnapshot.ts`: substrate registry and read-only imports.
 - `src/liveInventory.ts`: sanitized live read-only local and SSH host inventory collection.
+- `src/localRuntimeProbe.ts`: read-only Hermes and local model endpoint probes plus optional local-LLM usage evidence.
 - `src/liveAdapterApprovalPack.ts`: operator approval packet generation from live-adapter blockers.
 - `src/liveAdapterApprovalReview.ts`: operator review records for approval packets; these are not mutation approvals.
 - `src/liveAdapterApprovalReviewAudit.ts`: review-record audit that proves accepted packet reviews are current and evidence-backed.

@@ -203,7 +203,14 @@ function renderTable(rows: UsageMetricsReport["bySource"]): string {
 }
 
 function sourceValue(value: unknown): UsageMetricRecord["source"] | undefined {
-  if (value === "hermes" || value === "coderabbit" || value === "openai" || value === "ci" || value === "manual") {
+  if (
+    value === "hermes" ||
+    value === "coderabbit" ||
+    value === "openai" ||
+    value === "ci" ||
+    value === "local-llm" ||
+    value === "manual"
+  ) {
     return value;
   }
   return undefined;

@@ -138,6 +138,16 @@ const ARTIFACT_SPECS: ArtifactSpec[] = [
     minimumCount: 1
   },
   {
+    id: "local-runtime-probes",
+    label: "Local runtime probes",
+    required: false,
+    kind: "matching-files",
+    relativePath: "infrastructure/runtime",
+    prefix: "local-runtime-probe-",
+    suffix: ".json",
+    minimumCount: 1
+  },
+  {
     id: "control-report",
     label: "Merge-readiness report",
     required: true,

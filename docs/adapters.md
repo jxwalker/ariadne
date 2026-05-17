@@ -323,7 +323,7 @@ Artifacts:
 
 `evaluation-trends` reads timestamped evaluation records and writes overall plus per-dimension deltas for console charting and release review.
 
-`usage-import` appends token and cost metrics from Hermes, CodeRabbit, OpenAI, CI, or manual JSON exports. `usage-report` aggregates those records by source and model so evaluation can track model/review spend without live service calls.
+`usage-import` appends token and cost metrics from Hermes, CodeRabbit, OpenAI, CI, local LLM canaries, or manual JSON exports. `usage-report` aggregates those records by source and model, so evaluation can track model/review spend without live service calls.
 
 `artifact-checks` is a deterministic evaluation sensor. It verifies that the required evidence spine exists before an operator records scores or relies on a control report. Optional console artifacts are reported without blocking the status.
 
@@ -458,6 +458,14 @@ npm run ariadne -- infra-live-local --project ariadne --notes "Mac workstation r
 ```
 
 The collector uses local Node.js OS APIs, hashes the hostname, omits network and MAC addresses, and records `snapshotKind: live_read_only`. It does not connect to remote hosts or mutate infrastructure.
+
+`local-runtime-probe` records the current runtime surface for Hermes and local model servers:
+
+```bash
+npm run ariadne -- local-runtime-probe --project ariadne --canary
+```
+
+It checks the Hermes dashboard URL, Hermes CLI status/doctor/gateway commands, Ollama, DS4/OpenAI-compatible, and LM Studio endpoints. With `--canary`, it sends short local prompts and records observed local model usage as `local-llm` metrics. It writes `infrastructure/runtime/local-runtime-probe-<timestamp>.json` and `infrastructure/runtime/local-runtime-probe-<timestamp>.md`; the Markdown file is the human-readable probe report. It does not start services, load models, create Hermes cron jobs, or mutate infrastructure.
 
 `infra-live-ssh` collects the same class of evidence from an approved remote host over SSH:
 
