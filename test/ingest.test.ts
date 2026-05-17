@@ -2,11 +2,36 @@ import fs from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
 import { describe, expect, it } from "vitest";
+import { writeJsonArtifact, writeTextArtifact } from "../src/artifacts.js";
 import { importExtractionResult } from "../src/extractionResults.js";
 import { planExtractionRunner } from "../src/extractionRunnerPlan.js";
 import { assembleDossier, ingestFiles, loadRecords, projectStatus } from "../src/vault.js";
 
 describe("source intake", () => {
+  it("replaces generated artifacts atomically without temp-file leftovers", async () => {
+    const temp = await fs.mkdtemp(path.join(os.tmpdir(), "ariadne-artifacts-"));
+    const vaultRoot = path.join(temp, "vault");
+
+    const writes = Array.from({ length: 20 }, (_item, index) =>
+      writeJsonArtifact(vaultRoot, "ariadne", "control", "atomic.json", { schemaVersion: 1, index })
+    );
+    const paths = await Promise.all(writes);
+    expect(new Set(paths).size).toBe(1);
+
+    const finalText = await fs.readFile(paths[0]!, "utf8");
+    const parsed = JSON.parse(finalText) as { schemaVersion: number; index: number };
+    expect(parsed.schemaVersion).toBe(1);
+    expect(parsed.index).toBeGreaterThanOrEqual(0);
+    expect(parsed.index).toBeLessThan(20);
+
+    const controlDir = path.dirname(paths[0]!);
+    const leftovers = (await fs.readdir(controlDir)).filter((name) => name.endsWith(".tmp"));
+    expect(leftovers).toEqual([]);
+
+    const markdownPath = await writeTextArtifact(vaultRoot, "ariadne", "control", "atomic.md", "done");
+    await expect(fs.readFile(markdownPath, "utf8")).resolves.toBe("done\n");
+  });
+
   it("preserves a raw source, extracts text, and assembles a dossier", async () => {
     const temp = await fs.mkdtemp(path.join(os.tmpdir(), "ariadne-"));
     const source = path.join(temp, "note.md");
