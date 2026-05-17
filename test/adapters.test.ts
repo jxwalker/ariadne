@@ -1160,6 +1160,11 @@ describe("roadmap adapters", () => {
     expect(notebookQueue?.status).toBe("ready_for_import");
     expect(notebookQueue?.latestCheckMissingSections).toBe(0);
     expect(notebookQueue?.nextAction).toContain("Import the checked evidence file");
+    const hermesQueue = operatorEvidenceQueue.queue.targets.find((target) => target.target === "hermes-cron");
+    expect(hermesQueue?.missingSections).toContain("Post-action verification command");
+    const queueMarkdown = await fs.readFile(operatorEvidenceQueue.markdownPath, "utf8");
+    expect(queueMarkdown).toContain("Missing section labels");
+    expect(queueMarkdown).toContain("Post-action verification command");
     const operatorEvidenceWorkspace = await generateLiveAdapterOperatorEvidenceWorkspace({ project: "ariadne", vaultRoot });
     expect(operatorEvidenceWorkspace.workspace.status).toBe("awaiting_operator_input");
     expect(operatorEvidenceWorkspace.workspace.mutationApproved).toBe(false);
