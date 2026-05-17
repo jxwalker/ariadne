@@ -424,6 +424,13 @@ function approvalQueue(data: ConsoleData): string {
         detail: `${check.planId}: ${blocker}`
       }))
     ) ?? [];
+  const cutoverBlockers =
+    data.liveAdapterCutoverAudit?.targets.flatMap((target) =>
+      target.blockers.map((blocker) => ({
+        kind: `cutover ${target.target}`,
+        detail: blocker
+      }))
+    ) ?? [];
   const healerReviews = data.healerProposals.filter((proposal) => proposal.status === "review_required");
   const rows = [
     ...missing.map((item) => ({ kind: "missing gate", detail: item })),
@@ -440,7 +447,8 @@ function approvalQueue(data: ConsoleData): string {
       kind: `mutation ${plan.status}`,
       detail: `${plan.target}: ${plan.scope}`
     })),
-    ...auditBlockers
+    ...auditBlockers,
+    ...cutoverBlockers
   ];
   if (rows.length === 0) return empty("No approval queue items are available.");
   return [

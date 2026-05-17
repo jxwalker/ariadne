@@ -29,6 +29,7 @@ export async function generateConsoleVisualCheckReport(input: {
     checkContains(html, "approval-review-audit-metric", "Approval review audit metric", "Review Audit"),
     checkContains(html, "adapter-dossier-metric", "Adapter dossier metric", "Dossiers"),
     checkContains(html, "adapter-cutover-metric", "Adapter cutover metric", "Cutover"),
+    cutoverQueueCheck(html, embeddedData),
     trendChartCheck(html, embeddedData),
     checkContains(html, "visual-check-panel", "Visual check panel", "Visual Checks"),
     checkContains(html, "embedded-data", "Embedded console data", 'id="console-data"'),
@@ -133,6 +134,28 @@ function approvalPackDataCheck(html: string, data: ConsoleData | undefined): Con
     label: "Live adapter approval pack data",
     status: present ? "passed" : "failed",
     detail: detailSentence(present ? "Found" : "Missing", expected)
+  };
+}
+
+function cutoverQueueCheck(html: string, data: ConsoleData | undefined): ConsoleVisualCheckReport["checks"][number] {
+  const blockedTargets = data?.liveAdapterCutoverAudit?.targets.filter((target) => target.blockers.length > 0) ?? [];
+  if (blockedTargets.length === 0) {
+    return {
+      id: "cutover-queue",
+      label: "Cutover blockers in approval queue",
+      status: "passed",
+      detail: "No cutover blockers are present."
+    };
+  }
+  const missing = blockedTargets.filter((target) => !html.includes(`cutover ${target.target}`));
+  return {
+    id: "cutover-queue",
+    label: "Cutover blockers in approval queue",
+    status: missing.length === 0 ? "passed" : "failed",
+    detail:
+      missing.length === 0
+        ? `${blockedTargets.length} cutover-blocked target(s) are visible in the approval queue.`
+        : `Missing cutover queue rows for ${missing.map((target) => target.target).join(", ")}.`
   };
 }
 

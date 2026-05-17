@@ -961,6 +961,10 @@ describe("roadmap adapters", () => {
     expect(console.data.summary.liveAdapterCutoverAuditStatus).toBe("blocked");
     expect(console.data.summary.liveAdapterCutoverReady).toBe(1);
     expect(console.data.liveAdapterCutoverAudit?.targets.some((target) => target.target === "github")).toBe(true);
+    const liveAdapterConsoleHtml = await generateConsoleHtml({ project: "ariadne", vaultRoot, refreshData: true });
+    const liveAdapterHtml = await fs.readFile(liveAdapterConsoleHtml.htmlPath, "utf8");
+    expect(liveAdapterHtml).toContain("cutover deployment");
+    expect(liveAdapterHtml).toContain("Current accepted operator packet review");
     expect(console.data.liveAdapterApprovalReviewAudit?.summary.currentAcceptedReviews).toBe(1);
     expect(console.data.liveAdapterTargetDossiers.some((dossier) => dossier.target === "deployment")).toBe(true);
     expect(
