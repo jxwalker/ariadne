@@ -60,6 +60,8 @@ Those live paths are roadmap items. The current job is to make state, evidence, 
 
 ## Quick Start
 
+The main runner is named `ariadne`. Use `npm run ariadne -- <command>` during local development; installed builds expose the same command as the package binary. Do not use the old scaffold name `cli` for commands, docs, or new entrypoints.
+
 ```bash
 npm install
 npm run check
