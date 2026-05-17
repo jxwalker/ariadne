@@ -8,6 +8,7 @@ import { generateLiveAdapterNextActions } from "./liveAdapterNextActions.js";
 import { generateLiveAdapterOperatorEvidenceAudit } from "./liveAdapterOperatorEvidence.js";
 import { isLiveAdapterTarget, LIVE_ADAPTER_TARGETS } from "./liveAdapterTargets.js";
 import { generateLiveAdapterTargetDossier } from "./liveAdapterTargetDossier.js";
+import { generateMutationReadinessRepairPlan } from "./mutationReadinessRepairPlan.js";
 import { projectDir, slugifyProject } from "./paths.js";
 import type {
   LiveAdapterOperatorEvidenceAssist,
@@ -25,6 +26,7 @@ export async function generateLiveAdapterReviewSession(input: {
   const approvalPack = await generateLiveAdapterApprovalPack({ project, vaultRoot: input.vaultRoot });
   const approvalReviewAudit = await generateLiveAdapterApprovalReviewAudit({ project, vaultRoot: input.vaultRoot });
   const operatorEvidenceAudit = await generateLiveAdapterOperatorEvidenceAudit({ project, vaultRoot: input.vaultRoot });
+  const mutationRepairPlan = await generateMutationReadinessRepairPlan({ project, vaultRoot: input.vaultRoot });
   const [operatorEvidenceQueue, operatorEvidenceAssist, dossiers] = await Promise.all([
     readExistingOperatorEvidenceQueue(input.vaultRoot, project),
     readExistingOperatorEvidenceAssist(input.vaultRoot, project),
@@ -38,6 +40,7 @@ export async function generateLiveAdapterReviewSession(input: {
   const reviewAuditByTarget = new Map(approvalReviewAudit.audit.targets.map((target) => [target.target, target]));
   const cutoverByTarget = new Map(cutoverAudit.audit.targets.map((target) => [target.target, target]));
   const operatorEvidenceByTarget = new Map(operatorEvidenceAudit.audit.targets.map((target) => [target.target, target]));
+  const repairByTarget = new Map(mutationRepairPlan.report.targets.map((target) => [target.target, target]));
   const queueByTarget = new Map(operatorEvidenceQueue?.targets.map((target) => [target.target, target]) ?? []);
   const assistByTarget = new Map(operatorEvidenceAssist?.targets.map((target) => [target.target, target]) ?? []);
 
@@ -49,11 +52,13 @@ export async function generateLiveAdapterReviewSession(input: {
     const reviewAuditTarget = reviewAuditByTarget.get(target.target);
     const cutoverTarget = cutoverByTarget.get(target.target);
     const operatorEvidenceTarget = operatorEvidenceByTarget.get(target.target);
+    const repairTarget = repairByTarget.get(target.target);
     const queueTarget = queueByTarget.get(target.target);
     const assistTarget = assistByTarget.get(target.target);
     if (!reviewAuditTarget) throw new Error(`Missing live-adapter approval-review audit target for ${target.target}.`);
     if (!cutoverTarget) throw new Error(`Missing live-adapter cutover target for ${target.target}.`);
     if (!operatorEvidenceTarget) throw new Error(`Missing live-adapter operator evidence audit target for ${target.target}.`);
+    if (!repairTarget) throw new Error(`Missing mutation-readiness repair target for ${target.target}.`);
     const operatorEvidenceFile = `vault/projects/${project}/control/operator-evidence/${operatorEvidenceTarget.target}/operator-evidence.md`;
     const operatorEvidenceFileRef = operatorEvidenceFile.replace(/^vault\//, "");
     const reviewCommand =
@@ -70,6 +75,10 @@ export async function generateLiveAdapterReviewSession(input: {
       reviewCommand,
       approvalRequestCommand: packet?.approvalRequestCommand,
       mutationPlanCommand: packet?.mutationPlanCommand,
+      mutationRepairStatus: repairTarget.status,
+      mutationRepairApprovalCommand: repairTarget.approvalCommand,
+      mutationRepairRegenerationCommand: repairTarget.regenerationCommand,
+      mutationRepairNextActionCommands: repairTarget.nextActionCommands,
       operatorEvidenceStatus: operatorEvidenceStatus(operatorEvidenceTarget.status),
       operatorEvidenceQueueStatus: queueTarget?.status,
       operatorEvidenceFileRef,
@@ -84,7 +93,15 @@ export async function generateLiveAdapterReviewSession(input: {
       cutoverBlockers: cutoverTarget.blockers,
       dossierRef: path.relative(input.vaultRoot, dossierResult.jsonPath),
       gbrainContext: dossier.gbrainContext,
-      evidenceRefs: reviewSessionEvidenceRefs(input.vaultRoot, project, dossier, dossierResult.jsonPath, target.actions.flatMap((action) => action.evidenceRefs))
+      evidenceRefs: reviewSessionEvidenceRefs(
+        input.vaultRoot,
+        project,
+        dossier,
+        dossierResult.jsonPath,
+        target.actions.flatMap((action) => action.evidenceRefs),
+        mutationRepairPlan.jsonPath,
+        repairTarget.evidenceRefs
+      )
     };
   });
 
@@ -109,6 +126,7 @@ export async function generateLiveAdapterReviewSession(input: {
     approvalPackRef: path.relative(input.vaultRoot, approvalPack.jsonPath),
     approvalReviewAuditRef: path.relative(input.vaultRoot, approvalReviewAudit.jsonPath),
     cutoverAuditRef: path.relative(input.vaultRoot, cutoverAudit.jsonPath),
+    mutationRepairPlanRef: path.relative(input.vaultRoot, mutationRepairPlan.jsonPath),
     operatorEvidenceAuditRef: path.relative(input.vaultRoot, operatorEvidenceAudit.jsonPath),
     operatorEvidenceQueueRef: operatorEvidenceQueue ? `projects/${project}/control/live-adapter-operator-evidence-queue.json` : undefined,
     operatorEvidenceAssistRef: operatorEvidenceAssist ? `projects/${project}/control/live-adapter-operator-evidence-assist.json` : undefined,
@@ -148,14 +166,18 @@ function reviewSessionEvidenceRefs(
   project: string,
   dossier: LiveAdapterTargetDossier,
   dossierPath: string,
-  actionEvidenceRefs: string[]
+  actionEvidenceRefs: string[],
+  mutationRepairPlanPath: string,
+  repairEvidenceRefs: string[]
 ): string[] {
   return Array.from(
     new Set(
       [
         path.relative(vaultRoot, dossierPath),
+        path.relative(vaultRoot, mutationRepairPlanPath),
         ...dossier.evidenceRefs,
         ...actionEvidenceRefs,
+        ...repairEvidenceRefs,
         ...dossier.gbrainContext.reportRefs
       ].map((ref) => canonicalEvidenceRef(project, ref))
     )
@@ -271,6 +293,7 @@ function renderSession(session: LiveAdapterReviewSession): string {
     `- Approval pack: ${session.approvalPackRef}`,
     `- Approval-review audit: ${session.approvalReviewAuditRef}`,
     `- Cutover audit: ${session.cutoverAuditRef}`,
+    `- Mutation repair plan: ${session.mutationRepairPlanRef}`,
     `- Operator evidence audit: ${session.operatorEvidenceAuditRef}`,
     ...(session.operatorEvidenceQueueRef ? [`- Operator evidence queue: ${session.operatorEvidenceQueueRef}`] : []),
     ...(session.operatorEvidenceAssistRef ? [`- Operator evidence assist: ${session.operatorEvidenceAssistRef}`] : []),
@@ -324,6 +347,20 @@ function renderSession(session: LiveAdapterReviewSession): string {
         ? ["#### Approval Request Draft", "", "```bash", target.approvalRequestCommand, "```", ""]
         : []),
       ...(target.mutationPlanCommand ? ["#### Mutation Plan Draft", "", "```bash", target.mutationPlanCommand, "```", ""] : []),
+      "#### Mutation Repair",
+      "",
+      `Status: ${target.mutationRepairStatus}`,
+      "",
+      ...optionalCommandSection("Approval request", target.mutationRepairApprovalCommand),
+      "Regeneration:",
+      "",
+      "```bash",
+      target.mutationRepairRegenerationCommand,
+      "```",
+      "",
+      "Next action commands:",
+      ...list(target.mutationRepairNextActionCommands),
+      "",
       "#### Required Evidence",
       "",
       ...list(target.requiredEvidence),
@@ -354,4 +391,8 @@ function renderSession(session: LiveAdapterReviewSession): string {
 
 function list(items: string[]): string[] {
   return items.length === 0 ? ["- none"] : items.map((item) => `- ${item}`);
+}
+
+function optionalCommandSection(label: string, command: string | undefined): string[] {
+  return command ? [`${label}:`, "", "```bash", command, "```", ""] : [`${label}: none`, ""];
 }

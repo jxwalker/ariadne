@@ -703,6 +703,7 @@ export interface LiveAdapterReviewSession {
   approvalPackRef: string;
   approvalReviewAuditRef: string;
   cutoverAuditRef: string;
+  mutationRepairPlanRef: string;
   operatorEvidenceAuditRef: string;
   operatorEvidenceQueueRef?: string;
   operatorEvidenceAssistRef?: string;
@@ -727,6 +728,10 @@ export interface LiveAdapterReviewSession {
     reviewCommand: string;
     approvalRequestCommand?: string;
     mutationPlanCommand?: string;
+    mutationRepairStatus: MutationReadinessRepairPlan["targets"][number]["status"];
+    mutationRepairApprovalCommand?: string;
+    mutationRepairRegenerationCommand: string;
+    mutationRepairNextActionCommands: string[];
     operatorEvidenceStatus: "complete" | "needs_evidence" | "needs_rework";
     operatorEvidenceQueueStatus?: LiveAdapterOperatorEvidenceQueue["targets"][number]["status"];
     operatorEvidenceFileRef: string;

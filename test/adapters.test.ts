@@ -1043,6 +1043,7 @@ describe("roadmap adapters", () => {
     expect(reviewSession.session.status).toBe("operator_review_required");
     expect(reviewSession.session.mutationApproved).toBe(false);
     expect(reviewSession.session.operatorDecisionRequired).toBe(true);
+    expect(reviewSession.session.mutationRepairPlanRef).toContain("mutation-readiness-repair-plan.json");
     expect(reviewSession.session.summary.targets).toBe(6);
     expect(reviewSession.session.summary.readyForAdapterWork).toBe(1);
     expect(reviewSession.session.summary.operatorReviewRequired).toBe(5);
@@ -1055,12 +1056,19 @@ describe("roadmap adapters", () => {
     expect(deploymentSession?.operatorEvidenceFileRef).toContain("control/operator-evidence/deployment/operator-evidence.md");
     expect(deploymentSession?.missingOperatorEvidenceSections).toContain("Post-action verification command");
     expect(deploymentSession?.approvalRequestCommand).toContain("--target deployment");
+    expect(deploymentSession?.mutationRepairStatus).toBe("operator_action_required");
+    expect(deploymentSession?.mutationRepairApprovalCommand).toContain("--target deployment");
+    expect(deploymentSession?.mutationRepairRegenerationCommand).toContain("deployment-mutation-plan");
+    expect(deploymentSession?.mutationRepairNextActionCommands.some((command) => command.includes("live-adapter-approval-review"))).toBe(true);
     expect(deploymentSession?.gbrainContext.suggestedQueries.some((query) => query.includes("deployment"))).toBe(true);
     expect(githubSession?.status).toBe("ready_for_adapter_work");
     expect(githubSession?.cutoverStatus).toBe("ready_for_cutover");
     const reviewSessionMarkdown = await fs.readFile(reviewSession.markdownPath, "utf8");
     expect(reviewSessionMarkdown).toContain("Operator Evidence Action");
     expect(reviewSessionMarkdown).toContain("Missing operator evidence sections");
+    expect(reviewSessionMarkdown).toContain("Mutation repair plan");
+    expect(reviewSessionMarkdown).toContain("#### Mutation Repair");
+    expect(reviewSessionMarkdown).toContain("deployment-mutation-plan");
     const malformedQueue = path.join(vaultRoot, "projects", "ariadne", "control", "live-adapter-operator-evidence-queue.json");
     const malformedAssist = path.join(vaultRoot, "projects", "ariadne", "control", "live-adapter-operator-evidence-assist.json");
     await fs.writeFile(malformedQueue, JSON.stringify({ schemaVersion: 1, targets: [{ target: 123 }] }));
