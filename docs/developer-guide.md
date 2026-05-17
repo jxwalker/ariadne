@@ -12,6 +12,8 @@ npm run build
 npm run ariadne -- status --project ariadne
 ```
 
+`status` is read-only. It reports intake counts and, when present, the current merge-readiness, roadmap-completion, mutation-repair, and latest e2e-smoke artifacts; it does not refresh those artifacts.
+
 ## Runner Naming
 
 The main runner is Ariadne, not `cli`. Keep the command surface, package binary, docs, examples, and entrypoint filenames aligned on `ariadne`:

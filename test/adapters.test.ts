@@ -72,7 +72,7 @@ import { captureTargetAppEvidence } from "../src/targetAppCapture.js";
 import { runTargetMutationExecution, targetForMutationExecutionCommand } from "../src/targetMutationExecute.js";
 import { generateUsageMetricsReport, importUsageMetrics } from "../src/usageMetrics.js";
 import { guardWorktrees } from "../src/worktreeGuard.js";
-import { assembleDossier, ingestFiles } from "../src/vault.js";
+import { assembleDossier, ingestFiles, projectStatus } from "../src/vault.js";
 
 async function preparedProject(): Promise<{ temp: string; vaultRoot: string }> {
   const temp = await fs.mkdtemp(path.join(os.tmpdir(), "ariadne-adapters-"));
@@ -1436,6 +1436,15 @@ describe("roadmap adapters", () => {
     expect(e2eSmokeMarkdown).toContain("Mutation repair plan");
     expect(e2eSmokeMarkdown).toContain("mutationAllowed=false");
     expect(e2eSmokeMarkdown).toContain("This command does not create approvals");
+    const status = await projectStatus(vaultRoot, "ariadne");
+    expect(status.readinessStatus).toBe("review_required");
+    expect(status.roadmapCompletionStatus).toBe("blocked");
+    expect(status.roadmapCompletionBlocked).toBe(3);
+    expect(status.mutationReadinessRepairStatus).toBe("actions_required");
+    expect(status.mutationReadinessRepairMissingPlans).toBeGreaterThan(0);
+    expect(status.latestE2eSmoke?.status).toBe("blocked");
+    expect(status.latestE2eSmoke?.passed).toBeGreaterThan(0);
+    expect(status.latestE2eSmoke?.reportRef).toContain("evaluation/e2e-smoke-");
 
     const artifactChecks = await generateArtifactCheckReport({ project: "ariadne", vaultRoot });
     const coordinationCheck = artifactChecks.report.checks.find((check) => check.id === "coordination-records");

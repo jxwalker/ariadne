@@ -1581,6 +1581,23 @@ async function main(): Promise<void> {
     if (status.latestIngestedAt) {
       console.log(`Latest: ${status.latestIngestedAt}`);
     }
+    if (status.readinessStatus) {
+      console.log(`Readiness: ${status.readinessStatus}`);
+    }
+    if (status.roadmapCompletionStatus) {
+      console.log(`Roadmap completion: ${status.roadmapCompletionStatus} (${status.roadmapCompletionBlocked ?? 0} blocked)`);
+    }
+    if (status.mutationReadinessRepairStatus) {
+      console.log(
+        `Mutation repair: ${status.mutationReadinessRepairStatus} (${status.mutationReadinessRepairMissingPlans ?? 0} missing, ${status.mutationReadinessRepairOperatorActionRequired ?? 0} operator)`
+      );
+    }
+    if (status.latestE2eSmoke) {
+      console.log(
+        `Latest e2e smoke: ${status.latestE2eSmoke.status} (${status.latestE2eSmoke.passed} passed, ${status.latestE2eSmoke.blocked} blocked, ${status.latestE2eSmoke.degraded} degraded, ${status.latestE2eSmoke.failed} failed)`
+      );
+      console.log(`Latest e2e report: ${status.latestE2eSmoke.reportRef}`);
+    }
     return;
   }
 
