@@ -688,6 +688,7 @@ function isRuntimeCommandProbe(value: unknown): boolean {
   if (!hasSchema(value)) return false;
   return (
     typeof value.command === "string" &&
+    (value.url === undefined || typeof value.url === "string") &&
     (value.status === "reachable" || value.status === "degraded" || value.status === "unreachable") &&
     (value.exitCode === undefined || typeof value.exitCode === "number") &&
     (value.stdoutPreview === undefined || typeof value.stdoutPreview === "string") &&
@@ -701,7 +702,7 @@ function isRuntimeModelEndpointProbe(value: unknown): boolean {
   return (
     typeof value.id === "string" &&
     (value.kind === "ollama" || value.kind === "openai-compatible") &&
-    typeof value.url === "string" &&
+    (value.url === undefined || typeof value.url === "string") &&
     (value.status === "reachable" || value.status === "degraded" || value.status === "unreachable") &&
     Array.isArray(value.models) &&
     value.models.every((model) => typeof model === "string") &&
@@ -726,7 +727,7 @@ function redactLocalRuntimeProbeForConsole(probe: LocalRuntimeProbe): LocalRunti
     ...probe,
     modelEndpoints: probe.modelEndpoints.map((endpoint) => ({
       ...endpoint,
-      url: CONSOLE_REDACTED_URL
+      url: endpoint.url !== undefined ? CONSOLE_REDACTED_URL : endpoint.url
     }))
   };
   if (redacted.hermes) {
