@@ -726,7 +726,7 @@ function redactLocalRuntimeProbeForConsole(probe: LocalRuntimeProbe): LocalRunti
     ...probe,
     modelEndpoints: probe.modelEndpoints.map((endpoint) => ({
       ...endpoint,
-      url: endpoint.url !== undefined ? CONSOLE_REDACTED_URL : endpoint.url
+      url: CONSOLE_REDACTED_URL
     }))
   };
   if (redacted.hermes) {
