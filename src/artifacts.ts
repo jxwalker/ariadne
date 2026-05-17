@@ -1,5 +1,6 @@
 import fs from "node:fs/promises";
 import path from "node:path";
+import { randomUUID } from "node:crypto";
 import { projectDir, slugifyProject } from "./paths.js";
 
 export async function ensureArtifactDir(
@@ -21,7 +22,7 @@ export async function writeJsonArtifact(
 ): Promise<string> {
   const dir = await ensureArtifactDir(vaultRoot, project, dirName);
   const filePath = path.join(dir, fileName);
-  await fs.writeFile(filePath, `${JSON.stringify(value, null, 2)}\n`);
+  await writeFileAtomically(filePath, `${JSON.stringify(value, null, 2)}\n`);
   return filePath;
 }
 
@@ -34,8 +35,20 @@ export async function writeTextArtifact(
 ): Promise<string> {
   const dir = await ensureArtifactDir(vaultRoot, project, dirName);
   const filePath = path.join(dir, fileName);
-  await fs.writeFile(filePath, text.endsWith("\n") ? text : `${text}\n`);
+  await writeFileAtomically(filePath, text.endsWith("\n") ? text : `${text}\n`);
   return filePath;
+}
+
+async function writeFileAtomically(filePath: string, text: string): Promise<void> {
+  const dir = path.dirname(filePath);
+  const tempPath = path.join(dir, `.${path.basename(filePath)}.${process.pid}.${randomUUID()}.tmp`);
+  try {
+    await fs.writeFile(tempPath, text);
+    await fs.rename(tempPath, filePath);
+  } catch (error) {
+    await fs.rm(tempPath, { force: true });
+    throw error;
+  }
 }
 
 export async function readJsonArtifact<T>(
