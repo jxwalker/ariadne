@@ -45,10 +45,10 @@ jobs:
       - name: Get PR diff
         if: steps.grok_config.outputs.configured == 'true'
         env:
-          BASE_REF: ${{ github.base_ref }}
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
         run: |
-          git fetch --no-tags origin "$BASE_REF:refs/remotes/origin/$BASE_REF"
-          git diff --no-ext-diff --find-renames "origin/$BASE_REF...HEAD" > pr.diff
+          git fetch --no-tags origin "$BASE_SHA"
+          git diff --no-ext-diff --find-renames "$BASE_SHA...HEAD" > pr.diff
 
       - name: Call Grok API
         if: steps.grok_config.outputs.configured == 'true'
@@ -57,7 +57,7 @@ jobs:
           XAI_API_KEY: ${{ secrets.XAI_API_KEY }}
         run: |
           max_diff_bytes=750000
-          diff_bytes=$(wc -c < pr.diff | tr -d ' ')
+          diff_bytes=$(wc -c < pr.diff | awk '{print $1}')
           if [ "$diff_bytes" -gt "$max_diff_bytes" ]; then
             {
               echo "<!-- grok-pr-review -->"
@@ -103,7 +103,11 @@ jobs:
 
           if [ "$http_status" -lt 200 ] || [ "$http_status" -ge 300 ]; then
             echo "Grok API request failed with HTTP $http_status" >&2
-            jq -r '.error.message // .message // .' grok-response.json >&2
+            if jq -e . grok-response.json >/dev/null 2>&1; then
+              jq -r '.error.message // .message // .' grok-response.json >&2
+            else
+              cat grok-response.json >&2
+            fi
             exit 1
           fi
 
