@@ -1310,6 +1310,11 @@ describe("roadmap adapters", () => {
     expect(console.data.summary.liveAdapterOperatorEvidenceQueueStatus).toBe("evidence_required");
     expect(console.data.summary.liveAdapterOperatorEvidenceQueueReady).toBe(0);
     expect(console.data.liveAdapterOperatorEvidenceQueue?.summary.uncheckedTargets).toBe(0);
+    expect(console.data.summary.liveAdapterOperatorEvidenceAssistStatus).toBe("awaiting_operator_review");
+    expect(console.data.summary.liveAdapterOperatorEvidenceAssistTargets).toBe(6);
+    expect(console.data.summary.liveAdapterOperatorEvidenceAssistRefs).toBeGreaterThan(0);
+    expect(console.data.liveAdapterOperatorEvidenceAssist?.operatorEvidenceRecordCreated).toBe(false);
+    expect(console.data.liveAdapterOperatorEvidenceAssist?.targets.some((target) => target.target === "hermes-cron")).toBe(true);
     expect(console.data.summary.liveAdapterOperatorEvidenceChecks).toBe(14);
     expect(console.data.liveAdapterOperatorEvidenceAudit?.mutationApproved).toBe(false);
     expect(console.data.liveAdapterOperatorEvidenceChecks[0]?.recorded).toBe(false);
@@ -1326,6 +1331,7 @@ describe("roadmap adapters", () => {
     expect(liveAdapterHtml).toContain("Templates are blank collection aids");
     expect(liveAdapterHtml).toContain("The workplan is an evidence collection queue");
     expect(liveAdapterHtml).toContain("The queue orders operator work from preflight checks");
+    expect(liveAdapterHtml).toContain("Assist packets are read-only collection aids");
     expect(liveAdapterHtml).toContain("Operator evidence records do not approve mutation");
     expect(liveAdapterHtml).toContain("operator evidence hermes-cron");
     expect(liveAdapterHtml).toContain("Completion is only true");

@@ -41,6 +41,7 @@ import type {
   LiveAdapterNextActionsReport,
   LiveAdapterOperatorEvidenceAudit,
   LiveAdapterOperatorEvidenceCheck,
+  LiveAdapterOperatorEvidenceAssist,
   LiveAdapterOperatorEvidenceQueue,
   LiveAdapterOperatorEvidenceRecord,
   LiveAdapterOperatorEvidenceWorkplan,
@@ -167,6 +168,12 @@ export async function collectConsoleData(vaultRoot: string, projectInput: string
     project,
     "control",
     "live-adapter-operator-evidence-queue.json"
+  );
+  const liveAdapterOperatorEvidenceAssist = await readProjectJson<LiveAdapterOperatorEvidenceAssist>(
+    vaultRoot,
+    project,
+    "control",
+    "live-adapter-operator-evidence-assist.json"
   );
   const roadmapCompletionAudit = await readProjectJson<RoadmapCompletionAudit>(
     vaultRoot,
@@ -319,6 +326,9 @@ export async function collectConsoleData(vaultRoot: string, projectInput: string
       liveAdapterOperatorEvidenceWorkplanTargets: liveAdapterOperatorEvidenceWorkplan?.summary.targets,
       liveAdapterOperatorEvidenceQueueStatus: liveAdapterOperatorEvidenceQueue?.status,
       liveAdapterOperatorEvidenceQueueReady: liveAdapterOperatorEvidenceQueue?.summary.readyForImport,
+      liveAdapterOperatorEvidenceAssistStatus: liveAdapterOperatorEvidenceAssist?.status,
+      liveAdapterOperatorEvidenceAssistTargets: liveAdapterOperatorEvidenceAssist?.summary.targets,
+      liveAdapterOperatorEvidenceAssistRefs: liveAdapterOperatorEvidenceAssist?.summary.existingEvidenceRefs,
       liveAdapterOperatorEvidenceChecks: liveAdapterOperatorEvidenceChecks.length,
       liveAdapterOperatorEvidenceRecords: liveAdapterOperatorEvidence.length,
       liveAdapterOperatorEvidenceStatus: liveAdapterOperatorEvidenceAudit?.status,
@@ -356,6 +366,7 @@ export async function collectConsoleData(vaultRoot: string, projectInput: string
     liveAdapterEvidenceTemplatePack,
     liveAdapterOperatorEvidenceWorkplan,
     liveAdapterOperatorEvidenceQueue,
+    liveAdapterOperatorEvidenceAssist,
     liveAdapterOperatorEvidenceChecks,
     liveAdapterOperatorEvidence,
     liveAdapterOperatorEvidenceAudit,
@@ -436,6 +447,10 @@ export async function collectConsoleData(vaultRoot: string, projectInput: string
       liveAdapterOperatorEvidenceQueue: await existingPath(
         vaultRoot,
         path.join(dir, "control", "live-adapter-operator-evidence-queue.json")
+      ),
+      liveAdapterOperatorEvidenceAssist: await existingPath(
+        vaultRoot,
+        path.join(dir, "control", "live-adapter-operator-evidence-assist.json")
       ),
       liveAdapterOperatorEvidenceChecks: await existingPath(
         vaultRoot,

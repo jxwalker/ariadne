@@ -1696,6 +1696,9 @@ export interface ConsoleData {
     liveAdapterOperatorEvidenceWorkplanTargets?: number;
     liveAdapterOperatorEvidenceQueueStatus?: LiveAdapterOperatorEvidenceQueue["status"];
     liveAdapterOperatorEvidenceQueueReady?: number;
+    liveAdapterOperatorEvidenceAssistStatus?: LiveAdapterOperatorEvidenceAssist["status"];
+    liveAdapterOperatorEvidenceAssistTargets?: number;
+    liveAdapterOperatorEvidenceAssistRefs?: number;
     liveAdapterOperatorEvidenceChecks?: number;
     liveAdapterOperatorEvidenceRecords?: number;
     liveAdapterOperatorEvidenceStatus?: LiveAdapterOperatorEvidenceAudit["status"];
@@ -1776,6 +1779,7 @@ export interface ConsoleData {
   liveAdapterEvidenceTemplatePack?: LiveAdapterEvidenceTemplatePack;
   liveAdapterOperatorEvidenceWorkplan?: LiveAdapterOperatorEvidenceWorkplan;
   liveAdapterOperatorEvidenceQueue?: LiveAdapterOperatorEvidenceQueue;
+  liveAdapterOperatorEvidenceAssist?: LiveAdapterOperatorEvidenceAssist;
   liveAdapterOperatorEvidenceChecks: LiveAdapterOperatorEvidenceCheck[];
   liveAdapterOperatorEvidence: LiveAdapterOperatorEvidenceRecord[];
   liveAdapterOperatorEvidenceAudit?: LiveAdapterOperatorEvidenceAudit;
@@ -1815,6 +1819,7 @@ export interface ConsoleData {
     liveAdapterEvidenceTemplates?: string;
     liveAdapterOperatorEvidenceWorkplan?: string;
     liveAdapterOperatorEvidenceQueue?: string;
+    liveAdapterOperatorEvidenceAssist?: string;
     liveAdapterOperatorEvidenceChecks?: string;
     liveAdapterOperatorEvidence?: string;
     liveAdapterOperatorEvidenceAudit?: string;
