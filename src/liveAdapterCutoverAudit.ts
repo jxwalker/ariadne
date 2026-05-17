@@ -19,6 +19,7 @@ import type {
 export async function generateLiveAdapterCutoverAudit(input: {
   project: string;
   vaultRoot: string;
+  target?: LiveAdapterTarget;
 }): Promise<{ jsonPath: string; markdownPath: string; audit: LiveAdapterCutoverAudit }> {
   const project = slugifyProject(input.project);
   const readiness = await generateLiveAdapterReadiness({ project, vaultRoot: input.vaultRoot });
@@ -26,7 +27,8 @@ export async function generateLiveAdapterCutoverAudit(input: {
   const mutationReadinessAudit = await generateMutationReadinessAudit({ project, vaultRoot: input.vaultRoot });
   const operatorEvidenceAudit = await generateLiveAdapterOperatorEvidenceAudit({ project, vaultRoot: input.vaultRoot });
   const dossiers = await readDossiers(input.vaultRoot, project);
-  const targets = LIVE_ADAPTER_TARGETS.map((target) =>
+  const selectedTargets = input.target ? [input.target] : LIVE_ADAPTER_TARGETS;
+  const targets = selectedTargets.map((target) =>
     targetCutover(
       target,
       readiness.report,
@@ -48,6 +50,7 @@ export async function generateLiveAdapterCutoverAudit(input: {
     schemaVersion: 1,
     project,
     generatedAt: new Date().toISOString(),
+    target: input.target,
     status: summary.blocked === 0 ? "ready_for_cutover" : "blocked",
     mutationAllowed: false,
     readinessRef: "control/live-adapter-readiness.json",
@@ -58,12 +61,13 @@ export async function generateLiveAdapterCutoverAudit(input: {
     summary,
     targets
   };
-  const jsonPath = await writeJsonArtifact(input.vaultRoot, project, "control", "live-adapter-cutover-audit.json", audit);
+  const artifactName = input.target ? `live-adapter-cutover-audit-${input.target}` : "live-adapter-cutover-audit";
+  const jsonPath = await writeJsonArtifact(input.vaultRoot, project, "control", `${artifactName}.json`, audit);
   const markdownPath = await writeTextArtifact(
     input.vaultRoot,
     project,
     "control",
-    "live-adapter-cutover-audit.md",
+    `${artifactName}.md`,
     renderAudit(audit)
   );
   return { jsonPath, markdownPath, audit };
@@ -255,6 +259,7 @@ function renderAudit(audit: LiveAdapterCutoverAudit): string {
     "# Live Adapter Cutover Audit",
     "",
     `Project: ${audit.project}`,
+    `Target: ${audit.target ?? "all"}`,
     `Status: ${audit.status}`,
     `Generated: ${audit.generatedAt}`,
     `Mutation allowed: ${audit.mutationAllowed}`,

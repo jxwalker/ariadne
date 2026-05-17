@@ -658,6 +658,7 @@ export interface LiveAdapterCutoverAudit {
   schemaVersion: 1;
   project: string;
   generatedAt: string;
+  target?: Exclude<MutationReadinessPlan["target"], "generic">;
   status: "ready_for_cutover" | "blocked";
   mutationAllowed: false;
   readinessRef: string;
@@ -696,6 +697,7 @@ export interface LiveAdapterReviewSession {
   schemaVersion: 1;
   project: string;
   generatedAt: string;
+  target?: Exclude<MutationReadinessPlan["target"], "generic">;
   status: "operator_review_required" | "ready_for_adapter_work";
   mutationApproved: false;
   operatorDecisionRequired: true;

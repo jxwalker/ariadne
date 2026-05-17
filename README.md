@@ -99,7 +99,9 @@ npm run ariadne -- live-adapter-approval-review --project ariadne --target githu
 npm run ariadne -- live-adapter-approval-review-audit --project ariadne
 npm run ariadne -- live-adapter-dossier --project ariadne --target github
 npm run ariadne -- live-adapter-cutover-audit --project ariadne
+npm run ariadne -- live-adapter-cutover-audit --project ariadne --target hermes-cron
 npm run ariadne -- live-adapter-review-session --project ariadne
+npm run ariadne -- live-adapter-review-session --project ariadne --target hermes-cron
 npm run ariadne -- live-adapter-evidence-templates --project ariadne
 npm run ariadne -- live-adapter-operator-evidence-workplan --project ariadne
 npm run ariadne -- live-adapter-operator-evidence-queue --project ariadne
@@ -179,8 +181,8 @@ vault/projects/<project>/
 15. Use `live-adapter-approval-review` only when an operator has reviewed a packet; it does not approve live mutation.
 16. Use `live-adapter-approval-review-audit` to prove accepted packet reviews are current, evidence-backed, and non-mutating.
 17. Use `live-adapter-dossier` to assemble the target packet, blockers, actions, mutation audit, and GBrain memory queries for operator review.
-18. Use `live-adapter-cutover-audit` to prove whether a target has complete operator evidence and is actually ready to replace placeholder commands with a live adapter implementation.
-19. Use `live-adapter-review-session` to consolidate all target review commands, dossier refs, cutover blockers, and GBrain advisory queries into a single operator session before recording packet reviews.
+18. Use `live-adapter-cutover-audit` to prove whether a target has complete operator evidence and is actually ready to replace placeholder commands with a live adapter implementation; add `--target <target>` to audit one adapter at a time.
+19. Use `live-adapter-review-session` to consolidate target review commands, dossier refs, cutover blockers, and GBrain advisory queries into an operator session before recording packet reviews; add `--target <target>` for a one-adapter packet.
 20. Use `live-adapter-evidence-templates` to generate blank operator templates for the evidence refs that must exist before packet reviews, approvals, dry-runs, and execution gates can pass.
 21. Use `live-adapter-operator-evidence-workplan` to turn missing or incomplete operator evidence into target-specific check/import commands and collection queues.
 22. Use `live-adapter-operator-evidence-queue` to rank targets as unchecked, needs evidence, ready for import, needs rework, or complete.
@@ -242,7 +244,9 @@ npm run ariadne -- live-adapter-approval-review --project ariadne --target githu
 npm run ariadne -- live-adapter-approval-review-audit --project ariadne
 npm run ariadne -- live-adapter-dossier --project ariadne --target github
 npm run ariadne -- live-adapter-cutover-audit --project ariadne
+npm run ariadne -- live-adapter-cutover-audit --project ariadne --target hermes-cron
 npm run ariadne -- live-adapter-review-session --project ariadne
+npm run ariadne -- live-adapter-review-session --project ariadne --target hermes-cron
 npm run ariadne -- live-adapter-evidence-templates --project ariadne
 npm run ariadne -- live-adapter-operator-evidence-queue --project ariadne
 npm run ariadne -- live-adapter-operator-evidence-workspace --project ariadne

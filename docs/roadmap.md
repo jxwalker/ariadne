@@ -127,7 +127,7 @@ Implemented:
 - operator review records for live-adapter approval packets, with `mutationApproved=false`
 - approval-review audit reports that validate accepted packet reviews before readiness can rely on them
 - target-specific live adapter dossiers that combine readiness, approval packets, review audit, mutation audit, next actions, and GBrain memory context
-- live adapter cutover audits that verify complete operator evidence, current operator review, audit-passed plans, auth evidence, rollback, post-verification, dry-run, target-guarded execution, wrapper, dossier, and advisory GBrain context before placeholder replacement
+- live adapter cutover audits that verify complete operator evidence, current operator review, audit-passed plans, auth evidence, rollback, post-verification, dry-run, target-guarded execution, wrapper, dossier, and advisory GBrain context before placeholder replacement, including target-scoped audits for one-adapter cutover reviews
 - live adapter review sessions that consolidate target dossiers, operator packet-review commands, cutover blockers, and advisory GBrain queries into one non-mutating operator packet
 - live adapter review sessions link existing operator-evidence queues and read-only assist packets so preflight refs and assist next steps are visible in the operator packet
 - live adapter evidence templates that give operators blank, non-authoritative files for packet-review evidence, auth-boundary proof, rollback/post-verification checks, dry-run notes, target-execution notes, and advisory GBrain results
@@ -137,7 +137,7 @@ Implemented:
 - live adapter operator-evidence queue that ranks targets by latest preflight and import state without granting approval
 - live adapter operator-evidence ready-import batches that import only complete preflighted evidence files for all targets or one target without granting approval
 - live adapter operator-evidence workspaces that generate fillable per-target evidence files and supporting notes without granting approval, including target-scoped summary artifacts for one-adapter review sessions
-- live adapter operator-evidence assist packets that gather existing read-only support refs beside the workspace without creating operator evidence, including target-scoped assist artifacts for one-adapter review sessions
+- live adapter review sessions and operator-evidence assist packets that gather current commands, cutover blockers, read-only support refs, and advisory memory without creating operator evidence, including target-scoped artifacts for one-adapter review sessions
 - live adapter operator-evidence import and audit that hashes filled evidence files, identifies missing operator proof, and surfaces per-target blockers without granting mutation approval
 
 Next:

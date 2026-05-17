@@ -316,15 +316,21 @@ const ARTIFACT_SPECS: ArtifactSpec[] = [
     id: "live-adapter-cutover-audit",
     label: "Live adapter cutover audit",
     required: false,
-    kind: "file",
-    relativePath: "control/live-adapter-cutover-audit.json"
+    kind: "matching-files",
+    relativePath: "control",
+    prefix: "live-adapter-cutover-audit",
+    suffix: ".json",
+    minimumCount: 1
   },
   {
     id: "live-adapter-review-session",
     label: "Live adapter review session",
     required: false,
-    kind: "file",
-    relativePath: "control/live-adapter-review-session.json"
+    kind: "matching-files",
+    relativePath: "control",
+    prefix: "live-adapter-review-session",
+    suffix: ".json",
+    minimumCount: 1
   },
   {
     id: "live-adapter-evidence-templates",

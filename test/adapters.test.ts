@@ -1039,6 +1039,15 @@ describe("roadmap adapters", () => {
     expect(deploymentCutover?.status).toBe("blocked");
     expect(deploymentCutover?.blockers.some((blocker) => blocker.includes("Operator evidence complete"))).toBe(true);
     expect(deploymentCutover?.blockers.some((blocker) => blocker.includes("Current accepted operator packet review"))).toBe(true);
+    const scopedGithubCutover = await generateLiveAdapterCutoverAudit({ project: "ariadne", vaultRoot, target: "github" });
+    expect(scopedGithubCutover.jsonPath).toContain("live-adapter-cutover-audit-github.json");
+    expect(scopedGithubCutover.audit.target).toBe("github");
+    expect(scopedGithubCutover.audit.summary.targets).toBe(1);
+    expect(scopedGithubCutover.audit.summary.ready).toBe(1);
+    expect(scopedGithubCutover.audit.targets.map((target) => target.target)).toEqual(["github"]);
+    const allTargetCutoverJson = JSON.parse(await fs.readFile(cutoverAudit.jsonPath, "utf8"));
+    expect(allTargetCutoverJson.target).toBeUndefined();
+    expect(allTargetCutoverJson.summary.targets).toBe(6);
     const reviewSession = await generateLiveAdapterReviewSession({ project: "ariadne", vaultRoot });
     expect(reviewSession.session.status).toBe("operator_review_required");
     expect(reviewSession.session.mutationApproved).toBe(false);
@@ -1063,6 +1072,20 @@ describe("roadmap adapters", () => {
     expect(deploymentSession?.gbrainContext.suggestedQueries.some((query) => query.includes("deployment"))).toBe(true);
     expect(githubSession?.status).toBe("ready_for_adapter_work");
     expect(githubSession?.cutoverStatus).toBe("ready_for_cutover");
+    const scopedDeploymentReviewSession = await generateLiveAdapterReviewSession({
+      project: "ariadne",
+      vaultRoot,
+      target: "deployment"
+    });
+    expect(scopedDeploymentReviewSession.jsonPath).toContain("live-adapter-review-session-deployment.json");
+    expect(scopedDeploymentReviewSession.session.target).toBe("deployment");
+    expect(scopedDeploymentReviewSession.session.summary.targets).toBe(1);
+    expect(scopedDeploymentReviewSession.session.summary.operatorReviewRequired).toBe(1);
+    expect(scopedDeploymentReviewSession.session.targets.map((target) => target.target)).toEqual(["deployment"]);
+    expect(scopedDeploymentReviewSession.session.cutoverAuditRef).toContain("live-adapter-cutover-audit-deployment.json");
+    const allTargetReviewSessionJson = JSON.parse(await fs.readFile(reviewSession.jsonPath, "utf8"));
+    expect(allTargetReviewSessionJson.target).toBeUndefined();
+    expect(allTargetReviewSessionJson.summary.targets).toBe(6);
     const reviewSessionMarkdown = await fs.readFile(reviewSession.markdownPath, "utf8");
     expect(reviewSessionMarkdown).toContain("Operator Evidence Action");
     expect(reviewSessionMarkdown).toContain("Missing operator evidence sections");
@@ -1305,6 +1328,16 @@ describe("roadmap adapters", () => {
     expect(scopedHermesAssist.assist.target).toBe("hermes-cron");
     expect(scopedHermesAssist.assist.summary.targets).toBe(1);
     expect(scopedHermesAssist.assist.targets.map((target) => target.target)).toEqual(["hermes-cron"]);
+    const scopedHermesReviewSession = await generateLiveAdapterReviewSession({
+      project: "ariadne",
+      vaultRoot,
+      target: "hermes-cron"
+    });
+    expect(scopedHermesReviewSession.session.operatorEvidenceAssistRef).toBe(
+      "projects/ariadne/control/live-adapter-operator-evidence-assist-hermes-cron.json"
+    );
+    expect(scopedHermesReviewSession.session.targets.map((target) => target.target)).toEqual(["hermes-cron"]);
+    expect(scopedHermesReviewSession.session.summary.targets).toBe(1);
     const assistedReviewSession = await generateLiveAdapterReviewSession({ project: "ariadne", vaultRoot });
     const assistedGithubSession = assistedReviewSession.session.targets.find((target) => target.target === "github");
     expect(assistedReviewSession.session.operatorEvidenceQueueRef).toBe(
