@@ -1,5 +1,8 @@
 name: Grok PR Review
 
+# This workflow sends pull request diffs to xAI. Enable it only for repositories
+# where that external review path is approved.
+
 on:
   pull_request:
     types: [opened, synchronize]
@@ -62,6 +65,7 @@ jobs:
               echo
               echo "Skipped Grok review because this PR diff is ${diff_bytes} bytes, which exceeds the ${max_diff_bytes}-byte workflow limit."
             } > review.md
+            echo "Skipped Grok review because the PR diff is ${diff_bytes} bytes." >> "$GITHUB_STEP_SUMMARY"
             exit 0
           fi
 
@@ -85,6 +89,8 @@ jobs:
           http_status=$(
             curl -sS \
               --retry 2 \
+              --retry-delay 5 \
+              --retry-all-errors \
               --connect-timeout 10 \
               --max-time 900 \
               -w "%{http_code}" \
@@ -126,7 +132,7 @@ jobs:
             const { owner, repo } = context.repo;
             const issue_number = context.issue.number;
 
-            const { data: comments } = await github.rest.issues.listComments({
+            const comments = await github.paginate(github.rest.issues.listComments, {
               owner,
               repo,
               issue_number,
