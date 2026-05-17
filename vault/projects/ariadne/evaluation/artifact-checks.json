@@ -1,12 +1,12 @@
 {
   "schemaVersion": 1,
   "project": "ariadne",
-  "generatedAt": "2026-05-17T04:46:39.532Z",
+  "generatedAt": "2026-05-17T05:42:03.501Z",
   "status": "passed",
   "summary": {
     "required": 13,
-    "optional": 37,
-    "present": 41,
+    "optional": 38,
+    "present": 42,
     "missingRequired": 0
   },
   "checks": [
@@ -363,6 +363,13 @@
       "label": "Live adapter operator evidence audit",
       "required": false,
       "path": "projects/ariadne/control/live-adapter-operator-evidence-audit.json",
+      "status": "present"
+    },
+    {
+      "id": "roadmap-completion-audit",
+      "label": "Roadmap completion audit",
+      "required": false,
+      "path": "projects/ariadne/control/roadmap-completion-audit.json",
       "status": "present"
     },
     {

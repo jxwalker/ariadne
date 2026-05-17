@@ -848,6 +848,27 @@ export interface ArtifactCheckReport {
   }>;
 }
 
+export interface RoadmapCompletionAudit {
+  schemaVersion: 1;
+  project: string;
+  generatedAt: string;
+  status: "complete" | "blocked";
+  summary: {
+    requirements: number;
+    passed: number;
+    blocked: number;
+    advisory: number;
+  };
+  requirements: Array<{
+    id: string;
+    title: string;
+    status: "passed" | "blocked" | "advisory";
+    detail: string;
+    evidenceRefs: string[];
+    nextCommands: string[];
+  }>;
+}
+
 export type BenchmarkSet = "smoke" | "realistic" | "stress";
 export type BenchmarkAcceptanceType = "artifact_contract" | "pipeline_output" | "fixture_safety";
 
@@ -1364,6 +1385,8 @@ export interface ConsoleData {
     liveAdapterOperatorEvidenceComplete?: number;
     liveAdapterOperatorEvidenceIncomplete?: number;
     liveAdapterOperatorEvidenceMissing?: number;
+    roadmapCompletionStatus?: RoadmapCompletionAudit["status"];
+    roadmapCompletionBlocked?: number;
     recoveryIssues: number;
     consoleBrowserChecks?: ConsoleBrowserCheckReport["status"];
     readinessStatus?: ControlReport["status"];
@@ -1435,6 +1458,7 @@ export interface ConsoleData {
   liveAdapterEvidenceTemplatePack?: LiveAdapterEvidenceTemplatePack;
   liveAdapterOperatorEvidence: LiveAdapterOperatorEvidenceRecord[];
   liveAdapterOperatorEvidenceAudit?: LiveAdapterOperatorEvidenceAudit;
+  roadmapCompletionAudit?: RoadmapCompletionAudit;
   recovery?: RecoveryReport;
   readiness?: ControlReport;
   artifacts: {
@@ -1469,6 +1493,7 @@ export interface ConsoleData {
     liveAdapterEvidenceTemplates?: string;
     liveAdapterOperatorEvidence?: string;
     liveAdapterOperatorEvidenceAudit?: string;
+    roadmapCompletionAudit?: string;
     recoveryReport?: string;
     extractionResults?: string;
     healerProposals?: string;

@@ -72,6 +72,7 @@ import { recordPlaywrightEvidence } from "./playwrightEvidence.js";
 import { generatePlaywrightPlan } from "./playwrightPlan.js";
 import { generatePrd } from "./prd.js";
 import { generateRecoveryReport } from "./recovery.js";
+import { generateRoadmapCompletionAudit } from "./roadmapCompletionAudit.js";
 import { captureTargetAppEvidence, waitUntilOption } from "./targetAppCapture.js";
 import { runTargetMutationExecution, targetForMutationExecutionCommand } from "./targetMutationExecute.js";
 import { generateUsageMetricsReport, importUsageMetrics } from "./usageMetrics.js";
@@ -186,6 +187,7 @@ function usage(): string {
     "  ariadne live-adapter-evidence-templates --project <project>",
     "  ariadne live-adapter-operator-evidence --project <project> --target <github|deployment|hermes-cron|openscorpion|gsd2|notebooklm> --from <filled-template.md> --by <operator> [--notes <text>]",
     "  ariadne live-adapter-operator-evidence-audit --project <project>",
+    "  ariadne roadmap-completion-audit --project <project>",
     "  ariadne mutation-dry-run --project <project> --plan <id|json> [--timeout-ms <ms>]",
     "  ariadne mutation-execute --project <project> --plan <id|json> --confirm-plan <id> [--timeout-ms <ms>]",
     "  ariadne target-mutation-execute --project <project> --target <target> --plan <id|json> --confirm-plan <id> [--timeout-ms <ms>]",
@@ -1213,6 +1215,15 @@ async function main(): Promise<void> {
     return;
   }
 
+  if (parsed.command === "roadmap-completion-audit") {
+    const result = await generateRoadmapCompletionAudit({ project, vaultRoot });
+    console.log(`Roadmap completion audit: ${result.markdownPath}`);
+    console.log(`Status: ${result.audit.status}`);
+    console.log(`Passed: ${result.audit.summary.passed}`);
+    console.log(`Blocked: ${result.audit.summary.blocked}`);
+    return;
+  }
+
   if (parsed.command === "mutation-dry-run") {
     const result = await runMutationDryRun({
       project,
@@ -1363,6 +1374,7 @@ async function main(): Promise<void> {
     const control = await generateControlReport({ project, vaultRoot });
     const behaviorChecks = await generateBehaviorCheckReport({ project, vaultRoot });
     const gbrain = await exportGbrainBundle({ project, vaultRoot });
+    const roadmapCompletion = await generateRoadmapCompletionAudit({ project, vaultRoot });
     const artifactChecks = await generateArtifactCheckReport({ project, vaultRoot });
 
     console.log("Roadmap artifacts generated");
@@ -1376,9 +1388,11 @@ async function main(): Promise<void> {
     console.log(`  Control: ${control.markdownPath}`);
     console.log(`  Behavior checks: ${behaviorChecks.markdownPath}`);
     console.log(`  GBrain export: ${gbrain.markdownPath}`);
+    console.log(`  Roadmap completion audit: ${roadmapCompletion.markdownPath}`);
     console.log(`  Artifact checks: ${artifactChecks.markdownPath}`);
     console.log(`  Readiness: ${control.report.status}`);
     console.log(`  Artifact status: ${artifactChecks.report.status}`);
+    console.log(`  Roadmap completion: ${roadmapCompletion.audit.status}`);
     return;
   }
 

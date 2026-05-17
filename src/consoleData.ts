@@ -52,6 +52,7 @@ import type {
   PrdDocument,
   RecoveryReport,
   ReviewRecord,
+  RoadmapCompletionAudit,
   SleepRoutineRecord,
   SourceHygieneReport
 } from "./types.js";
@@ -150,6 +151,12 @@ export async function collectConsoleData(vaultRoot: string, projectInput: string
     project,
     "control",
     "live-adapter-operator-evidence-audit.json"
+  );
+  const roadmapCompletionAudit = await readProjectJson<RoadmapCompletionAudit>(
+    vaultRoot,
+    project,
+    "control",
+    "roadmap-completion-audit.json"
   );
   const liveAdapterOperatorEvidence = await readJsonFiles<LiveAdapterOperatorEvidenceRecord>(
     path.join(dir, "control", "live-adapter-operator-evidence"),
@@ -284,6 +291,8 @@ export async function collectConsoleData(vaultRoot: string, projectInput: string
       liveAdapterOperatorEvidenceComplete: liveAdapterOperatorEvidenceAudit?.summary.completeTargets,
       liveAdapterOperatorEvidenceIncomplete: liveAdapterOperatorEvidenceAudit?.summary.incompleteTargets,
       liveAdapterOperatorEvidenceMissing: liveAdapterOperatorEvidenceAudit?.summary.missingTargets,
+      roadmapCompletionStatus: roadmapCompletionAudit?.status,
+      roadmapCompletionBlocked: roadmapCompletionAudit?.summary.blocked,
       recoveryIssues: recovery?.issues.length ?? 0,
       consoleBrowserChecks: consoleBrowserChecks?.status,
       readinessStatus: readiness?.status,
@@ -313,6 +322,7 @@ export async function collectConsoleData(vaultRoot: string, projectInput: string
     liveAdapterEvidenceTemplatePack,
     liveAdapterOperatorEvidence,
     liveAdapterOperatorEvidenceAudit,
+    roadmapCompletionAudit,
     decisions,
     playwrightEvidence,
     healerProposals,
@@ -385,6 +395,7 @@ export async function collectConsoleData(vaultRoot: string, projectInput: string
         vaultRoot,
         path.join(dir, "control", "live-adapter-operator-evidence-audit.json")
       ),
+      roadmapCompletionAudit: await existingPath(vaultRoot, path.join(dir, "control", "roadmap-completion-audit.json")),
       recoveryReport: await existingPath(vaultRoot, path.join(dir, "control", "recovery-report.json")),
       extractionResults: await existingPath(vaultRoot, path.join(dir, "extractions")),
       healerProposals: await existingPath(vaultRoot, path.join(dir, "verification", "healer-proposals")),
