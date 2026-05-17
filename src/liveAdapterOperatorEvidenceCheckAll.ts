@@ -81,7 +81,7 @@ export async function checkAllLiveAdapterOperatorEvidence(input: {
   }
 
   const queueResult =
-    (input.target ? await readExistingQueue(input.vaultRoot, project) : undefined) ??
+    (input.target ? await readExistingQueue(input.vaultRoot, project, input.target) : undefined) ??
     (await generateLiveAdapterOperatorEvidenceQueue({ project, vaultRoot: input.vaultRoot }));
   const summary = {
     targets: targets.length,
@@ -187,15 +187,21 @@ async function readOptionalWorkspace(
   }
 }
 
-async function readExistingQueue(vaultRoot: string, project: string): Promise<QueueResult | undefined> {
+async function readExistingQueue(
+  vaultRoot: string,
+  project: string,
+  target: LiveAdapterTarget
+): Promise<QueueResult | undefined> {
   const jsonPath = path.join(projectDir(vaultRoot, project), "control", "live-adapter-operator-evidence-queue.json");
   try {
     const parsed = JSON.parse(await fs.readFile(jsonPath, "utf8")) as unknown;
-    if (isQueue(parsed, project)) return { jsonPath, queue: parsed };
-    throw new Error(`Invalid live adapter operator evidence queue: ${path.relative(vaultRoot, jsonPath)}`);
+    if (isQueue(parsed, project) && parsed.targets.some((item) => item.target === target)) return { jsonPath, queue: parsed };
+    console.warn(`Ignoring stale or malformed live adapter operator evidence queue: ${path.relative(vaultRoot, jsonPath)}`);
+    return undefined;
   } catch (error) {
     if ((error as NodeJS.ErrnoException).code === "ENOENT") return undefined;
-    throw error;
+    console.warn(`Ignoring unreadable live adapter operator evidence queue: ${(error as Error).message}`);
+    return undefined;
   }
 }
 
