@@ -17,6 +17,7 @@ import { generateConsoleVisualCheckReport } from "../src/consoleVisualChecks.js"
 import { recordAgentLease, recordAgentMail, recordMemoryProposal, recordSleepRoutine } from "../src/coordination.js";
 import { collectSshDeploymentSnapshot, importDeploymentSnapshot } from "../src/deploymentAdapters.js";
 import { planDeploymentMutation } from "../src/deploymentMutation.js";
+import { runE2eSmoke } from "../src/e2eSmoke.js";
 import { planExecution } from "../src/execution.js";
 import { exportGbrainBundle, importGbrainReport } from "../src/gbrainAdapter.js";
 import { importGithubSnapshot } from "../src/githubAdapter.js";
@@ -1351,6 +1352,15 @@ describe("roadmap adapters", () => {
     ).toBe(true);
     expect(console.data.behaviorChecks?.status).toBe("passed");
 
+    const e2eSmoke = await runE2eSmoke({ project: "ariadne", vaultRoot, width: 900, height: 900 });
+    expect(e2eSmoke.report.status).toBe("blocked");
+    expect(e2eSmoke.report.summary.failed).toBe(0);
+    expect(e2eSmoke.report.steps.some((step) => step.id === "console-browser-checks" && step.status === "passed")).toBe(true);
+    expect(e2eSmoke.report.steps.some((step) => step.id === "roadmap-completion-audit" && step.status === "blocked")).toBe(true);
+    const e2eSmokeMarkdown = await fs.readFile(e2eSmoke.markdownPath, "utf8");
+    expect(e2eSmokeMarkdown).toContain("End-to-End Smoke Report");
+    expect(e2eSmokeMarkdown).toContain("This command does not create approvals");
+
     const artifactChecks = await generateArtifactCheckReport({ project: "ariadne", vaultRoot });
     const coordinationCheck = artifactChecks.report.checks.find((check) => check.id === "coordination-records");
     const hermesCheck = artifactChecks.report.checks.find((check) => check.id === "hermes-cron-snapshots");
@@ -1394,6 +1404,7 @@ describe("roadmap adapters", () => {
       (check) => check.id === "live-adapter-operator-evidence-workplan"
     );
     const roadmapCompletionAuditCheck = artifactChecks.report.checks.find((check) => check.id === "roadmap-completion-audit");
+    const e2eSmokeCheck = artifactChecks.report.checks.find((check) => check.id === "e2e-smoke-reports");
     const mutationDryRunCheck = artifactChecks.report.checks.find((check) => check.id === "mutation-dry-runs");
     const mutationExecutionCheck = artifactChecks.report.checks.find((check) => check.id === "mutation-executions");
     expect(coordinationCheck?.matches?.some((match) => match.includes("coordination/hermes"))).toBe(true);
@@ -1420,6 +1431,7 @@ describe("roadmap adapters", () => {
     expect(operatorEvidenceAuditCheck?.status).toBe("present");
     expect(operatorEvidenceWorkplanCheck?.status).toBe("present");
     expect(roadmapCompletionAuditCheck?.status).toBe("present");
+    expect(e2eSmokeCheck?.status).toBe("present");
     expect(mutationDryRunCheck?.status).toBe("present");
     expect(mutationExecutionCheck?.status).toBe("present");
   });

@@ -120,6 +120,7 @@ npm run ariadne -- console-data --project ariadne
 npm run ariadne -- console-html --project ariadne --refresh-data
 npm run ariadne -- console-visual-checks --project ariadne
 npm run ariadne -- console-browser-checks --project ariadne
+npm run ariadne -- e2e-smoke --project ariadne --with-runtime-probe --runtime-canary --canary-endpoints lmstudio --lmstudio-canary-model google/gemma-3-4b --timeout-ms 60000
 npm run ariadne -- infra-live-local --project ariadne
 npm run ariadne -- local-runtime-probe --project ariadne --canary --canary-endpoints ds4-openai --ds4-canary-model deepseek-v4-flash
 npm run ariadne -- infra-live-ssh --project ariadne --host beast --target james@beast.lan

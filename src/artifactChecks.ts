@@ -204,6 +204,16 @@ const ARTIFACT_SPECS: ArtifactSpec[] = [
     relativePath: "evaluation/behavior-checks.json"
   },
   {
+    id: "e2e-smoke-reports",
+    label: "End-to-end smoke reports",
+    required: false,
+    kind: "matching-files",
+    relativePath: "evaluation",
+    prefix: "e2e-smoke-",
+    suffix: ".json",
+    minimumCount: 1
+  },
+  {
     id: "gbrain-export",
     label: "GBrain export bundle",
     required: false,

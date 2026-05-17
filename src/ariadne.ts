@@ -22,6 +22,7 @@ import {
 import { planDeploymentMutation } from "./deploymentMutation.js";
 import { generateEvaluationPlan, recordEvaluationRun } from "./evaluation.js";
 import { generateEvaluationTrendReport } from "./evaluationTrends.js";
+import { runE2eSmoke } from "./e2eSmoke.js";
 import { markRunStatus, planExecution } from "./execution.js";
 import { importExtractionResult } from "./extractionResults.js";
 import { extractionRunnerOption, planExtractionRunner } from "./extractionRunnerPlan.js";
@@ -156,6 +157,7 @@ function usage(): string {
     "  ariadne usage-import --project <project> --from <usage.json> [--source <source>]",
     "  ariadne usage-report --project <project>",
     "  ariadne behavior-checks --project <project> [--approved-fixture <review.json|review.md>]",
+    "  ariadne e2e-smoke --project <project> [--target-url <url>] [--with-runtime-probe] [--runtime-canary] [--canary-endpoints <ollama,ds4-openai,lmstudio>] [--ollama-canary-model <id>] [--ds4-canary-model <id>] [--lmstudio-canary-model <id>] [--hermes-dashboard-url <url>] [--ollama-url <url>] [--ds4-url <url>] [--lmstudio-url <url>] [--timeout-ms <ms>] [--width <px>] [--height <px>]",
     "  ariadne gbrain-export --project <project>",
     "  ariadne gbrain-report-import --project <project> --from <report.json>",
     "  ariadne github-snapshot --project <project> (--from <snapshot.json> | --repo <owner/name> [--pr <number>] [--limit <number>])",
@@ -625,6 +627,32 @@ async function main(): Promise<void> {
     });
     console.log(`Behavior checks: ${result.markdownPath}`);
     console.log(`Status: ${result.report.status}`);
+    return;
+  }
+
+  if (parsed.command === "e2e-smoke") {
+    const result = await runE2eSmoke({
+      project,
+      vaultRoot,
+      withRuntimeProbe: parsed.options.has("with-runtime-probe"),
+      runtimeCanary: parsed.options.has("runtime-canary"),
+      hermesDashboardUrl: optionString(parsed.options, "hermes-dashboard-url", "") || undefined,
+      ollamaUrl: optionString(parsed.options, "ollama-url", "") || undefined,
+      ds4Url: optionString(parsed.options, "ds4-url", "") || undefined,
+      lmStudioUrl: optionString(parsed.options, "lmstudio-url", "") || undefined,
+      canaryEndpointIds: optionalRuntimeCanaryEndpointIds(parsed.options),
+      canaryModels: optionalRuntimeCanaryModels(parsed.options),
+      runtimeTimeoutMs: optionalNumber(parsed.options, "timeout-ms"),
+      targetUrl: optionString(parsed.options, "target-url", "") || undefined,
+      width: optionalNumber(parsed.options, "width"),
+      height: optionalNumber(parsed.options, "height")
+    });
+    console.log(`End-to-end smoke report: ${result.markdownPath}`);
+    console.log(`Status: ${result.report.status}`);
+    console.log(`Passed: ${result.report.summary.passed}`);
+    console.log(`Blocked: ${result.report.summary.blocked}`);
+    console.log(`Degraded: ${result.report.summary.degraded}`);
+    console.log(`Failed: ${result.report.summary.failed}`);
     return;
   }
 
