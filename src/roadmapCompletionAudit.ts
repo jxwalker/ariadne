@@ -131,7 +131,7 @@ export async function generateRoadmapCompletionAudit(input: {
       title: "All live-adapter targets have complete operator evidence",
       status: operatorEvidenceAudit?.status === "complete" ? "passed" : "blocked",
       detail: operatorEvidenceAudit
-        ? `${operatorEvidenceAudit.summary.completeTargets}/${operatorEvidenceAudit.summary.targets} targets complete; ${operatorEvidenceAudit.summary.missingTargets} missing evidence.`
+        ? `${operatorEvidenceAudit.summary.completeTargets ?? 0}/${operatorEvidenceAudit.summary.targets ?? 0} targets complete; ${operatorEvidenceAudit.summary.missingTargets ?? 0} missing evidence; ${operatorEvidenceAudit.summary.missingSections ?? 0} missing section(s).`
         : "Operator evidence audit is missing.",
       evidenceRefs: ["projects/" + project + "/control/live-adapter-operator-evidence-audit.json"],
       nextCommands: [
