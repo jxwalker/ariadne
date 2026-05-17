@@ -95,6 +95,7 @@ npm run ariadne -- live-adapter-review-session --project ariadne
 npm run ariadne -- live-adapter-evidence-templates --project ariadne
 npm run ariadne -- live-adapter-operator-evidence-workplan --project ariadne
 npm run ariadne -- live-adapter-operator-evidence-check --project ariadne --target github --from vault/projects/ariadne/control/live-adapter-evidence-templates/live-adapter-evidence-template-github.md
+npm run ariadne -- live-adapter-operator-evidence-queue --project ariadne
 npm run ariadne -- live-adapter-operator-evidence --project ariadne --target github --from vault/projects/ariadne/control/live-adapter-evidence-templates/live-adapter-evidence-template-github.md --by james
 npm run ariadne -- live-adapter-operator-evidence-audit --project ariadne
 npm run ariadne -- roadmap-completion-audit --project ariadne
@@ -161,8 +162,9 @@ vault/projects/<project>/
 20. Use `live-adapter-evidence-templates` to generate blank operator templates for the evidence refs that must exist before packet reviews, approvals, dry-runs, and execution gates can pass.
 21. Use `live-adapter-operator-evidence-workplan` to turn missing or incomplete operator evidence into target-specific check/import commands and collection queues.
 22. Use `live-adapter-operator-evidence-check` to preflight a filled template before creating any operator evidence record.
-23. Use `live-adapter-operator-evidence` and `live-adapter-operator-evidence-audit` to record filled operator evidence and show which targets still have missing proof. These records keep `mutationApproved=false`.
-24. Use `roadmap-completion-audit` as the conservative completion gate for the whole roadmap; it stays blocked until artifact checks, behavior checks, evaluation trends, console visual/browser checks, coordination records, GBrain advisory context, operator-evidence audit, live-adapter cutover audit, and review-session state all prove completion.
+23. Use `live-adapter-operator-evidence-queue` to rank targets as unchecked, needs evidence, ready for import, needs rework, or complete.
+24. Use `live-adapter-operator-evidence` and `live-adapter-operator-evidence-audit` to record filled operator evidence and show which targets still have missing proof. These records keep `mutationApproved=false`.
+25. Use `roadmap-completion-audit` as the conservative completion gate for the whole roadmap; it stays blocked until artifact checks, behavior checks, evaluation trends, console visual/browser checks, coordination records, GBrain advisory context, operator-evidence audit, live-adapter cutover audit, and review-session state all prove completion.
 
 ## Adapter Commands
 
@@ -217,6 +219,7 @@ npm run ariadne -- live-adapter-cutover-audit --project ariadne
 npm run ariadne -- live-adapter-review-session --project ariadne
 npm run ariadne -- live-adapter-evidence-templates --project ariadne
 npm run ariadne -- live-adapter-operator-evidence-check --project ariadne --target github --from vault/projects/ariadne/control/live-adapter-evidence-templates/live-adapter-evidence-template-github.md
+npm run ariadne -- live-adapter-operator-evidence-queue --project ariadne
 npm run ariadne -- live-adapter-operator-evidence --project ariadne --target github --from vault/projects/ariadne/control/live-adapter-evidence-templates/live-adapter-evidence-template-github.md --by james
 npm run ariadne -- live-adapter-operator-evidence-audit --project ariadne
 npm run ariadne -- recovery-report --project ariadne

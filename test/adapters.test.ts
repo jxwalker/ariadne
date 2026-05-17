@@ -42,6 +42,7 @@ import {
   recordLiveAdapterOperatorEvidence
 } from "../src/liveAdapterOperatorEvidence.js";
 import { generateLiveAdapterOperatorEvidenceWorkplan } from "../src/liveAdapterOperatorEvidenceWorkplan.js";
+import { generateLiveAdapterOperatorEvidenceQueue } from "../src/liveAdapterOperatorEvidenceQueue.js";
 import { generateLiveAdapterNextActions } from "../src/liveAdapterNextActions.js";
 import { generateLiveAdapterReadiness } from "../src/liveAdapterReadiness.js";
 import { generateLiveAdapterReviewSession } from "../src/liveAdapterReviewSession.js";
@@ -1084,7 +1085,7 @@ describe("roadmap adapters", () => {
     const preflight = await checkLiveAdapterOperatorEvidence({
       project: "ariadne",
       vaultRoot,
-      target: "deployment",
+      target: "notebooklm",
       sourcePath: completeEvidencePath,
       notes: "Preflight only"
     });
@@ -1128,6 +1129,16 @@ describe("roadmap adapters", () => {
     expect(hermesWorkplan?.checkCommand).toContain("live-adapter-operator-evidence-check");
     expect(hermesWorkplan?.importCommand).toContain("live-adapter-operator-evidence");
     expect(hermesWorkplan?.gbrainQueries.length).toBeGreaterThan(0);
+    const operatorEvidenceQueue = await generateLiveAdapterOperatorEvidenceQueue({ project: "ariadne", vaultRoot });
+    expect(operatorEvidenceQueue.queue.status).toBe("ready_for_import");
+    expect(operatorEvidenceQueue.queue.mutationApproved).toBe(false);
+    expect(operatorEvidenceQueue.queue.summary.readyForImport).toBe(1);
+    expect(operatorEvidenceQueue.queue.summary.needsRework).toBe(1);
+    expect(operatorEvidenceQueue.queue.summary.uncheckedTargets).toBe(2);
+    const notebookQueue = operatorEvidenceQueue.queue.targets.find((target) => target.target === "notebooklm");
+    expect(notebookQueue?.status).toBe("ready_for_import");
+    expect(notebookQueue?.latestCheckMissingSections).toBe(0);
+    expect(notebookQueue?.nextAction).toContain("Import the checked evidence file");
     await generateArtifactCheckReport({ project: "ariadne", vaultRoot });
     const roadmapCompletion = await generateRoadmapCompletionAudit({ project: "ariadne", vaultRoot });
     expect(roadmapCompletion.audit.status).toBe("blocked");
@@ -1137,6 +1148,7 @@ describe("roadmap adapters", () => {
     expect(operatorEvidenceRequirement?.status).toBe("blocked");
     expect(operatorEvidenceRequirement?.nextCommands.length).toBeGreaterThan(0);
     expect(operatorEvidenceRequirement?.nextCommands).toContain("npm run ariadne -- live-adapter-operator-evidence-workplan --project ariadne");
+    expect(operatorEvidenceRequirement?.nextCommands).toContain("npm run ariadne -- live-adapter-operator-evidence-queue --project ariadne");
     expect(operatorEvidenceRequirement?.nextCommands.some((command) => command.includes("live-adapter-evidence-templates"))).toBe(true);
     const console = await generateConsoleData({ project: "ariadne", vaultRoot });
     expect(console.data.summary.sleepRoutines).toBe(1);
@@ -1176,6 +1188,9 @@ describe("roadmap adapters", () => {
     expect(console.data.summary.liveAdapterOperatorEvidenceStatus).toBe("blocked");
     expect(console.data.summary.liveAdapterOperatorEvidenceComplete).toBe(2);
     expect(console.data.summary.liveAdapterOperatorEvidenceMissing).toBe(3);
+    expect(console.data.summary.liveAdapterOperatorEvidenceQueueStatus).toBe("ready_for_import");
+    expect(console.data.summary.liveAdapterOperatorEvidenceQueueReady).toBe(1);
+    expect(console.data.liveAdapterOperatorEvidenceQueue?.summary.uncheckedTargets).toBe(2);
     expect(console.data.summary.liveAdapterOperatorEvidenceChecks).toBe(1);
     expect(console.data.liveAdapterOperatorEvidenceAudit?.mutationApproved).toBe(false);
     expect(console.data.liveAdapterOperatorEvidenceChecks[0]?.recorded).toBe(false);
@@ -1191,6 +1206,7 @@ describe("roadmap adapters", () => {
     expect(liveAdapterHtml).toContain("mutationApproved=false");
     expect(liveAdapterHtml).toContain("Templates are blank collection aids");
     expect(liveAdapterHtml).toContain("The workplan is an evidence collection queue");
+    expect(liveAdapterHtml).toContain("The queue orders operator work from preflight checks");
     expect(liveAdapterHtml).toContain("Operator evidence records do not approve mutation");
     expect(liveAdapterHtml).toContain("operator evidence hermes-cron");
     expect(liveAdapterHtml).toContain("Completion is only true");
@@ -1227,6 +1243,9 @@ describe("roadmap adapters", () => {
     const operatorEvidencePreflightCheck = artifactChecks.report.checks.find(
       (check) => check.id === "live-adapter-operator-evidence-checks"
     );
+    const operatorEvidenceQueueCheck = artifactChecks.report.checks.find(
+      (check) => check.id === "live-adapter-operator-evidence-queue"
+    );
     const operatorEvidenceCheck = artifactChecks.report.checks.find((check) => check.id === "live-adapter-operator-evidence");
     const operatorEvidenceAuditCheck = artifactChecks.report.checks.find(
       (check) => check.id === "live-adapter-operator-evidence-audit"
@@ -1251,6 +1270,7 @@ describe("roadmap adapters", () => {
     expect(reviewSessionCheck?.status).toBe("present");
     expect(evidenceTemplatesCheck?.status).toBe("present");
     expect(operatorEvidencePreflightCheck?.count).toBe(1);
+    expect(operatorEvidenceQueueCheck?.status).toBe("present");
     expect(operatorEvidenceCheck?.count).toBe(3);
     expect(operatorEvidenceAuditCheck?.status).toBe("present");
     expect(operatorEvidenceWorkplanCheck?.status).toBe("present");

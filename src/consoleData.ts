@@ -40,6 +40,7 @@ import type {
   LiveAdapterNextActionsReport,
   LiveAdapterOperatorEvidenceAudit,
   LiveAdapterOperatorEvidenceCheck,
+  LiveAdapterOperatorEvidenceQueue,
   LiveAdapterOperatorEvidenceRecord,
   LiveAdapterOperatorEvidenceWorkplan,
   LiveAdapterReadinessReport,
@@ -159,6 +160,12 @@ export async function collectConsoleData(vaultRoot: string, projectInput: string
     project,
     "control",
     "live-adapter-operator-evidence-workplan.json"
+  );
+  const liveAdapterOperatorEvidenceQueue = await readProjectJson<LiveAdapterOperatorEvidenceQueue>(
+    vaultRoot,
+    project,
+    "control",
+    "live-adapter-operator-evidence-queue.json"
   );
   const roadmapCompletionAudit = await readProjectJson<RoadmapCompletionAudit>(
     vaultRoot,
@@ -300,6 +307,8 @@ export async function collectConsoleData(vaultRoot: string, projectInput: string
       liveAdapterEvidenceTemplateStatus: liveAdapterEvidenceTemplatePack?.status,
       liveAdapterOperatorEvidenceWorkplanStatus: liveAdapterOperatorEvidenceWorkplan?.status,
       liveAdapterOperatorEvidenceWorkplanTargets: liveAdapterOperatorEvidenceWorkplan?.summary.targets,
+      liveAdapterOperatorEvidenceQueueStatus: liveAdapterOperatorEvidenceQueue?.status,
+      liveAdapterOperatorEvidenceQueueReady: liveAdapterOperatorEvidenceQueue?.summary.readyForImport,
       liveAdapterOperatorEvidenceChecks: liveAdapterOperatorEvidenceChecks.length,
       liveAdapterOperatorEvidenceRecords: liveAdapterOperatorEvidence.length,
       liveAdapterOperatorEvidenceStatus: liveAdapterOperatorEvidenceAudit?.status,
@@ -336,6 +345,7 @@ export async function collectConsoleData(vaultRoot: string, projectInput: string
     liveAdapterReviewSession,
     liveAdapterEvidenceTemplatePack,
     liveAdapterOperatorEvidenceWorkplan,
+    liveAdapterOperatorEvidenceQueue,
     liveAdapterOperatorEvidenceChecks,
     liveAdapterOperatorEvidence,
     liveAdapterOperatorEvidenceAudit,
@@ -410,6 +420,10 @@ export async function collectConsoleData(vaultRoot: string, projectInput: string
       liveAdapterOperatorEvidenceWorkplan: await existingPath(
         vaultRoot,
         path.join(dir, "control", "live-adapter-operator-evidence-workplan.json")
+      ),
+      liveAdapterOperatorEvidenceQueue: await existingPath(
+        vaultRoot,
+        path.join(dir, "control", "live-adapter-operator-evidence-queue.json")
       ),
       liveAdapterOperatorEvidenceChecks: await existingPath(
         vaultRoot,

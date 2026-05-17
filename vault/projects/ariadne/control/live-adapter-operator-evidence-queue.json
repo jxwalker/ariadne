@@ -1,0 +1,161 @@
+{
+  "schemaVersion": 1,
+  "project": "ariadne",
+  "generatedAt": "2026-05-17T06:55:42.801Z",
+  "status": "evidence_required",
+  "mutationApproved": false,
+  "operatorEvidenceAuditRef": "projects/ariadne/control/live-adapter-operator-evidence-audit.json",
+  "workplanRef": "projects/ariadne/control/live-adapter-operator-evidence-workplan.json",
+  "summary": {
+    "targets": 6,
+    "completeTargets": 0,
+    "readyForImport": 0,
+    "needsEvidence": 1,
+    "needsRework": 0,
+    "uncheckedTargets": 5,
+    "latestChecks": 1
+  },
+  "targets": [
+    {
+      "target": "github",
+      "status": "needs_evidence",
+      "operatorEvidenceStatus": "missing_evidence",
+      "latestCheckId": "operator-evidence-check-github-2026-05-17T06-36-28-110Z",
+      "latestCheckRef": "projects/ariadne/control/live-adapter-operator-evidence-checks/operator-evidence-check-github-2026-05-17T06-36-28-110Z.json",
+      "latestCheckStatus": "incomplete",
+      "latestCheckMissingSections": 9,
+      "missingSections": [
+        "Operator identity and timestamp",
+        "Approval packet review",
+        "Authentication or authorization boundary",
+        "Bounded action statement",
+        "Rollback or disable path",
+        "Post-action verification command",
+        "Dry-run command and safe output",
+        "Target-guarded execution wrapper",
+        "Exact confirm-plan proof"
+      ],
+      "nextAction": "Fill the missing sections in the operator evidence template and rerun the preflight check.",
+      "checkCommand": "npm run ariadne -- live-adapter-operator-evidence-check --project ariadne --target github --from vault/projects/ariadne/control/live-adapter-evidence-templates/live-adapter-evidence-template-github.md",
+      "importCommand": "npm run ariadne -- live-adapter-operator-evidence --project ariadne --target github --from vault/projects/ariadne/control/live-adapter-evidence-templates/live-adapter-evidence-template-github.md --by <operator>",
+      "templateRef": "projects/ariadne/control/live-adapter-evidence-templates/live-adapter-evidence-template-github.md",
+      "evidenceRefs": [
+        "projects/ariadne/control/live-adapter-evidence-templates/live-adapter-evidence-template-github.md",
+        "projects/ariadne/control/live-adapter-dossiers/live-adapter-dossier-github.json",
+        "projects/ariadne/control/live-adapter-readiness.json",
+        "projects/ariadne/control/live-adapter-next-actions.json",
+        "projects/ariadne/control/live-adapter-approval-pack.json",
+        "projects/ariadne/control/live-adapter-approval-review-audit.json",
+        "projects/ariadne/control/mutation-readiness-audit.json",
+        "projects/ariadne/control/live-adapter-evidence-templates.json",
+        "projects/ariadne/control/live-adapter-operator-evidence-audit.json",
+        "projects/ariadne/control/live-adapter-operator-evidence-checks/operator-evidence-check-github-2026-05-17T06-36-28-110Z.json"
+      ]
+    },
+    {
+      "target": "deployment",
+      "status": "unchecked",
+      "operatorEvidenceStatus": "missing_evidence",
+      "missingSections": [],
+      "nextAction": "Run the preflight check command against the target template before importing evidence.",
+      "checkCommand": "npm run ariadne -- live-adapter-operator-evidence-check --project ariadne --target deployment --from vault/projects/ariadne/control/live-adapter-evidence-templates/live-adapter-evidence-template-deployment.md",
+      "importCommand": "npm run ariadne -- live-adapter-operator-evidence --project ariadne --target deployment --from vault/projects/ariadne/control/live-adapter-evidence-templates/live-adapter-evidence-template-deployment.md --by <operator>",
+      "templateRef": "projects/ariadne/control/live-adapter-evidence-templates/live-adapter-evidence-template-deployment.md",
+      "evidenceRefs": [
+        "projects/ariadne/control/live-adapter-evidence-templates/live-adapter-evidence-template-deployment.md",
+        "projects/ariadne/control/live-adapter-dossiers/live-adapter-dossier-deployment.json",
+        "projects/ariadne/control/live-adapter-readiness.json",
+        "projects/ariadne/control/live-adapter-next-actions.json",
+        "projects/ariadne/control/live-adapter-approval-pack.json",
+        "projects/ariadne/control/live-adapter-approval-review-audit.json",
+        "projects/ariadne/control/mutation-readiness-audit.json",
+        "projects/ariadne/control/live-adapter-evidence-templates.json",
+        "projects/ariadne/control/live-adapter-operator-evidence-audit.json"
+      ]
+    },
+    {
+      "target": "hermes-cron",
+      "status": "unchecked",
+      "operatorEvidenceStatus": "missing_evidence",
+      "missingSections": [],
+      "nextAction": "Run the preflight check command against the target template before importing evidence.",
+      "checkCommand": "npm run ariadne -- live-adapter-operator-evidence-check --project ariadne --target hermes-cron --from vault/projects/ariadne/control/live-adapter-evidence-templates/live-adapter-evidence-template-hermes-cron.md",
+      "importCommand": "npm run ariadne -- live-adapter-operator-evidence --project ariadne --target hermes-cron --from vault/projects/ariadne/control/live-adapter-evidence-templates/live-adapter-evidence-template-hermes-cron.md --by <operator>",
+      "templateRef": "projects/ariadne/control/live-adapter-evidence-templates/live-adapter-evidence-template-hermes-cron.md",
+      "evidenceRefs": [
+        "projects/ariadne/control/live-adapter-evidence-templates/live-adapter-evidence-template-hermes-cron.md",
+        "projects/ariadne/control/live-adapter-dossiers/live-adapter-dossier-hermes-cron.json",
+        "projects/ariadne/control/live-adapter-readiness.json",
+        "projects/ariadne/control/live-adapter-next-actions.json",
+        "projects/ariadne/control/live-adapter-approval-pack.json",
+        "projects/ariadne/control/live-adapter-approval-review-audit.json",
+        "projects/ariadne/control/mutation-readiness-audit.json",
+        "projects/ariadne/control/live-adapter-evidence-templates.json",
+        "projects/ariadne/control/live-adapter-operator-evidence-audit.json"
+      ]
+    },
+    {
+      "target": "openscorpion",
+      "status": "unchecked",
+      "operatorEvidenceStatus": "missing_evidence",
+      "missingSections": [],
+      "nextAction": "Run the preflight check command against the target template before importing evidence.",
+      "checkCommand": "npm run ariadne -- live-adapter-operator-evidence-check --project ariadne --target openscorpion --from vault/projects/ariadne/control/live-adapter-evidence-templates/live-adapter-evidence-template-openscorpion.md",
+      "importCommand": "npm run ariadne -- live-adapter-operator-evidence --project ariadne --target openscorpion --from vault/projects/ariadne/control/live-adapter-evidence-templates/live-adapter-evidence-template-openscorpion.md --by <operator>",
+      "templateRef": "projects/ariadne/control/live-adapter-evidence-templates/live-adapter-evidence-template-openscorpion.md",
+      "evidenceRefs": [
+        "projects/ariadne/control/live-adapter-evidence-templates/live-adapter-evidence-template-openscorpion.md",
+        "projects/ariadne/control/live-adapter-dossiers/live-adapter-dossier-openscorpion.json",
+        "projects/ariadne/control/live-adapter-readiness.json",
+        "projects/ariadne/control/live-adapter-next-actions.json",
+        "projects/ariadne/control/live-adapter-approval-pack.json",
+        "projects/ariadne/control/live-adapter-approval-review-audit.json",
+        "projects/ariadne/control/mutation-readiness-audit.json",
+        "projects/ariadne/control/live-adapter-evidence-templates.json",
+        "projects/ariadne/control/live-adapter-operator-evidence-audit.json"
+      ]
+    },
+    {
+      "target": "gsd2",
+      "status": "unchecked",
+      "operatorEvidenceStatus": "missing_evidence",
+      "missingSections": [],
+      "nextAction": "Run the preflight check command against the target template before importing evidence.",
+      "checkCommand": "npm run ariadne -- live-adapter-operator-evidence-check --project ariadne --target gsd2 --from vault/projects/ariadne/control/live-adapter-evidence-templates/live-adapter-evidence-template-gsd2.md",
+      "importCommand": "npm run ariadne -- live-adapter-operator-evidence --project ariadne --target gsd2 --from vault/projects/ariadne/control/live-adapter-evidence-templates/live-adapter-evidence-template-gsd2.md --by <operator>",
+      "templateRef": "projects/ariadne/control/live-adapter-evidence-templates/live-adapter-evidence-template-gsd2.md",
+      "evidenceRefs": [
+        "projects/ariadne/control/live-adapter-evidence-templates/live-adapter-evidence-template-gsd2.md",
+        "projects/ariadne/control/live-adapter-dossiers/live-adapter-dossier-gsd2.json",
+        "projects/ariadne/control/live-adapter-readiness.json",
+        "projects/ariadne/control/live-adapter-next-actions.json",
+        "projects/ariadne/control/live-adapter-approval-pack.json",
+        "projects/ariadne/control/live-adapter-approval-review-audit.json",
+        "projects/ariadne/control/mutation-readiness-audit.json",
+        "projects/ariadne/control/live-adapter-evidence-templates.json",
+        "projects/ariadne/control/live-adapter-operator-evidence-audit.json"
+      ]
+    },
+    {
+      "target": "notebooklm",
+      "status": "unchecked",
+      "operatorEvidenceStatus": "missing_evidence",
+      "missingSections": [],
+      "nextAction": "Run the preflight check command against the target template before importing evidence.",
+      "checkCommand": "npm run ariadne -- live-adapter-operator-evidence-check --project ariadne --target notebooklm --from vault/projects/ariadne/control/live-adapter-evidence-templates/live-adapter-evidence-template-notebooklm.md",
+      "importCommand": "npm run ariadne -- live-adapter-operator-evidence --project ariadne --target notebooklm --from vault/projects/ariadne/control/live-adapter-evidence-templates/live-adapter-evidence-template-notebooklm.md --by <operator>",
+      "templateRef": "projects/ariadne/control/live-adapter-evidence-templates/live-adapter-evidence-template-notebooklm.md",
+      "evidenceRefs": [
+        "projects/ariadne/control/live-adapter-evidence-templates/live-adapter-evidence-template-notebooklm.md",
+        "projects/ariadne/control/live-adapter-dossiers/live-adapter-dossier-notebooklm.json",
+        "projects/ariadne/control/live-adapter-readiness.json",
+        "projects/ariadne/control/live-adapter-next-actions.json",
+        "projects/ariadne/control/live-adapter-approval-pack.json",
+        "projects/ariadne/control/live-adapter-approval-review-audit.json",
+        "projects/ariadne/control/mutation-readiness-audit.json",
+        "projects/ariadne/control/live-adapter-evidence-templates.json",
+        "projects/ariadne/control/live-adapter-operator-evidence-audit.json"
+      ]
+    }
+  ]
+}

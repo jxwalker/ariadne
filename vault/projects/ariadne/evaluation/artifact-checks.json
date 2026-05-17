@@ -1,12 +1,12 @@
 {
   "schemaVersion": 1,
   "project": "ariadne",
-  "generatedAt": "2026-05-17T06:36:35.989Z",
+  "generatedAt": "2026-05-17T06:56:33.814Z",
   "status": "passed",
   "summary": {
     "required": 13,
-    "optional": 40,
-    "present": 44,
+    "optional": 41,
+    "present": 45,
     "missingRequired": 0
   },
   "checks": [
@@ -381,6 +381,13 @@
       "label": "Live adapter operator evidence workplan",
       "required": false,
       "path": "projects/ariadne/control/live-adapter-operator-evidence-workplan.json",
+      "status": "present"
+    },
+    {
+      "id": "live-adapter-operator-evidence-queue",
+      "label": "Live adapter operator evidence queue",
+      "required": false,
+      "path": "projects/ariadne/control/live-adapter-operator-evidence-queue.json",
       "status": "present"
     },
     {
