@@ -355,6 +355,24 @@ const ARTIFACT_SPECS: ArtifactSpec[] = [
     relativePath: "control/live-adapter-operator-evidence-queue.json"
   },
   {
+    id: "live-adapter-operator-evidence-workspace",
+    label: "Live adapter operator evidence workspace",
+    required: false,
+    kind: "file",
+    relativePath: "control/live-adapter-operator-evidence-workspace.json"
+  },
+  {
+    id: "live-adapter-operator-evidence-workspace-files",
+    label: "Live adapter operator evidence workspace files",
+    required: false,
+    kind: "matching-files",
+    relativePath: "control/operator-evidence",
+    prefix: "",
+    suffix: ".md",
+    minimumCount: 6,
+    recursive: true
+  },
+  {
     id: "roadmap-completion-audit",
     label: "Roadmap completion audit",
     required: false,

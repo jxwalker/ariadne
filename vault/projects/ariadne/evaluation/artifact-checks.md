@@ -2,13 +2,13 @@
 
 Project: ariadne
 Status: passed
-Generated: 2026-05-17T07:32:19.485Z
+Generated: 2026-05-17T08:15:31.374Z
 
 ## Summary
 
 - Required checks: 13
-- Optional checks: 42
-- Present artifacts: 46
+- Optional checks: 44
+- Present artifacts: 48
 - Missing required artifacts: 0
 
 ## Checks
@@ -61,6 +61,8 @@ Generated: 2026-05-17T07:32:19.485Z
 | live-adapter-operator-evidence-audit | no | present | - | projects/ariadne/control/live-adapter-operator-evidence-audit.json |
 | live-adapter-operator-evidence-workplan | no | present | - | projects/ariadne/control/live-adapter-operator-evidence-workplan.json |
 | live-adapter-operator-evidence-queue | no | present | - | projects/ariadne/control/live-adapter-operator-evidence-queue.json |
+| live-adapter-operator-evidence-workspace | no | present | - | projects/ariadne/control/live-adapter-operator-evidence-workspace.json |
+| live-adapter-operator-evidence-workspace-files | no | present | 36 | projects/ariadne/control/operator-evidence/**/*.md |
 | roadmap-completion-audit | no | present | - | projects/ariadne/control/roadmap-completion-audit.json |
 | mutation-dry-runs | no | missing | 0 | projects/ariadne/control/mutation-dry-runs/mutation-dry-run-*.json |
 | mutation-executions | no | missing | 0 | projects/ariadne/control/mutation-executions/mutation-execution-*.json |

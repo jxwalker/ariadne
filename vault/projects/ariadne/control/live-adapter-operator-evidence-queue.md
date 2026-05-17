@@ -2,7 +2,7 @@
 
 Project: ariadne
 Status: evidence_required
-Generated: 2026-05-17T07:32:10.563Z
+Generated: 2026-05-17T08:33:54.762Z
 Mutation approved: false
 Operator evidence audit: projects/ariadne/control/live-adapter-operator-evidence-audit.json
 Workplan: projects/ariadne/control/live-adapter-operator-evidence-workplan.json

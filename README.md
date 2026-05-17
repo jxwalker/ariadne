@@ -44,6 +44,7 @@ The system starts with source-grounded intake: drawings, white papers, dictated 
 - Generate a live-adapter operator-evidence workplan that turns the missing evidence audit into per-target import commands, template refs, cutover blockers, and GBrain advisory queries.
 - Import filled live-adapter operator evidence and audit missing sections without turning that evidence into mutation approval.
 - Run one batch preflight across every live-adapter operator evidence template so unchecked targets become explicit queue items.
+- Generate a fillable live-adapter operator evidence workspace with one target directory per adapter and support files for packet, auth, rollback, dry-run, and GBrain notes.
 - Record file-backed sleep routines, memory proposals, agent mail, interagent leases, read-only Hermes cron snapshots/proposals, and read-only deployment snapshots.
 - Render evaluation trend charts in the static console and generate deterministic plus browser-backed console checks.
 - Guard worktree creation without mutating by default.
@@ -98,6 +99,7 @@ npm run ariadne -- live-adapter-operator-evidence-workplan --project ariadne
 npm run ariadne -- live-adapter-operator-evidence-check --project ariadne --target github --from vault/projects/ariadne/control/live-adapter-evidence-templates/live-adapter-evidence-template-github.md
 npm run ariadne -- live-adapter-operator-evidence-check-all --project ariadne
 npm run ariadne -- live-adapter-operator-evidence-queue --project ariadne
+npm run ariadne -- live-adapter-operator-evidence-workspace --project ariadne
 npm run ariadne -- live-adapter-operator-evidence --project ariadne --target github --from vault/projects/ariadne/control/live-adapter-evidence-templates/live-adapter-evidence-template-github.md --by james
 npm run ariadne -- live-adapter-operator-evidence-audit --project ariadne
 npm run ariadne -- roadmap-completion-audit --project ariadne
@@ -166,8 +168,9 @@ vault/projects/<project>/
 22. Use `live-adapter-operator-evidence-check` to preflight a filled template before creating any operator evidence record.
 23. Use `live-adapter-operator-evidence-check-all` to preflight every target template and refresh the queue without recording evidence.
 24. Use `live-adapter-operator-evidence-queue` to rank targets as unchecked, needs evidence, ready for import, needs rework, or complete.
-25. Use `live-adapter-operator-evidence` and `live-adapter-operator-evidence-audit` to record filled operator evidence and show which targets still have missing proof. These records keep `mutationApproved=false`.
-26. Use `roadmap-completion-audit` as the conservative completion gate for the whole roadmap; it stays blocked until artifact checks, behavior checks, evaluation trends, console visual/browser checks, coordination records, GBrain advisory context, operator-evidence audit, live-adapter cutover audit, and review-session state all prove completion.
+25. Use `live-adapter-operator-evidence-workspace` to create fillable per-target files under `control/operator-evidence/`.
+26. Use `live-adapter-operator-evidence` and `live-adapter-operator-evidence-audit` to record filled operator evidence and show which targets still have missing proof. These records keep `mutationApproved=false`.
+27. Use `roadmap-completion-audit` as the conservative completion gate for the whole roadmap; it stays blocked until artifact checks, behavior checks, evaluation trends, console visual/browser checks, coordination records, GBrain advisory context, operator-evidence audit, live-adapter cutover audit, and review-session state all prove completion.
 
 ## Adapter Commands
 
@@ -224,6 +227,7 @@ npm run ariadne -- live-adapter-evidence-templates --project ariadne
 npm run ariadne -- live-adapter-operator-evidence-check --project ariadne --target github --from vault/projects/ariadne/control/live-adapter-evidence-templates/live-adapter-evidence-template-github.md
 npm run ariadne -- live-adapter-operator-evidence-check-all --project ariadne
 npm run ariadne -- live-adapter-operator-evidence-queue --project ariadne
+npm run ariadne -- live-adapter-operator-evidence-workspace --project ariadne
 npm run ariadne -- live-adapter-operator-evidence --project ariadne --target github --from vault/projects/ariadne/control/live-adapter-evidence-templates/live-adapter-evidence-template-github.md --by james
 npm run ariadne -- live-adapter-operator-evidence-audit --project ariadne
 npm run ariadne -- recovery-report --project ariadne
