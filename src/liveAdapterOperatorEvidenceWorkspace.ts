@@ -2,8 +2,8 @@ import fs from "node:fs/promises";
 import path from "node:path";
 import { writeJsonArtifact, writeTextArtifact } from "./artifacts.js";
 import { generateLiveAdapterOperatorEvidenceQueue } from "./liveAdapterOperatorEvidenceQueue.js";
-import type { LiveAdapterTarget } from "./liveAdapterTargets.js";
-import { slugifyProject } from "./paths.js";
+import { isLiveAdapterTarget, type LiveAdapterTarget } from "./liveAdapterTargets.js";
+import { projectDir, slugifyProject } from "./paths.js";
 import type {
   LiveAdapterOperatorEvidenceQueue,
   LiveAdapterOperatorEvidenceWorkspace,
@@ -13,6 +13,7 @@ import type {
 type WorkspaceTarget = LiveAdapterOperatorEvidenceWorkspace["targets"][number];
 type QueueTarget = LiveAdapterOperatorEvidenceQueue["targets"][number];
 type WorkplanTarget = LiveAdapterOperatorEvidenceWorkplan["targets"][number];
+type QueueResult = { jsonPath: string; queue: LiveAdapterOperatorEvidenceQueue };
 
 const SUPPORT_FILES = [
   "packet-review.md",
@@ -38,7 +39,9 @@ export async function generateLiveAdapterOperatorEvidenceWorkspace(input: {
   target?: LiveAdapterTarget;
 }): Promise<{ jsonPath: string; markdownPath: string; workspace: LiveAdapterOperatorEvidenceWorkspace }> {
   const project = slugifyProject(input.project);
-  const queueResult = await generateLiveAdapterOperatorEvidenceQueue({ project, vaultRoot: input.vaultRoot });
+  const queueResult =
+    (input.target ? await readExistingQueue(input.vaultRoot, project) : undefined) ??
+    (await generateLiveAdapterOperatorEvidenceQueue({ project, vaultRoot: input.vaultRoot }));
   const workplan = await readWorkplan(input.vaultRoot, queueResult.queue.workplanRef);
   const workplanByTarget = new Map(workplan.targets.map((target) => [target.target, target]));
   const generatedAt = new Date().toISOString();
@@ -152,6 +155,54 @@ async function writeTargetWorkspace(
 
 async function readWorkplan(vaultRoot: string, relativeRef: string): Promise<LiveAdapterOperatorEvidenceWorkplan> {
   return JSON.parse(await fs.readFile(path.join(vaultRoot, relativeRef), "utf8")) as LiveAdapterOperatorEvidenceWorkplan;
+}
+
+async function readExistingQueue(vaultRoot: string, project: string): Promise<QueueResult | undefined> {
+  const jsonPath = path.join(projectDir(vaultRoot, project), "control", "live-adapter-operator-evidence-queue.json");
+  try {
+    const parsed = JSON.parse(await fs.readFile(jsonPath, "utf8")) as unknown;
+    if (isQueue(parsed, { vaultRoot, project })) return { jsonPath, queue: parsed };
+    throw new Error(`Malformed operator evidence queue JSON or schema mismatch at ${jsonPath}. Refusing to regenerate over an existing queue.`);
+  } catch (error) {
+    if ((error as NodeJS.ErrnoException).code === "ENOENT") return undefined;
+    throw error;
+  }
+}
+
+function isQueue(value: unknown, input: { vaultRoot: string; project: string }): value is LiveAdapterOperatorEvidenceQueue {
+  if (!value || typeof value !== "object" || Array.isArray(value)) return false;
+  const queue = value as LiveAdapterOperatorEvidenceQueue;
+  if (queue.schemaVersion !== 1) return false;
+  if (queue.project !== input.project) return false;
+  if (typeof queue.workplanRef !== "string") return false;
+  if (!queue.workplanRef.startsWith(`projects/${input.project}/control/`)) return false;
+  const resolvedWorkplan = path.resolve(input.vaultRoot, queue.workplanRef);
+  const projectRoot = path.resolve(projectDir(input.vaultRoot, input.project));
+  const relativeToProject = path.relative(projectRoot, resolvedWorkplan);
+  if (relativeToProject === "" || relativeToProject.startsWith("..") || path.isAbsolute(relativeToProject)) return false;
+  if (!Array.isArray(queue.targets)) return false;
+  return queue.targets.every(isQueueTarget);
+}
+
+function isQueueTarget(value: unknown): value is QueueTarget {
+  if (!value || typeof value !== "object" || Array.isArray(value)) return false;
+  const target = value as QueueTarget;
+  return (
+    isLiveAdapterTarget(target.target) &&
+    isQueueTargetStatus(target.status) &&
+    Array.isArray(target.missingSections) &&
+    target.missingSections.every((section) => typeof section === "string")
+  );
+}
+
+function isQueueTargetStatus(value: unknown): value is QueueTarget["status"] {
+  return (
+    value === "complete" ||
+    value === "ready_for_import" ||
+    value === "needs_evidence" ||
+    value === "needs_rework" ||
+    value === "unchecked"
+  );
 }
 
 function renderWorkspace(workspace: LiveAdapterOperatorEvidenceWorkspace): string {

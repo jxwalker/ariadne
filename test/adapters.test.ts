@@ -1290,6 +1290,8 @@ describe("roadmap adapters", () => {
     expect(githubWorkspace?.supportFileRefs).toContain("projects/ariadne/control/operator-evidence/github/read-only-assist.md");
     const githubWorkspaceFile = path.join(vaultRoot, githubWorkspace?.evidenceFileRef ?? "");
     await fs.appendFile(githubWorkspaceFile, "\nOperator draft marker: keep me\n");
+    const queueJsonBeforeScopedWorkspace = await fs.readFile(operatorEvidenceQueue.jsonPath, "utf8");
+    const workplanJsonBeforeScopedWorkspace = await fs.readFile(operatorEvidenceWorkplan.jsonPath, "utf8");
     const scopedHermesWorkspace = await generateLiveAdapterOperatorEvidenceWorkspace({
       project: "ariadne",
       vaultRoot,
@@ -1301,6 +1303,10 @@ describe("roadmap adapters", () => {
     expect(scopedHermesWorkspace.workspace.summary.workspaceFiles).toBe(1);
     expect(scopedHermesWorkspace.workspace.summary.supportFiles).toBe(6);
     expect(scopedHermesWorkspace.workspace.targets.map((target) => target.target)).toEqual(["hermes-cron"]);
+    expect(scopedHermesWorkspace.workspace.workplanRef).toBe(operatorEvidenceQueue.queue.workplanRef);
+    expect(scopedHermesWorkspace.workspace.targets[0]?.missingSections).toEqual(hermesQueue?.missingSections);
+    await expect(fs.readFile(operatorEvidenceQueue.jsonPath, "utf8")).resolves.toBe(queueJsonBeforeScopedWorkspace);
+    await expect(fs.readFile(operatorEvidenceWorkplan.jsonPath, "utf8")).resolves.toBe(workplanJsonBeforeScopedWorkspace);
     const operatorEvidenceAssist = await generateLiveAdapterOperatorEvidenceAssist({ project: "ariadne", vaultRoot });
     expect(operatorEvidenceAssist.assist.status).toBe("awaiting_operator_review");
     expect(operatorEvidenceAssist.assist.mutationApproved).toBe(false);
