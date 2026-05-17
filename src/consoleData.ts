@@ -530,7 +530,9 @@ function isLiveAdapterTargetDossier(value: unknown): value is LiveAdapterTargetD
     hasSchema(value) &&
     value.schemaVersion === 1 &&
     isNonGenericMutationTarget(value.target) &&
-    (value.status === "ready_for_operator_review" || value.status === "blocked") &&
+    (value.status === "ready_for_operator_review" ||
+      value.status === "ready_for_adapter_work" ||
+      value.status === "blocked") &&
     hasSchema(value.summary) &&
     typeof value.summary.actions === "number"
   );

@@ -585,6 +585,7 @@ function statusClass(value: string | undefined): string {
     value === "ready" ||
     value === "ready_for_bounded_review" ||
     value === "ready_for_operator_review" ||
+    value === "ready_for_adapter_work" ||
     value === "approved" ||
     value === "complete" ||
     value === "ready_for_adapter" ||
