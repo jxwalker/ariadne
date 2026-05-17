@@ -2,6 +2,7 @@ import fs from "node:fs/promises";
 import path from "node:path";
 import { extractText, normaliseExtractedText, sourceKind } from "./extract.js";
 import { sha256File } from "./hash.js";
+import { REQUIRED_OPERATOR_EVIDENCE_SECTION_LABELS } from "./liveAdapterOperatorEvidence.js";
 import { projectDir, safeFileName, slugifyProject } from "./paths.js";
 import { scanTextForSecrets, shouldBlockHygiene } from "./sourceHygiene.js";
 import type {
@@ -362,7 +363,7 @@ export async function projectStatus(vaultRoot: string, project: string): Promise
     liveAdapterOperatorEvidenceStatus: operatorEvidenceAudit?.status,
     liveAdapterOperatorEvidenceCompleteTargets: operatorEvidenceAudit?.summary.completeTargets,
     liveAdapterOperatorEvidenceMissingTargets: operatorEvidenceAudit?.summary.missingTargets,
-    liveAdapterOperatorEvidenceMissingSections: operatorEvidenceAudit?.summary.missingSections,
+    liveAdapterOperatorEvidenceMissingSections: operatorEvidenceMissingSections(operatorEvidenceAudit),
     liveAdapterOperatorEvidenceQueueStatus: operatorEvidenceQueue?.status,
     liveAdapterOperatorEvidenceQueueReadyForImport: operatorEvidenceQueue?.summary.readyForImport,
     liveAdapterOperatorEvidenceQueueNeedsEvidence: operatorEvidenceQueue?.summary.needsEvidence,
@@ -378,6 +379,23 @@ export async function projectStatus(vaultRoot: string, project: string): Promise
     liveAdapterReviewSessionActionItems: reviewSession?.summary.actionItems,
     latestE2eSmoke: e2eSmoke
   };
+}
+
+function operatorEvidenceMissingSections(audit: LiveAdapterOperatorEvidenceAudit | undefined): number | undefined {
+  if (!audit) return undefined;
+  const summary = audit.summary;
+  const summaryMissingSections = summary?.missingSections ?? 0;
+  if (summaryMissingSections > 0) return summaryMissingSections;
+
+  const targetSections = (audit.targets ?? []).reduce((count, target) => count + (target.missingSections?.length ?? 0), 0);
+  if (targetSections > 0) return targetSections;
+
+  const missingTargets = summary?.missingTargets ?? 0;
+  if (missingTargets > 0) {
+    return missingTargets * REQUIRED_OPERATOR_EVIDENCE_SECTION_LABELS.length;
+  }
+
+  return summaryMissingSections;
 }
 
 async function readJson<T>(filePath: string): Promise<T | undefined> {
