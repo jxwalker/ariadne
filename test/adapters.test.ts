@@ -52,6 +52,7 @@ import { generateLiveAdapterNextActions } from "../src/liveAdapterNextActions.js
 import { generateLiveAdapterReadiness } from "../src/liveAdapterReadiness.js";
 import { generateLiveAdapterReviewSession } from "../src/liveAdapterReviewSession.js";
 import { generateLiveAdapterTargetDossier } from "../src/liveAdapterTargetDossier.js";
+import { promoteLiveEvidence } from "../src/liveEvidencePromotion.js";
 import { collectLocalRuntimeProbe } from "../src/localRuntimeProbe.js";
 import { planMutationReadiness } from "../src/mutationReadiness.js";
 import { generateMutationReadinessAudit } from "../src/mutationReadinessAudit.js";
@@ -2174,6 +2175,113 @@ describe("roadmap adapters", () => {
     expect(deploymentSnapshot.snapshot.raw).toMatchObject({ source: "infra-live-ssh" });
     expect(JSON.stringify(deploymentSnapshot.snapshot.raw)).not.toContain("beast-secret.lan");
     expect(JSON.stringify(deploymentSnapshot.snapshot.raw)).not.toContain("james@beast.lan");
+
+    const promotedLiveEvidence = await promoteLiveEvidence({
+      project: "ariadne",
+      vaultRoot,
+      target: "deployment",
+      title: "Read-only deployment runtime evidence",
+      sourcePaths: [runtimeProbe.jsonPath, deploymentSnapshot.jsonPath],
+      notes: "Promote sanitized summaries only"
+    });
+    expect(promotedLiveEvidence.promotion.status).toBe("promoted_for_operator_review");
+    expect(promotedLiveEvidence.promotion.mutationApproved).toBe(false);
+    expect(promotedLiveEvidence.promotion.approvalGranted).toBe(false);
+    expect(promotedLiveEvidence.promotion.operatorEvidenceRecordCreated).toBe(false);
+    expect(promotedLiveEvidence.promotion.summary.sources).toBe(2);
+    expect(promotedLiveEvidence.promotion.summary.parsedSources).toBe(2);
+    expect(promotedLiveEvidence.promotion.sources.map((source) => source.kind)).toEqual([
+      "local-runtime-probe",
+      "deployment-snapshot"
+    ]);
+    const promotedJson = JSON.stringify(promotedLiveEvidence.promotion);
+    expect(promotedJson).not.toContain("http://runtime.test/atlas/v1");
+    expect(promotedJson).not.toContain("james@beast.lan");
+    expect(promotedJson).not.toContain("beast-secret.lan");
+    expect(promotedJson).toContain("qwen3.6-35b-a3b-nvfp4-atlas");
+    const promotedMarkdown = await fs.readFile(promotedLiveEvidence.markdownPath, "utf8");
+    expect(promotedMarkdown).toContain("does not import operator evidence");
+    const promotionArtifactChecks = await generateArtifactCheckReport({ project: "ariadne", vaultRoot });
+    expect(promotionArtifactChecks.report.checks.find((check) => check.id === "live-evidence-promotions")?.status).toBe(
+      "present"
+    );
+    const falseJson = path.join(vaultRoot, "projects", "ariadne", "deployment", "false.json");
+    await fs.writeFile(falseJson, "false");
+    const promotedFalsyJson = await promoteLiveEvidence({
+      project: "ariadne",
+      vaultRoot,
+      target: "deployment",
+      title: "Falsy JSON root",
+      sourcePaths: [falseJson]
+    });
+    expect(promotedFalsyJson.promotion.sources[0]?.parsed).toBe(true);
+    expect(promotedFalsyJson.promotion.sources[0]?.kind).toBe("file-hash");
+    const genericSummary = path.join(vaultRoot, "projects", "ariadne", "deployment", "generic-summary.json");
+    await fs.writeFile(
+      genericSummary,
+      JSON.stringify({
+        summary: {
+          endpointUrl: "http://127.0.0.1:9999/private",
+          host: "localhost",
+          token: "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxMjMifQ.signature",
+          note: "safe model evidence"
+        }
+      })
+    );
+    const promotedGenericSummary = await promoteLiveEvidence({
+      project: "ariadne",
+      vaultRoot,
+      target: "deployment",
+      title: "  Generic summary  ",
+      sourcePaths: [genericSummary]
+    });
+    expect(promotedGenericSummary.promotion.title).toBe("Generic summary");
+    expect(promotedGenericSummary.promotion.sources[0]?.kind).toBe("json-summary");
+    const genericPromotionJson = JSON.stringify(promotedGenericSummary.promotion);
+    expect(genericPromotionJson).toContain("safe model evidence");
+    expect(genericPromotionJson).not.toContain("127.0.0.1");
+    expect(genericPromotionJson).not.toContain("localhost");
+    expect(genericPromotionJson).not.toContain("eyJhbGciOiJIUzI1NiJ9");
+    await expect(
+      promoteLiveEvidence({
+        project: "ariadne",
+        vaultRoot,
+        target: "deployment",
+        title: "   ",
+        sourcePaths: [genericSummary]
+      })
+    ).rejects.toThrow(/title/);
+    await expect(
+      promoteLiveEvidence({
+        project: "ariadne",
+        vaultRoot,
+        target: "deployment",
+        title: "x".repeat(161),
+        sourcePaths: [genericSummary]
+      })
+    ).rejects.toThrow(/160 characters/);
+    const outsideVault = path.join(temp, "outside.json");
+    await fs.writeFile(outsideVault, "{}");
+    await expect(
+      promoteLiveEvidence({
+        project: "ariadne",
+        vaultRoot,
+        target: "deployment",
+        title: "Outside vault",
+        sourcePaths: [outsideVault]
+      })
+    ).rejects.toThrow(/project vault/);
+    const oversizedSource = path.join(vaultRoot, "projects", "ariadne", "deployment", "oversized.txt");
+    await fs.writeFile(oversizedSource, "x".repeat(2 * 1024 * 1024 + 1));
+    await expect(
+      promoteLiveEvidence({
+        project: "ariadne",
+        vaultRoot,
+        target: "deployment",
+        title: "Oversized source",
+        sourcePaths: [oversizedSource]
+      })
+    ).rejects.toThrow(/too large/);
 
     const activity = await draftOpenScorpionActivity({
       project: "ariadne",

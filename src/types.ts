@@ -357,12 +357,15 @@ export interface OpenScorpionActivityDraft {
   submit: false;
 }
 
+export type LiveAdapterEvidenceTarget = "github" | "deployment" | "hermes-cron" | "openscorpion" | "gsd2" | "notebooklm";
+export type MutationReadinessTarget = LiveAdapterEvidenceTarget | "generic";
+
 export interface MutationReadinessPlan {
   schemaVersion: 1;
   id: string;
   project: string;
   generatedAt: string;
-  target: "github" | "deployment" | "hermes-cron" | "openscorpion" | "gsd2" | "notebooklm" | "generic";
+  target: MutationReadinessTarget;
   status: "approval_required" | "approval_rejected" | "ready_for_bounded_review";
   risk: "low" | "medium" | "high";
   scope: string;
@@ -1028,6 +1031,34 @@ export interface LiveAdapterOperatorEvidenceAssist {
     gbrainQueries: string[];
     nextSteps: string[];
   }>;
+}
+
+export interface LiveEvidencePromotion {
+  schemaVersion: 1;
+  id: string;
+  project: string;
+  generatedAt: string;
+  target: LiveAdapterEvidenceTarget;
+  title: string;
+  status: "promoted_for_operator_review";
+  mutationApproved: false;
+  approvalGranted: false;
+  operatorEvidenceRecordCreated: false;
+  summary: {
+    sources: number;
+    parsedSources: number;
+    redactedValues: number;
+  };
+  sources: Array<{
+    sourceRef: string;
+    sourceSha256: string;
+    sourceBytes: number;
+    kind: "local-runtime-probe" | "deployment-snapshot" | "infra-snapshot" | "e2e-smoke" | "json-summary" | "file-hash";
+    parsed: boolean;
+    redactedValues: number;
+    summary?: unknown;
+  }>;
+  notes?: string;
 }
 
 export interface LiveAdapterOperatorEvidenceRecord {
