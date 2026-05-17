@@ -72,6 +72,7 @@ import { importNotebookLmExport } from "./notebooklm.js";
 import { notebookLmMutationActionOption, planNotebookLmMutation } from "./notebookLmMutation.js";
 import { mutationTargetOption, planMutationReadiness } from "./mutationReadiness.js";
 import { generateMutationReadinessAudit } from "./mutationReadinessAudit.js";
+import { generateMutationReadinessRepairPlan } from "./mutationReadinessRepairPlan.js";
 import { runMutationDryRun } from "./mutationDryRun.js";
 import { runMutationExecution } from "./mutationExecute.js";
 import {
@@ -190,6 +191,7 @@ function usage(): string {
     "  ariadne approval-decision --project <project> --approval <id|json> --status <approved|rejected|expired> --by <name> [--notes <text>]",
     "  ariadne mutation-readiness --project <project> --target <target> --scope <text> --auth-evidence <paths> --dry-run <cmd> --live-command <cmd> --post-verify <cmd> --rollback <text> [--approval <id|json>] [--risk <low|medium|high>] [--evidence <paths>] [--notes <text>]",
     "  ariadne mutation-readiness-audit --project <project>",
+    "  ariadne mutation-readiness-repair-plan --project <project>",
     "  ariadne live-adapter-readiness --project <project>",
     "  ariadne live-adapter-next-actions --project <project>",
     "  ariadne live-adapter-approval-pack --project <project> [--target <all|github|deployment|hermes-cron|openscorpion|gsd2|notebooklm>]",
@@ -1157,6 +1159,15 @@ async function main(): Promise<void> {
     console.log(`Mutation readiness audit: ${result.markdownPath}`);
     console.log(`Status: ${result.audit.status}`);
     console.log(`Blocked: ${result.audit.summary.blocked}`);
+    return;
+  }
+
+  if (parsed.command === "mutation-readiness-repair-plan") {
+    const result = await generateMutationReadinessRepairPlan({ project, vaultRoot });
+    console.log(`Mutation readiness repair plan: ${result.markdownPath}`);
+    console.log(`Status: ${result.report.status}`);
+    console.log(`Repairable plans: ${result.report.summary.repairablePlans}`);
+    console.log(`Operator action required: ${result.report.summary.operatorActionRequired}`);
     return;
   }
 

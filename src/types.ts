@@ -370,6 +370,37 @@ export interface MutationReadinessAudit {
   }>;
 }
 
+export interface MutationReadinessRepairPlan {
+  schemaVersion: 1;
+  project: string;
+  generatedAt: string;
+  status: "complete" | "actions_required";
+  mutationAllowed: false;
+  mutationReadinessAuditRef: string;
+  liveAdapterNextActionsRef: string;
+  summary: {
+    targets: number;
+    auditPassed: number;
+    missingPlans: number;
+    repairablePlans: number;
+    operatorActionRequired: number;
+    blocked: number;
+  };
+  targets: Array<{
+    target: Exclude<MutationReadinessPlan["target"], "generic">;
+    status: "audit_passed" | "missing_plan" | "repairable_plan" | "operator_action_required" | "blocked";
+    latestPlanId?: string;
+    blockers: string[];
+    repairableBlockers: string[];
+    operatorBlockers: string[];
+    remainingBlockers: string[];
+    approvalCommand?: string;
+    regenerationCommand: string;
+    nextActionCommands: string[];
+    evidenceRefs: string[];
+  }>;
+}
+
 export interface MutationDryRunRecord {
   schemaVersion: 1;
   id: string;

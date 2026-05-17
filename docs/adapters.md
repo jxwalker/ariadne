@@ -200,6 +200,8 @@ Artifacts:
 
 `mutation-readiness-audit` aggregates all readiness plans and reports whether each plan has approved human authorization, existing evidence refs, a non-mutating dry-run command, a post-action verification command, rollback text, and `execute=false`. It never runs dry-run or live commands.
 
+`mutation-readiness-repair-plan` is the read-only repair guide when that audit blocks. It refreshes the audit and live-adapter next-actions report, then classifies each live-adapter target as audit-passed, missing a plan, repairable by regenerating a target-specific plan, or waiting on operator approval/evidence. It emits approval-request and regeneration command scaffolds with `mutationAllowed=false`; it never imports evidence, grants approval, runs dry-runs, or executes live commands.
+
 `mutation-dry-run` executes only the reviewed dry-run command for one readiness plan, and only when that exact plan passes the readiness audit. It captures stdout, stderr, exit code, duration, audit reference, and `execute=false` as evidence. It never runs the proposed live command or post-action verification command.
 
 `mutation-execute` executes the proposed live command only when the plan passes readiness audit, has a passed dry-run record, and the operator supplies `--confirm-plan` matching the exact plan id. It then runs the post-action verification command and records live output, verification output, rollback text, audit reference, dry-run reference, and `execute=true`. Console projections redact command output; the full output remains in the execution artifact.
