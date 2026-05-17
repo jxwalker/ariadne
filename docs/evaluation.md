@@ -113,6 +113,8 @@ vault/projects/<project>/control/mutation-readiness-repair-plan.md
 
 The repair plan does not approve or execute anything. It classifies blocker types and emits target-specific approval/regeneration command scaffolds so stale plans can be rebuilt with the missing gates.
 
+`console-data` and `console-html` include the same repair-plan artifact. The console summary shows missing, repairable, operator-action-required, and blocked repair counts; the rendered console shows each target's current classification and regeneration scaffold beside the mutation audit. This makes blocked roadmap work visible without turning guidance into approval evidence.
+
 `live-adapter-cutover-audit` is the final non-mutating evaluator before replacing placeholder commands with target adapters. It checks complete operator evidence, current packet-review evidence, audit-passed readiness plans, auth evidence, rollback and post-verification acceptance, passed dry-run evidence, passed target-guarded execution evidence, target wrapper availability, generated dossiers, and advisory GBrain context.
 
 `live-adapter-review-session` is an operator-facing evaluator over the same evidence. It proves the current review workload is explicit by listing every target's first action, packet-review command, approval request draft, mutation-plan draft, required evidence, dossier ref, cutover blockers, and GBrain advisory queries. When operator-evidence queue or assist artifacts already exist, the review session links them and shows target queue status, latest preflight refs, read-only assist refs, and assist next steps. It is not a gate bypass: it writes `mutationApproved=false` and only makes the next human review step inspectable.

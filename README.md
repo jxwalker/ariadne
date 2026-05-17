@@ -129,6 +129,8 @@ npm run ariadne -- infra-live-ssh --project ariadne --host beast --target james@
 npm run ariadne -- status --project ariadne
 ```
 
+The generated console includes the mutation-readiness repair plan beside the mutation audit, so blocked live-adapter work is visible by target without granting approval or running a live command.
+
 ## Vault Layout
 
 ```text

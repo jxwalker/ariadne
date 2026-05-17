@@ -13,6 +13,7 @@ The first visualisation should be an operations surface over evidence, not a cha
 - Recovery: incomplete runs, missing guards, failed checks, pending reviews, and resume actions.
 - Approvals: requested, approved, rejected, or expired mutation gates with risk and rollback notes.
 - Mutation readiness: target-specific live-adapter plans with auth evidence, dry runs, proposed live commands, rollback, and execute=false.
+- Mutation readiness repair: read-only target classifications for audit-passed, missing-plan, repairable-plan, operator-action-required, and blocked live-adapter readiness, with regeneration command scaffolds.
 - Live adapter approval packs: operator-facing packets for target risk, auth evidence, rollback, post-verification, and approval request drafts.
 - Live adapter approval reviews: operator packet-review records that explicitly do not approve mutation.
 - Approval review audit: current accepted packet-review counts, stale records, missing evidence refs, and invalid review artifacts.
@@ -65,7 +66,7 @@ Nodes are Macs, DGX Spark, Proxmox, TrueNAS, runners, Hermes instances, and mode
 
 ### Approval Queue
 
-Pending review records, missing readiness gates, requested approvals, mutation-readiness blockers, audit blockers, mutation blockers, approval-pack packets, packet-review records, approval-review audit blockers, target dossier packets, cutover blockers, review-session targets, and blank evidence templates are grouped into one queue so the operator sees what requires human action.
+Pending review records, missing readiness gates, requested approvals, mutation-readiness blockers, mutation repair actions, audit blockers, mutation blockers, approval-pack packets, packet-review records, approval-review audit blockers, target dossier packets, cutover blockers, review-session targets, and blank evidence templates are grouped into one queue so the operator sees what requires human action.
 
 ### Memory And Mail
 
@@ -85,7 +86,7 @@ The static console renders an SVG trend chart from `evaluation/evaluation-trends
 
 ## Implementation Direction
 
-Start with static JSON artifacts and generated Markdown. `console-data` creates a normalised read-only projection at `console/console-data.json`, and `console-html` renders the first static local console at `console/index.html`. A future live console should read the same JSON contract rather than scanning the vault directly. The console should remain read-only until the artifact model and access control are stable.
+Start with static JSON artifacts and generated Markdown. `console-data` creates a normalised read-only projection at `console/console-data.json`, and `console-html` renders the first static local console at `console/index.html`. The console includes `control/mutation-readiness-repair-plan.json`, so blocked adapter work is visible as read-only repair guidance beside the mutation audit. A future live console should read the same JSON contract rather than scanning the vault directly. The console should remain read-only until the artifact model and access control are stable.
 
 ## Integration Lessons From Current Tools
 
