@@ -232,6 +232,7 @@ export async function collectConsoleData(vaultRoot: string, projectInput: string
   const localRuntimeProbes = sortLocalRuntimeProbes(
     await readJsonFiles<LocalRuntimeProbe>(path.join(dir, "infrastructure", "runtime"), isLocalRuntimeProbe)
   );
+  const localRuntimeProbesForConsole = localRuntimeProbes.map(redactLocalRuntimeProbeForConsole);
   const gsd2ProcessSnapshots = await readJsonFiles<Gsd2ProcessSnapshot>(path.join(dir, "gsd", "process"), isGsd2ProcessSnapshot);
   const gbrainReports = await readJsonFiles<GbrainReportImport>(path.join(dir, "integrations", "gbrain"), isGbrainReport);
   const githubSnapshots = await readJsonFiles<GithubSnapshot>(path.join(dir, "integrations", "github"), isGithubSnapshot);
@@ -271,7 +272,7 @@ export async function collectConsoleData(vaultRoot: string, projectInput: string
         milestoneTitle: milestone.title
       }))
     ) ?? [];
-  const latestRuntimeProbe = latestLocalRuntimeProbe(localRuntimeProbes);
+  const latestRuntimeProbe = latestLocalRuntimeProbe(localRuntimeProbesForConsole);
 
   const data: ConsoleData = {
     schemaVersion: 1,
@@ -409,7 +410,7 @@ export async function collectConsoleData(vaultRoot: string, projectInput: string
     infrastructure: {
       registry,
       snapshots: infraSnapshots,
-      runtimeProbes: localRuntimeProbes
+      runtimeProbes: localRuntimeProbesForConsole
     },
     deployment: {
       snapshots: deploymentSnapshots
@@ -686,6 +687,17 @@ function sortLocalRuntimeProbes(probes: LocalRuntimeProbe[]): LocalRuntimeProbe[
 
 function latestLocalRuntimeProbe(probes: LocalRuntimeProbe[]): LocalRuntimeProbe | undefined {
   return sortLocalRuntimeProbes(probes).at(-1);
+}
+
+function redactLocalRuntimeProbeForConsole(probe: LocalRuntimeProbe): LocalRuntimeProbe {
+  return {
+    ...probe,
+    hermes: {
+      ...probe.hermes,
+      dashboard: probe.hermes.dashboard.url ? { ...probe.hermes.dashboard, url: "<redacted-url>" } : probe.hermes.dashboard
+    },
+    modelEndpoints: probe.modelEndpoints.map((endpoint) => ({ ...endpoint, url: "<redacted-url>" }))
+  };
 }
 
 function isGsd2ProcessSnapshot(value: unknown): value is Gsd2ProcessSnapshot {
