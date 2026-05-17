@@ -1,5 +1,6 @@
 import { writeTextArtifact } from "./artifacts.js";
 import { collectConsoleData, generateConsoleData } from "./consoleData.js";
+import { operatorEvidenceTargetMissingSections } from "./liveAdapterOperatorEvidence.js";
 import { slugifyProject } from "./paths.js";
 import type { ConsoleData } from "./types.js";
 
@@ -702,10 +703,10 @@ function operatorEvidence(data: ConsoleData): string {
     `<div class="visual-status"><strong class="${statusClass(audit.status)}">${escapeHtml(audit.status)}</strong><span>${escapeHtml(`${audit.summary.completeTargets} complete / ${audit.summary.incompleteTargets} incomplete / ${audit.summary.missingTargets} missing / ${audit.summary.records} records`)}</span></div>`,
     '<p class="metadata">Operator evidence records do not approve mutation and GBrain notes remain advisory.</p>',
     '<div class="table-wrap"><table><thead><tr><th>Target</th><th>Status</th><th>Records</th><th>Latest</th><th>Missing</th><th>GBrain</th></tr></thead><tbody>',
-    ...audit.targets.map(
-      (target) =>
-        `<tr><td>${escapeHtml(target.target)}</td><td class="${statusClass(target.status)}">${escapeHtml(target.status)}</td><td>${escapeHtml(String(target.recordCount))}</td><td>${escapeHtml(target.latestRecordId ?? "none")}</td><td>${escapeHtml(target.missingSections.length === 0 ? "none" : target.missingSections.join("; "))}</td><td>${escapeHtml(String(target.advisoryWarnings.length))}</td></tr>`
-    ),
+    ...audit.targets.map((target) => {
+      const missingSections = operatorEvidenceTargetMissingSections(target);
+      return `<tr><td>${escapeHtml(target.target)}</td><td class="${statusClass(target.status)}">${escapeHtml(target.status)}</td><td>${escapeHtml(String(target.recordCount))}</td><td>${escapeHtml(target.latestRecordId ?? "none")}</td><td>${escapeHtml(missingSections.length === 0 ? "none" : missingSections.join("; "))}</td><td>${escapeHtml(String(target.advisoryWarnings.length))}</td></tr>`;
+    }),
     "</tbody></table></div>"
   ].join("");
 }

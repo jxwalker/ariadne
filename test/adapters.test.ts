@@ -1492,6 +1492,9 @@ describe("roadmap adapters", () => {
       (requirement) => requirement.id === "operator-evidence"
     );
     expect(staleOperatorEvidenceRequirement?.detail).toContain("27 missing section(s)");
+    const staleConsoleHtml = await generateConsoleHtml({ project: "ariadne", vaultRoot, refreshData: true });
+    const staleConsoleText = await fs.readFile(staleConsoleHtml.htmlPath, "utf8");
+    expect(staleConsoleText).toContain("Operator identity and timestamp");
 
     const artifactChecks = await generateArtifactCheckReport({ project: "ariadne", vaultRoot });
     const coordinationCheck = artifactChecks.report.checks.find((check) => check.id === "coordination-records");
