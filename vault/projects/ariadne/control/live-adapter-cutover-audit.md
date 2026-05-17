@@ -2,7 +2,7 @@
 
 Project: ariadne
 Status: blocked
-Generated: 2026-05-17T02:57:44.473Z
+Generated: 2026-05-17T03:27:57.982Z
 Mutation allowed: false
 
 This audit does not enable or execute live adapters. It verifies whether a target has enough current evidence to replace placeholder commands with a target-specific live adapter implementation.
@@ -13,19 +13,19 @@ This audit does not enable or execute live adapters. It verifies whether a targe
 - Ready: 0
 - Blocked: 6
 - Passed gates: 12
-- Blocked gates: 36
+- Blocked gates: 42
 - Advisory gates: 6
 
 ## Targets
 
 | Target | Status | Execute command | Ready plan | Accepted review | Blockers |
 | --- | --- | --- | --- | --- | --- |
-| github | blocked | github-mutation-execute | - | - | Current accepted operator packet review: no accepted operator review exists<br>Mutation-readiness audit passed: No target-specific mutation-readiness plan passes audit.<br>Credential and auth-boundary evidence accepted: No passing readiness audit is available to prove auth evidence.<br>Rollback and post-verification contract accepted: A passing readiness audit is required to prove rollback and post-verification.<br>Dry-run evidence passed: No passed dry-run evidence exists for an audit-passed plan.<br>Target-guarded execution evidence passed: No passed target-guarded execution evidence exists. |
-| deployment | blocked | deployment-mutation-execute | - | - | Current accepted operator packet review: no accepted operator review exists<br>Mutation-readiness audit passed: No target-specific mutation-readiness plan passes audit.<br>Credential and auth-boundary evidence accepted: No passing readiness audit is available to prove auth evidence.<br>Rollback and post-verification contract accepted: A passing readiness audit is required to prove rollback and post-verification.<br>Dry-run evidence passed: No passed dry-run evidence exists for an audit-passed plan.<br>Target-guarded execution evidence passed: No passed target-guarded execution evidence exists. |
-| hermes-cron | blocked | hermes-cron-mutation-execute | - | - | Current accepted operator packet review: no accepted operator review exists<br>Mutation-readiness audit passed: No target-specific mutation-readiness plan passes audit.<br>Credential and auth-boundary evidence accepted: No passing readiness audit is available to prove auth evidence.<br>Rollback and post-verification contract accepted: A passing readiness audit is required to prove rollback and post-verification.<br>Dry-run evidence passed: No passed dry-run evidence exists for an audit-passed plan.<br>Target-guarded execution evidence passed: No passed target-guarded execution evidence exists. |
-| openscorpion | blocked | openscorpion-mutation-execute | - | - | Current accepted operator packet review: no accepted operator review exists<br>Mutation-readiness audit passed: No target-specific mutation-readiness plan passes audit.<br>Credential and auth-boundary evidence accepted: No passing readiness audit is available to prove auth evidence.<br>Rollback and post-verification contract accepted: A passing readiness audit is required to prove rollback and post-verification.<br>Dry-run evidence passed: No passed dry-run evidence exists for an audit-passed plan.<br>Target-guarded execution evidence passed: No passed target-guarded execution evidence exists. |
-| gsd2 | blocked | gsd2-mutation-execute | - | - | Current accepted operator packet review: no accepted operator review exists<br>Mutation-readiness audit passed: No target-specific mutation-readiness plan passes audit.<br>Credential and auth-boundary evidence accepted: No passing readiness audit is available to prove auth evidence.<br>Rollback and post-verification contract accepted: A passing readiness audit is required to prove rollback and post-verification.<br>Dry-run evidence passed: No passed dry-run evidence exists for an audit-passed plan.<br>Target-guarded execution evidence passed: No passed target-guarded execution evidence exists. |
-| notebooklm | blocked | notebooklm-mutation-execute | - | - | Current accepted operator packet review: no accepted operator review exists<br>Mutation-readiness audit passed: No target-specific mutation-readiness plan passes audit.<br>Credential and auth-boundary evidence accepted: No passing readiness audit is available to prove auth evidence.<br>Rollback and post-verification contract accepted: A passing readiness audit is required to prove rollback and post-verification.<br>Dry-run evidence passed: No passed dry-run evidence exists for an audit-passed plan.<br>Target-guarded execution evidence passed: No passed target-guarded execution evidence exists. |
+| github | blocked | github-mutation-execute | - | - | Operator evidence complete: No operator evidence record exists for github.<br>Current accepted operator packet review: no accepted operator review exists<br>Mutation-readiness audit passed: No target-specific mutation-readiness plan passes audit.<br>Credential and auth-boundary evidence accepted: No passing readiness audit is available to prove auth evidence.<br>Rollback and post-verification contract accepted: A passing readiness audit is required to prove rollback and post-verification.<br>Dry-run evidence passed: No passed dry-run evidence exists for an audit-passed plan.<br>Target-guarded execution evidence passed: No passed target-guarded execution evidence exists. |
+| deployment | blocked | deployment-mutation-execute | - | - | Operator evidence complete: No operator evidence record exists for deployment.<br>Current accepted operator packet review: no accepted operator review exists<br>Mutation-readiness audit passed: No target-specific mutation-readiness plan passes audit.<br>Credential and auth-boundary evidence accepted: No passing readiness audit is available to prove auth evidence.<br>Rollback and post-verification contract accepted: A passing readiness audit is required to prove rollback and post-verification.<br>Dry-run evidence passed: No passed dry-run evidence exists for an audit-passed plan.<br>Target-guarded execution evidence passed: No passed target-guarded execution evidence exists. |
+| hermes-cron | blocked | hermes-cron-mutation-execute | - | - | Operator evidence complete: No operator evidence record exists for hermes-cron.<br>Current accepted operator packet review: no accepted operator review exists<br>Mutation-readiness audit passed: No target-specific mutation-readiness plan passes audit.<br>Credential and auth-boundary evidence accepted: No passing readiness audit is available to prove auth evidence.<br>Rollback and post-verification contract accepted: A passing readiness audit is required to prove rollback and post-verification.<br>Dry-run evidence passed: No passed dry-run evidence exists for an audit-passed plan.<br>Target-guarded execution evidence passed: No passed target-guarded execution evidence exists. |
+| openscorpion | blocked | openscorpion-mutation-execute | - | - | Operator evidence complete: No operator evidence record exists for openscorpion.<br>Current accepted operator packet review: no accepted operator review exists<br>Mutation-readiness audit passed: No target-specific mutation-readiness plan passes audit.<br>Credential and auth-boundary evidence accepted: No passing readiness audit is available to prove auth evidence.<br>Rollback and post-verification contract accepted: A passing readiness audit is required to prove rollback and post-verification.<br>Dry-run evidence passed: No passed dry-run evidence exists for an audit-passed plan.<br>Target-guarded execution evidence passed: No passed target-guarded execution evidence exists. |
+| gsd2 | blocked | gsd2-mutation-execute | - | - | Operator evidence complete: No operator evidence record exists for gsd2.<br>Current accepted operator packet review: no accepted operator review exists<br>Mutation-readiness audit passed: No target-specific mutation-readiness plan passes audit.<br>Credential and auth-boundary evidence accepted: No passing readiness audit is available to prove auth evidence.<br>Rollback and post-verification contract accepted: A passing readiness audit is required to prove rollback and post-verification.<br>Dry-run evidence passed: No passed dry-run evidence exists for an audit-passed plan.<br>Target-guarded execution evidence passed: No passed target-guarded execution evidence exists. |
+| notebooklm | blocked | notebooklm-mutation-execute | - | - | Operator evidence complete: No operator evidence record exists for notebooklm.<br>Current accepted operator packet review: no accepted operator review exists<br>Mutation-readiness audit passed: No target-specific mutation-readiness plan passes audit.<br>Credential and auth-boundary evidence accepted: No passing readiness audit is available to prove auth evidence.<br>Rollback and post-verification contract accepted: A passing readiness audit is required to prove rollback and post-verification.<br>Dry-run evidence passed: No passed dry-run evidence exists for an audit-passed plan.<br>Target-guarded execution evidence passed: No passed target-guarded execution evidence exists. |
 
 ## Gate Detail
 
@@ -33,6 +33,7 @@ This audit does not enable or execute live adapters. It verifies whether a targe
 
 | Gate | Status | Detail |
 | --- | --- | --- |
+| Operator evidence complete | blocked | No operator evidence record exists for github. |
 | Current accepted operator packet review | blocked | no accepted operator review exists |
 | Mutation-readiness audit passed | blocked | No target-specific mutation-readiness plan passes audit. |
 | Credential and auth-boundary evidence accepted | blocked | No passing readiness audit is available to prove auth evidence. |
@@ -53,6 +54,7 @@ GBrain queries:
 
 | Gate | Status | Detail |
 | --- | --- | --- |
+| Operator evidence complete | blocked | No operator evidence record exists for deployment. |
 | Current accepted operator packet review | blocked | no accepted operator review exists |
 | Mutation-readiness audit passed | blocked | No target-specific mutation-readiness plan passes audit. |
 | Credential and auth-boundary evidence accepted | blocked | No passing readiness audit is available to prove auth evidence. |
@@ -73,6 +75,7 @@ GBrain queries:
 
 | Gate | Status | Detail |
 | --- | --- | --- |
+| Operator evidence complete | blocked | No operator evidence record exists for hermes-cron. |
 | Current accepted operator packet review | blocked | no accepted operator review exists |
 | Mutation-readiness audit passed | blocked | No target-specific mutation-readiness plan passes audit. |
 | Credential and auth-boundary evidence accepted | blocked | No passing readiness audit is available to prove auth evidence. |
@@ -93,6 +96,7 @@ GBrain queries:
 
 | Gate | Status | Detail |
 | --- | --- | --- |
+| Operator evidence complete | blocked | No operator evidence record exists for openscorpion. |
 | Current accepted operator packet review | blocked | no accepted operator review exists |
 | Mutation-readiness audit passed | blocked | No target-specific mutation-readiness plan passes audit. |
 | Credential and auth-boundary evidence accepted | blocked | No passing readiness audit is available to prove auth evidence. |
@@ -113,6 +117,7 @@ GBrain queries:
 
 | Gate | Status | Detail |
 | --- | --- | --- |
+| Operator evidence complete | blocked | No operator evidence record exists for gsd2. |
 | Current accepted operator packet review | blocked | no accepted operator review exists |
 | Mutation-readiness audit passed | blocked | No target-specific mutation-readiness plan passes audit. |
 | Credential and auth-boundary evidence accepted | blocked | No passing readiness audit is available to prove auth evidence. |
@@ -133,6 +138,7 @@ GBrain queries:
 
 | Gate | Status | Detail |
 | --- | --- | --- |
+| Operator evidence complete | blocked | No operator evidence record exists for notebooklm. |
 | Current accepted operator packet review | blocked | no accepted operator review exists |
 | Mutation-readiness audit passed | blocked | No target-specific mutation-readiness plan passes audit. |
 | Credential and auth-boundary evidence accepted | blocked | No passing readiness audit is available to prove auth evidence. |

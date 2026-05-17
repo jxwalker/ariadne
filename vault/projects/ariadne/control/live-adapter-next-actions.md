@@ -2,7 +2,7 @@
 
 Project: ariadne
 Status: actions_required
-Generated: 2026-05-17T02:57:44.466Z
+Generated: 2026-05-17T03:27:57.975Z
 Readiness: projects/ariadne/control/live-adapter-readiness.json
 
 ## Summary

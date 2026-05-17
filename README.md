@@ -38,7 +38,7 @@ The system starts with source-grounded intake: drawings, white papers, dictated 
 - Generate live-adapter next-action packets from the current blockers.
 - Generate live-adapter approval packs that draft target-specific operator checklists without approving or executing anything.
 - Record operator reviews of live-adapter approval packets without granting mutation authority.
-- Audit live-adapter cutover readiness before any placeholder command is replaced with a real external adapter.
+- Audit live-adapter cutover readiness, including complete imported operator evidence, before any placeholder command is replaced with a real external adapter.
 - Generate live-adapter review sessions that consolidate operator actions, target dossiers, cutover blockers, and advisory GBrain queries into one non-mutating review packet.
 - Generate blank live-adapter evidence templates so operators have a safe place to collect packet-review, auth-boundary, rollback, dry-run, and GBrain notes without creating approval evidence automatically.
 - Import filled live-adapter operator evidence and audit missing sections without turning that evidence into mutation approval.
@@ -152,7 +152,7 @@ vault/projects/<project>/
 15. Use `live-adapter-approval-review` only when an operator has reviewed a packet; it does not approve live mutation.
 16. Use `live-adapter-approval-review-audit` to prove accepted packet reviews are current, evidence-backed, and non-mutating.
 17. Use `live-adapter-dossier` to assemble the target packet, blockers, actions, mutation audit, and GBrain memory queries for operator review.
-18. Use `live-adapter-cutover-audit` to prove whether a target is actually ready to replace placeholder commands with a live adapter implementation.
+18. Use `live-adapter-cutover-audit` to prove whether a target has complete operator evidence and is actually ready to replace placeholder commands with a live adapter implementation.
 19. Use `live-adapter-review-session` to consolidate all target review commands, dossier refs, cutover blockers, and GBrain advisory queries into a single operator session before recording packet reviews.
 20. Use `live-adapter-evidence-templates` to generate blank operator templates for the evidence refs that must exist before packet reviews, approvals, dry-runs, and execution gates can pass.
 21. Use `live-adapter-operator-evidence` and `live-adapter-operator-evidence-audit` to record filled operator evidence and show which targets still have missing proof. These records keep `mutationApproved=false`.

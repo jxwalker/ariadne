@@ -1,19 +1,20 @@
 {
   "schemaVersion": 1,
   "project": "ariadne",
-  "generatedAt": "2026-05-17T02:57:44.473Z",
+  "generatedAt": "2026-05-17T03:27:57.982Z",
   "status": "blocked",
   "mutationAllowed": false,
   "readinessRef": "control/live-adapter-readiness.json",
   "approvalReviewAuditRef": "control/live-adapter-approval-review-audit.json",
   "mutationReadinessAuditRef": "control/mutation-readiness-audit.json",
+  "operatorEvidenceAuditRef": "control/live-adapter-operator-evidence-audit.json",
   "dossierDirRef": "control/live-adapter-dossiers",
   "summary": {
     "targets": 6,
     "ready": 0,
     "blocked": 6,
     "passedGates": 12,
-    "blockedGates": 36,
+    "blockedGates": 42,
     "advisoryGates": 6
   },
   "targets": [
@@ -22,6 +23,13 @@
       "status": "blocked",
       "executeCommand": "github-mutation-execute",
       "gates": [
+        {
+          "id": "operator-evidence-complete",
+          "label": "Operator evidence complete",
+          "status": "blocked",
+          "detail": "No operator evidence record exists for github.",
+          "evidenceRefs": []
+        },
         {
           "id": "operator-review-current",
           "label": "Current accepted operator packet review",
@@ -91,6 +99,7 @@
         }
       ],
       "blockers": [
+        "Operator evidence complete: No operator evidence record exists for github.",
         "Current accepted operator packet review: no accepted operator review exists",
         "Mutation-readiness audit passed: No target-specific mutation-readiness plan passes audit.",
         "Credential and auth-boundary evidence accepted: No passing readiness audit is available to prove auth evidence.",
@@ -107,6 +116,7 @@
         "control/live-adapter-readiness.json",
         "control/live-adapter-approval-review-audit.json",
         "control/mutation-readiness-audit.json",
+        "control/live-adapter-operator-evidence-audit.json",
         "control/live-adapter-dossiers/live-adapter-dossier-github.json"
       ]
     },
@@ -115,6 +125,13 @@
       "status": "blocked",
       "executeCommand": "deployment-mutation-execute",
       "gates": [
+        {
+          "id": "operator-evidence-complete",
+          "label": "Operator evidence complete",
+          "status": "blocked",
+          "detail": "No operator evidence record exists for deployment.",
+          "evidenceRefs": []
+        },
         {
           "id": "operator-review-current",
           "label": "Current accepted operator packet review",
@@ -184,6 +201,7 @@
         }
       ],
       "blockers": [
+        "Operator evidence complete: No operator evidence record exists for deployment.",
         "Current accepted operator packet review: no accepted operator review exists",
         "Mutation-readiness audit passed: No target-specific mutation-readiness plan passes audit.",
         "Credential and auth-boundary evidence accepted: No passing readiness audit is available to prove auth evidence.",
@@ -200,6 +218,7 @@
         "control/live-adapter-readiness.json",
         "control/live-adapter-approval-review-audit.json",
         "control/mutation-readiness-audit.json",
+        "control/live-adapter-operator-evidence-audit.json",
         "control/live-adapter-dossiers/live-adapter-dossier-deployment.json"
       ]
     },
@@ -208,6 +227,13 @@
       "status": "blocked",
       "executeCommand": "hermes-cron-mutation-execute",
       "gates": [
+        {
+          "id": "operator-evidence-complete",
+          "label": "Operator evidence complete",
+          "status": "blocked",
+          "detail": "No operator evidence record exists for hermes-cron.",
+          "evidenceRefs": []
+        },
         {
           "id": "operator-review-current",
           "label": "Current accepted operator packet review",
@@ -277,6 +303,7 @@
         }
       ],
       "blockers": [
+        "Operator evidence complete: No operator evidence record exists for hermes-cron.",
         "Current accepted operator packet review: no accepted operator review exists",
         "Mutation-readiness audit passed: No target-specific mutation-readiness plan passes audit.",
         "Credential and auth-boundary evidence accepted: No passing readiness audit is available to prove auth evidence.",
@@ -293,6 +320,7 @@
         "control/live-adapter-readiness.json",
         "control/live-adapter-approval-review-audit.json",
         "control/mutation-readiness-audit.json",
+        "control/live-adapter-operator-evidence-audit.json",
         "control/live-adapter-dossiers/live-adapter-dossier-hermes-cron.json"
       ]
     },
@@ -301,6 +329,13 @@
       "status": "blocked",
       "executeCommand": "openscorpion-mutation-execute",
       "gates": [
+        {
+          "id": "operator-evidence-complete",
+          "label": "Operator evidence complete",
+          "status": "blocked",
+          "detail": "No operator evidence record exists for openscorpion.",
+          "evidenceRefs": []
+        },
         {
           "id": "operator-review-current",
           "label": "Current accepted operator packet review",
@@ -370,6 +405,7 @@
         }
       ],
       "blockers": [
+        "Operator evidence complete: No operator evidence record exists for openscorpion.",
         "Current accepted operator packet review: no accepted operator review exists",
         "Mutation-readiness audit passed: No target-specific mutation-readiness plan passes audit.",
         "Credential and auth-boundary evidence accepted: No passing readiness audit is available to prove auth evidence.",
@@ -386,6 +422,7 @@
         "control/live-adapter-readiness.json",
         "control/live-adapter-approval-review-audit.json",
         "control/mutation-readiness-audit.json",
+        "control/live-adapter-operator-evidence-audit.json",
         "control/live-adapter-dossiers/live-adapter-dossier-openscorpion.json"
       ]
     },
@@ -394,6 +431,13 @@
       "status": "blocked",
       "executeCommand": "gsd2-mutation-execute",
       "gates": [
+        {
+          "id": "operator-evidence-complete",
+          "label": "Operator evidence complete",
+          "status": "blocked",
+          "detail": "No operator evidence record exists for gsd2.",
+          "evidenceRefs": []
+        },
         {
           "id": "operator-review-current",
           "label": "Current accepted operator packet review",
@@ -463,6 +507,7 @@
         }
       ],
       "blockers": [
+        "Operator evidence complete: No operator evidence record exists for gsd2.",
         "Current accepted operator packet review: no accepted operator review exists",
         "Mutation-readiness audit passed: No target-specific mutation-readiness plan passes audit.",
         "Credential and auth-boundary evidence accepted: No passing readiness audit is available to prove auth evidence.",
@@ -479,6 +524,7 @@
         "control/live-adapter-readiness.json",
         "control/live-adapter-approval-review-audit.json",
         "control/mutation-readiness-audit.json",
+        "control/live-adapter-operator-evidence-audit.json",
         "control/live-adapter-dossiers/live-adapter-dossier-gsd2.json"
       ]
     },
@@ -487,6 +533,13 @@
       "status": "blocked",
       "executeCommand": "notebooklm-mutation-execute",
       "gates": [
+        {
+          "id": "operator-evidence-complete",
+          "label": "Operator evidence complete",
+          "status": "blocked",
+          "detail": "No operator evidence record exists for notebooklm.",
+          "evidenceRefs": []
+        },
         {
           "id": "operator-review-current",
           "label": "Current accepted operator packet review",
@@ -556,6 +609,7 @@
         }
       ],
       "blockers": [
+        "Operator evidence complete: No operator evidence record exists for notebooklm.",
         "Current accepted operator packet review: no accepted operator review exists",
         "Mutation-readiness audit passed: No target-specific mutation-readiness plan passes audit.",
         "Credential and auth-boundary evidence accepted: No passing readiness audit is available to prove auth evidence.",
@@ -572,6 +626,7 @@
         "control/live-adapter-readiness.json",
         "control/live-adapter-approval-review-audit.json",
         "control/mutation-readiness-audit.json",
+        "control/live-adapter-operator-evidence-audit.json",
         "control/live-adapter-dossiers/live-adapter-dossier-notebooklm.json"
       ]
     }

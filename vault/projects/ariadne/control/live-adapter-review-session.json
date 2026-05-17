@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "project": "ariadne",
-  "generatedAt": "2026-05-17T02:57:44.473Z",
+  "generatedAt": "2026-05-17T03:27:57.982Z",
   "status": "operator_review_required",
   "mutationApproved": false,
   "operatorDecisionRequired": true,
@@ -47,6 +47,7 @@
         "no passed target-guarded execution evidence exists"
       ],
       "cutoverBlockers": [
+        "Operator evidence complete: No operator evidence record exists for github.",
         "Current accepted operator packet review: no accepted operator review exists",
         "Mutation-readiness audit passed: No target-specific mutation-readiness plan passes audit.",
         "Credential and auth-boundary evidence accepted: No passing readiness audit is available to prove auth evidence.",
@@ -100,6 +101,7 @@
         "no passed target-guarded execution evidence exists"
       ],
       "cutoverBlockers": [
+        "Operator evidence complete: No operator evidence record exists for deployment.",
         "Current accepted operator packet review: no accepted operator review exists",
         "Mutation-readiness audit passed: No target-specific mutation-readiness plan passes audit.",
         "Credential and auth-boundary evidence accepted: No passing readiness audit is available to prove auth evidence.",
@@ -153,6 +155,7 @@
         "no passed target-guarded execution evidence exists"
       ],
       "cutoverBlockers": [
+        "Operator evidence complete: No operator evidence record exists for hermes-cron.",
         "Current accepted operator packet review: no accepted operator review exists",
         "Mutation-readiness audit passed: No target-specific mutation-readiness plan passes audit.",
         "Credential and auth-boundary evidence accepted: No passing readiness audit is available to prove auth evidence.",
@@ -206,6 +209,7 @@
         "no passed target-guarded execution evidence exists"
       ],
       "cutoverBlockers": [
+        "Operator evidence complete: No operator evidence record exists for openscorpion.",
         "Current accepted operator packet review: no accepted operator review exists",
         "Mutation-readiness audit passed: No target-specific mutation-readiness plan passes audit.",
         "Credential and auth-boundary evidence accepted: No passing readiness audit is available to prove auth evidence.",
@@ -259,6 +263,7 @@
         "no passed target-guarded execution evidence exists"
       ],
       "cutoverBlockers": [
+        "Operator evidence complete: No operator evidence record exists for gsd2.",
         "Current accepted operator packet review: no accepted operator review exists",
         "Mutation-readiness audit passed: No target-specific mutation-readiness plan passes audit.",
         "Credential and auth-boundary evidence accepted: No passing readiness audit is available to prove auth evidence.",
@@ -312,6 +317,7 @@
         "no passed target-guarded execution evidence exists"
       ],
       "cutoverBlockers": [
+        "Operator evidence complete: No operator evidence record exists for notebooklm.",
         "Current accepted operator packet review: no accepted operator review exists",
         "Mutation-readiness audit passed: No target-specific mutation-readiness plan passes audit.",
         "Credential and auth-boundary evidence accepted: No passing readiness audit is available to prove auth evidence.",

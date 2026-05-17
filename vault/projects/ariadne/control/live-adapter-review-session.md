@@ -2,7 +2,7 @@
 
 Project: ariadne
 Status: operator_review_required
-Generated: 2026-05-17T02:57:44.473Z
+Generated: 2026-05-17T03:27:57.982Z
 Mutation approved: false
 Operator decision required: true
 
@@ -77,6 +77,7 @@ npm run ariadne -- github-mutation-plan --project <project> --repo <owner/name> 
 
 #### Cutover Blockers
 
+- Operator evidence complete: No operator evidence record exists for github.
 - Current accepted operator packet review: no accepted operator review exists
 - Mutation-readiness audit passed: No target-specific mutation-readiness plan passes audit.
 - Credential and auth-boundary evidence accepted: No passing readiness audit is available to prove auth evidence.
@@ -150,6 +151,7 @@ npm run ariadne -- deployment-mutation-plan --project <project> --system <proxmo
 
 #### Cutover Blockers
 
+- Operator evidence complete: No operator evidence record exists for deployment.
 - Current accepted operator packet review: no accepted operator review exists
 - Mutation-readiness audit passed: No target-specific mutation-readiness plan passes audit.
 - Credential and auth-boundary evidence accepted: No passing readiness audit is available to prove auth evidence.
@@ -223,6 +225,7 @@ npm run ariadne -- hermes-cron-mutation-plan --project <project> --action <creat
 
 #### Cutover Blockers
 
+- Operator evidence complete: No operator evidence record exists for hermes-cron.
 - Current accepted operator packet review: no accepted operator review exists
 - Mutation-readiness audit passed: No target-specific mutation-readiness plan passes audit.
 - Credential and auth-boundary evidence accepted: No passing readiness audit is available to prove auth evidence.
@@ -296,6 +299,7 @@ npm run ariadne -- openscorpion-mutation-plan --project <project> --activity <id
 
 #### Cutover Blockers
 
+- Operator evidence complete: No operator evidence record exists for openscorpion.
 - Current accepted operator packet review: no accepted operator review exists
 - Mutation-readiness audit passed: No target-specific mutation-readiness plan passes audit.
 - Credential and auth-boundary evidence accepted: No passing readiness audit is available to prove auth evidence.
@@ -369,6 +373,7 @@ npm run ariadne -- gsd2-mutation-plan --project <project> --task <id> --mode <he
 
 #### Cutover Blockers
 
+- Operator evidence complete: No operator evidence record exists for gsd2.
 - Current accepted operator packet review: no accepted operator review exists
 - Mutation-readiness audit passed: No target-specific mutation-readiness plan passes audit.
 - Credential and auth-boundary evidence accepted: No passing readiness audit is available to prove auth evidence.
@@ -442,6 +447,7 @@ npm run ariadne -- notebooklm-mutation-plan --project <project> --notebook <id> 
 
 #### Cutover Blockers
 
+- Operator evidence complete: No operator evidence record exists for notebooklm.
 - Current accepted operator packet review: no accepted operator review exists
 - Mutation-readiness audit passed: No target-specific mutation-readiness plan passes audit.
 - Credential and auth-boundary evidence accepted: No passing readiness audit is available to prove auth evidence.

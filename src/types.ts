@@ -600,6 +600,7 @@ export interface LiveAdapterCutoverAudit {
   readinessRef: string;
   approvalReviewAuditRef: string;
   mutationReadinessAuditRef: string;
+  operatorEvidenceAuditRef: string;
   dossierDirRef: string;
   summary: {
     targets: number;

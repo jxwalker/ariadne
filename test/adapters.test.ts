@@ -922,6 +922,43 @@ describe("roadmap adapters", () => {
     expect(deploymentDossier.dossier.summary.packetPresent).toBe(true);
     expect(deploymentDossier.dossier.summary.reviewAuditStatus).toBe("missing_review");
     expect(deploymentDossier.dossier.gbrainContext.suggestedQueries.some((query) => query.includes("deployment"))).toBe(true);
+    const githubOperatorEvidencePath = path.join(temp, "github-complete-operator-evidence.md");
+    await fs.writeFile(
+      githubOperatorEvidencePath,
+      [
+        "# Filled GitHub Operator Evidence",
+        "",
+        "- Operator: James",
+        "- Review timestamp: 2026-05-17T04:00:00Z",
+        "- Packet reviewed: control/live-adapter-approval-pack.json",
+        "- Decision for packet completeness: complete",
+        "",
+        "## Required Evidence To Attach",
+        "",
+        "- [x] operator identity and review timestamp",
+        "- [x] reviewed approval packet path and generation timestamp",
+        "- [x] authentication or authorization boundary observed for this target",
+        "- [x] bounded action statement and explicit non-goals",
+        "- [x] rollback or disable path checked by the operator",
+        "- [x] post-action verification command checked by the operator",
+        "- [x] dry-run command and expected safe output shape",
+        "- [x] target-guarded execution command and expected post-verification output shape",
+        "- [x] proof that execution used mutation-execute or a target-specific wrapper with an exact --confirm-plan match",
+        "",
+        "## GBrain Notes",
+        "",
+        "- Query result refs: integrations/gbrain/gbrain-report-1.json",
+        ""
+      ].join("\n")
+    );
+    const githubOperatorEvidence = await recordLiveAdapterOperatorEvidence({
+      project: "ariadne",
+      vaultRoot,
+      target: "github",
+      sourcePath: githubOperatorEvidencePath,
+      reviewedBy: "James"
+    });
+    expect(githubOperatorEvidence.record.status).toBe("complete");
     const malformedDossier = path.join(
       vaultRoot,
       "projects",
@@ -938,8 +975,10 @@ describe("roadmap adapters", () => {
     expect(cutoverAudit.audit.status).toBe("blocked");
     expect(cutoverAudit.audit.summary.ready).toBe(1);
     expect(githubCutover?.status).toBe("ready_for_cutover");
+    expect(githubCutover?.gates.some((gate) => gate.id === "operator-evidence-complete" && gate.status === "passed")).toBe(true);
     expect(githubCutover?.gates.some((gate) => gate.id === "gbrain-context-advisory" && gate.status === "advisory")).toBe(true);
     expect(deploymentCutover?.status).toBe("blocked");
+    expect(deploymentCutover?.blockers.some((blocker) => blocker.includes("Operator evidence complete"))).toBe(true);
     expect(deploymentCutover?.blockers.some((blocker) => blocker.includes("Current accepted operator packet review"))).toBe(true);
     const reviewSession = await generateLiveAdapterReviewSession({ project: "ariadne", vaultRoot });
     expect(reviewSession.session.status).toBe("operator_review_required");
@@ -1040,10 +1079,10 @@ describe("roadmap adapters", () => {
     expect(incompleteOperatorEvidence.record.summary.missingSections).toBeGreaterThan(0);
     const operatorEvidenceAudit = await generateLiveAdapterOperatorEvidenceAudit({ project: "ariadne", vaultRoot });
     expect(operatorEvidenceAudit.audit.status).toBe("blocked");
-    expect(operatorEvidenceAudit.audit.summary.records).toBe(2);
-    expect(operatorEvidenceAudit.audit.summary.completeTargets).toBe(1);
+    expect(operatorEvidenceAudit.audit.summary.records).toBe(3);
+    expect(operatorEvidenceAudit.audit.summary.completeTargets).toBe(2);
     expect(operatorEvidenceAudit.audit.summary.incompleteTargets).toBe(1);
-    expect(operatorEvidenceAudit.audit.summary.missingTargets).toBe(4);
+    expect(operatorEvidenceAudit.audit.summary.missingTargets).toBe(3);
     const console = await generateConsoleData({ project: "ariadne", vaultRoot });
     expect(console.data.summary.sleepRoutines).toBe(1);
     expect(console.data.summary.memoryProposals).toBe(1);
@@ -1075,10 +1114,10 @@ describe("roadmap adapters", () => {
     expect(console.data.summary.liveAdapterEvidenceTemplateStatus).toBe("awaiting_operator_evidence");
     expect(console.data.summary.liveAdapterEvidenceTemplates).toBe(6);
     expect(console.data.liveAdapterEvidenceTemplatePack?.mutationApproved).toBe(false);
-    expect(console.data.summary.liveAdapterOperatorEvidenceRecords).toBe(2);
+    expect(console.data.summary.liveAdapterOperatorEvidenceRecords).toBe(3);
     expect(console.data.summary.liveAdapterOperatorEvidenceStatus).toBe("blocked");
-    expect(console.data.summary.liveAdapterOperatorEvidenceComplete).toBe(1);
-    expect(console.data.summary.liveAdapterOperatorEvidenceMissing).toBe(4);
+    expect(console.data.summary.liveAdapterOperatorEvidenceComplete).toBe(2);
+    expect(console.data.summary.liveAdapterOperatorEvidenceMissing).toBe(3);
     expect(console.data.liveAdapterOperatorEvidenceAudit?.mutationApproved).toBe(false);
     expect(console.data.liveAdapterOperatorEvidence.some((record) => record.target === "deployment")).toBe(true);
     expect(console.data.liveAdapterCutoverAudit?.targets.some((target) => target.target === "github")).toBe(true);
@@ -1139,7 +1178,7 @@ describe("roadmap adapters", () => {
     expect(cutoverAuditCheck?.status).toBe("present");
     expect(reviewSessionCheck?.status).toBe("present");
     expect(evidenceTemplatesCheck?.status).toBe("present");
-    expect(operatorEvidenceCheck?.count).toBe(2);
+    expect(operatorEvidenceCheck?.count).toBe(3);
     expect(operatorEvidenceAuditCheck?.status).toBe("present");
     expect(mutationDryRunCheck?.status).toBe("present");
     expect(mutationExecutionCheck?.status).toBe("present");

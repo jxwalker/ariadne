@@ -17,7 +17,7 @@ The first visualisation should be an operations surface over evidence, not a cha
 - Live adapter approval reviews: operator packet-review records that explicitly do not approve mutation.
 - Approval review audit: current accepted packet-review counts, stale records, missing evidence refs, and invalid review artifacts.
 - Live adapter target dossiers: per-target operator packets combining readiness, action queues, mutation audit, approval packets, review audit, and GBrain memory context.
-- Live adapter cutover audit: final per-target gate state before placeholder commands can be replaced with real adapters.
+- Live adapter cutover audit: final per-target gate state before placeholder commands can be replaced with real adapters, including complete operator evidence as a blocking gate.
 - Live adapter review session: consolidated target dossiers, first actions, review commands, cutover blockers, and advisory GBrain queries without approving mutation.
 - Live adapter evidence templates: blank per-target operator files for collecting review, auth, rollback, dry-run, execution, and GBrain notes without creating proof automatically.
 - Live adapter operator evidence: imported filled operator files and aggregate missing-evidence audit, still non-approving and non-mutating.
