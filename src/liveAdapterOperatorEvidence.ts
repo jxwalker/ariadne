@@ -76,6 +76,8 @@ const REQUIRED_SECTIONS: Array<{
   }
 ];
 
+export const REQUIRED_OPERATOR_EVIDENCE_SECTION_LABELS = REQUIRED_SECTIONS.map((section) => section.label);
+
 export async function recordLiveAdapterOperatorEvidence(input: {
   project: string;
   vaultRoot: string;
