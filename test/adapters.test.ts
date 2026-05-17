@@ -42,6 +42,7 @@ import {
   recordLiveAdapterOperatorEvidence
 } from "../src/liveAdapterOperatorEvidence.js";
 import { checkAllLiveAdapterOperatorEvidence } from "../src/liveAdapterOperatorEvidenceCheckAll.js";
+import { generateLiveAdapterOperatorEvidenceAssist } from "../src/liveAdapterOperatorEvidenceAssist.js";
 import { importReadyLiveAdapterOperatorEvidence } from "../src/liveAdapterOperatorEvidenceImportReady.js";
 import { generateLiveAdapterOperatorEvidenceWorkplan } from "../src/liveAdapterOperatorEvidenceWorkplan.js";
 import { generateLiveAdapterOperatorEvidenceQueue } from "../src/liveAdapterOperatorEvidenceQueue.js";
@@ -1180,11 +1181,32 @@ describe("roadmap adapters", () => {
     expect(operatorEvidenceWorkspace.workspace.approvalGranted).toBe(false);
     expect(operatorEvidenceWorkspace.workspace.summary.targets).toBe(6);
     expect(operatorEvidenceWorkspace.workspace.summary.workspaceFiles).toBe(6);
-    expect(operatorEvidenceWorkspace.workspace.summary.supportFiles).toBe(30);
+    expect(operatorEvidenceWorkspace.workspace.summary.supportFiles).toBe(36);
     const githubWorkspace = operatorEvidenceWorkspace.workspace.targets.find((target) => target.target === "github");
     expect(githubWorkspace?.evidenceFileRef).toContain("control/operator-evidence/github/operator-evidence.md");
     expect(githubWorkspace?.checkCommand).toContain("control/operator-evidence/github/operator-evidence.md");
     expect(githubWorkspace?.supportFileRefs).toContain("projects/ariadne/control/operator-evidence/github/gbrain-notes.md");
+    expect(githubWorkspace?.supportFileRefs).toContain("projects/ariadne/control/operator-evidence/github/read-only-assist.md");
+    const githubWorkspaceFile = path.join(vaultRoot, githubWorkspace?.evidenceFileRef ?? "");
+    await fs.appendFile(githubWorkspaceFile, "\nOperator draft marker: keep me\n");
+    const operatorEvidenceAssist = await generateLiveAdapterOperatorEvidenceAssist({ project: "ariadne", vaultRoot });
+    expect(operatorEvidenceAssist.assist.status).toBe("awaiting_operator_review");
+    expect(operatorEvidenceAssist.assist.mutationApproved).toBe(false);
+    expect(operatorEvidenceAssist.assist.approvalGranted).toBe(false);
+    expect(operatorEvidenceAssist.assist.operatorEvidenceRecordCreated).toBe(false);
+    expect(operatorEvidenceAssist.assist.summary.targets).toBe(6);
+    expect(operatorEvidenceAssist.assist.summary.assistFiles).toBe(6);
+    expect(operatorEvidenceAssist.assist.summary.supportFileRefs).toBe(36);
+    const githubAssist = operatorEvidenceAssist.assist.targets.find((target) => target.target === "github");
+    expect(githubAssist?.assistFileRef).toBe("projects/ariadne/control/operator-evidence/github/read-only-assist.md");
+    const hermesAssist = operatorEvidenceAssist.assist.targets.find((target) => target.target === "hermes-cron");
+    expect(hermesAssist?.nextSteps).toContain("Verify each relevant fact manually before copying it into operator-evidence.md.");
+    const assistMarkdown = await fs.readFile(operatorEvidenceAssist.markdownPath, "utf8");
+    expect(assistMarkdown).toContain("does not create operator evidence records");
+    const githubAssistMarkdown = await fs.readFile(path.join(vaultRoot, githubAssist?.assistFileRef ?? ""), "utf8");
+    expect(githubAssistMarkdown).toContain("This file is generated from existing Ariadne artifacts.");
+    expect(githubAssistMarkdown).toContain("GBrain Advisory Queries");
+    expect(await fs.readFile(githubWorkspaceFile, "utf8")).toContain("Operator draft marker: keep me");
     const workspaceBatchPreflight = await checkAllLiveAdapterOperatorEvidence({
       project: "ariadne",
       vaultRoot,
@@ -1343,11 +1365,17 @@ describe("roadmap adapters", () => {
     const operatorEvidenceBatchCheck = artifactChecks.report.checks.find(
       (check) => check.id === "live-adapter-operator-evidence-check-all"
     );
+    const operatorEvidenceImportReadyCheck = artifactChecks.report.checks.find(
+      (check) => check.id === "live-adapter-operator-evidence-import-ready"
+    );
     const operatorEvidenceQueueCheck = artifactChecks.report.checks.find(
       (check) => check.id === "live-adapter-operator-evidence-queue"
     );
     const operatorEvidenceWorkspaceCheck = artifactChecks.report.checks.find(
       (check) => check.id === "live-adapter-operator-evidence-workspace"
+    );
+    const operatorEvidenceAssistCheck = artifactChecks.report.checks.find(
+      (check) => check.id === "live-adapter-operator-evidence-assist"
     );
     const operatorEvidenceWorkspaceFilesCheck = artifactChecks.report.checks.find(
       (check) => check.id === "live-adapter-operator-evidence-workspace-files"
@@ -1377,9 +1405,11 @@ describe("roadmap adapters", () => {
     expect(evidenceTemplatesCheck?.status).toBe("present");
     expect(operatorEvidencePreflightCheck?.count).toBe(14);
     expect(operatorEvidenceBatchCheck?.status).toBe("present");
+    expect(operatorEvidenceImportReadyCheck?.status).toBe("present");
     expect(operatorEvidenceQueueCheck?.status).toBe("present");
     expect(operatorEvidenceWorkspaceCheck?.status).toBe("present");
-    expect(operatorEvidenceWorkspaceFilesCheck?.count).toBe(36);
+    expect(operatorEvidenceAssistCheck?.status).toBe("present");
+    expect(operatorEvidenceWorkspaceFilesCheck?.count).toBe(42);
     expect(operatorEvidenceCheck?.count).toBe(4);
     expect(operatorEvidenceAuditCheck?.status).toBe("present");
     expect(operatorEvidenceWorkplanCheck?.status).toBe("present");

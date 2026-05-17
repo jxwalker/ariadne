@@ -236,7 +236,9 @@ Target-specific execute wrappers hard-code that guard for the live adapters: `gi
 
 `live-adapter-operator-evidence-import-ready` imports only queue targets whose latest preflight check is complete. It skips unchecked, incomplete, already-complete, and needs-rework targets, then refreshes the operator-evidence audit and queue. It writes `control/live-adapter-operator-evidence-import-ready.json` and `.md`, keeps `mutationApproved=false`, keeps `approvalGranted=false`, and does not bypass review, dry-run, execution, or cutover gates.
 
-`live-adapter-operator-evidence-workspace` turns the queue and workplan into fillable operator files under `control/operator-evidence/<target>/`. Each target gets `operator-evidence.md` plus support files for packet review, auth boundary, rollback/post-verification, dry-run review, and GBrain notes. The generated commands point at the workspace evidence file, but the workspace remains paperwork only until an operator fills and imports it.
+`live-adapter-operator-evidence-workspace` turns the queue and workplan into fillable operator files under `control/operator-evidence/<target>/`. Each target gets `operator-evidence.md` plus support files for packet review, auth boundary, rollback/post-verification, dry-run review, GBrain notes, and read-only assist notes. The generated commands point at the workspace evidence file, but the workspace remains paperwork only until an operator fills and imports it.
+
+`live-adapter-operator-evidence-assist` generates `control/live-adapter-operator-evidence-assist.json` and `.md`, then writes a `read-only-assist.md` file beside each target's evidence file. The assist packet gathers existing Ariadne support refs from the current workplan and lists next steps for human review. It is not proof: it keeps `operatorEvidenceRecordCreated=false`, `mutationApproved=false`, and `approvalGranted=false`.
 
 `live-adapter-operator-evidence` imports a filled operator evidence file for one target. It hashes the source file, checks whether the operator identity, packet review, auth boundary, bounded action, rollback, post-verification, dry-run, target-wrapper, and exact `--confirm-plan` sections are present, and writes `control/live-adapter-operator-evidence/operator-evidence-<target>-<timestamp>.json` and `.md`. It also records whether GBrain notes are present, but GBrain remains advisory only. The record always writes `mutationApproved=false` and `approvalGranted=false`.
 
@@ -265,6 +267,7 @@ npm run ariadne -- live-adapter-evidence-templates --project ariadne
 npm run ariadne -- live-adapter-operator-evidence-workplan --project ariadne
 npm run ariadne -- live-adapter-operator-evidence-queue --project ariadne
 npm run ariadne -- live-adapter-operator-evidence-workspace --project ariadne
+npm run ariadne -- live-adapter-operator-evidence-assist --project ariadne
 npm run ariadne -- live-adapter-operator-evidence-check --project ariadne --target github --from vault/projects/ariadne/control/operator-evidence/github/operator-evidence.md
 npm run ariadne -- live-adapter-operator-evidence-check-all --project ariadne --source workspace
 npm run ariadne -- live-adapter-operator-evidence-import-ready --project ariadne --by james
@@ -313,10 +316,12 @@ Artifacts:
 - `control/live-adapter-operator-evidence-queue.md`
 - `control/live-adapter-operator-evidence-import-ready.json`
 - `control/live-adapter-operator-evidence-import-ready.md`
+- `control/live-adapter-operator-evidence-assist.json`
+- `control/live-adapter-operator-evidence-assist.md`
 - `control/live-adapter-operator-evidence-workspace.json`
 - `control/live-adapter-operator-evidence-workspace.md`
 - `control/operator-evidence/<target>/operator-evidence.md`
-- `control/operator-evidence/<target>/{packet-review,auth-boundary,rollback-post-verify,dry-run-review,gbrain-notes}.md`
+- `control/operator-evidence/<target>/{packet-review,auth-boundary,rollback-post-verify,dry-run-review,gbrain-notes,read-only-assist}.md`
 - `control/live-adapter-operator-evidence/operator-evidence-<target>-<timestamp>.json`
 - `control/live-adapter-operator-evidence/operator-evidence-<target>-<timestamp>.md`
 - `control/live-adapter-operator-evidence-audit.json`

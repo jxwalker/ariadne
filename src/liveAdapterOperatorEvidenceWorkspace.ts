@@ -18,7 +18,8 @@ const SUPPORT_FILES = [
   "auth-boundary.md",
   "rollback-post-verify.md",
   "dry-run-review.md",
-  "gbrain-notes.md"
+  "gbrain-notes.md",
+  "read-only-assist.md"
 ] as const;
 
 const USER_FACING_TARGET_LABELS = new Map<string, string>([
@@ -353,6 +354,8 @@ function supportPurpose(fileName: (typeof SUPPORT_FILES)[number]): string {
       return "Record the dry-run command, expected safe output, and whether the output was reviewed.";
     case "gbrain-notes.md":
       return "Record advisory GBrain query outputs and link them back to Ariadne evidence refs.";
+    case "read-only-assist.md":
+      return "Review read-only Ariadne support refs gathered for this target. This file is not operator evidence until a human verifies the facts in operator-evidence.md.";
   }
 }
 

@@ -47,7 +47,8 @@ The system starts with source-grounded intake: drawings, white papers, dictated 
 - Import filled live-adapter operator evidence and audit missing sections without turning that evidence into mutation approval.
 - Run one batch preflight across every live-adapter operator evidence template so unchecked targets become explicit queue items.
 - Batch-import only ready live-adapter operator evidence files whose latest preflight checks are complete, while leaving all mutation and approval gates closed.
-- Generate a fillable live-adapter operator evidence workspace with one target directory per adapter and support files for packet, auth, rollback, dry-run, and GBrain notes.
+- Generate a fillable live-adapter operator evidence workspace with one target directory per adapter and support files for packet, auth, rollback, dry-run, GBrain notes, and read-only assist packets.
+- Generate read-only operator evidence assist packets that gather existing Ariadne support refs without counting generated text as operator proof.
 - Record file-backed sleep routines, memory proposals, agent mail, interagent leases, read-only Hermes cron snapshots/proposals, and read-only deployment snapshots.
 - Render evaluation trend charts in the static console and generate deterministic plus browser-backed console checks.
 - Guard worktree creation without mutating by default.
@@ -101,6 +102,7 @@ npm run ariadne -- live-adapter-evidence-templates --project ariadne
 npm run ariadne -- live-adapter-operator-evidence-workplan --project ariadne
 npm run ariadne -- live-adapter-operator-evidence-queue --project ariadne
 npm run ariadne -- live-adapter-operator-evidence-workspace --project ariadne
+npm run ariadne -- live-adapter-operator-evidence-assist --project ariadne
 npm run ariadne -- live-adapter-operator-evidence-check --project ariadne --target github --from vault/projects/ariadne/control/operator-evidence/github/operator-evidence.md
 npm run ariadne -- live-adapter-operator-evidence-check-all --project ariadne --source workspace
 npm run ariadne -- live-adapter-operator-evidence-import-ready --project ariadne --by james
@@ -172,11 +174,12 @@ vault/projects/<project>/
 21. Use `live-adapter-operator-evidence-workplan` to turn missing or incomplete operator evidence into target-specific check/import commands and collection queues.
 22. Use `live-adapter-operator-evidence-queue` to rank targets as unchecked, needs evidence, ready for import, needs rework, or complete.
 23. Use `live-adapter-operator-evidence-workspace` to create fillable per-target files under `control/operator-evidence/`.
-24. Use `live-adapter-operator-evidence-check` to preflight a filled workspace file before creating any operator evidence record.
-25. Use `live-adapter-operator-evidence-check-all --source workspace` to preflight every target workspace file and refresh the queue without recording evidence.
-26. Use `live-adapter-operator-evidence-import-ready` when the queue contains ready targets and you want to import only files whose latest preflight checks are complete.
-27. Use `live-adapter-operator-evidence` and `live-adapter-operator-evidence-audit` to record filled operator evidence and show which targets still have missing proof. These records keep `mutationApproved=false`.
-28. Use `roadmap-completion-audit` as the conservative completion gate for the whole roadmap; it stays blocked until artifact checks, behavior checks, evaluation trends, console visual/browser checks, coordination records, GBrain advisory context, operator-evidence audit, live-adapter cutover audit, and review-session state all prove completion.
+24. Use `live-adapter-operator-evidence-assist` to gather current read-only Ariadne support refs into per-target assist files before the operator fills the real evidence file.
+25. Use `live-adapter-operator-evidence-check` to preflight a filled workspace file before creating any operator evidence record.
+26. Use `live-adapter-operator-evidence-check-all --source workspace` to preflight every target workspace file and refresh the queue without recording evidence.
+27. Use `live-adapter-operator-evidence-import-ready` when the queue contains ready targets and you want to import only files whose latest preflight checks are complete.
+28. Use `live-adapter-operator-evidence` and `live-adapter-operator-evidence-audit` to record filled operator evidence and show which targets still have missing proof. These records keep `mutationApproved=false`.
+29. Use `roadmap-completion-audit` as the conservative completion gate for the whole roadmap; it stays blocked until artifact checks, behavior checks, evaluation trends, console visual/browser checks, coordination records, GBrain advisory context, operator-evidence audit, live-adapter cutover audit, and review-session state all prove completion.
 
 ## Adapter Commands
 
@@ -232,6 +235,7 @@ npm run ariadne -- live-adapter-review-session --project ariadne
 npm run ariadne -- live-adapter-evidence-templates --project ariadne
 npm run ariadne -- live-adapter-operator-evidence-queue --project ariadne
 npm run ariadne -- live-adapter-operator-evidence-workspace --project ariadne
+npm run ariadne -- live-adapter-operator-evidence-assist --project ariadne
 npm run ariadne -- live-adapter-operator-evidence-check --project ariadne --target github --from vault/projects/ariadne/control/operator-evidence/github/operator-evidence.md
 npm run ariadne -- live-adapter-operator-evidence-check-all --project ariadne --source workspace
 npm run ariadne -- live-adapter-operator-evidence-import-ready --project ariadne --by james
