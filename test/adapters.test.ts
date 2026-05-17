@@ -1442,6 +1442,17 @@ describe("roadmap adapters", () => {
     expect(status.roadmapCompletionBlocked).toBe(3);
     expect(status.mutationReadinessRepairStatus).toBe("actions_required");
     expect(status.mutationReadinessRepairMissingPlans).toBeGreaterThan(0);
+    expect(status.liveAdapterOperatorEvidenceStatus).toBe("blocked");
+    expect(status.liveAdapterOperatorEvidenceCompleteTargets).toBeGreaterThan(0);
+    expect(status.liveAdapterOperatorEvidenceMissingTargets).toBeGreaterThan(0);
+    expect(status.liveAdapterOperatorEvidenceQueueStatus).toBe("evidence_required");
+    expect(status.liveAdapterOperatorEvidenceQueueNeedsEvidence).toBeGreaterThan(0);
+    expect(status.liveAdapterCutoverStatus).toBe("blocked");
+    expect(status.liveAdapterCutoverReady).toBe(1);
+    expect(status.liveAdapterCutoverBlockedGates).toBeGreaterThan(0);
+    expect(status.liveAdapterReviewSessionStatus).toBe("operator_review_required");
+    expect(status.liveAdapterReviewSessionReadyForAdapterWork).toBe(1);
+    expect(status.liveAdapterReviewSessionOperatorReviewRequired).toBeGreaterThan(0);
     expect(status.latestE2eSmoke?.status).toBe("blocked");
     expect(status.latestE2eSmoke?.passed).toBeGreaterThan(0);
     expect(status.latestE2eSmoke?.reportRef).toContain("evaluation/e2e-smoke-");

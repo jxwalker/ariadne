@@ -12,7 +12,7 @@ npm run build
 npm run ariadne -- status --project ariadne
 ```
 
-`status` is read-only. It reports intake counts and, when present, the current merge-readiness, roadmap-completion, mutation-repair, and latest e2e-smoke artifacts; it does not refresh those artifacts.
+`status` is read-only. It reports intake counts and, when present, the current merge-readiness, roadmap-completion, mutation-repair, live-adapter operator-evidence, operator-queue, cutover, review-session, and latest e2e-smoke artifacts; it does not refresh those artifacts.
 
 ## Runner Naming
 

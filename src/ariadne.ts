@@ -1592,6 +1592,26 @@ async function main(): Promise<void> {
         `Mutation repair: ${status.mutationReadinessRepairStatus} (${status.mutationReadinessRepairMissingPlans ?? 0} missing, ${status.mutationReadinessRepairOperatorActionRequired ?? 0} operator)`
       );
     }
+    if (status.liveAdapterOperatorEvidenceStatus) {
+      console.log(
+        `Operator evidence: ${status.liveAdapterOperatorEvidenceStatus} (${status.liveAdapterOperatorEvidenceCompleteTargets ?? 0} complete, ${status.liveAdapterOperatorEvidenceMissingTargets ?? 0} missing, ${status.liveAdapterOperatorEvidenceMissingSections ?? 0} sections)`
+      );
+    }
+    if (status.liveAdapterOperatorEvidenceQueueStatus) {
+      console.log(
+        `Operator queue: ${status.liveAdapterOperatorEvidenceQueueStatus} (${status.liveAdapterOperatorEvidenceQueueReadyForImport ?? 0} ready, ${status.liveAdapterOperatorEvidenceQueueNeedsEvidence ?? 0} needs evidence, ${status.liveAdapterOperatorEvidenceQueueNeedsRework ?? 0} rework, ${status.liveAdapterOperatorEvidenceQueueUnchecked ?? 0} unchecked)`
+      );
+    }
+    if (status.liveAdapterCutoverStatus) {
+      console.log(
+        `Cutover: ${status.liveAdapterCutoverStatus} (${status.liveAdapterCutoverReady ?? 0} ready, ${status.liveAdapterCutoverBlocked ?? 0} blocked, ${status.liveAdapterCutoverBlockedGates ?? 0} blocked gates)`
+      );
+    }
+    if (status.liveAdapterReviewSessionStatus) {
+      console.log(
+        `Review session: ${status.liveAdapterReviewSessionStatus} (${status.liveAdapterReviewSessionReadyForAdapterWork ?? 0} ready, ${status.liveAdapterReviewSessionOperatorReviewRequired ?? 0} review required, ${status.liveAdapterReviewSessionActionItems ?? 0} actions)`
+      );
+    }
     if (status.latestE2eSmoke) {
       console.log(
         `Latest e2e smoke: ${status.latestE2eSmoke.status} (${status.latestE2eSmoke.passed} passed, ${status.latestE2eSmoke.blocked} blocked, ${status.latestE2eSmoke.degraded} degraded, ${status.latestE2eSmoke.failed} failed)`

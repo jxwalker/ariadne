@@ -86,6 +86,23 @@ export interface ProjectStatus {
   mutationReadinessRepairStatus?: MutationReadinessRepairPlan["status"];
   mutationReadinessRepairMissingPlans?: number;
   mutationReadinessRepairOperatorActionRequired?: number;
+  liveAdapterOperatorEvidenceStatus?: LiveAdapterOperatorEvidenceAudit["status"];
+  liveAdapterOperatorEvidenceCompleteTargets?: number;
+  liveAdapterOperatorEvidenceMissingTargets?: number;
+  liveAdapterOperatorEvidenceMissingSections?: number;
+  liveAdapterOperatorEvidenceQueueStatus?: LiveAdapterOperatorEvidenceQueue["status"];
+  liveAdapterOperatorEvidenceQueueReadyForImport?: number;
+  liveAdapterOperatorEvidenceQueueNeedsEvidence?: number;
+  liveAdapterOperatorEvidenceQueueNeedsRework?: number;
+  liveAdapterOperatorEvidenceQueueUnchecked?: number;
+  liveAdapterCutoverStatus?: LiveAdapterCutoverAudit["status"];
+  liveAdapterCutoverReady?: number;
+  liveAdapterCutoverBlocked?: number;
+  liveAdapterCutoverBlockedGates?: number;
+  liveAdapterReviewSessionStatus?: LiveAdapterReviewSession["status"];
+  liveAdapterReviewSessionReadyForAdapterWork?: number;
+  liveAdapterReviewSessionOperatorReviewRequired?: number;
+  liveAdapterReviewSessionActionItems?: number;
   latestE2eSmoke?: {
     status: "passed" | "blocked" | "degraded" | "failed";
     passed: number;
