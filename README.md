@@ -41,6 +41,7 @@ The system starts with source-grounded intake: drawings, white papers, dictated 
 - Audit live-adapter cutover readiness, including complete imported operator evidence, before any placeholder command is replaced with a real external adapter.
 - Generate live-adapter review sessions that consolidate operator actions, target dossiers, cutover blockers, and advisory GBrain queries into one non-mutating review packet.
 - Generate blank live-adapter evidence templates so operators have a safe place to collect packet-review, auth-boundary, rollback, dry-run, and GBrain notes without creating approval evidence automatically.
+- Generate a live-adapter operator-evidence workplan that turns the missing evidence audit into per-target import commands, template refs, cutover blockers, and GBrain advisory queries.
 - Import filled live-adapter operator evidence and audit missing sections without turning that evidence into mutation approval.
 - Record file-backed sleep routines, memory proposals, agent mail, interagent leases, read-only Hermes cron snapshots/proposals, and read-only deployment snapshots.
 - Render evaluation trend charts in the static console and generate deterministic plus browser-backed console checks.
@@ -92,6 +93,7 @@ npm run ariadne -- live-adapter-dossier --project ariadne --target github
 npm run ariadne -- live-adapter-cutover-audit --project ariadne
 npm run ariadne -- live-adapter-review-session --project ariadne
 npm run ariadne -- live-adapter-evidence-templates --project ariadne
+npm run ariadne -- live-adapter-operator-evidence-workplan --project ariadne
 npm run ariadne -- live-adapter-operator-evidence --project ariadne --target github --from vault/projects/ariadne/control/live-adapter-evidence-templates/live-adapter-evidence-template-github.md --by james
 npm run ariadne -- live-adapter-operator-evidence-audit --project ariadne
 npm run ariadne -- roadmap-completion-audit --project ariadne
@@ -156,8 +158,9 @@ vault/projects/<project>/
 18. Use `live-adapter-cutover-audit` to prove whether a target has complete operator evidence and is actually ready to replace placeholder commands with a live adapter implementation.
 19. Use `live-adapter-review-session` to consolidate all target review commands, dossier refs, cutover blockers, and GBrain advisory queries into a single operator session before recording packet reviews.
 20. Use `live-adapter-evidence-templates` to generate blank operator templates for the evidence refs that must exist before packet reviews, approvals, dry-runs, and execution gates can pass.
-21. Use `live-adapter-operator-evidence` and `live-adapter-operator-evidence-audit` to record filled operator evidence and show which targets still have missing proof. These records keep `mutationApproved=false`.
-22. Use `roadmap-completion-audit` as the conservative completion gate for the whole roadmap; it stays blocked until artifact checks, behavior checks, evaluation trends, console visual/browser checks, coordination records, GBrain advisory context, operator-evidence audit, live-adapter cutover audit, and review-session state all prove completion.
+21. Use `live-adapter-operator-evidence-workplan` to turn missing or incomplete operator evidence into target-specific import commands and collection queues.
+22. Use `live-adapter-operator-evidence` and `live-adapter-operator-evidence-audit` to record filled operator evidence and show which targets still have missing proof. These records keep `mutationApproved=false`.
+23. Use `roadmap-completion-audit` as the conservative completion gate for the whole roadmap; it stays blocked until artifact checks, behavior checks, evaluation trends, console visual/browser checks, coordination records, GBrain advisory context, operator-evidence audit, live-adapter cutover audit, and review-session state all prove completion.
 
 ## Adapter Commands
 

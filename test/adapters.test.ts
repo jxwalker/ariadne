@@ -40,6 +40,7 @@ import {
   generateLiveAdapterOperatorEvidenceAudit,
   recordLiveAdapterOperatorEvidence
 } from "../src/liveAdapterOperatorEvidence.js";
+import { generateLiveAdapterOperatorEvidenceWorkplan } from "../src/liveAdapterOperatorEvidenceWorkplan.js";
 import { generateLiveAdapterNextActions } from "../src/liveAdapterNextActions.js";
 import { generateLiveAdapterReadiness } from "../src/liveAdapterReadiness.js";
 import { generateLiveAdapterReviewSession } from "../src/liveAdapterReviewSession.js";
@@ -1104,6 +1105,14 @@ describe("roadmap adapters", () => {
     expect(operatorEvidenceAudit.audit.summary.completeTargets).toBe(2);
     expect(operatorEvidenceAudit.audit.summary.incompleteTargets).toBe(1);
     expect(operatorEvidenceAudit.audit.summary.missingTargets).toBe(3);
+    const operatorEvidenceWorkplan = await generateLiveAdapterOperatorEvidenceWorkplan({ project: "ariadne", vaultRoot });
+    expect(operatorEvidenceWorkplan.workplan.status).toBe("evidence_required");
+    expect(operatorEvidenceWorkplan.workplan.mutationApproved).toBe(false);
+    expect(operatorEvidenceWorkplan.workplan.summary.importCommands).toBe(4);
+    const hermesWorkplan = operatorEvidenceWorkplan.workplan.targets.find((target) => target.target === "hermes-cron");
+    expect(hermesWorkplan?.status).toBe("needs_rework");
+    expect(hermesWorkplan?.importCommand).toContain("live-adapter-operator-evidence");
+    expect(hermesWorkplan?.gbrainQueries.length).toBeGreaterThan(0);
     await generateArtifactCheckReport({ project: "ariadne", vaultRoot });
     const roadmapCompletion = await generateRoadmapCompletionAudit({ project: "ariadne", vaultRoot });
     expect(roadmapCompletion.audit.status).toBe("blocked");
@@ -1112,7 +1121,8 @@ describe("roadmap adapters", () => {
     const operatorEvidenceRequirement = roadmapCompletion.audit.requirements.find((item) => item.id === "operator-evidence");
     expect(operatorEvidenceRequirement?.status).toBe("blocked");
     expect(operatorEvidenceRequirement?.nextCommands.length).toBeGreaterThan(0);
-    expect(operatorEvidenceRequirement?.nextCommands[0]).toContain("live-adapter-evidence-templates");
+    expect(operatorEvidenceRequirement?.nextCommands).toContain("npm run ariadne -- live-adapter-operator-evidence-workplan --project ariadne");
+    expect(operatorEvidenceRequirement?.nextCommands.some((command) => command.includes("live-adapter-evidence-templates"))).toBe(true);
     const console = await generateConsoleData({ project: "ariadne", vaultRoot });
     expect(console.data.summary.sleepRoutines).toBe(1);
     expect(console.data.summary.memoryProposals).toBe(1);
@@ -1144,6 +1154,9 @@ describe("roadmap adapters", () => {
     expect(console.data.summary.liveAdapterEvidenceTemplateStatus).toBe("awaiting_operator_evidence");
     expect(console.data.summary.liveAdapterEvidenceTemplates).toBe(6);
     expect(console.data.liveAdapterEvidenceTemplatePack?.mutationApproved).toBe(false);
+    expect(console.data.summary.liveAdapterOperatorEvidenceWorkplanStatus).toBe("evidence_required");
+    expect(console.data.summary.liveAdapterOperatorEvidenceWorkplanTargets).toBe(6);
+    expect(console.data.liveAdapterOperatorEvidenceWorkplan?.targets.some((target) => target.target === "hermes-cron")).toBe(true);
     expect(console.data.summary.liveAdapterOperatorEvidenceRecords).toBe(3);
     expect(console.data.summary.liveAdapterOperatorEvidenceStatus).toBe("blocked");
     expect(console.data.summary.liveAdapterOperatorEvidenceComplete).toBe(2);
@@ -1160,6 +1173,7 @@ describe("roadmap adapters", () => {
     expect(liveAdapterHtml).toContain("Current accepted operator packet review");
     expect(liveAdapterHtml).toContain("mutationApproved=false");
     expect(liveAdapterHtml).toContain("Templates are blank collection aids");
+    expect(liveAdapterHtml).toContain("The workplan is an evidence collection queue");
     expect(liveAdapterHtml).toContain("Operator evidence records do not approve mutation");
     expect(liveAdapterHtml).toContain("operator evidence hermes-cron");
     expect(liveAdapterHtml).toContain("Completion is only true");
@@ -1197,6 +1211,9 @@ describe("roadmap adapters", () => {
     const operatorEvidenceAuditCheck = artifactChecks.report.checks.find(
       (check) => check.id === "live-adapter-operator-evidence-audit"
     );
+    const operatorEvidenceWorkplanCheck = artifactChecks.report.checks.find(
+      (check) => check.id === "live-adapter-operator-evidence-workplan"
+    );
     const roadmapCompletionAuditCheck = artifactChecks.report.checks.find((check) => check.id === "roadmap-completion-audit");
     const mutationDryRunCheck = artifactChecks.report.checks.find((check) => check.id === "mutation-dry-runs");
     const mutationExecutionCheck = artifactChecks.report.checks.find((check) => check.id === "mutation-executions");
@@ -1215,6 +1232,7 @@ describe("roadmap adapters", () => {
     expect(evidenceTemplatesCheck?.status).toBe("present");
     expect(operatorEvidenceCheck?.count).toBe(3);
     expect(operatorEvidenceAuditCheck?.status).toBe("present");
+    expect(operatorEvidenceWorkplanCheck?.status).toBe("present");
     expect(roadmapCompletionAuditCheck?.status).toBe("present");
     expect(mutationDryRunCheck?.status).toBe("present");
     expect(mutationExecutionCheck?.status).toBe("present");

@@ -11,6 +11,7 @@ import type {
   EvaluationTrendReport,
   LiveAdapterCutoverAudit,
   LiveAdapterOperatorEvidenceAudit,
+  LiveAdapterOperatorEvidenceWorkplan,
   LiveAdapterReviewSession,
   LiveAdapterTargetDossier,
   RoadmapCompletionAudit
@@ -32,6 +33,9 @@ export async function generateRoadmapCompletionAudit(input: {
   const consoleData = await readJson<ConsoleData>(path.join(dir, "console", "console-data.json"));
   const operatorEvidenceAudit = await readJson<LiveAdapterOperatorEvidenceAudit>(
     path.join(dir, "control", "live-adapter-operator-evidence-audit.json")
+  );
+  const operatorEvidenceWorkplan = await readJson<LiveAdapterOperatorEvidenceWorkplan>(
+    path.join(dir, "control", "live-adapter-operator-evidence-workplan.json")
   );
   const cutoverAudit = await readJson<LiveAdapterCutoverAudit>(path.join(dir, "control", "live-adapter-cutover-audit.json"));
   const reviewSession = await readJson<LiveAdapterReviewSession>(path.join(dir, "control", "live-adapter-review-session.json"));
@@ -123,6 +127,7 @@ export async function generateRoadmapCompletionAudit(input: {
         : "Operator evidence audit is missing.",
       evidenceRefs: ["projects/" + project + "/control/live-adapter-operator-evidence-audit.json"],
       nextCommands: [
+        `npm run ariadne -- live-adapter-operator-evidence-workplan --project ${project}`,
         `npm run ariadne -- live-adapter-evidence-templates --project ${project}`,
         `npm run ariadne -- live-adapter-operator-evidence --project ${project} --target <target> --from vault/projects/${project}/control/live-adapter-evidence-templates/live-adapter-evidence-template-<target>.md --by <operator>`,
         `npm run ariadne -- live-adapter-operator-evidence-audit --project ${project}`
@@ -156,6 +161,11 @@ export async function generateRoadmapCompletionAudit(input: {
     blocked: requirements.filter((requirement) => requirement.status === "blocked").length,
     advisory: requirements.filter((requirement) => requirement.status === "advisory").length
   };
+  const operatorEvidenceRequirement = requirements.find((requirement) => requirement.id === "operator-evidence");
+  if (operatorEvidenceRequirement && operatorEvidenceWorkplan) {
+    operatorEvidenceRequirement.detail += ` Workplan status is ${operatorEvidenceWorkplan.status} with ${operatorEvidenceWorkplan.summary.importCommands} import command(s).`;
+    operatorEvidenceRequirement.evidenceRefs.push("projects/" + project + "/control/live-adapter-operator-evidence-workplan.json");
+  }
   const audit: RoadmapCompletionAudit = {
     schemaVersion: 1,
     project,

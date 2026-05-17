@@ -2,12 +2,12 @@
 
 Project: ariadne
 Status: passed
-Generated: 2026-05-17T05:42:05.378Z
+Generated: 2026-05-17T06:04:29.009Z
 HTML: projects/ariadne/console/index.html
 
 ## Summary
 
-- Passed: 24
+- Passed: 26
 - Failed: 0
 
 ## Checks
@@ -29,6 +29,8 @@ HTML: projects/ariadne/console/index.html
 | live-adapter-review-session | passed | Found mutationApproved=false. |
 | adapter-evidence-template-metric | passed | Found Evidence Templates. |
 | live-adapter-evidence-templates | passed | Found Templates are blank collection aids. |
+| adapter-operator-evidence-workplan-metric | passed | Found Evidence Workplan. |
+| live-adapter-operator-evidence-workplan | passed | Found The workplan is an evidence collection queue. |
 | adapter-operator-evidence-metric | passed | Found Operator Evidence. |
 | live-adapter-operator-evidence | passed | Found Operator evidence records do not approve mutation. |
 | cutover-queue | passed | 6 cutover-blocked target(s) are visible in the approval queue. |

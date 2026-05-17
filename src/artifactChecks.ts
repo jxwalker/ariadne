@@ -324,6 +324,13 @@ const ARTIFACT_SPECS: ArtifactSpec[] = [
     relativePath: "control/live-adapter-operator-evidence-audit.json"
   },
   {
+    id: "live-adapter-operator-evidence-workplan",
+    label: "Live adapter operator evidence workplan",
+    required: false,
+    kind: "file",
+    relativePath: "control/live-adapter-operator-evidence-workplan.json"
+  },
+  {
     id: "roadmap-completion-audit",
     label: "Roadmap completion audit",
     required: false,

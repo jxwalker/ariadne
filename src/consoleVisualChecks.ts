@@ -33,6 +33,8 @@ export async function generateConsoleVisualCheckReport(input: {
     reviewSessionDataCheck(html, embeddedData),
     checkContains(html, "adapter-evidence-template-metric", "Adapter evidence-template metric", "Evidence Templates"),
     evidenceTemplateDataCheck(html, embeddedData),
+    checkContains(html, "adapter-operator-evidence-workplan-metric", "Adapter operator-evidence workplan metric", "Evidence Workplan"),
+    operatorEvidenceWorkplanDataCheck(html, embeddedData),
     checkContains(html, "adapter-operator-evidence-metric", "Adapter operator-evidence metric", "Operator Evidence"),
     operatorEvidenceDataCheck(html, embeddedData),
     cutoverQueueCheck(html, embeddedData),
@@ -183,6 +185,19 @@ function evidenceTemplateDataCheck(html: string, data: ConsoleData | undefined):
   return {
     id: "live-adapter-evidence-templates",
     label: "Live adapter evidence template data",
+    status: present ? "passed" : "failed",
+    detail: detailSentence(present ? "Found" : "Missing", expected)
+  };
+}
+
+function operatorEvidenceWorkplanDataCheck(html: string, data: ConsoleData | undefined): ConsoleVisualCheckReport["checks"][number] {
+  const expected = data?.liveAdapterOperatorEvidenceWorkplan
+    ? "The workplan is an evidence collection queue"
+    : "No live adapter operator evidence workplan required.";
+  const present = expected === "No live adapter operator evidence workplan required." || html.includes(expected);
+  return {
+    id: "live-adapter-operator-evidence-workplan",
+    label: "Live adapter operator evidence workplan data",
     status: present ? "passed" : "failed",
     detail: detailSentence(present ? "Found" : "Missing", expected)
   };

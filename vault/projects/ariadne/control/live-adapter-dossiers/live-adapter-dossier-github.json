@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "project": "ariadne",
-  "generatedAt": "2026-05-17T04:46:39.073Z",
+  "generatedAt": "2026-05-17T06:04:26.662Z",
   "target": "github",
   "status": "ready_for_operator_review",
   "readinessRef": "projects/ariadne/control/live-adapter-readiness.json",
