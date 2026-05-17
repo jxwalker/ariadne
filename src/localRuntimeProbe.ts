@@ -13,7 +13,7 @@ import type {
 } from "./types.js";
 
 const execFileAsync = promisify(execFile);
-export type RuntimeModelEndpointId = "ollama" | "ds4-openai" | "lmstudio";
+export type RuntimeModelEndpointId = "ollama" | "ds4-openai" | "lmstudio" | "atlas";
 
 // Keep ordinary reachability checks quick when runtimes are offline.
 const DEFAULT_RUNTIME_PROBE_TIMEOUT_MS = 8_000;
@@ -50,6 +50,7 @@ export async function collectLocalRuntimeProbe(
     ollamaUrl?: string;
     ds4Url?: string;
     lmStudioUrl?: string;
+    atlasUrl?: string;
     canaryEndpointIds?: RuntimeModelEndpointId[];
     canaryModels?: Partial<Record<RuntimeModelEndpointId, string>>;
     timeoutMs?: number;
@@ -97,6 +98,12 @@ export async function collectLocalRuntimeProbe(
       kind: "openai-compatible",
       url: input.lmStudioUrl ?? "http://127.0.0.1:1234/v1",
       canaryModel: input.canaryModels?.lmstudio
+    },
+    {
+      id: "atlas",
+      kind: "openai-compatible",
+      url: input.atlasUrl ?? "http://127.0.0.1:8888/v1",
+      canaryModel: input.canaryModels?.atlas
     }
   ];
   const canaryEndpointIds = input.canary
