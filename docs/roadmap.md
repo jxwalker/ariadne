@@ -154,6 +154,7 @@ Implemented:
 - runner pool planning contract
 - local model endpoint registry contract
 - Atlas model endpoint registered with a neutral alias and explicit live-probe override path
+- environment-default runtime endpoint and canary-model configuration for unattended local model probes
 - explicit no-mutation rules
 - read-only infrastructure snapshot imports
 - sanitized live read-only local host inventory collector

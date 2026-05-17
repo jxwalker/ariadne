@@ -48,7 +48,7 @@ vault/projects/<project>/evaluation/usage-report.json
 vault/projects/<project>/evaluation/usage-report.md
 ```
 
-`local-runtime-probe --canary` can append `local-llm` usage records from short Ollama or OpenAI-compatible local model canaries, including DS4, LM Studio, and Atlas. Use `--canary-endpoints` plus endpoint-specific model flags when only one local runtime should be exercised or the default model is too large for a quick probe. Canary requests use a 128-token reasoning-tolerant completion budget and a minimum 30-second generation timeout while still requiring the model to return the `READY` health token. Those records flow into the same usage report.
+`local-runtime-probe --canary` can append `local-llm` usage records from short Ollama or OpenAI-compatible local model canaries, including DS4, LM Studio, and Atlas. Use `--canary-endpoints` plus endpoint-specific model flags when only one local runtime should be exercised or the default model is too large for a quick probe. For unattended runs, set `ARIADNE_ATLAS_URL` and `ARIADNE_ATLAS_CANARY_MODEL` or the equivalent Ollama, DS4, and LM Studio environment variables instead of passing endpoint URLs on every command. Canary requests use a strict no-think `READY` health prompt, a 128-token reasoning-tolerant completion budget, and a minimum 30-second generation timeout. Those records flow into the same usage report.
 
 `artifact-checks` writes the deterministic artifact contract report:
 

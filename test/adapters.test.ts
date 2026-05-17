@@ -1649,6 +1649,84 @@ describe("roadmap adapters", () => {
     expect(mutationExecutionCheck?.status).toBe("present");
   });
 
+  it("uses environment defaults for local runtime endpoint URLs and canary models", async () => {
+    const { vaultRoot } = await preparedProject();
+    const previous = {
+      hermes: process.env.ARIADNE_HERMES_DASHBOARD_URL,
+      atlasUrl: process.env.ARIADNE_ATLAS_URL,
+      atlasModel: process.env.ARIADNE_ATLAS_CANARY_MODEL
+    };
+    process.env.ARIADNE_HERMES_DASHBOARD_URL = "http://runtime.env/hermes";
+    process.env.ARIADNE_ATLAS_URL = "http://runtime.env/atlas/v1";
+    process.env.ARIADNE_ATLAS_CANARY_MODEL = "qwen3.6-35b-a3b-nvfp4-atlas";
+    const canaryRequests: Array<{ url: string; model: string; systemPrompt: string; userPrompt: string }> = [];
+
+    try {
+      const runtimeProbe = await collectLocalRuntimeProbe(
+        {
+          project: "ariadne",
+          vaultRoot,
+          canary: true,
+          canaryEndpointIds: ["atlas"],
+          timeoutMs: 100
+        },
+        {
+          runCommand: async () => ({ exitCode: 0, stdout: "ok", stderr: "" }),
+          fetchJson: async (url, init) => {
+            if (url === "http://runtime.env/hermes") return { ok: true, status: 200, text: "<html></html>" };
+            if (url === "http://runtime.env/atlas/v1/models") {
+              return {
+                ok: true,
+                status: 200,
+                text: "{}",
+                json: { data: [{ id: "qwen3.6-35b-a3b-nvfp4-atlas" }] }
+              };
+            }
+            if (url === "http://runtime.env/atlas/v1/chat/completions" && init?.method === "POST") {
+              const body = JSON.parse(String(init.body)) as { model: string; messages: Array<{ content: string }> };
+              canaryRequests.push({
+                url,
+                model: body.model,
+                systemPrompt: body.messages[0]?.content ?? "",
+                userPrompt: body.messages[1]?.content ?? ""
+              });
+              return {
+                ok: true,
+                status: 200,
+                text: "{}",
+                json: {
+                  choices: [{ message: { content: "READY" } }],
+                  usage: { prompt_tokens: 4, completion_tokens: 1, total_tokens: 5 }
+                }
+              };
+            }
+            return { ok: false, status: 0, text: "", error: "connection refused" };
+          }
+        }
+      );
+
+      expect(runtimeProbe.probe.hermes.dashboard.url).toBe("http://runtime.env/hermes");
+      expect(runtimeProbe.probe.modelEndpoints.find((endpoint) => endpoint.id === "atlas")?.url).toBe(
+        "http://runtime.env/atlas/v1"
+      );
+      expect(runtimeProbe.probe.modelEndpoints.find((endpoint) => endpoint.id === "atlas")?.canary?.model).toBe(
+        "qwen3.6-35b-a3b-nvfp4-atlas"
+      );
+      expect(canaryRequests).toEqual([
+        {
+          url: "http://runtime.env/atlas/v1/chat/completions",
+          model: "qwen3.6-35b-a3b-nvfp4-atlas",
+          systemPrompt: "You are a local runtime health check. Do not reason. Output exactly READY.",
+          userPrompt: "/no_think\nReply with exactly READY and no other text."
+        }
+      ]);
+    } finally {
+      restoreEnv("ARIADNE_HERMES_DASHBOARD_URL", previous.hermes);
+      restoreEnv("ARIADNE_ATLAS_URL", previous.atlasUrl);
+      restoreEnv("ARIADNE_ATLAS_CANARY_MODEL", previous.atlasModel);
+    }
+  });
+
   it("records CI, CodeRabbit, Playwright, infra, OpenScorpion, and guarded worktree evidence", async () => {
     const { temp, vaultRoot } = await preparedProject();
     const repo = path.join(temp, "repo");
@@ -2640,4 +2718,12 @@ async function readJsonl(filePath: string): Promise<Array<Record<string, string>
     .map((line) => line.trim())
     .filter(Boolean)
     .map((line) => JSON.parse(line) as Record<string, string>);
+}
+
+function restoreEnv(name: string, value: string | undefined): void {
+  if (value === undefined) {
+    delete process.env[name];
+    return;
+  }
+  process.env[name] = value;
 }

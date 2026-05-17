@@ -21,6 +21,8 @@ const DEFAULT_RUNTIME_PROBE_TIMEOUT_MS = 8_000;
 const CANARY_RESPONSE_TOKEN_BUDGET = 128;
 // Canary generation floors caller timeouts so slow local models are not false negatives.
 const CANARY_GENERATION_TIMEOUT_MS = 30_000;
+const CANARY_READY_PROMPT = "/no_think\nReply with exactly READY and no other text.";
+const CANARY_SYSTEM_PROMPT = "You are a local runtime health check. Do not reason. Output exactly READY.";
 
 interface CommandResult {
   exitCode: number;
@@ -65,7 +67,7 @@ export async function collectLocalRuntimeProbe(
 
   const hermesDashboard = await probeHttpService(
     "hermes-dashboard",
-    input.hermesDashboardUrl ?? "http://127.0.0.1:9119",
+    input.hermesDashboardUrl ?? envValue("ARIADNE_HERMES_DASHBOARD_URL") ?? "http://127.0.0.1:9119",
     fetchJson,
     timeoutMs
   );
@@ -84,26 +86,26 @@ export async function collectLocalRuntimeProbe(
     {
       id: "ollama",
       kind: "ollama",
-      url: input.ollamaUrl ?? "http://127.0.0.1:11434",
-      canaryModel: input.canaryModels?.ollama
+      url: input.ollamaUrl ?? envValue("ARIADNE_OLLAMA_URL") ?? "http://127.0.0.1:11434",
+      canaryModel: input.canaryModels?.ollama ?? envValue("ARIADNE_OLLAMA_CANARY_MODEL")
     },
     {
       id: "ds4-openai",
       kind: "openai-compatible",
-      url: input.ds4Url ?? "http://127.0.0.1:8000/v1",
-      canaryModel: input.canaryModels?.["ds4-openai"]
+      url: input.ds4Url ?? envValue("ARIADNE_DS4_URL") ?? "http://127.0.0.1:8000/v1",
+      canaryModel: input.canaryModels?.["ds4-openai"] ?? envValue("ARIADNE_DS4_CANARY_MODEL")
     },
     {
       id: "lmstudio",
       kind: "openai-compatible",
-      url: input.lmStudioUrl ?? "http://127.0.0.1:1234/v1",
-      canaryModel: input.canaryModels?.lmstudio
+      url: input.lmStudioUrl ?? envValue("ARIADNE_LMSTUDIO_URL") ?? "http://127.0.0.1:1234/v1",
+      canaryModel: input.canaryModels?.lmstudio ?? envValue("ARIADNE_LMSTUDIO_CANARY_MODEL")
     },
     {
       id: "atlas",
       kind: "openai-compatible",
-      url: input.atlasUrl ?? "http://127.0.0.1:8888/v1",
-      canaryModel: input.canaryModels?.atlas
+      url: input.atlasUrl ?? envValue("ARIADNE_ATLAS_URL") ?? "http://127.0.0.1:8888/v1",
+      canaryModel: input.canaryModels?.atlas ?? envValue("ARIADNE_ATLAS_CANARY_MODEL")
     }
   ];
   const canaryEndpointIds = input.canary
@@ -279,7 +281,8 @@ async function runOllamaCanary(
       headers: { "content-type": "application/json" },
       body: JSON.stringify({
         model,
-        prompt: "Ariadne local runtime probe. Reply READY only.",
+        system: CANARY_SYSTEM_PROMPT,
+        prompt: CANARY_READY_PROMPT,
         stream: false,
         options: { temperature: 0, num_predict: CANARY_RESPONSE_TOKEN_BUDGET }
       })
@@ -318,7 +321,10 @@ async function runOpenAiCanary(
       headers: { "content-type": "application/json" },
       body: JSON.stringify({
         model,
-        messages: [{ role: "user", content: "Ariadne local runtime probe. Reply READY only." }],
+        messages: [
+          { role: "system", content: CANARY_SYSTEM_PROMPT },
+          { role: "user", content: CANARY_READY_PROMPT }
+        ],
         temperature: 0,
         max_tokens: CANARY_RESPONSE_TOKEN_BUDGET
       })
@@ -519,4 +525,9 @@ function isReadyResponse(value: string): boolean {
 
 function escapeRegExp(value: string): string {
   return value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+}
+
+function envValue(name: string): string | undefined {
+  const value = process.env[name]?.trim();
+  return value ? value : undefined;
 }

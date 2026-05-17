@@ -52,7 +52,7 @@ export async function generateInfrastructureRegistry(options: GenerateInfraOptio
         id: "atlas-node",
         label: "Atlas model host",
         role: "fast OpenAI-compatible local model endpoint",
-        notes: "Use local-runtime-probe --atlas-url for the actual LAN or Tailscale address; registry keeps a neutral endpoint alias."
+        notes: "Use ARIADNE_ATLAS_URL or local-runtime-probe --atlas-url for the actual LAN or tailnet address; registry keeps a neutral endpoint alias."
       }
     ],
     modelEndpoints: [
