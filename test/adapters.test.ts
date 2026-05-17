@@ -1423,10 +1423,18 @@ describe("roadmap adapters", () => {
     const e2eSmoke = await runE2eSmoke({ project: "ariadne", vaultRoot, width: 900, height: 900 });
     expect(e2eSmoke.report.status).toBe("blocked");
     expect(e2eSmoke.report.summary.failed).toBe(0);
+    expect(e2eSmoke.report.steps.some((step) => step.id === "mutation-readiness-repair-plan" && step.status === "passed")).toBe(
+      true
+    );
+    expect(e2eSmoke.report.artifacts.mutationReadinessRepairPlan).toContain(
+      "control/mutation-readiness-repair-plan.json"
+    );
     expect(e2eSmoke.report.steps.some((step) => step.id === "console-browser-checks" && step.status === "passed")).toBe(true);
     expect(e2eSmoke.report.steps.some((step) => step.id === "roadmap-completion-audit" && step.status === "blocked")).toBe(true);
     const e2eSmokeMarkdown = await fs.readFile(e2eSmoke.markdownPath, "utf8");
     expect(e2eSmokeMarkdown).toContain("End-to-End Smoke Report");
+    expect(e2eSmokeMarkdown).toContain("Mutation repair plan");
+    expect(e2eSmokeMarkdown).toContain("mutationAllowed=false");
     expect(e2eSmokeMarkdown).toContain("This command does not create approvals");
 
     const artifactChecks = await generateArtifactCheckReport({ project: "ariadne", vaultRoot });

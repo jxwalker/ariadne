@@ -293,7 +293,7 @@ Run the local end-to-end smoke harness:
 npm run ariadne -- e2e-smoke --project ariadne --with-runtime-probe --runtime-canary --canary-endpoints lmstudio --lmstudio-canary-model google/gemma-3-4b --timeout-ms 60000
 ```
 
-This runs behavior checks, optional Hermes/model runtime probing, console data and HTML generation, deterministic visual checks, Playwright browser checks, artifact checks, and the roadmap completion audit into one report under `evaluation/e2e-smoke-...json` and `.md`. A `blocked` smoke status is expected while operator evidence and cutover gates remain incomplete; it means the pipeline ran and correctly refused to claim live-adapter completion.
+This runs behavior checks, optional Hermes/model runtime probing, mutation-readiness repair guidance, console data and HTML generation, deterministic visual checks, Playwright browser checks, artifact checks, and the roadmap completion audit into one report under `evaluation/e2e-smoke-...json` and `.md`. A `blocked` smoke status is expected while operator evidence and cutover gates remain incomplete; it means the pipeline ran and correctly refused to claim live-adapter completion.
 
 For an approved remote host reachable over SSH, collect a sanitized read-only inventory:
 
