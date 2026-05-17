@@ -1,12 +1,12 @@
 {
   "schemaVersion": 1,
   "project": "ariadne",
-  "generatedAt": "2026-05-17T02:57:44.963Z",
+  "generatedAt": "2026-05-17T03:17:41.481Z",
   "status": "passed",
   "summary": {
     "required": 13,
-    "optional": 35,
-    "present": 40,
+    "optional": 37,
+    "present": 41,
     "missingRequired": 0
   },
   "checks": [
@@ -347,6 +347,22 @@
       "label": "Live adapter evidence templates",
       "required": false,
       "path": "projects/ariadne/control/live-adapter-evidence-templates.json",
+      "status": "present"
+    },
+    {
+      "id": "live-adapter-operator-evidence",
+      "label": "Live adapter operator evidence records",
+      "required": false,
+      "path": "projects/ariadne/control/live-adapter-operator-evidence/operator-evidence-*.json",
+      "status": "missing",
+      "count": 0,
+      "matches": []
+    },
+    {
+      "id": "live-adapter-operator-evidence-audit",
+      "label": "Live adapter operator evidence audit",
+      "required": false,
+      "path": "projects/ariadne/control/live-adapter-operator-evidence-audit.json",
       "status": "present"
     },
     {

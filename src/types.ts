@@ -698,6 +698,66 @@ export interface LiveAdapterEvidenceTemplatePack {
   }>;
 }
 
+export interface LiveAdapterOperatorEvidenceRecord {
+  schemaVersion: 1;
+  id: string;
+  project: string;
+  recordedAt: string;
+  target: Exclude<MutationReadinessPlan["target"], "generic">;
+  reviewedBy: string;
+  sourceRef: string;
+  sourceSha256: string;
+  sourceBytes: number;
+  status: "complete" | "incomplete";
+  mutationApproved: false;
+  approvalGranted: false;
+  summary: {
+    requiredSections: number;
+    completeSections: number;
+    missingSections: number;
+    advisoryWarnings: number;
+  };
+  sections: Array<{
+    id: string;
+    label: string;
+    status: "complete" | "missing";
+    detail: string;
+  }>;
+  gbrain: {
+    status: "present" | "missing";
+    detail: string;
+  };
+  notes?: string;
+}
+
+export interface LiveAdapterOperatorEvidenceAudit {
+  schemaVersion: 1;
+  project: string;
+  generatedAt: string;
+  status: "complete" | "blocked";
+  mutationApproved: false;
+  summary: {
+    targets: number;
+    records: number;
+    completeTargets: number;
+    incompleteTargets: number;
+    missingTargets: number;
+    missingSections: number;
+    advisoryWarnings: number;
+  };
+  targets: Array<{
+    target: Exclude<MutationReadinessPlan["target"], "generic">;
+    status: "complete" | "incomplete" | "missing_evidence";
+    recordCount: number;
+    latestRecordId?: string;
+    latestRecordRef?: string;
+    missingSections: string[];
+    advisoryWarnings: string[];
+    blockers: string[];
+    evidenceRefs: string[];
+  }>;
+}
+
 export interface InfraRegistry {
   schemaVersion: 1;
   project: string;
@@ -1297,6 +1357,11 @@ export interface ConsoleData {
     liveAdapterReviewSessionRequired?: number;
     liveAdapterEvidenceTemplates?: number;
     liveAdapterEvidenceTemplateStatus?: LiveAdapterEvidenceTemplatePack["status"];
+    liveAdapterOperatorEvidenceRecords?: number;
+    liveAdapterOperatorEvidenceStatus?: LiveAdapterOperatorEvidenceAudit["status"];
+    liveAdapterOperatorEvidenceComplete?: number;
+    liveAdapterOperatorEvidenceIncomplete?: number;
+    liveAdapterOperatorEvidenceMissing?: number;
     recoveryIssues: number;
     consoleBrowserChecks?: ConsoleBrowserCheckReport["status"];
     readinessStatus?: ControlReport["status"];
@@ -1366,6 +1431,8 @@ export interface ConsoleData {
   liveAdapterCutoverAudit?: LiveAdapterCutoverAudit;
   liveAdapterReviewSession?: LiveAdapterReviewSession;
   liveAdapterEvidenceTemplatePack?: LiveAdapterEvidenceTemplatePack;
+  liveAdapterOperatorEvidence: LiveAdapterOperatorEvidenceRecord[];
+  liveAdapterOperatorEvidenceAudit?: LiveAdapterOperatorEvidenceAudit;
   recovery?: RecoveryReport;
   readiness?: ControlReport;
   artifacts: {
@@ -1398,6 +1465,8 @@ export interface ConsoleData {
     liveAdapterCutoverAudit?: string;
     liveAdapterReviewSession?: string;
     liveAdapterEvidenceTemplates?: string;
+    liveAdapterOperatorEvidence?: string;
+    liveAdapterOperatorEvidenceAudit?: string;
     recoveryReport?: string;
     extractionResults?: string;
     healerProposals?: string;

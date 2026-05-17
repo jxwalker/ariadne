@@ -1,0 +1,84 @@
+{
+  "schemaVersion": 1,
+  "project": "ariadne",
+  "generatedAt": "2026-05-17T03:16:37.210Z",
+  "status": "blocked",
+  "mutationApproved": false,
+  "summary": {
+    "targets": 6,
+    "records": 0,
+    "completeTargets": 0,
+    "incompleteTargets": 0,
+    "missingTargets": 6,
+    "missingSections": 0,
+    "advisoryWarnings": 0
+  },
+  "targets": [
+    {
+      "target": "github",
+      "status": "missing_evidence",
+      "recordCount": 0,
+      "missingSections": [],
+      "advisoryWarnings": [],
+      "blockers": [
+        "No operator evidence record exists for github."
+      ],
+      "evidenceRefs": []
+    },
+    {
+      "target": "deployment",
+      "status": "missing_evidence",
+      "recordCount": 0,
+      "missingSections": [],
+      "advisoryWarnings": [],
+      "blockers": [
+        "No operator evidence record exists for deployment."
+      ],
+      "evidenceRefs": []
+    },
+    {
+      "target": "hermes-cron",
+      "status": "missing_evidence",
+      "recordCount": 0,
+      "missingSections": [],
+      "advisoryWarnings": [],
+      "blockers": [
+        "No operator evidence record exists for hermes-cron."
+      ],
+      "evidenceRefs": []
+    },
+    {
+      "target": "openscorpion",
+      "status": "missing_evidence",
+      "recordCount": 0,
+      "missingSections": [],
+      "advisoryWarnings": [],
+      "blockers": [
+        "No operator evidence record exists for openscorpion."
+      ],
+      "evidenceRefs": []
+    },
+    {
+      "target": "gsd2",
+      "status": "missing_evidence",
+      "recordCount": 0,
+      "missingSections": [],
+      "advisoryWarnings": [],
+      "blockers": [
+        "No operator evidence record exists for gsd2."
+      ],
+      "evidenceRefs": []
+    },
+    {
+      "target": "notebooklm",
+      "status": "missing_evidence",
+      "recordCount": 0,
+      "missingSections": [],
+      "advisoryWarnings": [],
+      "blockers": [
+        "No operator evidence record exists for notebooklm."
+      ],
+      "evidenceRefs": []
+    }
+  ]
+}

@@ -48,6 +48,11 @@ import { generateLiveAdapterApprovalReviewAudit } from "./liveAdapterApprovalRev
 import { generateLiveAdapterCutoverAudit } from "./liveAdapterCutoverAudit.js";
 import { generateLiveAdapterEvidenceTemplates } from "./liveAdapterEvidenceTemplates.js";
 import { generateLiveAdapterNextActions } from "./liveAdapterNextActions.js";
+import {
+  generateLiveAdapterOperatorEvidenceAudit,
+  liveAdapterOperatorEvidenceTargetOption,
+  recordLiveAdapterOperatorEvidence
+} from "./liveAdapterOperatorEvidence.js";
 import { generateLiveAdapterReadiness } from "./liveAdapterReadiness.js";
 import { generateLiveAdapterReviewSession } from "./liveAdapterReviewSession.js";
 import { generateLiveAdapterTargetDossier, liveAdapterDossierTargetOption } from "./liveAdapterTargetDossier.js";
@@ -179,6 +184,8 @@ function usage(): string {
     "  ariadne live-adapter-cutover-audit --project <project>",
     "  ariadne live-adapter-review-session --project <project>",
     "  ariadne live-adapter-evidence-templates --project <project>",
+    "  ariadne live-adapter-operator-evidence --project <project> --target <github|deployment|hermes-cron|openscorpion|gsd2|notebooklm> --from <filled-template.md> --by <operator> [--notes <text>]",
+    "  ariadne live-adapter-operator-evidence-audit --project <project>",
     "  ariadne mutation-dry-run --project <project> --plan <id|json> [--timeout-ms <ms>]",
     "  ariadne mutation-execute --project <project> --plan <id|json> --confirm-plan <id> [--timeout-ms <ms>]",
     "  ariadne target-mutation-execute --project <project> --target <target> --plan <id|json> --confirm-plan <id> [--timeout-ms <ms>]",
@@ -1176,6 +1183,33 @@ async function main(): Promise<void> {
     console.log(`Status: ${result.pack.status}`);
     console.log(`Templates: ${result.pack.summary.templates}`);
     console.log(`Mutation approved: ${result.pack.mutationApproved}`);
+    return;
+  }
+
+  if (parsed.command === "live-adapter-operator-evidence") {
+    const result = await recordLiveAdapterOperatorEvidence({
+      project,
+      vaultRoot,
+      target: liveAdapterOperatorEvidenceTargetOption(requiredOption(parsed.options, "target")),
+      sourcePath: requiredOption(parsed.options, "from"),
+      reviewedBy: requiredOption(parsed.options, "by"),
+      notes: optionString(parsed.options, "notes", "") || undefined
+    });
+    console.log(`Live adapter operator evidence: ${result.markdownPath}`);
+    console.log(`Target: ${result.record.target}`);
+    console.log(`Status: ${result.record.status}`);
+    console.log(`Missing sections: ${result.record.summary.missingSections}`);
+    console.log(`Mutation approved: ${result.record.mutationApproved}`);
+    return;
+  }
+
+  if (parsed.command === "live-adapter-operator-evidence-audit") {
+    const result = await generateLiveAdapterOperatorEvidenceAudit({ project, vaultRoot });
+    console.log(`Live adapter operator evidence audit: ${result.markdownPath}`);
+    console.log(`Status: ${result.audit.status}`);
+    console.log(`Complete targets: ${result.audit.summary.completeTargets}`);
+    console.log(`Missing targets: ${result.audit.summary.missingTargets}`);
+    console.log(`Mutation approved: ${result.audit.mutationApproved}`);
     return;
   }
 

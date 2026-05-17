@@ -307,6 +307,23 @@ const ARTIFACT_SPECS: ArtifactSpec[] = [
     relativePath: "control/live-adapter-evidence-templates.json"
   },
   {
+    id: "live-adapter-operator-evidence",
+    label: "Live adapter operator evidence records",
+    required: false,
+    kind: "matching-files",
+    relativePath: "control/live-adapter-operator-evidence",
+    prefix: "operator-evidence-",
+    suffix: ".json",
+    minimumCount: 1
+  },
+  {
+    id: "live-adapter-operator-evidence-audit",
+    label: "Live adapter operator evidence audit",
+    required: false,
+    kind: "file",
+    relativePath: "control/live-adapter-operator-evidence-audit.json"
+  },
+  {
     id: "mutation-dry-runs",
     label: "Mutation dry-run records",
     required: false,

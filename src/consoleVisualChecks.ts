@@ -33,7 +33,10 @@ export async function generateConsoleVisualCheckReport(input: {
     reviewSessionDataCheck(html, embeddedData),
     checkContains(html, "adapter-evidence-template-metric", "Adapter evidence-template metric", "Evidence Templates"),
     evidenceTemplateDataCheck(html, embeddedData),
+    checkContains(html, "adapter-operator-evidence-metric", "Adapter operator-evidence metric", "Operator Evidence"),
+    operatorEvidenceDataCheck(html, embeddedData),
     cutoverQueueCheck(html, embeddedData),
+    operatorEvidenceQueueCheck(html, embeddedData),
     trendChartCheck(html, embeddedData),
     checkContains(html, "visual-check-panel", "Visual check panel", "Visual Checks"),
     checkContains(html, "embedded-data", "Embedded console data", 'id="console-data"'),
@@ -182,6 +185,41 @@ function evidenceTemplateDataCheck(html: string, data: ConsoleData | undefined):
     label: "Live adapter evidence template data",
     status: present ? "passed" : "failed",
     detail: detailSentence(present ? "Found" : "Missing", expected)
+  };
+}
+
+function operatorEvidenceDataCheck(html: string, data: ConsoleData | undefined): ConsoleVisualCheckReport["checks"][number] {
+  const expected = data?.liveAdapterOperatorEvidenceAudit
+    ? "Operator evidence records do not approve mutation"
+    : "No live adapter operator evidence audit required.";
+  const present = expected === "No live adapter operator evidence audit required." || html.includes(expected);
+  return {
+    id: "live-adapter-operator-evidence",
+    label: "Live adapter operator evidence data",
+    status: present ? "passed" : "failed",
+    detail: detailSentence(present ? "Found" : "Missing", expected)
+  };
+}
+
+function operatorEvidenceQueueCheck(html: string, data: ConsoleData | undefined): ConsoleVisualCheckReport["checks"][number] {
+  const blockedTargets = data?.liveAdapterOperatorEvidenceAudit?.targets.filter((target) => target.blockers.length > 0) ?? [];
+  if (blockedTargets.length === 0) {
+    return {
+      id: "operator-evidence-queue",
+      label: "Operator evidence blockers in approval queue",
+      status: "passed",
+      detail: "No operator evidence blockers are present."
+    };
+  }
+  const missing = blockedTargets.filter((target) => !html.includes(`operator evidence ${target.target}`));
+  return {
+    id: "operator-evidence-queue",
+    label: "Operator evidence blockers in approval queue",
+    status: missing.length === 0 ? "passed" : "failed",
+    detail:
+      missing.length === 0
+        ? `${blockedTargets.length} operator-evidence-blocked target(s) are visible in the approval queue.`
+        : `Missing operator evidence queue rows for ${missing.map((target) => target.target).join(", ")}.`
   };
 }
 
