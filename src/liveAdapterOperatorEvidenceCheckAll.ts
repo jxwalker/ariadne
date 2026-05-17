@@ -24,14 +24,16 @@ type EvidenceSourceSet = {
 export async function checkAllLiveAdapterOperatorEvidence(input: {
   project: string;
   vaultRoot: string;
+  target?: LiveAdapterTarget;
   notes?: string;
   source?: LiveAdapterOperatorEvidenceCheckAllSource;
 }): Promise<{ jsonPath: string; markdownPath: string; batch: LiveAdapterOperatorEvidenceCheckBatch }> {
   const project = slugifyProject(input.project);
-  const sourceSet = await resolveEvidenceSourceSet(input.vaultRoot, project, input.source ?? "auto");
+  const sourceSet = await resolveEvidenceSourceSet(input.vaultRoot, project, input.source ?? "auto", input.target);
   const targets: BatchTarget[] = [];
+  const selectedTargets = input.target ? [input.target] : [...LIVE_ADAPTER_TARGETS];
 
-  for (const target of LIVE_ADAPTER_TARGETS) {
+  for (const target of selectedTargets) {
     const sourceFileRef = sourceSet.refsByTarget.get(target);
     if (!sourceFileRef) {
       targets.push({
@@ -91,6 +93,7 @@ export async function checkAllLiveAdapterOperatorEvidence(input: {
     schemaVersion: 1,
     project,
     checkedAt: new Date().toISOString(),
+    target: input.target,
     status: summary.completeChecks === summary.targets ? "complete" : "incomplete",
     mutationApproved: false,
     approvalGranted: false,
@@ -102,12 +105,15 @@ export async function checkAllLiveAdapterOperatorEvidence(input: {
     summary,
     targets
   };
-  const jsonPath = await writeJsonArtifact(input.vaultRoot, project, "control", "live-adapter-operator-evidence-check-all.json", batch);
+  const fileStem = input.target
+    ? `live-adapter-operator-evidence-check-all-${input.target}`
+    : "live-adapter-operator-evidence-check-all";
+  const jsonPath = await writeJsonArtifact(input.vaultRoot, project, "control", `${fileStem}.json`, batch);
   const markdownPath = await writeTextArtifact(
     input.vaultRoot,
     project,
     "control",
-    "live-adapter-operator-evidence-check-all.md",
+    `${fileStem}.md`,
     renderBatch(batch)
   );
   return { jsonPath, markdownPath, batch };
@@ -121,22 +127,31 @@ export function liveAdapterOperatorEvidenceCheckAllSourceOption(value: string): 
 async function resolveEvidenceSourceSet(
   vaultRoot: string,
   project: string,
-  source: LiveAdapterOperatorEvidenceCheckAllSource
+  source: LiveAdapterOperatorEvidenceCheckAllSource,
+  target?: LiveAdapterTarget
 ): Promise<EvidenceSourceSet> {
   const templatePackRef = `projects/${project}/control/live-adapter-evidence-templates.json`;
-  const workspaceRef = `projects/${project}/control/live-adapter-operator-evidence-workspace.json`;
+  const workspaceRefs = target
+    ? [
+        `projects/${project}/control/live-adapter-operator-evidence-workspace-${target}.json`,
+        `projects/${project}/control/live-adapter-operator-evidence-workspace.json`
+      ]
+    : [`projects/${project}/control/live-adapter-operator-evidence-workspace.json`];
 
   if (source !== "templates") {
-    const workspace = await readOptionalWorkspace(vaultRoot, workspaceRef);
-    if (workspace) {
-      return {
-        source: "workspace",
-        sourcePackRef: workspaceRef,
-        workspaceRef,
-        refsByTarget: new Map(workspace.targets.map((target) => [target.target, target.evidenceFileRef]))
-      };
+    // Prefer a target-scoped workspace, but allow the all-target workspace as a fallback for operators who have not split the packet yet.
+    for (const workspaceRef of workspaceRefs) {
+      const workspace = await readOptionalWorkspace(vaultRoot, workspaceRef);
+      if (workspace) {
+        return {
+          source: "workspace",
+          sourcePackRef: workspaceRef,
+          workspaceRef,
+          refsByTarget: new Map(workspace.targets.map((target) => [target.target, target.evidenceFileRef]))
+        };
+      }
     }
-    if (source === "workspace") throw new Error(`Missing live adapter operator evidence workspace: ${workspaceRef}`);
+    if (source === "workspace") throw new Error(`Missing live adapter operator evidence workspace: ${workspaceRefs[0]}`);
   }
 
   const templatePack = await readTemplatePack(vaultRoot, templatePackRef);
@@ -218,6 +233,7 @@ function renderBatch(batch: LiveAdapterOperatorEvidenceCheckBatch): string {
     "# Live Adapter Operator Evidence Check All",
     "",
     `Project: ${batch.project}`,
+    `Target: ${batch.target ?? "all"}`,
     `Status: ${batch.status}`,
     `Checked: ${batch.checkedAt}`,
     `Mutation approved: ${batch.mutationApproved}`,

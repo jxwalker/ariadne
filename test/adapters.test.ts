@@ -1337,6 +1337,20 @@ describe("roadmap adapters", () => {
     const batchMarkdown = await fs.readFile(workspaceBatchPreflight.markdownPath, "utf8");
     expect(batchMarkdown).toContain("Missing section labels");
     expect(batchMarkdown).toContain("Operator identity and timestamp");
+    const scopedHermesPreflight = await checkAllLiveAdapterOperatorEvidence({
+      project: "ariadne",
+      vaultRoot,
+      source: "workspace",
+      target: "hermes-cron",
+      notes: "Hermes workspace preflight only"
+    });
+    expect(scopedHermesPreflight.jsonPath).toContain("live-adapter-operator-evidence-check-all-hermes-cron.json");
+    expect(scopedHermesPreflight.batch.target).toBe("hermes-cron");
+    expect(scopedHermesPreflight.batch.workspaceRef).toBe(
+      "projects/ariadne/control/live-adapter-operator-evidence-workspace-hermes-cron.json"
+    );
+    expect(scopedHermesPreflight.batch.summary.targets).toBe(1);
+    expect(scopedHermesPreflight.batch.targets.map((target) => target.target)).toEqual(["hermes-cron"]);
     const gsd2Workspace = operatorEvidenceWorkspace.workspace.targets.find((target) => target.target === "gsd2");
     expect(gsd2Workspace?.evidenceFileRef).toContain("control/operator-evidence/gsd2/operator-evidence.md");
     const gsd2WorkspaceFile = path.join(vaultRoot, gsd2Workspace?.evidenceFileRef ?? "");
@@ -1352,14 +1366,25 @@ describe("roadmap adapters", () => {
       project: "ariadne",
       vaultRoot,
       reviewedBy: "James",
+      target: "gsd2",
       notes: "Batch import complete preflight checks only"
     });
+    expect(importReady.jsonPath).toContain("live-adapter-operator-evidence-import-ready-gsd2.json");
+    expect(importReady.batch.target).toBe("gsd2");
     expect(importReady.batch.status).toBe("imported");
+    expect(importReady.batch.summary.targets).toBe(1);
+    expect(importReady.batch.summary.imported).toBe(1);
+    expect(importReady.batch.targets.map((target) => target.target)).toEqual(["gsd2"]);
     expect(importReady.batch.mutationApproved).toBe(false);
     expect(importReady.batch.approvalGranted).toBe(false);
     expect(importReady.batch.notes).toBe("Batch import complete preflight checks only");
     expect(importReady.batch.summary.imported).toBe(1);
     expect(importReady.batch.summary.failed).toBe(0);
+    const postScopedImportQueue = await generateLiveAdapterOperatorEvidenceQueue({ project: "ariadne", vaultRoot });
+    expect(postScopedImportQueue.queue.targets.find((target) => target.target === "gsd2")?.status).toBe("complete");
+    expect(postScopedImportQueue.queue.targets.find((target) => target.target === "notebooklm")?.operatorEvidenceStatus).toBe(
+      "missing_evidence"
+    );
     const gsd2Import = importReady.batch.targets.find((target) => target.target === "gsd2");
     expect(gsd2Import?.status).toBe("imported");
     expect(gsd2Import?.recordRef).toContain("control/live-adapter-operator-evidence/operator-evidence-gsd2-");
@@ -1438,7 +1463,7 @@ describe("roadmap adapters", () => {
     expect(console.data.summary.liveAdapterOperatorEvidenceAssistRefs).toBeGreaterThan(0);
     expect(console.data.liveAdapterOperatorEvidenceAssist?.operatorEvidenceRecordCreated).toBe(false);
     expect(console.data.liveAdapterOperatorEvidenceAssist?.targets.some((target) => target.target === "hermes-cron")).toBe(true);
-    expect(console.data.summary.liveAdapterOperatorEvidenceChecks).toBe(14);
+    expect(console.data.summary.liveAdapterOperatorEvidenceChecks).toBe(15);
     expect(console.data.liveAdapterOperatorEvidenceAudit?.mutationApproved).toBe(false);
     expect(console.data.liveAdapterOperatorEvidenceChecks[0]?.recorded).toBe(false);
     expect(console.data.liveAdapterOperatorEvidence.some((record) => record.target === "deployment")).toBe(true);
@@ -1608,7 +1633,7 @@ describe("roadmap adapters", () => {
     expect(cutoverAuditCheck?.status).toBe("present");
     expect(reviewSessionCheck?.status).toBe("present");
     expect(evidenceTemplatesCheck?.status).toBe("present");
-    expect(operatorEvidencePreflightCheck?.count).toBe(14);
+    expect(operatorEvidencePreflightCheck?.count).toBe(15);
     expect(operatorEvidenceBatchCheck?.status).toBe("present");
     expect(operatorEvidenceImportReadyCheck?.status).toBe("present");
     expect(operatorEvidenceQueueCheck?.status).toBe("present");

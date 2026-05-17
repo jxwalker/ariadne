@@ -347,15 +347,21 @@ const ARTIFACT_SPECS: ArtifactSpec[] = [
     id: "live-adapter-operator-evidence-check-all",
     label: "Live adapter operator evidence batch check",
     required: false,
-    kind: "file",
-    relativePath: "control/live-adapter-operator-evidence-check-all.json"
+    kind: "matching-files",
+    relativePath: "control",
+    prefix: "live-adapter-operator-evidence-check-all",
+    suffix: ".json",
+    minimumCount: 1
   },
   {
     id: "live-adapter-operator-evidence-import-ready",
     label: "Live adapter operator evidence ready import batch",
     required: false,
-    kind: "file",
-    relativePath: "control/live-adapter-operator-evidence-import-ready.json"
+    kind: "matching-files",
+    relativePath: "control",
+    prefix: "live-adapter-operator-evidence-import-ready",
+    suffix: ".json",
+    minimumCount: 1
   },
   {
     id: "live-adapter-operator-evidence",
@@ -392,15 +398,21 @@ const ARTIFACT_SPECS: ArtifactSpec[] = [
     id: "live-adapter-operator-evidence-workspace",
     label: "Live adapter operator evidence workspace",
     required: false,
-    kind: "file",
-    relativePath: "control/live-adapter-operator-evidence-workspace.json"
+    kind: "matching-files",
+    relativePath: "control",
+    prefix: "live-adapter-operator-evidence-workspace",
+    suffix: ".json",
+    minimumCount: 1
   },
   {
     id: "live-adapter-operator-evidence-assist",
     label: "Live adapter operator evidence assist packet",
     required: false,
-    kind: "file",
-    relativePath: "control/live-adapter-operator-evidence-assist.json"
+    kind: "matching-files",
+    relativePath: "control",
+    prefix: "live-adapter-operator-evidence-assist",
+    suffix: ".json",
+    minimumCount: 1
   },
   {
     id: "live-adapter-operator-evidence-workspace-files",

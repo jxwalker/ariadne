@@ -202,9 +202,9 @@ function usage(): string {
     "  ariadne live-adapter-review-session --project <project>",
     "  ariadne live-adapter-evidence-templates --project <project>",
     "  ariadne live-adapter-operator-evidence-check --project <project> --target <github|deployment|hermes-cron|openscorpion|gsd2|notebooklm> --from <operator-evidence.md> [--notes <text>]",
-    "  ariadne live-adapter-operator-evidence-check-all --project <project> [--source auto|workspace|templates] [--notes <text>]",
+    "  ariadne live-adapter-operator-evidence-check-all --project <project> [--target <github|deployment|hermes-cron|openscorpion|gsd2|notebooklm>] [--source auto|workspace|templates] [--notes <text>]",
     "  ariadne live-adapter-operator-evidence-assist --project <project> [--target <github|deployment|hermes-cron|openscorpion|gsd2|notebooklm>]",
-    "  ariadne live-adapter-operator-evidence-import-ready --project <project> --by <operator> [--notes <text>]",
+    "  ariadne live-adapter-operator-evidence-import-ready --project <project> --by <operator> [--target <github|deployment|hermes-cron|openscorpion|gsd2|notebooklm>] [--notes <text>]",
     "  ariadne live-adapter-operator-evidence --project <project> --target <github|deployment|hermes-cron|openscorpion|gsd2|notebooklm> --from <operator-evidence.md> --by <operator> [--notes <text>]",
     "  ariadne live-adapter-operator-evidence-audit --project <project>",
     "  ariadne live-adapter-operator-evidence-workplan --project <project>",
@@ -1310,10 +1310,12 @@ async function main(): Promise<void> {
     const result = await checkAllLiveAdapterOperatorEvidence({
       project,
       vaultRoot,
+      target: optionalLiveAdapterOperatorEvidenceTarget(parsed.options),
       source: liveAdapterOperatorEvidenceCheckAllSourceOption(typeof sourceOption === "string" ? sourceOption : "auto"),
       notes: optionString(parsed.options, "notes", "") || undefined
     });
     console.log(`Live adapter operator evidence check all: ${result.markdownPath}`);
+    console.log(`Target: ${result.batch.target ?? "all"}`);
     console.log(`Source: ${result.batch.source}`);
     console.log(`Status: ${result.batch.status}`);
     console.log(`Checks: ${result.batch.summary.checks}`);
@@ -1344,9 +1346,11 @@ async function main(): Promise<void> {
       project,
       vaultRoot,
       reviewedBy: requiredOption(parsed.options, "by"),
+      target: optionalLiveAdapterOperatorEvidenceTarget(parsed.options),
       notes: optionString(parsed.options, "notes", "") || undefined
     });
     console.log(`Live adapter operator evidence import ready: ${result.markdownPath}`);
+    console.log(`Target: ${result.batch.target ?? "all"}`);
     console.log(`Status: ${result.batch.status}`);
     console.log(`Ready for import: ${result.batch.summary.readyForImport}`);
     console.log(`Imported: ${result.batch.summary.imported}`);

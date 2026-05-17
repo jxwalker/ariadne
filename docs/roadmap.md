@@ -133,9 +133,9 @@ Implemented:
 - live adapter evidence templates that give operators blank, non-authoritative files for packet-review evidence, auth-boundary proof, rollback/post-verification checks, dry-run notes, target-execution notes, and advisory GBrain results
 - live adapter operator-evidence workplans that turn missing evidence into per-target check/import commands, template refs, cutover blockers, and advisory GBrain queries
 - live adapter operator-evidence preflight checks that evaluate filled workspace files without creating evidence records or approving mutation
-- live adapter operator-evidence batch preflight checks that evaluate every target workspace file and refresh the queue without creating evidence records
+- live adapter operator-evidence batch preflight checks that evaluate every target workspace file or one target-scoped workspace file and refresh the queue without creating evidence records
 - live adapter operator-evidence queue that ranks targets by latest preflight and import state without granting approval
-- live adapter operator-evidence ready-import batches that import only complete preflighted evidence files without granting approval
+- live adapter operator-evidence ready-import batches that import only complete preflighted evidence files for all targets or one target without granting approval
 - live adapter operator-evidence workspaces that generate fillable per-target evidence files and supporting notes without granting approval, including target-scoped summary artifacts for one-adapter review sessions
 - live adapter operator-evidence assist packets that gather existing read-only support refs beside the workspace without creating operator evidence, including target-scoped assist artifacts for one-adapter review sessions
 - live adapter operator-evidence import and audit that hashes filled evidence files, identifies missing operator proof, and surfaces per-target blockers without granting mutation approval
