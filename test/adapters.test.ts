@@ -908,6 +908,8 @@ describe("roadmap adapters", () => {
     expect(deployment.snapshot.summary.host).toBe("beast");
 
     await generateLiveAdapterApprovalPack({ project: "ariadne", vaultRoot });
+    const githubDossier = await generateLiveAdapterTargetDossier({ project: "ariadne", vaultRoot, target: "github" });
+    expect(githubDossier.dossier.status).toBe("ready_for_adapter_work");
     const deploymentDossier = await generateLiveAdapterTargetDossier({ project: "ariadne", vaultRoot, target: "deployment" });
     expect(deploymentDossier.dossier.status).toBe("ready_for_operator_review");
     expect(deploymentDossier.dossier.summary.packetPresent).toBe(true);
@@ -935,9 +937,14 @@ describe("roadmap adapters", () => {
     expect(console.data.summary.acceptedLiveAdapterApprovalReviews).toBe(1);
     expect(console.data.summary.liveAdapterApprovalReviewAuditStatus).toBe("blocked");
     expect(console.data.summary.currentLiveAdapterApprovalReviews).toBe(1);
-    expect(console.data.summary.liveAdapterTargetDossiers).toBe(1);
+    expect(console.data.summary.liveAdapterTargetDossiers).toBe(2);
     expect(console.data.liveAdapterApprovalReviewAudit?.summary.currentAcceptedReviews).toBe(1);
-    expect(console.data.liveAdapterTargetDossiers[0]?.target).toBe("deployment");
+    expect(console.data.liveAdapterTargetDossiers.some((dossier) => dossier.target === "deployment")).toBe(true);
+    expect(
+      console.data.liveAdapterTargetDossiers.some(
+        (dossier) => dossier.target === "github" && dossier.status === "ready_for_adapter_work"
+      )
+    ).toBe(true);
     expect(console.data.liveAdapterNextActions?.targets.some((target) => target.target === "github")).toBe(true);
     expect(console.data.liveAdapterApprovalPack?.packets.some((packet) => packet.target === "deployment")).toBe(true);
     expect(
