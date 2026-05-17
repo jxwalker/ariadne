@@ -1569,6 +1569,16 @@ describe("roadmap adapters", () => {
     expect(runtimeArtifactChecks.report.checks.find((check) => check.id === "local-runtime-probes")?.status).toBe(
       "present"
     );
+    await fs.writeFile(
+      path.join(vaultRoot, "projects", "ariadne", "infrastructure", "runtime", "malformed-runtime-probe.json"),
+      JSON.stringify({
+        schemaVersion: 1,
+        mode: "read_only",
+        generatedAt: "2099-01-01T00:00:00.000Z",
+        summary: { reachable: 1, degraded: 0, unreachable: 0, models: 1 },
+        modelEndpoints: [{ id: "broken", status: "reachable" }]
+      })
+    );
     const usageReport = await generateUsageMetricsReport({ project: "ariadne", vaultRoot });
     expect(usageReport.report.bySource.find((source) => source.name === "local-llm")?.totalTokens).toBe(8);
 

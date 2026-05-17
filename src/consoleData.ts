@@ -215,9 +215,8 @@ export async function collectConsoleData(vaultRoot: string, projectInput: string
   const evaluations = await readJsonFiles<EvaluationRun>(path.join(dir, "evaluation"), isEvaluationRun);
   const benchmarkRuns = await readJsonFiles<BenchmarkRun>(path.join(dir, "evaluation"), isBenchmarkRun);
   const infraSnapshots = await readJsonFiles<InfraSnapshot>(path.join(dir, "infrastructure"), isInfraSnapshot);
-  const localRuntimeProbes = await readJsonFiles<LocalRuntimeProbe>(
-    path.join(dir, "infrastructure", "runtime"),
-    isLocalRuntimeProbe
+  const localRuntimeProbes = sortLocalRuntimeProbes(
+    await readJsonFiles<LocalRuntimeProbe>(path.join(dir, "infrastructure", "runtime"), isLocalRuntimeProbe)
   );
   const gsd2ProcessSnapshots = await readJsonFiles<Gsd2ProcessSnapshot>(path.join(dir, "gsd", "process"), isGsd2ProcessSnapshot);
   const gbrainReports = await readJsonFiles<GbrainReportImport>(path.join(dir, "integrations", "gbrain"), isGbrainReport);
@@ -628,12 +627,33 @@ function isLocalRuntimeProbe(value: unknown): value is LocalRuntimeProbe {
     typeof summary.degraded === "number" &&
     typeof summary.unreachable === "number" &&
     typeof summary.models === "number" &&
-    Array.isArray(modelEndpoints)
+    Array.isArray(modelEndpoints) &&
+    modelEndpoints.every(isRuntimeModelEndpointProbe)
   );
 }
 
+function isRuntimeModelEndpointProbe(value: unknown): boolean {
+  if (!hasSchema(value)) return false;
+  return (
+    typeof value.id === "string" &&
+    (value.kind === "ollama" || value.kind === "openai-compatible") &&
+    (value.status === "reachable" || value.status === "degraded" || value.status === "unreachable") &&
+    Array.isArray(value.models) &&
+    value.models.every((model) => typeof model === "string") &&
+    (value.canary === undefined || isRuntimeCanaryProbe(value.canary))
+  );
+}
+
+function isRuntimeCanaryProbe(value: unknown): boolean {
+  return hasSchema(value) && (value.status === "passed" || value.status === "degraded" || value.status === "failed" || value.status === "skipped");
+}
+
+function sortLocalRuntimeProbes(probes: LocalRuntimeProbe[]): LocalRuntimeProbe[] {
+  return [...probes].sort((left, right) => Date.parse(left.generatedAt) - Date.parse(right.generatedAt));
+}
+
 function latestLocalRuntimeProbe(probes: LocalRuntimeProbe[]): LocalRuntimeProbe | undefined {
-  return [...probes].sort((left, right) => left.generatedAt.localeCompare(right.generatedAt)).at(-1);
+  return sortLocalRuntimeProbes(probes).at(-1);
 }
 
 function isGsd2ProcessSnapshot(value: unknown): value is Gsd2ProcessSnapshot {
