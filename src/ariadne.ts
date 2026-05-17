@@ -1615,7 +1615,10 @@ function usageSourceOption(
 }
 
 function optionalRuntimeCanaryEndpointIds(options: Map<string, string | true>): RuntimeModelEndpointId[] | undefined {
-  const value = optionString(options, "canary-endpoints", "");
+  const raw = options.get("canary-endpoints");
+  if (raw === undefined) return undefined;
+  if (raw === true) throw new Error("--canary-endpoints requires a value.");
+  const value = raw.trim();
   if (!value) return undefined;
   const endpoints = splitList(value).map(runtimeModelEndpointIdOption);
   return Array.from(new Set(endpoints));
@@ -1623,16 +1626,22 @@ function optionalRuntimeCanaryEndpointIds(options: Map<string, string | true>): 
 
 function runtimeModelEndpointIdOption(value: string): RuntimeModelEndpointId {
   if (value === "ollama" || value === "ds4-openai" || value === "lmstudio") return value;
-  throw new Error("--canary-endpoints must contain ollama, ds4-openai, or lmstudio.");
+  throw new Error(`Invalid endpoint ID: "${value}". --canary-endpoints must be one of: ollama, ds4-openai, lmstudio.`);
 }
 
 function optionalRuntimeCanaryModels(
   options: Map<string, string | true>
 ): Partial<Record<RuntimeModelEndpointId, string>> | undefined {
   const canaryModels: Partial<Record<RuntimeModelEndpointId, string>> = {};
-  const ollama = optionString(options, "ollama-canary-model", "");
-  const ds4 = optionString(options, "ds4-canary-model", "");
-  const lmstudio = optionString(options, "lmstudio-canary-model", "");
+  const ollamaRaw = options.get("ollama-canary-model");
+  const ds4Raw = options.get("ds4-canary-model");
+  const lmstudioRaw = options.get("lmstudio-canary-model");
+  if (ollamaRaw === true) throw new Error("--ollama-canary-model requires a value.");
+  if (ds4Raw === true) throw new Error("--ds4-canary-model requires a value.");
+  if (lmstudioRaw === true) throw new Error("--lmstudio-canary-model requires a value.");
+  const ollama = typeof ollamaRaw === "string" ? ollamaRaw.trim() : "";
+  const ds4 = typeof ds4Raw === "string" ? ds4Raw.trim() : "";
+  const lmstudio = typeof lmstudioRaw === "string" ? lmstudioRaw.trim() : "";
   if (ollama) canaryModels.ollama = ollama;
   if (ds4) canaryModels["ds4-openai"] = ds4;
   if (lmstudio) canaryModels.lmstudio = lmstudio;
