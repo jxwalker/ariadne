@@ -21,6 +21,13 @@ import type {
 } from "./types.js";
 
 type Requirement = RoadmapCompletionAudit["requirements"][number];
+type OperatorEvidenceTarget = LiveAdapterOperatorEvidenceQueue["targets"][number]["target"];
+
+interface NextOperatorEvidenceTarget {
+  target: OperatorEvidenceTarget;
+  status: string;
+  missingSections: number;
+}
 
 export async function generateRoadmapCompletionAudit(input: {
   project: string;
@@ -53,6 +60,11 @@ export async function generateRoadmapCompletionAudit(input: {
   const gbrainReports = await countMatching(path.join(dir, "integrations", "gbrain"), /^gbrain-report-.+\.json$/);
   const operatorEvidenceSummary = operatorEvidenceAudit?.summary;
   const operatorEvidenceMissingSections = operatorEvidenceAuditMissingSections(operatorEvidenceAudit);
+  const nextOperatorEvidenceTarget = selectNextOperatorEvidenceTarget(
+    operatorEvidenceQueue,
+    operatorEvidenceWorkplan,
+    operatorEvidenceAudit
+  );
 
   const requirements: Requirement[] = [
     {
@@ -138,6 +150,16 @@ export async function generateRoadmapCompletionAudit(input: {
         : "Operator evidence audit is missing.",
       evidenceRefs: ["projects/" + project + "/control/live-adapter-operator-evidence-audit.json"],
       nextCommands: [
+        ...(nextOperatorEvidenceTarget
+          ? [
+              `npm run ariadne -- live-adapter-operator-evidence-workspace --project ${project} --target ${nextOperatorEvidenceTarget.target}`,
+              `npm run ariadne -- live-adapter-operator-evidence-assist --project ${project} --target ${nextOperatorEvidenceTarget.target}`,
+              `npm run ariadne -- live-adapter-operator-evidence-check-all --project ${project} --source workspace --target ${nextOperatorEvidenceTarget.target}`,
+              `npm run ariadne -- live-adapter-operator-evidence-import-ready --project ${project} --by <operator> --target ${nextOperatorEvidenceTarget.target}`,
+              `npm run ariadne -- live-adapter-review-session --project ${project} --target ${nextOperatorEvidenceTarget.target}`,
+              `npm run ariadne -- live-adapter-cutover-audit --project ${project} --target ${nextOperatorEvidenceTarget.target}`
+            ]
+          : []),
         `npm run ariadne -- live-adapter-operator-evidence-workplan --project ${project}`,
         `npm run ariadne -- live-adapter-operator-evidence-queue --project ${project}`,
         `npm run ariadne -- live-adapter-evidence-templates --project ${project}`,
@@ -158,7 +180,12 @@ export async function generateRoadmapCompletionAudit(input: {
         ? `${cutoverAudit.summary.ready}/${cutoverAudit.summary.targets} targets ready; ${cutoverAudit.summary.blockedGates} gates blocked.`
         : "Live-adapter cutover audit is missing.",
       evidenceRefs: ["projects/" + project + "/control/live-adapter-cutover-audit.json"],
-      nextCommands: [`npm run ariadne -- live-adapter-cutover-audit --project ${project}`]
+      nextCommands: [
+        ...(nextOperatorEvidenceTarget
+          ? [`npm run ariadne -- live-adapter-cutover-audit --project ${project} --target ${nextOperatorEvidenceTarget.target}`]
+          : []),
+        `npm run ariadne -- live-adapter-cutover-audit --project ${project}`
+      ]
     },
     {
       id: "operator-review-session",
@@ -168,7 +195,12 @@ export async function generateRoadmapCompletionAudit(input: {
         ? `${reviewSession.summary.readyForAdapterWork}/${reviewSession.summary.targets} targets ready for adapter work; ${reviewSession.summary.operatorReviewRequired} still require operator review.`
         : "Live-adapter review session is missing.",
       evidenceRefs: ["projects/" + project + "/control/live-adapter-review-session.json"],
-      nextCommands: [`npm run ariadne -- live-adapter-review-session --project ${project}`]
+      nextCommands: [
+        ...(nextOperatorEvidenceTarget
+          ? [`npm run ariadne -- live-adapter-review-session --project ${project} --target ${nextOperatorEvidenceTarget.target}`]
+          : []),
+        `npm run ariadne -- live-adapter-review-session --project ${project}`
+      ]
     }
   ];
 
@@ -191,6 +223,12 @@ export async function generateRoadmapCompletionAudit(input: {
     operatorEvidenceRequirement.detail += ` Workspace status is ${operatorEvidenceWorkspace.status} with ${operatorEvidenceWorkspace.summary.workspaceFiles} fillable file(s).`;
     operatorEvidenceRequirement.evidenceRefs.push("projects/" + project + "/control/live-adapter-operator-evidence-workspace.json");
   }
+  if (operatorEvidenceRequirement && nextOperatorEvidenceTarget) {
+    operatorEvidenceRequirement.detail += ` Next target is ${nextOperatorEvidenceTarget.target} (${nextOperatorEvidenceTarget.status}, ${nextOperatorEvidenceTarget.missingSections} missing section(s)).`;
+    operatorEvidenceRequirement.evidenceRefs.push(
+      `projects/${project}/control/operator-evidence/${nextOperatorEvidenceTarget.target}/operator-evidence.md`
+    );
+  }
   const audit: RoadmapCompletionAudit = {
     schemaVersion: 1,
     project,
@@ -202,6 +240,55 @@ export async function generateRoadmapCompletionAudit(input: {
   const jsonPath = await writeJsonArtifact(input.vaultRoot, project, "control", "roadmap-completion-audit.json", audit);
   const markdownPath = await writeTextArtifact(input.vaultRoot, project, "control", "roadmap-completion-audit.md", renderAudit(audit));
   return { jsonPath, markdownPath, audit };
+}
+
+function selectNextOperatorEvidenceTarget(
+  queue: LiveAdapterOperatorEvidenceQueue | undefined,
+  workplan: LiveAdapterOperatorEvidenceWorkplan | undefined,
+  audit: LiveAdapterOperatorEvidenceAudit | undefined
+): NextOperatorEvidenceTarget | undefined {
+  const queueTargets = orderedTargets(Array.isArray(queue?.targets) ? queue.targets : []);
+  const workplanTargets = orderedTargets(Array.isArray(workplan?.targets) ? workplan.targets : []);
+  const auditTargets = orderedTargets(Array.isArray(audit?.targets) ? audit.targets : []);
+  const priority: Array<LiveAdapterOperatorEvidenceQueue["targets"][number]["status"]> = [
+    "ready_for_import",
+    "needs_rework",
+    "needs_evidence",
+    "unchecked"
+  ];
+  for (const status of priority) {
+    const target = queueTargets.find((item) => item.status === status);
+    if (target) {
+      return {
+        target: target.target,
+        status: target.status,
+        missingSections: target.latestCheckMissingSections ?? target.missingSections.length
+      };
+    }
+  }
+
+  const workplanTarget = workplanTargets.find((target) => target.status !== "complete");
+  if (workplanTarget) {
+    return {
+      target: workplanTarget.target,
+      status: workplanTarget.status,
+      missingSections: workplanTarget.missingSections.length
+    };
+  }
+
+  const auditTarget = auditTargets.find((target) => target.status !== "complete");
+  if (auditTarget) {
+    return {
+      target: auditTarget.target,
+      status: auditTarget.status,
+      missingSections: auditTarget.missingSections.length
+    };
+  }
+  return undefined;
+}
+
+function orderedTargets<T extends { target: string }>(targets: T[]): T[] {
+  return [...targets].sort((left, right) => left.target.localeCompare(right.target));
 }
 
 async function readJson<T>(filePath: string): Promise<T | undefined> {
