@@ -1322,6 +1322,7 @@ describe("roadmap adapters", () => {
     expect(roadmapCompletion.audit.requirements.find((item) => item.id === "gbrain-advisory-context")?.status).toBe("passed");
     const operatorEvidenceRequirement = roadmapCompletion.audit.requirements.find((item) => item.id === "operator-evidence");
     expect(operatorEvidenceRequirement?.status).toBe("blocked");
+    expect(operatorEvidenceRequirement?.detail).toContain("missing section");
     expect(operatorEvidenceRequirement?.nextCommands.length).toBeGreaterThan(0);
     expect(operatorEvidenceRequirement?.nextCommands).toContain("npm run ariadne -- live-adapter-operator-evidence-workplan --project ariadne");
     expect(operatorEvidenceRequirement?.nextCommands).toContain("npm run ariadne -- live-adapter-operator-evidence-queue --project ariadne");
