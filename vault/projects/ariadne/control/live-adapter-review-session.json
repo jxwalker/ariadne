@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "project": "ariadne",
-  "generatedAt": "2026-05-17T08:33:54.742Z",
+  "generatedAt": "2026-05-17T09:47:18.483Z",
   "status": "operator_review_required",
   "mutationApproved": false,
   "operatorDecisionRequired": true,
@@ -72,8 +72,8 @@
         "projects/ariadne/control/live-adapter-approval-pack.json",
         "projects/ariadne/control/live-adapter-approval-review-audit.json",
         "projects/ariadne/control/mutation-readiness-audit.json",
-        "projects/ariadne/control/live-adapter-evidence-templates.json",
-        "projects/ariadne/control/live-adapter-evidence-templates/live-adapter-evidence-template-github.md"
+        "projects/ariadne/control/live-adapter-operator-evidence-workspace.json",
+        "projects/ariadne/control/operator-evidence/github/operator-evidence.md"
       ]
     },
     {
@@ -128,8 +128,8 @@
         "projects/ariadne/control/live-adapter-approval-pack.json",
         "projects/ariadne/control/live-adapter-approval-review-audit.json",
         "projects/ariadne/control/mutation-readiness-audit.json",
-        "projects/ariadne/control/live-adapter-evidence-templates.json",
-        "projects/ariadne/control/live-adapter-evidence-templates/live-adapter-evidence-template-deployment.md"
+        "projects/ariadne/control/live-adapter-operator-evidence-workspace.json",
+        "projects/ariadne/control/operator-evidence/deployment/operator-evidence.md"
       ]
     },
     {
@@ -184,8 +184,8 @@
         "projects/ariadne/control/live-adapter-approval-pack.json",
         "projects/ariadne/control/live-adapter-approval-review-audit.json",
         "projects/ariadne/control/mutation-readiness-audit.json",
-        "projects/ariadne/control/live-adapter-evidence-templates.json",
-        "projects/ariadne/control/live-adapter-evidence-templates/live-adapter-evidence-template-hermes-cron.md"
+        "projects/ariadne/control/live-adapter-operator-evidence-workspace.json",
+        "projects/ariadne/control/operator-evidence/hermes-cron/operator-evidence.md"
       ]
     },
     {
@@ -240,8 +240,8 @@
         "projects/ariadne/control/live-adapter-approval-pack.json",
         "projects/ariadne/control/live-adapter-approval-review-audit.json",
         "projects/ariadne/control/mutation-readiness-audit.json",
-        "projects/ariadne/control/live-adapter-evidence-templates.json",
-        "projects/ariadne/control/live-adapter-evidence-templates/live-adapter-evidence-template-openscorpion.md"
+        "projects/ariadne/control/live-adapter-operator-evidence-workspace.json",
+        "projects/ariadne/control/operator-evidence/openscorpion/operator-evidence.md"
       ]
     },
     {
@@ -296,8 +296,8 @@
         "projects/ariadne/control/live-adapter-approval-pack.json",
         "projects/ariadne/control/live-adapter-approval-review-audit.json",
         "projects/ariadne/control/mutation-readiness-audit.json",
-        "projects/ariadne/control/live-adapter-evidence-templates.json",
-        "projects/ariadne/control/live-adapter-evidence-templates/live-adapter-evidence-template-gsd2.md"
+        "projects/ariadne/control/live-adapter-operator-evidence-workspace.json",
+        "projects/ariadne/control/operator-evidence/gsd2/operator-evidence.md"
       ]
     },
     {
@@ -352,8 +352,8 @@
         "projects/ariadne/control/live-adapter-approval-pack.json",
         "projects/ariadne/control/live-adapter-approval-review-audit.json",
         "projects/ariadne/control/mutation-readiness-audit.json",
-        "projects/ariadne/control/live-adapter-evidence-templates.json",
-        "projects/ariadne/control/live-adapter-evidence-templates/live-adapter-evidence-template-notebooklm.md"
+        "projects/ariadne/control/live-adapter-operator-evidence-workspace.json",
+        "projects/ariadne/control/operator-evidence/notebooklm/operator-evidence.md"
       ]
     }
   ]

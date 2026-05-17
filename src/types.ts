@@ -809,7 +809,10 @@ export interface LiveAdapterOperatorEvidenceCheckBatch {
   status: "complete" | "incomplete";
   mutationApproved: false;
   approvalGranted: false;
-  templatePackRef: string;
+  source: "templates" | "workspace";
+  sourcePackRef: string;
+  templatePackRef?: string;
+  workspaceRef?: string;
   queueRef: string;
   summary: {
     targets: number;
@@ -817,13 +820,16 @@ export interface LiveAdapterOperatorEvidenceCheckBatch {
     completeChecks: number;
     incompleteChecks: number;
     failedChecks: number;
+    missingSources: number;
     missingTemplates: number;
     missingSections: number;
   };
   targets: Array<{
     target: Exclude<MutationReadinessPlan["target"], "generic">;
-    status: "complete" | "incomplete" | "missing_template" | "error";
+    status: "complete" | "incomplete" | "missing_source" | "missing_template" | "error";
+    sourceFileRef?: string;
     templateRef?: string;
+    evidenceFileRef?: string;
     checkRef?: string;
     checkMarkdownRef?: string;
     missingSections: number;

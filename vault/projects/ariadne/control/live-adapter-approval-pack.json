@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "project": "ariadne",
-  "generatedAt": "2026-05-17T08:33:54.728Z",
+  "generatedAt": "2026-05-17T09:47:18.471Z",
   "status": "ready_for_operator_review",
   "summary": {
     "targets": 6,
@@ -45,8 +45,8 @@
         "blocked: Capture target-guarded execution evidence"
       ],
       "evidenceRefs": [
-        "control/live-adapter-evidence-templates.json",
-        "control/live-adapter-evidence-templates/live-adapter-evidence-template-github.md",
+        "control/live-adapter-operator-evidence-workspace.json",
+        "control/operator-evidence/github/operator-evidence.md",
         "control/mutation-readiness-audit.json"
       ]
     },
@@ -87,8 +87,8 @@
         "blocked: Capture target-guarded execution evidence"
       ],
       "evidenceRefs": [
-        "control/live-adapter-evidence-templates.json",
-        "control/live-adapter-evidence-templates/live-adapter-evidence-template-deployment.md",
+        "control/live-adapter-operator-evidence-workspace.json",
+        "control/operator-evidence/deployment/operator-evidence.md",
         "control/mutation-readiness-audit.json"
       ]
     },
@@ -129,8 +129,8 @@
         "blocked: Capture target-guarded execution evidence"
       ],
       "evidenceRefs": [
-        "control/live-adapter-evidence-templates.json",
-        "control/live-adapter-evidence-templates/live-adapter-evidence-template-hermes-cron.md",
+        "control/live-adapter-operator-evidence-workspace.json",
+        "control/operator-evidence/hermes-cron/operator-evidence.md",
         "control/mutation-readiness-audit.json"
       ]
     },
@@ -171,8 +171,8 @@
         "blocked: Capture target-guarded execution evidence"
       ],
       "evidenceRefs": [
-        "control/live-adapter-evidence-templates.json",
-        "control/live-adapter-evidence-templates/live-adapter-evidence-template-openscorpion.md",
+        "control/live-adapter-operator-evidence-workspace.json",
+        "control/operator-evidence/openscorpion/operator-evidence.md",
         "control/mutation-readiness-audit.json"
       ]
     },
@@ -213,8 +213,8 @@
         "blocked: Capture target-guarded execution evidence"
       ],
       "evidenceRefs": [
-        "control/live-adapter-evidence-templates.json",
-        "control/live-adapter-evidence-templates/live-adapter-evidence-template-gsd2.md",
+        "control/live-adapter-operator-evidence-workspace.json",
+        "control/operator-evidence/gsd2/operator-evidence.md",
         "control/mutation-readiness-audit.json"
       ]
     },
@@ -255,8 +255,8 @@
         "blocked: Capture target-guarded execution evidence"
       ],
       "evidenceRefs": [
-        "control/live-adapter-evidence-templates.json",
-        "control/live-adapter-evidence-templates/live-adapter-evidence-template-notebooklm.md",
+        "control/live-adapter-operator-evidence-workspace.json",
+        "control/operator-evidence/notebooklm/operator-evidence.md",
         "control/mutation-readiness-audit.json"
       ]
     }

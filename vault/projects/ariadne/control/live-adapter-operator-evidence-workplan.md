@@ -2,7 +2,7 @@
 
 Project: ariadne
 Status: evidence_required
-Generated: 2026-05-17T08:33:54.749Z
+Generated: 2026-05-17T09:47:18.490Z
 Mutation approved: false
 
 ## Rule
@@ -37,13 +37,13 @@ First action: Fill and import operator evidence
 #### Check Command
 
 ```bash
-npm run ariadne -- live-adapter-operator-evidence-check --project ariadne --target github --from vault/projects/ariadne/control/live-adapter-evidence-templates/live-adapter-evidence-template-github.md
+npm run ariadne -- live-adapter-operator-evidence-check --project ariadne --target github --from vault/projects/ariadne/control/operator-evidence/github/operator-evidence.md
 ```
 
 #### Import Command
 
 ```bash
-npm run ariadne -- live-adapter-operator-evidence --project ariadne --target github --from vault/projects/ariadne/control/live-adapter-evidence-templates/live-adapter-evidence-template-github.md --by <operator>
+npm run ariadne -- live-adapter-operator-evidence --project ariadne --target github --from vault/projects/ariadne/control/operator-evidence/github/operator-evidence.md --by <operator>
 ```
 
 #### Packet Review Command
@@ -100,7 +100,8 @@ npm run ariadne -- live-adapter-approval-review --project ariadne --target githu
 - projects/ariadne/control/live-adapter-approval-pack.json
 - projects/ariadne/control/live-adapter-approval-review-audit.json
 - projects/ariadne/control/mutation-readiness-audit.json
-- projects/ariadne/control/live-adapter-evidence-templates.json
+- projects/ariadne/control/live-adapter-operator-evidence-workspace.json
+- projects/ariadne/control/operator-evidence/github/operator-evidence.md
 - projects/ariadne/control/live-adapter-operator-evidence-audit.json
 
 ### deployment
@@ -112,13 +113,13 @@ First action: Fill and import operator evidence
 #### Check Command
 
 ```bash
-npm run ariadne -- live-adapter-operator-evidence-check --project ariadne --target deployment --from vault/projects/ariadne/control/live-adapter-evidence-templates/live-adapter-evidence-template-deployment.md
+npm run ariadne -- live-adapter-operator-evidence-check --project ariadne --target deployment --from vault/projects/ariadne/control/operator-evidence/deployment/operator-evidence.md
 ```
 
 #### Import Command
 
 ```bash
-npm run ariadne -- live-adapter-operator-evidence --project ariadne --target deployment --from vault/projects/ariadne/control/live-adapter-evidence-templates/live-adapter-evidence-template-deployment.md --by <operator>
+npm run ariadne -- live-adapter-operator-evidence --project ariadne --target deployment --from vault/projects/ariadne/control/operator-evidence/deployment/operator-evidence.md --by <operator>
 ```
 
 #### Packet Review Command
@@ -175,7 +176,8 @@ npm run ariadne -- live-adapter-approval-review --project ariadne --target deplo
 - projects/ariadne/control/live-adapter-approval-pack.json
 - projects/ariadne/control/live-adapter-approval-review-audit.json
 - projects/ariadne/control/mutation-readiness-audit.json
-- projects/ariadne/control/live-adapter-evidence-templates.json
+- projects/ariadne/control/live-adapter-operator-evidence-workspace.json
+- projects/ariadne/control/operator-evidence/deployment/operator-evidence.md
 - projects/ariadne/control/live-adapter-operator-evidence-audit.json
 
 ### hermes-cron
@@ -187,13 +189,13 @@ First action: Fill and import operator evidence
 #### Check Command
 
 ```bash
-npm run ariadne -- live-adapter-operator-evidence-check --project ariadne --target hermes-cron --from vault/projects/ariadne/control/live-adapter-evidence-templates/live-adapter-evidence-template-hermes-cron.md
+npm run ariadne -- live-adapter-operator-evidence-check --project ariadne --target hermes-cron --from vault/projects/ariadne/control/operator-evidence/hermes-cron/operator-evidence.md
 ```
 
 #### Import Command
 
 ```bash
-npm run ariadne -- live-adapter-operator-evidence --project ariadne --target hermes-cron --from vault/projects/ariadne/control/live-adapter-evidence-templates/live-adapter-evidence-template-hermes-cron.md --by <operator>
+npm run ariadne -- live-adapter-operator-evidence --project ariadne --target hermes-cron --from vault/projects/ariadne/control/operator-evidence/hermes-cron/operator-evidence.md --by <operator>
 ```
 
 #### Packet Review Command
@@ -250,7 +252,8 @@ npm run ariadne -- live-adapter-approval-review --project ariadne --target herme
 - projects/ariadne/control/live-adapter-approval-pack.json
 - projects/ariadne/control/live-adapter-approval-review-audit.json
 - projects/ariadne/control/mutation-readiness-audit.json
-- projects/ariadne/control/live-adapter-evidence-templates.json
+- projects/ariadne/control/live-adapter-operator-evidence-workspace.json
+- projects/ariadne/control/operator-evidence/hermes-cron/operator-evidence.md
 - projects/ariadne/control/live-adapter-operator-evidence-audit.json
 
 ### openscorpion
@@ -262,13 +265,13 @@ First action: Fill and import operator evidence
 #### Check Command
 
 ```bash
-npm run ariadne -- live-adapter-operator-evidence-check --project ariadne --target openscorpion --from vault/projects/ariadne/control/live-adapter-evidence-templates/live-adapter-evidence-template-openscorpion.md
+npm run ariadne -- live-adapter-operator-evidence-check --project ariadne --target openscorpion --from vault/projects/ariadne/control/operator-evidence/openscorpion/operator-evidence.md
 ```
 
 #### Import Command
 
 ```bash
-npm run ariadne -- live-adapter-operator-evidence --project ariadne --target openscorpion --from vault/projects/ariadne/control/live-adapter-evidence-templates/live-adapter-evidence-template-openscorpion.md --by <operator>
+npm run ariadne -- live-adapter-operator-evidence --project ariadne --target openscorpion --from vault/projects/ariadne/control/operator-evidence/openscorpion/operator-evidence.md --by <operator>
 ```
 
 #### Packet Review Command
@@ -325,7 +328,8 @@ npm run ariadne -- live-adapter-approval-review --project ariadne --target opens
 - projects/ariadne/control/live-adapter-approval-pack.json
 - projects/ariadne/control/live-adapter-approval-review-audit.json
 - projects/ariadne/control/mutation-readiness-audit.json
-- projects/ariadne/control/live-adapter-evidence-templates.json
+- projects/ariadne/control/live-adapter-operator-evidence-workspace.json
+- projects/ariadne/control/operator-evidence/openscorpion/operator-evidence.md
 - projects/ariadne/control/live-adapter-operator-evidence-audit.json
 
 ### gsd2
@@ -337,13 +341,13 @@ First action: Fill and import operator evidence
 #### Check Command
 
 ```bash
-npm run ariadne -- live-adapter-operator-evidence-check --project ariadne --target gsd2 --from vault/projects/ariadne/control/live-adapter-evidence-templates/live-adapter-evidence-template-gsd2.md
+npm run ariadne -- live-adapter-operator-evidence-check --project ariadne --target gsd2 --from vault/projects/ariadne/control/operator-evidence/gsd2/operator-evidence.md
 ```
 
 #### Import Command
 
 ```bash
-npm run ariadne -- live-adapter-operator-evidence --project ariadne --target gsd2 --from vault/projects/ariadne/control/live-adapter-evidence-templates/live-adapter-evidence-template-gsd2.md --by <operator>
+npm run ariadne -- live-adapter-operator-evidence --project ariadne --target gsd2 --from vault/projects/ariadne/control/operator-evidence/gsd2/operator-evidence.md --by <operator>
 ```
 
 #### Packet Review Command
@@ -400,7 +404,8 @@ npm run ariadne -- live-adapter-approval-review --project ariadne --target gsd2 
 - projects/ariadne/control/live-adapter-approval-pack.json
 - projects/ariadne/control/live-adapter-approval-review-audit.json
 - projects/ariadne/control/mutation-readiness-audit.json
-- projects/ariadne/control/live-adapter-evidence-templates.json
+- projects/ariadne/control/live-adapter-operator-evidence-workspace.json
+- projects/ariadne/control/operator-evidence/gsd2/operator-evidence.md
 - projects/ariadne/control/live-adapter-operator-evidence-audit.json
 
 ### notebooklm
@@ -412,13 +417,13 @@ First action: Fill and import operator evidence
 #### Check Command
 
 ```bash
-npm run ariadne -- live-adapter-operator-evidence-check --project ariadne --target notebooklm --from vault/projects/ariadne/control/live-adapter-evidence-templates/live-adapter-evidence-template-notebooklm.md
+npm run ariadne -- live-adapter-operator-evidence-check --project ariadne --target notebooklm --from vault/projects/ariadne/control/operator-evidence/notebooklm/operator-evidence.md
 ```
 
 #### Import Command
 
 ```bash
-npm run ariadne -- live-adapter-operator-evidence --project ariadne --target notebooklm --from vault/projects/ariadne/control/live-adapter-evidence-templates/live-adapter-evidence-template-notebooklm.md --by <operator>
+npm run ariadne -- live-adapter-operator-evidence --project ariadne --target notebooklm --from vault/projects/ariadne/control/operator-evidence/notebooklm/operator-evidence.md --by <operator>
 ```
 
 #### Packet Review Command
@@ -475,5 +480,6 @@ npm run ariadne -- live-adapter-approval-review --project ariadne --target noteb
 - projects/ariadne/control/live-adapter-approval-pack.json
 - projects/ariadne/control/live-adapter-approval-review-audit.json
 - projects/ariadne/control/mutation-readiness-audit.json
-- projects/ariadne/control/live-adapter-evidence-templates.json
+- projects/ariadne/control/live-adapter-operator-evidence-workspace.json
+- projects/ariadne/control/operator-evidence/notebooklm/operator-evidence.md
 - projects/ariadne/control/live-adapter-operator-evidence-audit.json

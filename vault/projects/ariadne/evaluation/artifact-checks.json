@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "project": "ariadne",
-  "generatedAt": "2026-05-17T08:15:31.374Z",
+  "generatedAt": "2026-05-17T09:51:58.717Z",
   "status": "passed",
   "summary": {
     "required": 13,
@@ -355,15 +355,21 @@
       "required": false,
       "path": "projects/ariadne/control/live-adapter-operator-evidence-checks/operator-evidence-check-*.json",
       "status": "present",
-      "count": 7,
+      "count": 13,
       "matches": [
         "projects/ariadne/control/live-adapter-operator-evidence-checks/operator-evidence-check-deployment-2026-05-17T07-32-10-447Z.json",
+        "projects/ariadne/control/live-adapter-operator-evidence-checks/operator-evidence-check-deployment-2026-05-17T09-47-18-390Z.json",
         "projects/ariadne/control/live-adapter-operator-evidence-checks/operator-evidence-check-github-2026-05-17T06-36-28-110Z.json",
         "projects/ariadne/control/live-adapter-operator-evidence-checks/operator-evidence-check-github-2026-05-17T07-32-10-440Z.json",
+        "projects/ariadne/control/live-adapter-operator-evidence-checks/operator-evidence-check-github-2026-05-17T09-47-18-388Z.json",
         "projects/ariadne/control/live-adapter-operator-evidence-checks/operator-evidence-check-gsd2-2026-05-17T07-32-10-450Z.json",
+        "projects/ariadne/control/live-adapter-operator-evidence-checks/operator-evidence-check-gsd2-2026-05-17T09-47-18-394Z.json",
         "projects/ariadne/control/live-adapter-operator-evidence-checks/operator-evidence-check-hermes-cron-2026-05-17T07-32-10-448Z.json",
+        "projects/ariadne/control/live-adapter-operator-evidence-checks/operator-evidence-check-hermes-cron-2026-05-17T09-47-18-391Z.json",
         "projects/ariadne/control/live-adapter-operator-evidence-checks/operator-evidence-check-notebooklm-2026-05-17T07-32-10-451Z.json",
-        "projects/ariadne/control/live-adapter-operator-evidence-checks/operator-evidence-check-openscorpion-2026-05-17T07-32-10-449Z.json"
+        "projects/ariadne/control/live-adapter-operator-evidence-checks/operator-evidence-check-notebooklm-2026-05-17T09-47-18-395Z.json",
+        "projects/ariadne/control/live-adapter-operator-evidence-checks/operator-evidence-check-openscorpion-2026-05-17T07-32-10-449Z.json",
+        "projects/ariadne/control/live-adapter-operator-evidence-checks/operator-evidence-check-openscorpion-2026-05-17T09-47-18-393Z.json"
       ]
     },
     {

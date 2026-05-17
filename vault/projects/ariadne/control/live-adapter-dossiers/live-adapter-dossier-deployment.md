@@ -2,7 +2,7 @@
 
 Project: ariadne
 Status: ready_for_operator_review
-Generated: 2026-05-17T08:33:54.736Z
+Generated: 2026-05-17T09:47:18.476Z
 
 ## Summary
 
@@ -25,7 +25,7 @@ Generated: 2026-05-17T08:33:54.736Z
 
 ## Next Actions
 
-- pending: Fill and import operator evidence - npm run ariadne -- live-adapter-operator-evidence --project <project> --target deployment --from vault/projects/<project>/control/live-adapter-evidence-templates/live-adapter-evidence-template-deployment.md --by <operator>
+- pending: Fill and import operator evidence - npm run ariadne -- live-adapter-operator-evidence --project <project> --target deployment --from vault/projects/<project>/control/operator-evidence/deployment/operator-evidence.md --by <operator>
 - pending: Record operator review of the approval packet - npm run ariadne -- live-adapter-approval-review --project <project> --target deployment --by <operator> --status accepted --packet control/live-adapter-approval-pack.json --evidence <operator-review-evidence>
 - pending: Record an operator approval request - npm run ariadne -- approval-request --project <project> --by <operator> --target deployment --action "<bounded action>" --risk <low|medium|high> --reason "<why this target should mutate>" --rollback "<operator rollback path>" --evidence <auth-or-policy-evidence>
 - blocked: Create a target-specific mutation-readiness plan - npm run ariadne -- deployment-mutation-plan --project <project> --system <proxmox|truenas|dgx-spark|mac> --host <host> --scope <scope> --auth-evidence <paths> --dry-run <cmd> --live-command <cmd> --post-verify <cmd> --rollback <text> --approval <approval-id>
@@ -63,5 +63,5 @@ Suggested queries:
 - projects/ariadne/control/live-adapter-approval-pack.json
 - projects/ariadne/control/live-adapter-approval-review-audit.json
 - projects/ariadne/control/mutation-readiness-audit.json
-- projects/ariadne/control/live-adapter-evidence-templates.json
-- projects/ariadne/control/live-adapter-evidence-templates/live-adapter-evidence-template-deployment.md
+- projects/ariadne/control/live-adapter-operator-evidence-workspace.json
+- projects/ariadne/control/operator-evidence/deployment/operator-evidence.md

@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "project": "ariadne",
-  "generatedAt": "2026-05-17T08:33:54.736Z",
+  "generatedAt": "2026-05-17T09:47:18.476Z",
   "target": "deployment",
   "status": "ready_for_operator_review",
   "readinessRef": "projects/ariadne/control/live-adapter-readiness.json",
@@ -45,11 +45,11 @@
       "id": "deployment-operator-evidence",
       "status": "pending",
       "title": "Fill and import operator evidence",
-      "rationale": "The target has no imported operator evidence record. Fill the generated template with real observations before packet review or cutover.",
-      "command": "npm run ariadne -- live-adapter-operator-evidence --project <project> --target deployment --from vault/projects/<project>/control/live-adapter-evidence-templates/live-adapter-evidence-template-deployment.md --by <operator>",
+      "rationale": "The target has no imported operator evidence record. Fill the generated workspace file with real observations before packet review or cutover.",
+      "command": "npm run ariadne -- live-adapter-operator-evidence --project <project> --target deployment --from vault/projects/<project>/control/operator-evidence/deployment/operator-evidence.md --by <operator>",
       "evidenceRefs": [
-        "control/live-adapter-evidence-templates.json",
-        "control/live-adapter-evidence-templates/live-adapter-evidence-template-deployment.md"
+        "control/live-adapter-operator-evidence-workspace.json",
+        "control/operator-evidence/deployment/operator-evidence.md"
       ]
     },
     {
@@ -150,8 +150,8 @@
       "blocked: Capture target-guarded execution evidence"
     ],
     "evidenceRefs": [
-      "control/live-adapter-evidence-templates.json",
-      "control/live-adapter-evidence-templates/live-adapter-evidence-template-deployment.md",
+      "control/live-adapter-operator-evidence-workspace.json",
+      "control/operator-evidence/deployment/operator-evidence.md",
       "control/mutation-readiness-audit.json"
     ]
   },
@@ -191,7 +191,7 @@
     "projects/ariadne/control/live-adapter-approval-pack.json",
     "projects/ariadne/control/live-adapter-approval-review-audit.json",
     "projects/ariadne/control/mutation-readiness-audit.json",
-    "projects/ariadne/control/live-adapter-evidence-templates.json",
-    "projects/ariadne/control/live-adapter-evidence-templates/live-adapter-evidence-template-deployment.md"
+    "projects/ariadne/control/live-adapter-operator-evidence-workspace.json",
+    "projects/ariadne/control/operator-evidence/deployment/operator-evidence.md"
   ]
 }
