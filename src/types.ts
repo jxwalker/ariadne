@@ -95,6 +95,11 @@ export interface ProjectStatus {
   liveAdapterOperatorEvidenceQueueNeedsEvidence?: number;
   liveAdapterOperatorEvidenceQueueNeedsRework?: number;
   liveAdapterOperatorEvidenceQueueUnchecked?: number;
+  liveAdapterOperatorEvidenceNextTarget?: LiveAdapterOperatorEvidenceQueue["targets"][number]["target"];
+  liveAdapterOperatorEvidenceNextTargetStatus?: string;
+  liveAdapterOperatorEvidenceNextTargetMissingSections?: number;
+  liveAdapterOperatorEvidenceNextAction?: string;
+  liveAdapterOperatorEvidenceNextCommands?: string[];
   liveAdapterCutoverStatus?: LiveAdapterCutoverAudit["status"];
   liveAdapterCutoverReady?: number;
   liveAdapterCutoverBlocked?: number;

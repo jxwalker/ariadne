@@ -137,7 +137,7 @@ npm run ariadne -- infra-live-ssh --project ariadne --host beast --target james@
 npm run ariadne -- status --project ariadne
 ```
 
-The generated console includes the mutation-readiness repair plan beside the mutation audit, and `e2e-smoke` now refreshes that read-only repair guidance before rendering the console. Blocked live-adapter work is visible by target without granting approval or running a live command. `status` also surfaces the live-adapter operator-evidence, queue, cutover, and review-session summaries so a blocked smoke result is explainable from one command.
+The generated console includes the mutation-readiness repair plan beside the mutation audit, and `e2e-smoke` now refreshes that read-only repair guidance before rendering the console. Blocked live-adapter work is visible by target without granting approval or running a live command. `status` also surfaces the live-adapter operator-evidence, queue, next target, target-scoped next commands, cutover, and review-session summaries so a blocked smoke result is explainable from one command.
 
 ## Vault Layout
 

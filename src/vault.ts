@@ -3,6 +3,7 @@ import path from "node:path";
 import { extractText, normaliseExtractedText, sourceKind } from "./extract.js";
 import { sha256File } from "./hash.js";
 import { operatorEvidenceAuditMissingSections } from "./liveAdapterOperatorEvidence.js";
+import { nextOperatorEvidenceCommands, selectNextOperatorEvidenceTarget } from "./liveAdapterOperatorEvidenceNextTarget.js";
 import { projectDir, safeFileName, slugifyProject } from "./paths.js";
 import { scanTextForSecrets, shouldBlockHygiene } from "./sourceHygiene.js";
 import type {
@@ -13,6 +14,7 @@ import type {
   LiveAdapterCutoverAudit,
   LiveAdapterOperatorEvidenceAudit,
   LiveAdapterOperatorEvidenceQueue,
+  LiveAdapterOperatorEvidenceWorkplan,
   LiveAdapterReviewSession,
   MutationReadinessRepairPlan,
   ProjectStatus,
@@ -327,6 +329,7 @@ export async function projectStatus(vaultRoot: string, project: string): Promise
     roadmapCompletion,
     repairPlan,
     operatorEvidenceAudit,
+    operatorEvidenceWorkplan,
     operatorEvidenceQueue,
     cutoverAudit,
     reviewSession,
@@ -339,6 +342,9 @@ export async function projectStatus(vaultRoot: string, project: string): Promise
     readJson<LiveAdapterOperatorEvidenceAudit>(
       path.join(dir, "control", "live-adapter-operator-evidence-audit.json")
     ),
+    readJson<LiveAdapterOperatorEvidenceWorkplan>(
+      path.join(dir, "control", "live-adapter-operator-evidence-workplan.json")
+    ),
     readJson<LiveAdapterOperatorEvidenceQueue>(
       path.join(dir, "control", "live-adapter-operator-evidence-queue.json")
     ),
@@ -347,6 +353,11 @@ export async function projectStatus(vaultRoot: string, project: string): Promise
     readLatestE2eSmoke(vaultRoot, path.join(dir, "evaluation"))
   ]);
   const latest = records.at(-1);
+  const nextOperatorEvidenceTarget = selectNextOperatorEvidenceTarget(
+    operatorEvidenceQueue,
+    operatorEvidenceWorkplan,
+    operatorEvidenceAudit
+  );
 
   return {
     project: projectSlug,
@@ -369,6 +380,13 @@ export async function projectStatus(vaultRoot: string, project: string): Promise
     liveAdapterOperatorEvidenceQueueNeedsEvidence: operatorEvidenceQueue?.summary.needsEvidence,
     liveAdapterOperatorEvidenceQueueNeedsRework: operatorEvidenceQueue?.summary.needsRework,
     liveAdapterOperatorEvidenceQueueUnchecked: operatorEvidenceQueue?.summary.uncheckedTargets,
+    liveAdapterOperatorEvidenceNextTarget: nextOperatorEvidenceTarget?.target,
+    liveAdapterOperatorEvidenceNextTargetStatus: nextOperatorEvidenceTarget?.status,
+    liveAdapterOperatorEvidenceNextTargetMissingSections: nextOperatorEvidenceTarget?.missingSections,
+    liveAdapterOperatorEvidenceNextAction: nextOperatorEvidenceTarget?.nextAction,
+    liveAdapterOperatorEvidenceNextCommands: nextOperatorEvidenceTarget
+      ? nextOperatorEvidenceCommands(projectSlug, nextOperatorEvidenceTarget.target)
+      : undefined,
     liveAdapterCutoverStatus: cutoverAudit?.status,
     liveAdapterCutoverReady: cutoverAudit?.summary.ready,
     liveAdapterCutoverBlocked: cutoverAudit?.summary.blocked,
