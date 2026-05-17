@@ -1,6 +1,7 @@
 import fs from "node:fs/promises";
 import path from "node:path";
 import { writeJsonArtifact, writeTextArtifact } from "./artifacts.js";
+import { operatorEvidenceCheckMissingSections, operatorEvidenceTargetMissingSections } from "./liveAdapterOperatorEvidence.js";
 import { generateLiveAdapterOperatorEvidenceWorkplan } from "./liveAdapterOperatorEvidenceWorkplan.js";
 import { isLiveAdapterTarget, LIVE_ADAPTER_TARGETS, type LiveAdapterTarget } from "./liveAdapterTargets.js";
 import { projectDir, slugifyProject } from "./paths.js";
@@ -122,9 +123,7 @@ function queueTarget(
       : undefined,
     latestCheckStatus: latestCheck?.status,
     latestCheckMissingSections: latestCheck?.summary.missingSections,
-    missingSections: latestCheck
-      ? latestCheck.sections.filter((section) => section.status === "missing").map((section) => section.label)
-      : auditTarget.missingSections,
+    missingSections: latestCheck ? operatorEvidenceCheckMissingSections(latestCheck) : operatorEvidenceTargetMissingSections(auditTarget),
     nextAction: nextAction(status),
     checkCommand: workplanTarget.checkCommand,
     importCommand: workplanTarget.importCommand,

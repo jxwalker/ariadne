@@ -1082,6 +1082,10 @@ describe("roadmap adapters", () => {
     expect(deploymentTemplate?.templateRef).toContain("live-adapter-evidence-template-deployment.md");
     expect(deploymentTemplate?.requiredEvidence).toContain("rollback or disable path checked by the operator");
     expect(deploymentTemplate?.notes.some((note) => note.includes("not approval evidence"))).toBe(true);
+    const uncheckedQueue = await generateLiveAdapterOperatorEvidenceQueue({ project: "ariadne", vaultRoot });
+    const uncheckedDeploymentQueue = uncheckedQueue.queue.targets.find((target) => target.target === "deployment");
+    expect(uncheckedDeploymentQueue?.status).toBe("unchecked");
+    expect(uncheckedDeploymentQueue?.missingSections).toContain("Operator identity and timestamp");
     const batchPreflight = await checkAllLiveAdapterOperatorEvidence({
       project: "ariadne",
       vaultRoot,
