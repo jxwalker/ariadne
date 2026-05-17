@@ -140,6 +140,7 @@ export async function generateRoadmapCompletionAudit(input: {
         `npm run ariadne -- live-adapter-evidence-templates --project ${project}`,
         `npm run ariadne -- live-adapter-operator-evidence-workspace --project ${project}`,
         `npm run ariadne -- live-adapter-operator-evidence-check-all --project ${project} --source workspace`,
+        `npm run ariadne -- live-adapter-operator-evidence-import-ready --project ${project} --by <operator>`,
         `npm run ariadne -- live-adapter-operator-evidence-check --project ${project} --target <target> --from vault/projects/${project}/control/operator-evidence/<target>/operator-evidence.md`,
         `npm run ariadne -- live-adapter-operator-evidence --project ${project} --target <target> --from vault/projects/${project}/control/operator-evidence/<target>/operator-evidence.md --by <operator>`,
         `npm run ariadne -- live-adapter-operator-evidence-audit --project ${project}`

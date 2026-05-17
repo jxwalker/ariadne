@@ -845,6 +845,37 @@ export interface LiveAdapterOperatorEvidenceCheckBatch {
   }>;
 }
 
+export interface LiveAdapterOperatorEvidenceImportReadyBatch {
+  schemaVersion: 1;
+  project: string;
+  importedAt: string;
+  status: "imported" | "nothing_ready" | "partial";
+  mutationApproved: false;
+  approvalGranted: false;
+  reviewedBy: string;
+  notes?: string;
+  queueRef: string;
+  operatorEvidenceAuditRef: string;
+  refreshedQueueRef: string;
+  summary: {
+    targets: number;
+    readyForImport: number;
+    imported: number;
+    skipped: number;
+    failed: number;
+  };
+  targets: Array<{
+    target: Exclude<MutationReadinessPlan["target"], "generic">;
+    status: "imported" | "skipped" | "failed";
+    reason: string;
+    latestCheckRef?: string;
+    sourceRef?: string;
+    recordRef?: string;
+    recordMarkdownRef?: string;
+    errorDetail?: string;
+  }>;
+}
+
 export interface LiveAdapterOperatorEvidenceWorkspace {
   schemaVersion: 1;
   project: string;
