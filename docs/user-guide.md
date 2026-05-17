@@ -277,7 +277,7 @@ For the current machine, collect a sanitized live read-only local inventory:
 npm run ariadne -- infra-live-local --project ariadne --notes "Mac workstation read-only snapshot"
 ```
 
-This uses local Node.js OS APIs only. It hashes the hostname and omits network and MAC addresses before writing `infrastructure/infra-snapshot-live-local-...json`.
+This uses local Node.js OS APIs only. It hashes the hostname and omits network and MAC addresses before writing `infrastructure/infra-snapshot-live-local-...json`. Live local and SSH inventory files are ignored by Git by default because they describe the current private estate; promote a sanitized copy explicitly if a snapshot should become repo evidence.
 
 Probe the local runtime surface:
 
@@ -293,7 +293,7 @@ Atlas can be probed directly when the fast LAN model endpoint is available:
 ARIADNE_ATLAS_URL=http://your-atlas-host.tailnet:8888/v1 ARIADNE_ATLAS_CANARY_MODEL=qwen3.6-35b-a3b-nvfp4-atlas npm run ariadne -- local-runtime-probe --project ariadne --canary --canary-endpoints atlas --timeout-ms 60000
 ```
 
-The static infrastructure registry records Atlas with a neutral `atlas.local` alias as a placeholder. Pass the real local URL, such as a LAN or tailnet address, with `ARIADNE_ATLAS_URL` or `--atlas-url` when collecting runtime evidence.
+The static infrastructure registry records Atlas with a neutral `atlas.local` alias as a placeholder. Pass the real local URL, such as a LAN or tailnet address, with `ARIADNE_ATLAS_URL` or `--atlas-url` when collecting runtime evidence. Runtime probe artifacts and appended canary usage records are ignored by Git by default because they may include private endpoint URLs.
 
 Run the local end-to-end smoke harness:
 
@@ -301,7 +301,7 @@ Run the local end-to-end smoke harness:
 npm run ariadne -- e2e-smoke --project ariadne --with-runtime-probe --runtime-canary --canary-endpoints lmstudio --lmstudio-canary-model google/gemma-3-4b --timeout-ms 60000
 ```
 
-This runs behavior checks, optional Hermes/model runtime probing, mutation-readiness repair guidance, console data and HTML generation, deterministic visual checks, Playwright browser checks, artifact checks, and the roadmap completion audit into one report under `evaluation/e2e-smoke-...json` and `.md`. A `blocked` smoke status is expected while operator evidence and cutover gates remain incomplete; it means the pipeline ran and correctly refused to claim live-adapter completion.
+This runs behavior checks, optional Hermes/model runtime probing, mutation-readiness repair guidance, console data and HTML generation, deterministic visual checks, Playwright browser checks, artifact checks, and the roadmap completion audit into one local report under `evaluation/e2e-smoke-...json` and `.md`. A `blocked` smoke status is expected while operator evidence and cutover gates remain incomplete; it means the pipeline ran and correctly refused to claim live-adapter completion. E2E smoke reports, screenshots, and repair-plan artifacts are ignored by Git by default to avoid timestamp churn and private runtime evidence.
 
 For an approved remote host reachable over SSH, collect a sanitized read-only inventory:
 

@@ -6,3 +6,21 @@ vault/projects/*/raw/
 vault/projects/*/context/
 vault/projects/*/manifest.jsonl
 vault/projects/*/HOT_INDEX.md
+
+# Live evidence generated during local probes and unattended smoke runs.
+# These can contain private host aliases, local runtime URLs, screenshots, and
+# timestamp churn. Promote a sanitized artifact explicitly when it should become
+# repo evidence.
+vault/projects/*/console/screenshots/console-*.png
+vault/projects/*/control/mutation-readiness-repair-plan.json
+vault/projects/*/control/mutation-readiness-repair-plan.md
+vault/projects/*/deployment/deployment-live-ssh-*.json
+vault/projects/*/deployment/deployment-live-ssh-*.md
+vault/projects/*/evaluation/e2e-smoke-*.json
+vault/projects/*/evaluation/e2e-smoke-*.md
+vault/projects/*/evaluation/usage-metrics.jsonl
+vault/projects/*/infrastructure/infra-snapshot-live-local-*.json
+vault/projects/*/infrastructure/infra-snapshot-live-local-*.md
+vault/projects/*/infrastructure/infra-snapshot-live-ssh-*.json
+vault/projects/*/infrastructure/infra-snapshot-live-ssh-*.md
+vault/projects/*/infrastructure/runtime/
