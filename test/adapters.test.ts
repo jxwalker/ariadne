@@ -35,6 +35,7 @@ import { generateLiveAdapterApprovalPack } from "../src/liveAdapterApprovalPack.
 import { recordLiveAdapterApprovalReview } from "../src/liveAdapterApprovalReview.js";
 import { generateLiveAdapterApprovalReviewAudit } from "../src/liveAdapterApprovalReviewAudit.js";
 import { generateLiveAdapterCutoverAudit } from "../src/liveAdapterCutoverAudit.js";
+import { generateLiveAdapterEvidenceTemplates } from "../src/liveAdapterEvidenceTemplates.js";
 import { generateLiveAdapterNextActions } from "../src/liveAdapterNextActions.js";
 import { generateLiveAdapterReadiness } from "../src/liveAdapterReadiness.js";
 import { generateLiveAdapterReviewSession } from "../src/liveAdapterReviewSession.js";
@@ -950,6 +951,15 @@ describe("roadmap adapters", () => {
     expect(deploymentSession?.gbrainContext.suggestedQueries.some((query) => query.includes("deployment"))).toBe(true);
     expect(githubSession?.status).toBe("ready_for_adapter_work");
     expect(githubSession?.cutoverStatus).toBe("ready_for_cutover");
+    const evidenceTemplates = await generateLiveAdapterEvidenceTemplates({ project: "ariadne", vaultRoot });
+    expect(evidenceTemplates.pack.status).toBe("awaiting_operator_evidence");
+    expect(evidenceTemplates.pack.mutationApproved).toBe(false);
+    expect(evidenceTemplates.pack.summary.templates).toBe(6);
+    expect(evidenceTemplates.pack.summary.gbrainQueryItems).toBe(18);
+    const deploymentTemplate = evidenceTemplates.pack.templates.find((template) => template.target === "deployment");
+    expect(deploymentTemplate?.templateRef).toContain("live-adapter-evidence-template-deployment.md");
+    expect(deploymentTemplate?.requiredEvidence).toContain("rollback or disable path checked by the operator");
+    expect(deploymentTemplate?.notes.some((note) => note.includes("not approval evidence"))).toBe(true);
     const console = await generateConsoleData({ project: "ariadne", vaultRoot });
     expect(console.data.summary.sleepRoutines).toBe(1);
     expect(console.data.summary.memoryProposals).toBe(1);
@@ -978,12 +988,16 @@ describe("roadmap adapters", () => {
     expect(console.data.summary.liveAdapterReviewSessionStatus).toBe("operator_review_required");
     expect(console.data.summary.liveAdapterReviewSessionRequired).toBe(5);
     expect(console.data.liveAdapterReviewSession?.mutationApproved).toBe(false);
+    expect(console.data.summary.liveAdapterEvidenceTemplateStatus).toBe("awaiting_operator_evidence");
+    expect(console.data.summary.liveAdapterEvidenceTemplates).toBe(6);
+    expect(console.data.liveAdapterEvidenceTemplatePack?.mutationApproved).toBe(false);
     expect(console.data.liveAdapterCutoverAudit?.targets.some((target) => target.target === "github")).toBe(true);
     const liveAdapterConsoleHtml = await generateConsoleHtml({ project: "ariadne", vaultRoot, refreshData: true });
     const liveAdapterHtml = await fs.readFile(liveAdapterConsoleHtml.htmlPath, "utf8");
     expect(liveAdapterHtml).toContain("cutover deployment");
     expect(liveAdapterHtml).toContain("Current accepted operator packet review");
     expect(liveAdapterHtml).toContain("mutationApproved=false");
+    expect(liveAdapterHtml).toContain("Templates are blank collection aids");
     expect(console.data.liveAdapterApprovalReviewAudit?.summary.currentAcceptedReviews).toBe(1);
     expect(console.data.liveAdapterTargetDossiers.some((dossier) => dossier.target === "deployment")).toBe(true);
     expect(
@@ -1013,6 +1027,7 @@ describe("roadmap adapters", () => {
     const targetDossierCheck = artifactChecks.report.checks.find((check) => check.id === "live-adapter-dossiers");
     const cutoverAuditCheck = artifactChecks.report.checks.find((check) => check.id === "live-adapter-cutover-audit");
     const reviewSessionCheck = artifactChecks.report.checks.find((check) => check.id === "live-adapter-review-session");
+    const evidenceTemplatesCheck = artifactChecks.report.checks.find((check) => check.id === "live-adapter-evidence-templates");
     const mutationDryRunCheck = artifactChecks.report.checks.find((check) => check.id === "mutation-dry-runs");
     const mutationExecutionCheck = artifactChecks.report.checks.find((check) => check.id === "mutation-executions");
     expect(coordinationCheck?.matches?.some((match) => match.includes("coordination/hermes"))).toBe(false);
@@ -1027,6 +1042,7 @@ describe("roadmap adapters", () => {
     expect(targetDossierCheck?.status).toBe("present");
     expect(cutoverAuditCheck?.status).toBe("present");
     expect(reviewSessionCheck?.status).toBe("present");
+    expect(evidenceTemplatesCheck?.status).toBe("present");
     expect(mutationDryRunCheck?.status).toBe("present");
     expect(mutationExecutionCheck?.status).toBe("present");
   });

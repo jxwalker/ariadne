@@ -31,6 +31,8 @@ export async function generateConsoleVisualCheckReport(input: {
     checkContains(html, "adapter-cutover-metric", "Adapter cutover metric", "Cutover"),
     checkContains(html, "adapter-review-session-metric", "Adapter review-session metric", "Review Session"),
     reviewSessionDataCheck(html, embeddedData),
+    checkContains(html, "adapter-evidence-template-metric", "Adapter evidence-template metric", "Evidence Templates"),
+    evidenceTemplateDataCheck(html, embeddedData),
     cutoverQueueCheck(html, embeddedData),
     trendChartCheck(html, embeddedData),
     checkContains(html, "visual-check-panel", "Visual check panel", "Visual Checks"),
@@ -167,6 +169,17 @@ function reviewSessionDataCheck(html: string, data: ConsoleData | undefined): Co
   return {
     id: "live-adapter-review-session",
     label: "Live adapter review session data",
+    status: present ? "passed" : "failed",
+    detail: detailSentence(present ? "Found" : "Missing", expected)
+  };
+}
+
+function evidenceTemplateDataCheck(html: string, data: ConsoleData | undefined): ConsoleVisualCheckReport["checks"][number] {
+  const expected = data?.liveAdapterEvidenceTemplatePack ? "Templates are blank collection aids" : "No live adapter evidence templates required.";
+  const present = expected === "No live adapter evidence templates required." || html.includes(expected);
+  return {
+    id: "live-adapter-evidence-templates",
+    label: "Live adapter evidence template data",
     status: present ? "passed" : "failed",
     detail: detailSentence(present ? "Found" : "Missing", expected)
   };

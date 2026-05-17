@@ -97,6 +97,8 @@ The audit is a non-mutating evaluator. It checks approval state, evidence refs, 
 
 `live-adapter-review-session` is an operator-facing evaluator over the same evidence. It proves the current review workload is explicit by listing every target's first action, packet-review command, approval request draft, mutation-plan draft, required evidence, dossier ref, cutover blockers, and GBrain advisory queries. It is not a gate bypass: it writes `mutationApproved=false` and only makes the next human review step inspectable.
 
+`live-adapter-evidence-templates` turns that review workload into blank per-target collection files. It improves evaluation by making missing proof explicit without letting placeholders pass gates: templates are marked `awaiting_operator_evidence` and are not counted as approval evidence until a human fills them with concrete observations and artifact refs.
+
 `hermes-cron-import` writes read-only scheduler evidence:
 
 ```text

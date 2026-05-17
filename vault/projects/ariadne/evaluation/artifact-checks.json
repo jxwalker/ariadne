@@ -1,12 +1,12 @@
 {
   "schemaVersion": 1,
   "project": "ariadne",
-  "generatedAt": "2026-05-17T02:14:53.244Z",
+  "generatedAt": "2026-05-17T02:57:44.963Z",
   "status": "passed",
   "summary": {
     "required": 13,
-    "optional": 34,
-    "present": 39,
+    "optional": 35,
+    "present": 40,
     "missingRequired": 0
   },
   "checks": [
@@ -340,6 +340,13 @@
       "label": "Live adapter review session",
       "required": false,
       "path": "projects/ariadne/control/live-adapter-review-session.json",
+      "status": "present"
+    },
+    {
+      "id": "live-adapter-evidence-templates",
+      "label": "Live adapter evidence templates",
+      "required": false,
+      "path": "projects/ariadne/control/live-adapter-evidence-templates.json",
       "status": "present"
     },
     {

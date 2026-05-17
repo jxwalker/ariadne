@@ -187,7 +187,6 @@ function postVerificationRequirement(target: ApprovalTarget): string {
 }
 
 function planFallback(target: ApprovalTarget): string {
-  const base = "Create or repair the target-specific mutation-readiness plan after operator approval exists.";
   const commands: Record<ApprovalTarget, string> = {
     github:
       "npm run ariadne -- github-mutation-plan --project <project> --repo <owner/name> --action <merge-pr|rerun-failed-run> --auth-evidence <paths> --approval <approval-id>",
@@ -202,7 +201,7 @@ function planFallback(target: ApprovalTarget): string {
     notebooklm:
       "npm run ariadne -- notebooklm-mutation-plan --project <project> --notebook <id> --action <create-source|refresh-source|generate-summary|export-notes> --scope <scope> --auth-evidence <paths> --dry-run <cmd> --live-command <cmd> --post-verify <cmd> --rollback <text> --approval <approval-id>"
   };
-  return `${base} ${commands[target]}`;
+  return commands[target];
 }
 
 function renderReport(report: LiveAdapterApprovalPack): string {

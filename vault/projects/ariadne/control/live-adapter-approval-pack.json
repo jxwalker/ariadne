@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "project": "ariadne",
-  "generatedAt": "2026-05-17T02:14:46.125Z",
+  "generatedAt": "2026-05-17T02:57:44.467Z",
   "status": "ready_for_operator_review",
   "summary": {
     "targets": 6,
@@ -26,7 +26,7 @@
         "rollback or disable path",
         "repository, PR, branch policy, and check-rollup evidence"
       ],
-      "mutationPlanCommand": "Create or repair the target-specific mutation-readiness plan after operator approval exists. npm run ariadne -- github-mutation-plan --project <project> --repo <owner/name> --action <merge-pr|rerun-failed-run> --auth-evidence <paths> --approval <approval-id>",
+      "mutationPlanCommand": "npm run ariadne -- github-mutation-plan --project <project> --repo <owner/name> --action <merge-pr|rerun-failed-run> --auth-evidence <paths> --approval <approval-id>",
       "dryRunCommand": "After mutation-readiness-github-2026-05-16T16-50-54-241Z passes audit, run npm run ariadne -- mutation-dry-run --project <project> --plan mutation-readiness-github-2026-05-16T16-50-54-241Z",
       "executionCommand": "Run a passed dry-run for an audit-passed plan first.",
       "rollbackRequirement": "Document how to revert or undo the PR/workflow operation and restore manual review flow.",

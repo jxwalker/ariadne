@@ -669,6 +669,35 @@ export interface LiveAdapterReviewSession {
   }>;
 }
 
+export interface LiveAdapterEvidenceTemplatePack {
+  schemaVersion: 1;
+  project: string;
+  generatedAt: string;
+  status: "awaiting_operator_evidence" | "ready_for_operator_review";
+  mutationApproved: false;
+  reviewSessionRef: string;
+  summary: {
+    targets: number;
+    templates: number;
+    evidenceItems: number;
+    gbrainQueryItems: number;
+  };
+  templates: Array<{
+    target: Exclude<MutationReadinessPlan["target"], "generic">;
+    status: "awaiting_operator_evidence";
+    templateRef: string;
+    reviewSessionStatus: LiveAdapterReviewSession["targets"][number]["status"];
+    firstAction?: string;
+    suggestedEvidenceRefs: string[];
+    requiredEvidence: string[];
+    gbrainQueries: string[];
+    reviewCommand: string;
+    approvalRequestCommand?: string;
+    mutationPlanCommand?: string;
+    notes: string[];
+  }>;
+}
+
 export interface InfraRegistry {
   schemaVersion: 1;
   project: string;
@@ -1266,6 +1295,8 @@ export interface ConsoleData {
     liveAdapterReviewSessionStatus?: LiveAdapterReviewSession["status"];
     liveAdapterReviewSessionTargets?: number;
     liveAdapterReviewSessionRequired?: number;
+    liveAdapterEvidenceTemplates?: number;
+    liveAdapterEvidenceTemplateStatus?: LiveAdapterEvidenceTemplatePack["status"];
     recoveryIssues: number;
     consoleBrowserChecks?: ConsoleBrowserCheckReport["status"];
     readinessStatus?: ControlReport["status"];
@@ -1334,6 +1365,7 @@ export interface ConsoleData {
   liveAdapterTargetDossiers: LiveAdapterTargetDossier[];
   liveAdapterCutoverAudit?: LiveAdapterCutoverAudit;
   liveAdapterReviewSession?: LiveAdapterReviewSession;
+  liveAdapterEvidenceTemplatePack?: LiveAdapterEvidenceTemplatePack;
   recovery?: RecoveryReport;
   readiness?: ControlReport;
   artifacts: {
@@ -1365,6 +1397,7 @@ export interface ConsoleData {
     liveAdapterTargetDossiers?: string;
     liveAdapterCutoverAudit?: string;
     liveAdapterReviewSession?: string;
+    liveAdapterEvidenceTemplates?: string;
     recoveryReport?: string;
     extractionResults?: string;
     healerProposals?: string;
