@@ -9,7 +9,18 @@ npm install
 npm run check
 npm test
 npm run build
+npm run ariadne -- status --project ariadne
 ```
+
+## Runner Naming
+
+The main runner is Ariadne, not `cli`. Keep the command surface, package binary, docs, examples, and entrypoint filenames aligned on `ariadne`:
+
+- local development command: `npm run ariadne -- <command>`
+- package binary: `ariadne`
+- source entrypoint: `src/ariadne.ts`
+
+Do not add `npm run cli`, `src/cli.ts`, or docs that describe the main runner as the CLI. The word CLI is fine only when referring to third-party tools such as the GitHub `gh` CLI.
 
 ## Design Rules
 

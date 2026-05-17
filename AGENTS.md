@@ -12,21 +12,34 @@ This repository implements Ariadne, the control layer for an end-to-end agentic 
 - Do not mutate infrastructure, repositories, runners, or model routing without an explicit approved plan.
 - Prefer integrating existing tools through clear contracts over rebuilding a coding assistant.
 
-## First Slice Boundary
+## Runner Name
 
-The current code is only allowed to:
+The canonical runner is `ariadne`. Do not refer to the main entrypoint as `cli`, do not add `npm run cli`, and do not create new `src/cli*` entrypoints. Use:
 
-- ingest local source files
-- copy raw artifacts into the vault
-- extract text from safe local formats
-- write manifests, hot indexes, and context dossiers
+```bash
+npm run ariadne -- <command> --project <project>
+```
 
-It must not:
+The npm package binary is also `ariadne`, backed by `src/ariadne.ts`.
 
-- push commits
-- call model APIs
-- call NotebookLM
-- call Proxmox
-- call GitHub
-- execute generated plans
-- change external repos
+## Current Boundary
+
+The codebase now includes planning, evidence, evaluation, console, read-only adapter, and guarded mutation-readiness flows. Normal commands may write local vault artifacts, but they must not mutate external systems unless the user has an explicit approved plan and invokes the audited execution path.
+
+Allowed normal work:
+
+- ingest and assemble source evidence
+- generate requirements, GSD tasks, execution plans, Playwright plans, console data, and evaluation artifacts
+- import reviewed external evidence such as CI, CodeRabbit, NotebookLM exports, GitHub snapshots, GBrain reports, and infrastructure snapshots
+- collect read-only local or SSH inventory evidence
+- generate live-adapter approval packs, reviews, dossiers, audits, and next-action reports
+
+Blocked without the full mutation gate:
+
+- pushing commits or merging PRs from an adapter
+- calling NotebookLM write actions
+- changing Proxmox, TrueNAS, DGX Spark, Macs, Hermes cron jobs, runners, or model routing
+- submitting governed OpenScorpion activity
+- executing generated live commands
+
+Mutation-capable paths must use `mutation-readiness`, pass `mutation-readiness-audit`, record approval and dry-run evidence, and execute only through `mutation-execute` or a target-specific `*-mutation-execute` wrapper with an exact `--confirm-plan` match.

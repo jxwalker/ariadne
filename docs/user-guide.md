@@ -2,6 +2,8 @@
 
 This guide is for operating `ariadne` as a source-grounded coding harness.
 
+The runner is called `ariadne`. In this repo, invoke it with `npm run ariadne -- <command>`; after installation, use the `ariadne` binary directly. Older scaffold names such as `cli` are not part of the supported command surface.
+
 ## Mental Model
 
 The repo turns messy project input into auditable work packages:
