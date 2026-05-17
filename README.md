@@ -116,7 +116,7 @@ npm run ariadne -- console-html --project ariadne --refresh-data
 npm run ariadne -- console-visual-checks --project ariadne
 npm run ariadne -- console-browser-checks --project ariadne
 npm run ariadne -- infra-live-local --project ariadne
-npm run ariadne -- local-runtime-probe --project ariadne --canary
+npm run ariadne -- local-runtime-probe --project ariadne --canary --canary-endpoints ds4-openai --ds4-canary-model deepseek-v4-flash
 npm run ariadne -- infra-live-ssh --project ariadne --host beast --target james@beast.lan
 npm run ariadne -- status --project ariadne
 ```
@@ -240,7 +240,7 @@ npm run ariadne -- console-browser-checks --project ariadne
 npm run ariadne -- infra --project ariadne
 npm run ariadne -- infra-snapshot --project ariadne --from manifest.json
 npm run ariadne -- infra-live-local --project ariadne --notes "Mac workstation read-only snapshot"
-npm run ariadne -- local-runtime-probe --project ariadne --canary
+npm run ariadne -- local-runtime-probe --project ariadne --canary --canary-endpoints ds4-openai --ds4-canary-model deepseek-v4-flash
 npm run ariadne -- infra-live-ssh --project ariadne --host beast --target james@beast.lan --notes "Approved read-only remote snapshot"
 npm run ariadne -- openscorpion-draft --project ariadne --title "Evidence package" --type ariadne.evidence --evidence path-a,path-b
 npm run ariadne -- openscorpion-mutation-plan --project ariadne --activity activity-001 --type ariadne.evidence --action submit-activity --route governed --scope "Submit reviewed evidence package" --auth-evidence control/approvals/approval-...json --dry-run "openscorpion activity validate activity-001 --route governed" --live-command "openscorpion activity submit activity-001 --route governed" --post-verify "openscorpion activity status activity-001 --route governed" --rollback "openscorpion activity withdraw activity-001 --route governed" --approval approval-...

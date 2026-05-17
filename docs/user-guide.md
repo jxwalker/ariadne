@@ -282,10 +282,10 @@ This uses local Node.js OS APIs only. It hashes the hostname and omits network a
 Probe the local runtime surface:
 
 ```bash
-npm run ariadne -- local-runtime-probe --project ariadne --canary
+npm run ariadne -- local-runtime-probe --project ariadne --canary --canary-endpoints ds4-openai --ds4-canary-model deepseek-v4-flash
 ```
 
-This checks the Hermes dashboard, Hermes CLI status/doctor/gateway commands, Ollama, DS4/OpenAI-compatible, and LM Studio endpoints. `--canary` sends short local model prompts and appends any observed token counts as `local-llm` usage metrics. The command writes `infrastructure/runtime/local-runtime-probe-...json` and a matching `.md` human-readable report. It does not start services, load models, edit scheduler state, or mutate infrastructure.
+This checks the Hermes dashboard, Hermes CLI status/doctor/gateway commands, Ollama, DS4/OpenAI-compatible, and LM Studio endpoints. `--canary` sends short local model prompts and appends any observed token counts as `local-llm` usage metrics. Use `--canary-endpoints` to target a subset such as `ds4-openai`, and use `--ollama-canary-model`, `--ds4-canary-model`, or `--lmstudio-canary-model` to avoid cold or very large default models. Canary prompts run sequentially so local runtimes are not overloaded. The command writes `infrastructure/runtime/local-runtime-probe-...json` and a matching `.md` human-readable report. It does not start services, load models, edit scheduler state, or mutate infrastructure.
 
 For an approved remote host reachable over SSH, collect a sanitized read-only inventory:
 
