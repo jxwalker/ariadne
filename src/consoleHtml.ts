@@ -643,13 +643,25 @@ function reviewSession(data: ConsoleData): string {
   if (!session) return empty("No live-adapter review session is available.");
   return [
     `<div class="visual-status"><strong class="${statusClass(session.status)}">${escapeHtml(session.status)}</strong><span>${escapeHtml(`${session.summary.operatorReviewRequired} review-required / ${session.summary.readyForAdapterWork} adapter-ready / ${session.summary.gbrainReports} GBrain reports`)}</span></div>`,
-    '<p class="metadata">Review session only: mutationApproved=false and GBrain is advisory memory.</p>',
-    '<div class="table-wrap"><table><thead><tr><th>Target</th><th>Status</th><th>Cutover</th><th>Review</th><th>First Action</th><th>GBrain Queries</th></tr></thead><tbody>',
-    ...session.targets.map(
-      (target) =>
-        `<tr><td>${escapeHtml(target.target)}</td><td class="${statusClass(target.status)}">${escapeHtml(target.status)}</td><td class="${statusClass(target.cutoverStatus)}">${escapeHtml(target.cutoverStatus)}</td><td>${escapeHtml(target.reviewAuditStatus)}</td><td>${escapeHtml(target.firstAction ?? "none")}</td><td>${escapeHtml(String(target.gbrainContext.suggestedQueries.length))}</td></tr>`
-    ),
+    '<p class="metadata">Review session only: mutationApproved=false and GBrain is advisory memory. Mutation repair commands remain scaffolds until operator evidence and approval gates pass.</p>',
+    '<div class="table-wrap"><table><thead><tr><th>Target</th><th>Status</th><th>Cutover</th><th>Review</th><th>Repair</th><th>First Action</th><th>Repair Commands</th><th>GBrain Queries</th></tr></thead><tbody>',
+    ...session.targets.map(reviewSessionTargetRow),
     "</tbody></table></div>"
+  ].join("");
+}
+
+function reviewSessionTargetRow(target: NonNullable<ConsoleData["liveAdapterReviewSession"]>["targets"][number]): string {
+  return [
+    "<tr>",
+    `<td>${escapeHtml(target.target)}</td>`,
+    `<td class="${statusClass(target.status)}">${escapeHtml(target.status)}</td>`,
+    `<td class="${statusClass(target.cutoverStatus)}">${escapeHtml(target.cutoverStatus)}</td>`,
+    `<td>${escapeHtml(target.reviewAuditStatus)}</td>`,
+    `<td class="${statusClass(target.mutationRepairStatus)}">${escapeHtml(target.mutationRepairStatus)}</td>`,
+    `<td>${escapeHtml(target.firstAction ?? "none")}</td>`,
+    `<td>${escapeHtml(String(target.mutationRepairNextActionCommands.length))}</td>`,
+    `<td>${escapeHtml(String(target.gbrainContext.suggestedQueries.length))}</td>`,
+    "</tr>"
   ].join("");
 }
 
