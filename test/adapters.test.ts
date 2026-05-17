@@ -2328,6 +2328,9 @@ describe("roadmap adapters", () => {
         "<redacted-url>",
         "<redacted-url>"
       ]);
+      expect(JSON.stringify([probe.hermes.statusCommand, probe.hermes.doctorCommand, probe.hermes.gatewayCommand])).not.toContain(
+        "runtime.test"
+      );
     }
     expect(JSON.stringify(console.data.infrastructure.runtimeProbes)).not.toContain("runtime.test");
     expect(console.data.summary.githubSnapshots).toBe(1);

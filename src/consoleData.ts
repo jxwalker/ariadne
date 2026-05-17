@@ -726,16 +726,26 @@ function redactLocalRuntimeProbeForConsole(probe: LocalRuntimeProbe): LocalRunti
     ...probe,
     modelEndpoints: probe.modelEndpoints.map((endpoint) => ({
       ...endpoint,
-      url: endpoint.url ? CONSOLE_REDACTED_URL : endpoint.url
+      url: endpoint.url !== undefined ? CONSOLE_REDACTED_URL : endpoint.url
     }))
   };
-  if (redacted.hermes?.dashboard?.url) {
+  if (redacted.hermes) {
     redacted.hermes = {
       ...redacted.hermes,
-      dashboard: { ...redacted.hermes.dashboard, url: CONSOLE_REDACTED_URL }
+      dashboard: redactObjectUrl(redacted.hermes.dashboard),
+      statusCommand: redactObjectUrl(redacted.hermes.statusCommand),
+      doctorCommand: redactObjectUrl(redacted.hermes.doctorCommand),
+      gatewayCommand: redactObjectUrl(redacted.hermes.gatewayCommand)
     };
   }
   return redacted;
+}
+
+function redactObjectUrl<T>(value: T): T {
+  if (!value || typeof value !== "object") return value;
+  const object = value as T & { url?: unknown };
+  if (object.url === undefined) return value;
+  return { ...object, url: CONSOLE_REDACTED_URL };
 }
 
 function isGsd2ProcessSnapshot(value: unknown): value is Gsd2ProcessSnapshot {
