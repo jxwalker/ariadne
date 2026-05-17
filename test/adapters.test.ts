@@ -57,6 +57,7 @@ import { planNotebookLmMutation } from "../src/notebookLmMutation.js";
 import { recordPlaywrightEvidence } from "../src/playwrightEvidence.js";
 import { generatePrd } from "../src/prd.js";
 import { generateRecoveryReport } from "../src/recovery.js";
+import { generateRoadmapCompletionAudit } from "../src/roadmapCompletionAudit.js";
 import { captureTargetAppEvidence } from "../src/targetAppCapture.js";
 import { runTargetMutationExecution, targetForMutationExecutionCommand } from "../src/targetMutationExecute.js";
 import { generateUsageMetricsReport, importUsageMetrics } from "../src/usageMetrics.js";
@@ -568,6 +569,22 @@ describe("roadmap adapters", () => {
       approvedFixturePath: coderabbit
     });
     expect(behavior.report.status).toBe("passed");
+    const evaluationPlan = await generateEvaluationPlan({ project: "ariadne", vaultRoot, target: "mac-local" });
+    await recordEvaluationRun({
+      project: "ariadne",
+      vaultRoot,
+      planPath: evaluationPlan.jsonPath,
+      target: "mac-local",
+      operator: "vitest",
+      dimensionScores: [
+        { id: "D1", score: 90, notes: "artifact chain present" },
+        { id: "D2", score: 85, notes: "roadmap gates visible" }
+      ],
+      evidenceRefs: [behavior.jsonPath],
+      regressions: [],
+      recommendations: []
+    });
+    await generateEvaluationTrendReport({ project: "ariadne", vaultRoot });
     const mutationReadiness = await planMutationReadiness({
       project: "ariadne",
       vaultRoot,
@@ -1087,6 +1104,15 @@ describe("roadmap adapters", () => {
     expect(operatorEvidenceAudit.audit.summary.completeTargets).toBe(2);
     expect(operatorEvidenceAudit.audit.summary.incompleteTargets).toBe(1);
     expect(operatorEvidenceAudit.audit.summary.missingTargets).toBe(3);
+    await generateArtifactCheckReport({ project: "ariadne", vaultRoot });
+    const roadmapCompletion = await generateRoadmapCompletionAudit({ project: "ariadne", vaultRoot });
+    expect(roadmapCompletion.audit.status).toBe("blocked");
+    expect(roadmapCompletion.audit.summary.passed).toBeGreaterThan(0);
+    expect(roadmapCompletion.audit.requirements.find((item) => item.id === "gbrain-advisory-context")?.status).toBe("passed");
+    const operatorEvidenceRequirement = roadmapCompletion.audit.requirements.find((item) => item.id === "operator-evidence");
+    expect(operatorEvidenceRequirement?.status).toBe("blocked");
+    expect(operatorEvidenceRequirement?.nextCommands.length).toBeGreaterThan(0);
+    expect(operatorEvidenceRequirement?.nextCommands[0]).toContain("live-adapter-evidence-templates");
     const console = await generateConsoleData({ project: "ariadne", vaultRoot });
     expect(console.data.summary.sleepRoutines).toBe(1);
     expect(console.data.summary.memoryProposals).toBe(1);
@@ -1125,6 +1151,9 @@ describe("roadmap adapters", () => {
     expect(console.data.liveAdapterOperatorEvidenceAudit?.mutationApproved).toBe(false);
     expect(console.data.liveAdapterOperatorEvidence.some((record) => record.target === "deployment")).toBe(true);
     expect(console.data.liveAdapterCutoverAudit?.targets.some((target) => target.target === "github")).toBe(true);
+    expect(console.data.summary.roadmapCompletionStatus).toBe("blocked");
+    expect(console.data.summary.roadmapCompletionBlocked).toBe(roadmapCompletion.audit.summary.blocked);
+    expect(console.data.roadmapCompletionAudit?.requirements.some((requirement) => requirement.id === "operator-evidence")).toBe(true);
     const liveAdapterConsoleHtml = await generateConsoleHtml({ project: "ariadne", vaultRoot, refreshData: true });
     const liveAdapterHtml = await fs.readFile(liveAdapterConsoleHtml.htmlPath, "utf8");
     expect(liveAdapterHtml).toContain("cutover deployment");
@@ -1133,6 +1162,7 @@ describe("roadmap adapters", () => {
     expect(liveAdapterHtml).toContain("Templates are blank collection aids");
     expect(liveAdapterHtml).toContain("Operator evidence records do not approve mutation");
     expect(liveAdapterHtml).toContain("operator evidence hermes-cron");
+    expect(liveAdapterHtml).toContain("Completion is only true");
     expect(console.data.liveAdapterApprovalReviewAudit?.summary.currentAcceptedReviews).toBe(1);
     expect(console.data.liveAdapterTargetDossiers.some((dossier) => dossier.target === "deployment")).toBe(true);
     expect(
@@ -1167,6 +1197,7 @@ describe("roadmap adapters", () => {
     const operatorEvidenceAuditCheck = artifactChecks.report.checks.find(
       (check) => check.id === "live-adapter-operator-evidence-audit"
     );
+    const roadmapCompletionAuditCheck = artifactChecks.report.checks.find((check) => check.id === "roadmap-completion-audit");
     const mutationDryRunCheck = artifactChecks.report.checks.find((check) => check.id === "mutation-dry-runs");
     const mutationExecutionCheck = artifactChecks.report.checks.find((check) => check.id === "mutation-executions");
     expect(coordinationCheck?.matches?.some((match) => match.includes("coordination/hermes"))).toBe(false);
@@ -1184,6 +1215,7 @@ describe("roadmap adapters", () => {
     expect(evidenceTemplatesCheck?.status).toBe("present");
     expect(operatorEvidenceCheck?.count).toBe(3);
     expect(operatorEvidenceAuditCheck?.status).toBe("present");
+    expect(roadmapCompletionAuditCheck?.status).toBe("present");
     expect(mutationDryRunCheck?.status).toBe("present");
     expect(mutationExecutionCheck?.status).toBe("present");
   });

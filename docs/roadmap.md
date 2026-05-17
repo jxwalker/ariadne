@@ -171,6 +171,7 @@ Implemented:
 - benchmark source packs for smoke, realistic, and stress runs
 - deterministic benchmark-run reports that exercise local packs through the pipeline
 - trend report generation
+- conservative roadmap-completion audit that blocks until artifact, behavior, evaluation, console, GBrain, operator-evidence, review-session, and cutover evidence prove the roadmap complete
 - token/cost metrics from Hermes and review tools
 - runner support for `evaluation`, `evaluation-record`, `evaluation-trends`, `usage-import`, `usage-report`, `artifact-checks`, `benchmark-pack`, and `benchmark-run`
 - mutation and approved-fixture checks for behavior confidence

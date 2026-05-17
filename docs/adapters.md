@@ -309,6 +309,8 @@ Artifacts:
 - non-submitting OpenScorpion activity drafts,
 - worktree guard records.
 
+`roadmap-completion-audit` is a conservative completion sensor for the full Ariadne roadmap. It reads the current artifact checks, behavior checks, evaluation trends, console visual/browser checks, coordination records, GBrain advisory context, operator-evidence audit, live-adapter cutover audit, and review-session state. The audit is blocked until those current artifacts prove completion; it does not infer readiness from intent or from partial roadmap progress.
+
 `benchmark-pack` materialises repeatable source packs for smoke, realistic, and stress evaluations. The packs are local files only; they do not ingest sources or call live services by themselves.
 
 `benchmark-run` runs one generated pack through the local deterministic Ariadne pipeline and records the outcome as evaluation evidence. It uses the pack's file roles to ingest sources and import fixtures, then generates planning, verification, control, behavior, GBrain, and artifact-check outputs. It does not call live services or execute mutation-capable commands.
@@ -330,6 +332,8 @@ Artifacts:
 - `evaluation/artifact-checks.md`
 - `evaluation/behavior-checks.json`
 - `evaluation/behavior-checks.md`
+- `control/roadmap-completion-audit.json`
+- `control/roadmap-completion-audit.md`
 - `benchmarks/source-packs/<set>/benchmark-pack.json`
 - `benchmarks/source-packs/<set>/README.md`
 

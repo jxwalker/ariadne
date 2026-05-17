@@ -147,6 +147,15 @@ function renderConsole(data: ConsoleData): string {
             detail: `${data.liveAdapterOperatorEvidenceAudit.summary.completeTargets} complete / ${data.liveAdapterOperatorEvidenceAudit.summary.missingTargets} missing`
           }
         ]
+      : []),
+    ...(data.roadmapCompletionAudit
+      ? [
+          {
+            time: data.roadmapCompletionAudit.generatedAt,
+            label: `Roadmap completion: ${data.roadmapCompletionAudit.status}`,
+            detail: `${data.roadmapCompletionAudit.summary.passed} passed / ${data.roadmapCompletionAudit.summary.blocked} blocked`
+          }
+        ]
       : [])
   ].sort((left, right) => right.time.localeCompare(left.time));
 
@@ -204,6 +213,7 @@ function renderConsole(data: ConsoleData): string {
     metric("Review Session", data.summary.liveAdapterReviewSessionStatus ?? "none", `${data.summary.liveAdapterReviewSessionRequired ?? 0} required`),
     metric("Evidence Templates", data.summary.liveAdapterEvidenceTemplates ?? "none", data.summary.liveAdapterEvidenceTemplateStatus ?? "operator"),
     metric("Operator Evidence", data.summary.liveAdapterOperatorEvidenceStatus ?? "none", `${data.summary.liveAdapterOperatorEvidenceComplete ?? 0} complete`),
+    metric("Roadmap Audit", data.summary.roadmapCompletionStatus ?? "none", `${data.summary.roadmapCompletionBlocked ?? 0} blocked`),
     metric("Hermes", data.summary.hermesCronSnapshots, `${data.summary.hermesCronProposals} proposals`),
     metric("Recovery", data.summary.recoveryIssues, "issues"),
     metric("Browser", data.summary.consoleBrowserChecks ?? "none", "console"),
@@ -226,6 +236,7 @@ function renderConsole(data: ConsoleData): string {
     section("Review Session", reviewSession(data)),
     section("Evidence Templates", evidenceTemplates(data)),
     section("Operator Evidence", operatorEvidence(data)),
+    section("Roadmap Audit", roadmapCompletion(data)),
     section("Timeline", timelineList(timeline.slice(0, 12))),
     "</div>",
     '<aside class="side-column">',
@@ -587,6 +598,24 @@ function operatorEvidence(data: ConsoleData): string {
         `<tr><td>${escapeHtml(target.target)}</td><td class="${statusClass(target.status)}">${escapeHtml(target.status)}</td><td>${escapeHtml(String(target.recordCount))}</td><td>${escapeHtml(target.latestRecordId ?? "none")}</td><td>${escapeHtml(target.missingSections.length === 0 ? "none" : target.missingSections.join("; "))}</td><td>${escapeHtml(String(target.advisoryWarnings.length))}</td></tr>`
     ),
     "</tbody></table></div>"
+  ].join("");
+}
+
+function roadmapCompletion(data: ConsoleData): string {
+  const audit = data.roadmapCompletionAudit;
+  if (!audit) return empty("No roadmap completion audit is available.");
+  const blocked = audit.requirements.filter((requirement) => requirement.status === "blocked");
+  return [
+    `<div class="visual-status"><strong class="${statusClass(audit.status)}">${escapeHtml(audit.status)}</strong><span>${escapeHtml(`${audit.summary.passed} passed / ${audit.summary.blocked} blocked / ${audit.summary.advisory} advisory`)}</span></div>`,
+    '<p class="metadata">Completion is only true when every requirement is proven by current artifacts.</p>',
+    '<ul class="compact-list">',
+    ...(blocked.length === 0
+      ? ["<li><strong>complete</strong><span>No blocked roadmap requirements.</span></li>"]
+      : blocked.map(
+          (requirement) =>
+            `<li><strong>${escapeHtml(requirement.id)}</strong><span>${escapeHtml(requirement.detail)}</span></li>`
+        )),
+    "</ul>"
   ].join("");
 }
 

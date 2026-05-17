@@ -1,0 +1,118 @@
+{
+  "schemaVersion": 1,
+  "project": "ariadne",
+  "generatedAt": "2026-05-17T05:42:03.952Z",
+  "status": "blocked",
+  "summary": {
+    "requirements": 9,
+    "passed": 6,
+    "blocked": 3,
+    "advisory": 0
+  },
+  "requirements": [
+    {
+      "id": "core-artifact-contracts",
+      "title": "Core pipeline artifacts are present",
+      "status": "passed",
+      "detail": "42 artifacts present; 0 required missing.",
+      "evidenceRefs": [
+        "projects/ariadne/evaluation/artifact-checks.json"
+      ],
+      "nextCommands": []
+    },
+    {
+      "id": "behavior-confidence",
+      "title": "Behavior confidence checks are passing",
+      "status": "passed",
+      "detail": "6/6 behavior checks passed; 0 failed.",
+      "evidenceRefs": [
+        "projects/ariadne/evaluation/behavior-checks.json"
+      ],
+      "nextCommands": []
+    },
+    {
+      "id": "evaluation-harness",
+      "title": "Evaluation harness has current trend evidence",
+      "status": "passed",
+      "detail": "Evaluation trend status is stable; latest score is 86.",
+      "evidenceRefs": [
+        "projects/ariadne/evaluation/evaluation-trends.json"
+      ],
+      "nextCommands": []
+    },
+    {
+      "id": "console-verification",
+      "title": "Orchestration console is rendered and browser-checked",
+      "status": "passed",
+      "detail": "Visual checks: passed; browser checks: passed.",
+      "evidenceRefs": [
+        "projects/ariadne/console/visual-checks.json",
+        "projects/ariadne/console/browser-checks.json"
+      ],
+      "nextCommands": []
+    },
+    {
+      "id": "sleep-memory-agent-mail",
+      "title": "Sleep, memory, agent mail, and lease records are visible",
+      "status": "passed",
+      "detail": "sleep=1, memory=1, mail=1, leases=1.",
+      "evidenceRefs": [
+        "projects/ariadne/console/console-data.json"
+      ],
+      "nextCommands": [
+        "npm run ariadne -- sleep-record --project ariadne --scope <scope> --summary <text>",
+        "npm run ariadne -- memory-proposal --project ariadne --title <title> --proposal <text>",
+        "npm run ariadne -- agent-mail --project ariadne --from <agent> --to <agent> --subject <text> --body <text>"
+      ]
+    },
+    {
+      "id": "gbrain-advisory-context",
+      "title": "GBrain is incorporated as advisory memory",
+      "status": "passed",
+      "detail": "6 live-adapter dossier(s) include GBrain advisory queries; export=present; imported reports=1.",
+      "evidenceRefs": [
+        "projects/ariadne/control/live-adapter-dossiers",
+        "projects/ariadne/integrations/gbrain/gbrain-export.json"
+      ],
+      "nextCommands": []
+    },
+    {
+      "id": "operator-evidence",
+      "title": "All live-adapter targets have complete operator evidence",
+      "status": "blocked",
+      "detail": "0/6 targets complete; 6 missing evidence.",
+      "evidenceRefs": [
+        "projects/ariadne/control/live-adapter-operator-evidence-audit.json"
+      ],
+      "nextCommands": [
+        "npm run ariadne -- live-adapter-evidence-templates --project ariadne",
+        "npm run ariadne -- live-adapter-operator-evidence --project ariadne --target <target> --from vault/projects/ariadne/control/live-adapter-evidence-templates/live-adapter-evidence-template-<target>.md --by <operator>",
+        "npm run ariadne -- live-adapter-operator-evidence-audit --project ariadne"
+      ]
+    },
+    {
+      "id": "live-adapter-cutover",
+      "title": "Live-adapter cutover gates are ready",
+      "status": "blocked",
+      "detail": "0/6 targets ready; 42 gates blocked.",
+      "evidenceRefs": [
+        "projects/ariadne/control/live-adapter-cutover-audit.json"
+      ],
+      "nextCommands": [
+        "npm run ariadne -- live-adapter-cutover-audit --project ariadne"
+      ]
+    },
+    {
+      "id": "operator-review-session",
+      "title": "Operator review session reflects live-adapter state",
+      "status": "blocked",
+      "detail": "0/6 targets ready for adapter work; 6 still require operator review.",
+      "evidenceRefs": [
+        "projects/ariadne/control/live-adapter-review-session.json"
+      ],
+      "nextCommands": [
+        "npm run ariadne -- live-adapter-review-session --project ariadne"
+      ]
+    }
+  ]
+}

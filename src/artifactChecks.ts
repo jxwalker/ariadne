@@ -324,6 +324,13 @@ const ARTIFACT_SPECS: ArtifactSpec[] = [
     relativePath: "control/live-adapter-operator-evidence-audit.json"
   },
   {
+    id: "roadmap-completion-audit",
+    label: "Roadmap completion audit",
+    required: false,
+    kind: "file",
+    relativePath: "control/roadmap-completion-audit.json"
+  },
+  {
     id: "mutation-dry-runs",
     label: "Mutation dry-run records",
     required: false,
