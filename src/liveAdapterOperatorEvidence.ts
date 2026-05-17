@@ -84,6 +84,10 @@ export function operatorEvidenceTargetMissingSections(target: LiveAdapterOperato
   return target.status === "missing_evidence" ? [...REQUIRED_OPERATOR_EVIDENCE_SECTION_LABELS] : missingSections;
 }
 
+export function operatorEvidenceCheckMissingSections(check: LiveAdapterOperatorEvidenceCheck): string[] {
+  return check.sections.filter((section) => section.status === "missing").map((section) => section.label);
+}
+
 export function operatorEvidenceAuditMissingSections(audit: LiveAdapterOperatorEvidenceAudit | undefined): number | undefined {
   if (!audit) return undefined;
   const summaryMissingSections = audit.summary?.missingSections ?? 0;
