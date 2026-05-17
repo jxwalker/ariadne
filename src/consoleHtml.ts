@@ -163,6 +163,7 @@ function renderConsole(data: ConsoleData): string {
     metric("Approval Packs", data.summary.liveAdapterApprovalPackets ?? "none", "operator"),
     metric("Packet Reviews", data.summary.acceptedLiveAdapterApprovalReviews ?? "none", `${data.summary.liveAdapterApprovalReviews ?? 0} total`),
     metric("Review Audit", data.summary.liveAdapterApprovalReviewAuditStatus ?? "none", `${data.summary.currentLiveAdapterApprovalReviews ?? 0} current`),
+    metric("Dossiers", data.summary.liveAdapterTargetDossiers ?? "none", "adapter"),
     metric("Hermes", data.summary.hermesCronSnapshots, `${data.summary.hermesCronProposals} proposals`),
     metric("Recovery", data.summary.recoveryIssues, "issues"),
     metric("Browser", data.summary.consoleBrowserChecks ?? "none", "console"),

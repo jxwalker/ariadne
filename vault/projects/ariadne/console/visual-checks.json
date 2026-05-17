@@ -1,11 +1,11 @@
 {
   "schemaVersion": 1,
   "project": "ariadne",
-  "generatedAt": "2026-05-17T00:28:31.282Z",
+  "generatedAt": "2026-05-17T00:45:08.699Z",
   "htmlPath": "projects/ariadne/console/index.html",
   "status": "passed",
   "summary": {
-    "passed": 14,
+    "passed": 15,
     "failed": 0
   },
   "checks": [
@@ -62,6 +62,12 @@
       "label": "Approval review audit metric",
       "status": "passed",
       "detail": "Found Review Audit."
+    },
+    {
+      "id": "adapter-dossier-metric",
+      "label": "Adapter dossier metric",
+      "status": "passed",
+      "detail": "Found Dossiers."
     },
     {
       "id": "trend-chart",

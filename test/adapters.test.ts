@@ -36,6 +36,7 @@ import { recordLiveAdapterApprovalReview } from "../src/liveAdapterApprovalRevie
 import { generateLiveAdapterApprovalReviewAudit } from "../src/liveAdapterApprovalReviewAudit.js";
 import { generateLiveAdapterNextActions } from "../src/liveAdapterNextActions.js";
 import { generateLiveAdapterReadiness } from "../src/liveAdapterReadiness.js";
+import { generateLiveAdapterTargetDossier } from "../src/liveAdapterTargetDossier.js";
 import { planMutationReadiness } from "../src/mutationReadiness.js";
 import { generateMutationReadinessAudit } from "../src/mutationReadinessAudit.js";
 import { runMutationDryRun } from "../src/mutationDryRun.js";
@@ -505,6 +506,13 @@ describe("roadmap adapters", () => {
     const imported = await importGbrainReport({ project: "ariadne", vaultRoot, sourcePath: reportPath });
     expect(imported.report.resultCount).toBe(1);
     expect(imported.report.metrics.latencyMs).toBe(42);
+
+    await generateLiveAdapterApprovalPack({ project: "ariadne", vaultRoot });
+    const dossier = await generateLiveAdapterTargetDossier({ project: "ariadne", vaultRoot, target: "github" });
+    expect(dossier.dossier.target).toBe("github");
+    expect(dossier.dossier.gbrainContext.exportRef).toContain("integrations/gbrain/gbrain-export.json");
+    expect(dossier.dossier.gbrainContext.suggestedQueries.some((query) => query.includes("github"))).toBe(true);
+    expect(dossier.dossier.operatorChecklist.some((item) => item.includes("Query GBrain"))).toBe(true);
   });
 
   it("records behavior checks, sleep routines, memory proposals, agent mail, leases, Hermes cron, and deployment snapshots", async () => {
@@ -900,6 +908,11 @@ describe("roadmap adapters", () => {
     expect(deployment.snapshot.summary.host).toBe("beast");
 
     await generateLiveAdapterApprovalPack({ project: "ariadne", vaultRoot });
+    const deploymentDossier = await generateLiveAdapterTargetDossier({ project: "ariadne", vaultRoot, target: "deployment" });
+    expect(deploymentDossier.dossier.status).toBe("ready_for_operator_review");
+    expect(deploymentDossier.dossier.summary.packetPresent).toBe(true);
+    expect(deploymentDossier.dossier.summary.reviewAuditStatus).toBe("missing_review");
+    expect(deploymentDossier.dossier.gbrainContext.suggestedQueries.some((query) => query.includes("deployment"))).toBe(true);
     const console = await generateConsoleData({ project: "ariadne", vaultRoot });
     expect(console.data.summary.sleepRoutines).toBe(1);
     expect(console.data.summary.memoryProposals).toBe(1);
@@ -922,7 +935,9 @@ describe("roadmap adapters", () => {
     expect(console.data.summary.acceptedLiveAdapterApprovalReviews).toBe(1);
     expect(console.data.summary.liveAdapterApprovalReviewAuditStatus).toBe("blocked");
     expect(console.data.summary.currentLiveAdapterApprovalReviews).toBe(1);
+    expect(console.data.summary.liveAdapterTargetDossiers).toBe(1);
     expect(console.data.liveAdapterApprovalReviewAudit?.summary.currentAcceptedReviews).toBe(1);
+    expect(console.data.liveAdapterTargetDossiers[0]?.target).toBe("deployment");
     expect(console.data.liveAdapterNextActions?.targets.some((target) => target.target === "github")).toBe(true);
     expect(console.data.liveAdapterApprovalPack?.packets.some((packet) => packet.target === "deployment")).toBe(true);
     expect(
@@ -942,6 +957,7 @@ describe("roadmap adapters", () => {
     const approvalPackCheck = artifactChecks.report.checks.find((check) => check.id === "live-adapter-approval-pack");
     const approvalReviewCheck = artifactChecks.report.checks.find((check) => check.id === "live-adapter-approval-reviews");
     const approvalReviewAuditCheck = artifactChecks.report.checks.find((check) => check.id === "live-adapter-approval-review-audit");
+    const targetDossierCheck = artifactChecks.report.checks.find((check) => check.id === "live-adapter-dossiers");
     const mutationDryRunCheck = artifactChecks.report.checks.find((check) => check.id === "mutation-dry-runs");
     const mutationExecutionCheck = artifactChecks.report.checks.find((check) => check.id === "mutation-executions");
     expect(coordinationCheck?.matches?.some((match) => match.includes("coordination/hermes"))).toBe(false);
@@ -953,6 +969,7 @@ describe("roadmap adapters", () => {
     expect(approvalPackCheck?.status).toBe("present");
     expect(approvalReviewCheck?.status).toBe("present");
     expect(approvalReviewAuditCheck?.status).toBe("present");
+    expect(targetDossierCheck?.status).toBe("present");
     expect(mutationDryRunCheck?.status).toBe("present");
     expect(mutationExecutionCheck?.status).toBe("present");
   });

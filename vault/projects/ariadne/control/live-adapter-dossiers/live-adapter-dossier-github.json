@@ -1,0 +1,184 @@
+{
+  "schemaVersion": 1,
+  "project": "ariadne",
+  "generatedAt": "2026-05-17T00:44:46.810Z",
+  "target": "github",
+  "status": "ready_for_operator_review",
+  "readinessRef": "projects/ariadne/control/live-adapter-readiness.json",
+  "nextActionsRef": "projects/ariadne/control/live-adapter-next-actions.json",
+  "approvalPackRef": "projects/ariadne/control/live-adapter-approval-pack.json",
+  "approvalReviewAuditRef": "projects/ariadne/control/live-adapter-approval-review-audit.json",
+  "mutationReadinessAuditRef": "projects/ariadne/control/mutation-readiness-audit.json",
+  "summary": {
+    "blockers": 5,
+    "actions": 4,
+    "packetPresent": true,
+    "reviewAuditStatus": "missing_review",
+    "mutationPlans": 1,
+    "readyMutationPlans": 0,
+    "gbrainReports": 0
+  },
+  "readiness": {
+    "target": "github",
+    "status": "blocked",
+    "planCount": 1,
+    "passedPlanCount": 0,
+    "passedDryRunCount": 0,
+    "passedExecutionCount": 0,
+    "approvalReviewCount": 0,
+    "acceptedApprovalReviewCount": 0,
+    "executeCommand": "github-mutation-execute",
+    "blockers": [
+      "no accepted operator review exists for live-adapter approval packet",
+      "no readiness plan passes audit",
+      "no passed dry-run evidence exists for an audit-passed plan",
+      "no passed target-guarded execution evidence exists"
+    ],
+    "evidenceRefs": [
+      "control/mutation-readiness-audit.json"
+    ]
+  },
+  "nextActions": [
+    {
+      "id": "github-approval-pack-review",
+      "status": "pending",
+      "title": "Record operator review of the approval packet",
+      "rationale": "Before a live adapter can replace placeholder shell commands, an operator must review the target packet and record whether the packet is accepted, rejected, or needs changes. This does not approve live mutation.",
+      "command": "npm run ariadne -- live-adapter-approval-review --project <project> --target github --by <operator> --status accepted --packet control/live-adapter-approval-pack.json --evidence <operator-review-evidence>",
+      "evidenceRefs": [
+        "control/mutation-readiness-audit.json"
+      ]
+    },
+    {
+      "id": "github-audit-fix",
+      "status": "pending",
+      "title": "Resolve existing readiness plan blockers",
+      "rationale": "Existing plan mutation-readiness-github-2026-05-16T16-50-54-241Z is blocked by: approval state is approval_required; approval record is requested; post-action verification command is missing. Approve the existing plan only after operator review, and regenerate it with post-action verification if that gate is missing.",
+      "command": "Review mutation-readiness-github-2026-05-16T16-50-54-241Z; after operator approval, record approval-decision, ensure --post-verify is present, then rerun npm run ariadne -- mutation-readiness-audit --project <project>",
+      "evidenceRefs": [
+        "control/mutation-readiness-audit.json"
+      ]
+    },
+    {
+      "id": "github-dry-run",
+      "status": "pending",
+      "title": "Run the reviewed dry-run command",
+      "rationale": "Dry-run evidence proves the reviewed command path before the live command is eligible for target-guarded execution.",
+      "command": "After mutation-readiness-github-2026-05-16T16-50-54-241Z passes audit, run npm run ariadne -- mutation-dry-run --project <project> --plan mutation-readiness-github-2026-05-16T16-50-54-241Z",
+      "evidenceRefs": [
+        "control/mutation-readiness-audit.json"
+      ]
+    },
+    {
+      "id": "github-target-execution",
+      "status": "blocked",
+      "title": "Capture target-guarded execution evidence",
+      "rationale": "The live adapter should only replace placeholder shell commands after the audited target wrapper has successfully verified the same target and recorded post-action verification evidence.",
+      "command": "Run a passed dry-run for an audit-passed plan first.",
+      "evidenceRefs": [
+        "control/mutation-readiness-audit.json"
+      ]
+    }
+  ],
+  "approvalPacket": {
+    "target": "github",
+    "readinessStatus": "blocked",
+    "recommendedRisk": "medium",
+    "operatorDecisionRequired": true,
+    "approvalRequestCommand": "npm run ariadne -- approval-request --project ariadne --by <operator> --target github --action \"Enable one reviewed GitHub mutation adapter action\" --risk medium --reason \"Permit a bounded PR or workflow operation after checks, review, and branch policy are verified\" --rollback \"Document how to revert or undo the PR/workflow operation and restore manual review flow.\" --evidence <auth-or-policy-evidence>",
+    "requiredEvidence": [
+      "operator approval request record",
+      "authentication or authorization evidence",
+      "bounded scope statement",
+      "dry-run command output evidence",
+      "post-action verification command",
+      "rollback or disable path",
+      "repository, PR, branch policy, and check-rollup evidence"
+    ],
+    "mutationPlanCommand": "Create or repair the target-specific mutation-readiness plan after operator approval exists. npm run ariadne -- github-mutation-plan --project <project> --repo <owner/name> --action <merge-pr|rerun-failed-run> --auth-evidence <paths> --approval <approval-id>",
+    "dryRunCommand": "After mutation-readiness-github-2026-05-16T16-50-54-241Z passes audit, run npm run ariadne -- mutation-dry-run --project <project> --plan mutation-readiness-github-2026-05-16T16-50-54-241Z",
+    "executionCommand": "Run a passed dry-run for an audit-passed plan first.",
+    "rollbackRequirement": "Document how to revert or undo the PR/workflow operation and restore manual review flow.",
+    "postVerificationRequirement": "Verify PR/workflow status, check rollup, and repository state after execution.",
+    "blockers": [
+      "no accepted operator review exists for live-adapter approval packet",
+      "no readiness plan passes audit",
+      "no passed dry-run evidence exists for an audit-passed plan",
+      "no passed target-guarded execution evidence exists"
+    ],
+    "nextActions": [
+      "pending: Record operator review of the approval packet",
+      "pending: Resolve existing readiness plan blockers",
+      "pending: Run the reviewed dry-run command",
+      "blocked: Capture target-guarded execution evidence"
+    ],
+    "evidenceRefs": [
+      "control/mutation-readiness-audit.json"
+    ]
+  },
+  "approvalReviewAudit": {
+    "target": "github",
+    "status": "missing_review",
+    "packetPresent": true,
+    "reviewCount": 0,
+    "acceptedReviewCount": 0,
+    "currentAcceptedReviewCount": 0,
+    "blockers": [
+      "no accepted operator review exists"
+    ],
+    "evidenceRefs": []
+  },
+  "mutationReadinessChecks": [
+    {
+      "planId": "mutation-readiness-github-2026-05-16T16-50-54-241Z",
+      "target": "github",
+      "status": "blocked",
+      "blockers": [
+        "approval state is approval_required",
+        "approval record is requested",
+        "post-action verification command is missing"
+      ],
+      "warnings": [],
+      "evidenceRefs": [
+        "vault/projects/ariadne/integrations/github/github-snapshot-2026-05-16T12-25-16-576Z.json",
+        "vault/projects/ariadne/control/approvals/approval-2026-05-16T13-21-33-834Z.json",
+        "vault/projects/ariadne/control/merge-readiness.json"
+      ],
+      "requiredGates": [
+        "bounded scope recorded",
+        "auth evidence reviewed",
+        "dry-run command reviewed",
+        "rollback command reviewed",
+        "human approval record approved",
+        "CodeRabbit or human review approval",
+        "post-action verification command defined",
+        "branch, PR, and merge policy verified"
+      ]
+    }
+  ],
+  "operatorChecklist": [
+    "Read the target approval packet.",
+    "Check authentication or authorization evidence for the exact target account, host, or service.",
+    "Check rollback and post-verification commands are concrete enough to execute later.",
+    "Check dry-run and target-guarded execution steps remain non-placeholder and bounded.",
+    "Query GBrain for prior decisions, stale assumptions, and related evidence before accepting the packet.",
+    "Record an approval-packet review only after the packet and evidence are complete."
+  ],
+  "gbrainContext": {
+    "exportRef": "projects/ariadne/integrations/gbrain/gbrain-export.json",
+    "reportRefs": [],
+    "suggestedQueries": [
+      "Find prior Ariadne decisions and evidence for the github live adapter.",
+      "List risks, rollback requirements, and stale assumptions for github approval.",
+      "Summarize operator-review evidence still missing before github mutation readiness."
+    ]
+  },
+  "evidenceRefs": [
+    "projects/ariadne/control/live-adapter-readiness.json",
+    "projects/ariadne/control/live-adapter-next-actions.json",
+    "projects/ariadne/control/live-adapter-approval-pack.json",
+    "projects/ariadne/control/live-adapter-approval-review-audit.json",
+    "projects/ariadne/control/mutation-readiness-audit.json",
+    "control/mutation-readiness-audit.json"
+  ]
+}
