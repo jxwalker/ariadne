@@ -1220,6 +1220,7 @@ describe("roadmap adapters", () => {
     expect(importReady.batch.status).toBe("imported");
     expect(importReady.batch.mutationApproved).toBe(false);
     expect(importReady.batch.approvalGranted).toBe(false);
+    expect(importReady.batch.notes).toBe("Batch import complete preflight checks only");
     expect(importReady.batch.summary.imported).toBe(1);
     expect(importReady.batch.summary.failed).toBe(0);
     const gsd2Import = importReady.batch.targets.find((target) => target.target === "gsd2");
@@ -1227,6 +1228,7 @@ describe("roadmap adapters", () => {
     expect(gsd2Import?.recordRef).toContain("control/live-adapter-operator-evidence/operator-evidence-gsd2-");
     const importReadyMarkdown = await fs.readFile(importReady.markdownPath, "utf8");
     expect(importReadyMarkdown).toContain("does not approve mutation");
+    expect(importReadyMarkdown).toContain("Notes: Batch import complete preflight checks only");
     await generateArtifactCheckReport({ project: "ariadne", vaultRoot });
     const roadmapCompletion = await generateRoadmapCompletionAudit({ project: "ariadne", vaultRoot });
     expect(roadmapCompletion.audit.status).toBe("blocked");

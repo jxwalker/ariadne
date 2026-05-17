@@ -853,6 +853,7 @@ export interface LiveAdapterOperatorEvidenceImportReadyBatch {
   mutationApproved: false;
   approvalGranted: false;
   reviewedBy: string;
+  notes?: string;
   queueRef: string;
   operatorEvidenceAuditRef: string;
   refreshedQueueRef: string;
