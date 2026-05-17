@@ -139,6 +139,15 @@ function renderConsole(data: ConsoleData): string {
           }
         ]
       : []),
+    ...(data.liveAdapterOperatorEvidenceWorkplan
+      ? [
+          {
+            time: data.liveAdapterOperatorEvidenceWorkplan.generatedAt,
+            label: `Operator evidence workplan: ${data.liveAdapterOperatorEvidenceWorkplan.status}`,
+            detail: `${data.liveAdapterOperatorEvidenceWorkplan.summary.importCommands} import commands`
+          }
+        ]
+      : []),
     ...(data.liveAdapterOperatorEvidenceAudit
       ? [
           {
@@ -212,6 +221,7 @@ function renderConsole(data: ConsoleData): string {
     metric("Cutover", data.summary.liveAdapterCutoverAuditStatus ?? "none", `${data.summary.liveAdapterCutoverReady ?? 0} ready`),
     metric("Review Session", data.summary.liveAdapterReviewSessionStatus ?? "none", `${data.summary.liveAdapterReviewSessionRequired ?? 0} required`),
     metric("Evidence Templates", data.summary.liveAdapterEvidenceTemplates ?? "none", data.summary.liveAdapterEvidenceTemplateStatus ?? "operator"),
+    metric("Evidence Workplan", data.summary.liveAdapterOperatorEvidenceWorkplanStatus ?? "none", `${data.summary.liveAdapterOperatorEvidenceWorkplanTargets ?? 0} targets`),
     metric("Operator Evidence", data.summary.liveAdapterOperatorEvidenceStatus ?? "none", `${data.summary.liveAdapterOperatorEvidenceComplete ?? 0} complete`),
     metric("Roadmap Audit", data.summary.roadmapCompletionStatus ?? "none", `${data.summary.roadmapCompletionBlocked ?? 0} blocked`),
     metric("Hermes", data.summary.hermesCronSnapshots, `${data.summary.hermesCronProposals} proposals`),
@@ -235,6 +245,7 @@ function renderConsole(data: ConsoleData): string {
     section("Live Adapters", liveAdapters(data)),
     section("Review Session", reviewSession(data)),
     section("Evidence Templates", evidenceTemplates(data)),
+    section("Evidence Workplan", operatorEvidenceWorkplan(data)),
     section("Operator Evidence", operatorEvidence(data)),
     section("Roadmap Audit", roadmapCompletion(data)),
     section("Timeline", timelineList(timeline.slice(0, 12))),
@@ -586,6 +597,21 @@ function evidenceTemplates(data: ConsoleData): string {
   ].join("");
 }
 
+function operatorEvidenceWorkplan(data: ConsoleData): string {
+  const workplan = data.liveAdapterOperatorEvidenceWorkplan;
+  if (!workplan) return empty("No live-adapter operator evidence workplan is available.");
+  return [
+    `<div class="visual-status"><strong class="${statusClass(workplan.status)}">${escapeHtml(workplan.status)}</strong><span>${escapeHtml(`${workplan.summary.importCommands} import commands / ${workplan.summary.gbrainQueries} GBrain queries`)}</span></div>`,
+    '<p class="metadata">The workplan is an evidence collection queue, not approval evidence.</p>',
+    '<div class="table-wrap"><table><thead><tr><th>Target</th><th>Status</th><th>Template</th><th>Import Command</th><th>Cutover Blockers</th></tr></thead><tbody>',
+    ...workplan.targets.map(
+      (target) =>
+        `<tr><td>${escapeHtml(target.target)}</td><td class="${statusClass(target.status)}">${escapeHtml(target.status)}</td><td>${escapeHtml(target.templateRef)}</td><td>${escapeHtml(target.importCommand)}</td><td>${escapeHtml(String(target.cutoverBlockers.length))}</td></tr>`
+    ),
+    "</tbody></table></div>"
+  ].join("");
+}
+
 function operatorEvidence(data: ConsoleData): string {
   const audit = data.liveAdapterOperatorEvidenceAudit;
   if (!audit) return empty("No live-adapter operator evidence audit is available.");
@@ -725,6 +751,7 @@ function statusClass(value: string | undefined): string {
     value === "ready_for_cutover" ||
     value === "approved" ||
     value === "complete" ||
+    value === "ready_for_review" ||
     value === "ready_for_adapter" ||
     value === "info"
   ) {
@@ -741,7 +768,10 @@ function statusClass(value: string | undefined): string {
     value === "warning" ||
     value === "attention_required" ||
     value === "awaiting_operator_evidence" ||
-    value === "actions_required"
+    value === "actions_required" ||
+    value === "evidence_required" ||
+    value === "needs_evidence" ||
+    value === "needs_rework"
   ) {
     return "warn";
   }

@@ -40,6 +40,7 @@ import type {
   LiveAdapterNextActionsReport,
   LiveAdapterOperatorEvidenceAudit,
   LiveAdapterOperatorEvidenceRecord,
+  LiveAdapterOperatorEvidenceWorkplan,
   LiveAdapterReadinessReport,
   LiveAdapterReviewSession,
   LiveAdapterTargetDossier,
@@ -151,6 +152,12 @@ export async function collectConsoleData(vaultRoot: string, projectInput: string
     project,
     "control",
     "live-adapter-operator-evidence-audit.json"
+  );
+  const liveAdapterOperatorEvidenceWorkplan = await readProjectJson<LiveAdapterOperatorEvidenceWorkplan>(
+    vaultRoot,
+    project,
+    "control",
+    "live-adapter-operator-evidence-workplan.json"
   );
   const roadmapCompletionAudit = await readProjectJson<RoadmapCompletionAudit>(
     vaultRoot,
@@ -286,6 +293,8 @@ export async function collectConsoleData(vaultRoot: string, projectInput: string
       liveAdapterReviewSessionRequired: liveAdapterReviewSession?.summary.operatorReviewRequired,
       liveAdapterEvidenceTemplates: liveAdapterEvidenceTemplatePack?.summary.templates,
       liveAdapterEvidenceTemplateStatus: liveAdapterEvidenceTemplatePack?.status,
+      liveAdapterOperatorEvidenceWorkplanStatus: liveAdapterOperatorEvidenceWorkplan?.status,
+      liveAdapterOperatorEvidenceWorkplanTargets: liveAdapterOperatorEvidenceWorkplan?.summary.targets,
       liveAdapterOperatorEvidenceRecords: liveAdapterOperatorEvidence.length,
       liveAdapterOperatorEvidenceStatus: liveAdapterOperatorEvidenceAudit?.status,
       liveAdapterOperatorEvidenceComplete: liveAdapterOperatorEvidenceAudit?.summary.completeTargets,
@@ -320,6 +329,7 @@ export async function collectConsoleData(vaultRoot: string, projectInput: string
     liveAdapterCutoverAudit,
     liveAdapterReviewSession,
     liveAdapterEvidenceTemplatePack,
+    liveAdapterOperatorEvidenceWorkplan,
     liveAdapterOperatorEvidence,
     liveAdapterOperatorEvidenceAudit,
     roadmapCompletionAudit,
@@ -389,6 +399,10 @@ export async function collectConsoleData(vaultRoot: string, projectInput: string
       liveAdapterEvidenceTemplates: await existingPath(
         vaultRoot,
         path.join(dir, "control", "live-adapter-evidence-templates.json")
+      ),
+      liveAdapterOperatorEvidenceWorkplan: await existingPath(
+        vaultRoot,
+        path.join(dir, "control", "live-adapter-operator-evidence-workplan.json")
       ),
       liveAdapterOperatorEvidence: await existingPath(vaultRoot, path.join(dir, "control", "live-adapter-operator-evidence")),
       liveAdapterOperatorEvidenceAudit: await existingPath(

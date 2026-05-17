@@ -226,6 +226,8 @@ Target-specific execute wrappers hard-code that guard for the live adapters: `gi
 
 `live-adapter-evidence-templates` creates blank operator evidence templates for each target. The aggregate report is written to `control/live-adapter-evidence-templates.json` and `.md`, while per-target Markdown templates are written under `control/live-adapter-evidence-templates/`. These templates list packet-review, auth-boundary, rollback, post-verification, dry-run, target-guarded execution, and GBrain advisory items, but they are not evidence until an operator fills them with real observations.
 
+`live-adapter-operator-evidence-workplan` converts the current operator-evidence audit into an execution queue. It writes `control/live-adapter-operator-evidence-workplan.json` and `.md` with the template ref, import command, packet-review command, missing sections, required evidence, cutover blockers, and GBrain advisory queries for each target. It is a collection aid only: it keeps `mutationApproved=false` and does not count as operator evidence.
+
 `live-adapter-operator-evidence` imports a filled operator evidence file for one target. It hashes the source file, checks whether the operator identity, packet review, auth boundary, bounded action, rollback, post-verification, dry-run, target-wrapper, and exact `--confirm-plan` sections are present, and writes `control/live-adapter-operator-evidence/operator-evidence-<target>-<timestamp>.json` and `.md`. It also records whether GBrain notes are present, but GBrain remains advisory only. The record always writes `mutationApproved=false` and `approvalGranted=false`.
 
 `live-adapter-operator-evidence-audit` summarizes those imported records across GitHub, deployment, Hermes cron, OpenScorpion, GSD2, and NotebookLM. Missing or incomplete target evidence becomes an approval-queue blocker in the console, while complete operator evidence still does not bypass approval-review, mutation-readiness, dry-run, target execution, or cutover gates.
@@ -250,6 +252,7 @@ npm run ariadne -- live-adapter-dossier --project ariadne --target github
 npm run ariadne -- live-adapter-cutover-audit --project ariadne
 npm run ariadne -- live-adapter-review-session --project ariadne
 npm run ariadne -- live-adapter-evidence-templates --project ariadne
+npm run ariadne -- live-adapter-operator-evidence-workplan --project ariadne
 npm run ariadne -- live-adapter-operator-evidence --project ariadne --target github --from vault/projects/ariadne/control/live-adapter-evidence-templates/live-adapter-evidence-template-github.md --by james
 npm run ariadne -- live-adapter-operator-evidence-audit --project ariadne
 npm run ariadne -- github-mutation-execute --project ariadne --plan mutation-readiness-github-... --confirm-plan mutation-readiness-github-...
@@ -285,6 +288,8 @@ Artifacts:
 - `control/live-adapter-evidence-templates.json`
 - `control/live-adapter-evidence-templates.md`
 - `control/live-adapter-evidence-templates/live-adapter-evidence-template-<target>.md`
+- `control/live-adapter-operator-evidence-workplan.json`
+- `control/live-adapter-operator-evidence-workplan.md`
 - `control/live-adapter-operator-evidence/operator-evidence-<target>-<timestamp>.json`
 - `control/live-adapter-operator-evidence/operator-evidence-<target>-<timestamp>.md`
 - `control/live-adapter-operator-evidence-audit.json`

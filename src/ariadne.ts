@@ -53,6 +53,7 @@ import {
   liveAdapterOperatorEvidenceTargetOption,
   recordLiveAdapterOperatorEvidence
 } from "./liveAdapterOperatorEvidence.js";
+import { generateLiveAdapterOperatorEvidenceWorkplan } from "./liveAdapterOperatorEvidenceWorkplan.js";
 import { generateLiveAdapterReadiness } from "./liveAdapterReadiness.js";
 import { generateLiveAdapterReviewSession } from "./liveAdapterReviewSession.js";
 import { generateLiveAdapterTargetDossier, liveAdapterDossierTargetOption } from "./liveAdapterTargetDossier.js";
@@ -187,6 +188,7 @@ function usage(): string {
     "  ariadne live-adapter-evidence-templates --project <project>",
     "  ariadne live-adapter-operator-evidence --project <project> --target <github|deployment|hermes-cron|openscorpion|gsd2|notebooklm> --from <filled-template.md> --by <operator> [--notes <text>]",
     "  ariadne live-adapter-operator-evidence-audit --project <project>",
+    "  ariadne live-adapter-operator-evidence-workplan --project <project>",
     "  ariadne roadmap-completion-audit --project <project>",
     "  ariadne mutation-dry-run --project <project> --plan <id|json> [--timeout-ms <ms>]",
     "  ariadne mutation-execute --project <project> --plan <id|json> --confirm-plan <id> [--timeout-ms <ms>]",
@@ -1212,6 +1214,16 @@ async function main(): Promise<void> {
     console.log(`Complete targets: ${result.audit.summary.completeTargets}`);
     console.log(`Missing targets: ${result.audit.summary.missingTargets}`);
     console.log(`Mutation approved: ${result.audit.mutationApproved}`);
+    return;
+  }
+
+  if (parsed.command === "live-adapter-operator-evidence-workplan") {
+    const result = await generateLiveAdapterOperatorEvidenceWorkplan({ project, vaultRoot });
+    console.log(`Live adapter operator evidence workplan: ${result.markdownPath}`);
+    console.log(`Status: ${result.workplan.status}`);
+    console.log(`Complete targets: ${result.workplan.summary.completeTargets}`);
+    console.log(`Import commands: ${result.workplan.summary.importCommands}`);
+    console.log(`Mutation approved: ${result.workplan.mutationApproved}`);
     return;
   }
 
