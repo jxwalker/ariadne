@@ -125,7 +125,7 @@ The repair plan does not approve or execute anything. It classifies blocker type
 
 `live-adapter-operator-evidence-check-all` evaluates every current target workspace file with the same preflight logic, writes one aggregate batch report, and refreshes the queue. It defaults to the workspace when it exists; `--source templates` keeps the older blank-template preflight available. It improves evaluation coverage by making unchecked targets explicit before an operator imports evidence.
 
-`live-adapter-operator-evidence-queue` evaluates the operator work queue after preflight checks. It does not prove evidence by itself; it tells the operator which targets are unchecked, which need more evidence, and which checked files are ready to import.
+`live-adapter-operator-evidence-queue` evaluates the operator work queue after preflight checks. It does not prove evidence by itself; it tells the operator which targets are unchecked, which need more evidence, and which checked files are ready to import. `roadmap-completion-audit` uses that queue to identify the next target and print target-scoped workspace, assist, preflight, import-ready, review-session, and cutover commands so operators can advance one adapter without touching the rest of the estate.
 
 `live-adapter-operator-evidence-workspace` evaluates the queue into concrete operator paperwork. It proves the remaining work has target-specific files, check commands, import commands, support refs, and GBrain note slots, but it still does not prove the evidence has been filled or approved.
 

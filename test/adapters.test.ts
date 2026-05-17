@@ -1432,9 +1432,32 @@ describe("roadmap adapters", () => {
     const operatorEvidenceRequirement = roadmapCompletion.audit.requirements.find((item) => item.id === "operator-evidence");
     expect(operatorEvidenceRequirement?.status).toBe("blocked");
     expect(operatorEvidenceRequirement?.detail).toContain("missing section");
+    expect(operatorEvidenceRequirement?.detail).toContain("Next target is");
+    const nextTarget = operatorEvidenceRequirement?.detail.match(/Next target is ([a-z0-9-]+)/)?.[1];
+    expect(nextTarget).toBeTruthy();
     expect(operatorEvidenceRequirement?.nextCommands.length).toBeGreaterThan(0);
     expect(operatorEvidenceRequirement?.nextCommands).toContain("npm run ariadne -- live-adapter-operator-evidence-workplan --project ariadne");
     expect(operatorEvidenceRequirement?.nextCommands).toContain("npm run ariadne -- live-adapter-operator-evidence-queue --project ariadne");
+    expect(
+      operatorEvidenceRequirement?.nextCommands.some((command) =>
+        command.includes(`live-adapter-operator-evidence-workspace --project ariadne --target ${nextTarget}`)
+      )
+    ).toBe(true);
+    expect(
+      operatorEvidenceRequirement?.nextCommands.some((command) =>
+        command.includes(`live-adapter-operator-evidence-assist --project ariadne --target ${nextTarget}`)
+      )
+    ).toBe(true);
+    expect(
+      operatorEvidenceRequirement?.nextCommands.some((command) =>
+        command.includes(`live-adapter-operator-evidence-check-all --project ariadne --source workspace --target ${nextTarget}`)
+      )
+    ).toBe(true);
+    expect(
+      operatorEvidenceRequirement?.nextCommands.some((command) =>
+        command.includes(`live-adapter-operator-evidence-import-ready --project ariadne --by <operator> --target ${nextTarget}`)
+      )
+    ).toBe(true);
     expect(
       operatorEvidenceRequirement?.nextCommands.some((command) =>
         command.includes("control/operator-evidence/<target>/operator-evidence.md")
@@ -1443,6 +1466,16 @@ describe("roadmap adapters", () => {
     expect(operatorEvidenceRequirement?.nextCommands).toContain(
       "npm run ariadne -- live-adapter-operator-evidence-check-all --project ariadne --source workspace"
     );
+    const cutoverRequirement = roadmapCompletion.audit.requirements.find((item) => item.id === "live-adapter-cutover");
+    const reviewRequirement = roadmapCompletion.audit.requirements.find((item) => item.id === "operator-review-session");
+    expect(cutoverRequirement?.nextCommands).toContain(
+      `npm run ariadne -- live-adapter-cutover-audit --project ariadne --target ${nextTarget}`
+    );
+    expect(cutoverRequirement?.nextCommands).toContain("npm run ariadne -- live-adapter-cutover-audit --project ariadne");
+    expect(reviewRequirement?.nextCommands).toContain(
+      `npm run ariadne -- live-adapter-review-session --project ariadne --target ${nextTarget}`
+    );
+    expect(reviewRequirement?.nextCommands).toContain("npm run ariadne -- live-adapter-review-session --project ariadne");
     const console = await generateConsoleData({ project: "ariadne", vaultRoot });
     expect(console.data.summary.sleepRoutines).toBe(1);
     expect(console.data.summary.memoryProposals).toBe(1);
