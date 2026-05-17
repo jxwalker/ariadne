@@ -33,6 +33,7 @@ import { draftOpenScorpionActivity, importInfraSnapshot } from "../src/infraSnap
 import { collectLocalInfraSnapshot, collectSshInfraSnapshot, parseSshInventory } from "../src/liveInventory.js";
 import { generateLiveAdapterApprovalPack } from "../src/liveAdapterApprovalPack.js";
 import { recordLiveAdapterApprovalReview } from "../src/liveAdapterApprovalReview.js";
+import { generateLiveAdapterApprovalReviewAudit } from "../src/liveAdapterApprovalReviewAudit.js";
 import { generateLiveAdapterNextActions } from "../src/liveAdapterNextActions.js";
 import { generateLiveAdapterReadiness } from "../src/liveAdapterReadiness.js";
 import { planMutationReadiness } from "../src/mutationReadiness.js";
@@ -745,6 +746,16 @@ describe("roadmap adapters", () => {
       notes: "Accepted the GitHub packet as complete for the fixture; this is not mutation approval."
     });
     expect(githubApprovalReview.record.mutationApproved).toBe(false);
+    const approvalReviewAudit = await generateLiveAdapterApprovalReviewAudit({ project: "ariadne", vaultRoot });
+    expect(approvalReviewAudit.audit.status).toBe("blocked");
+    expect(approvalReviewAudit.audit.summary.currentAcceptedReviews).toBe(1);
+    expect(approvalReviewAudit.audit.summary.invalidRecords).toBe(0);
+    const githubReviewAudit = approvalReviewAudit.audit.targets.find((target) => target.target === "github");
+    const deploymentReviewAudit = approvalReviewAudit.audit.targets.find((target) => target.target === "deployment");
+    expect(githubReviewAudit?.status).toBe("current_accepted");
+    expect(githubReviewAudit?.currentAcceptedReviewCount).toBe(1);
+    expect(deploymentReviewAudit?.status).toBe("missing_review");
+    expect(deploymentReviewAudit?.blockers).toContain("no accepted operator review exists");
     const liveAdapterReadiness = await generateLiveAdapterReadiness({ project: "ariadne", vaultRoot });
     expect(liveAdapterReadiness.report.status).toBe("blocked");
     const githubReadiness = liveAdapterReadiness.report.targets.find((target) => target.target === "github");
@@ -909,6 +920,9 @@ describe("roadmap adapters", () => {
     expect(console.data.summary.liveAdapterActionItems).toBeGreaterThan(0);
     expect(console.data.summary.liveAdapterApprovalPackets).toBe(5);
     expect(console.data.summary.acceptedLiveAdapterApprovalReviews).toBe(1);
+    expect(console.data.summary.liveAdapterApprovalReviewAuditStatus).toBe("blocked");
+    expect(console.data.summary.currentLiveAdapterApprovalReviews).toBe(1);
+    expect(console.data.liveAdapterApprovalReviewAudit?.summary.currentAcceptedReviews).toBe(1);
     expect(console.data.liveAdapterNextActions?.targets.some((target) => target.target === "github")).toBe(true);
     expect(console.data.liveAdapterApprovalPack?.packets.some((packet) => packet.target === "deployment")).toBe(true);
     expect(
@@ -927,6 +941,7 @@ describe("roadmap adapters", () => {
     const nextActionsCheck = artifactChecks.report.checks.find((check) => check.id === "live-adapter-next-actions");
     const approvalPackCheck = artifactChecks.report.checks.find((check) => check.id === "live-adapter-approval-pack");
     const approvalReviewCheck = artifactChecks.report.checks.find((check) => check.id === "live-adapter-approval-reviews");
+    const approvalReviewAuditCheck = artifactChecks.report.checks.find((check) => check.id === "live-adapter-approval-review-audit");
     const mutationDryRunCheck = artifactChecks.report.checks.find((check) => check.id === "mutation-dry-runs");
     const mutationExecutionCheck = artifactChecks.report.checks.find((check) => check.id === "mutation-executions");
     expect(coordinationCheck?.matches?.some((match) => match.includes("coordination/hermes"))).toBe(false);
@@ -937,6 +952,7 @@ describe("roadmap adapters", () => {
     expect(nextActionsCheck?.status).toBe("present");
     expect(approvalPackCheck?.status).toBe("present");
     expect(approvalReviewCheck?.status).toBe("present");
+    expect(approvalReviewAuditCheck?.status).toBe("present");
     expect(mutationDryRunCheck?.status).toBe("present");
     expect(mutationExecutionCheck?.status).toBe("present");
   });

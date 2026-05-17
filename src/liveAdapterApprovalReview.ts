@@ -42,6 +42,7 @@ export async function recordLiveAdapterApprovalReview(input: {
     status: input.status,
     reviewedBy: input.reviewedBy,
     packetRef,
+    packetGeneratedAt: packet.generatedAt,
     evidenceRefs: input.evidenceRefs,
     notes: input.notes,
     mutationApproved: false
@@ -128,6 +129,7 @@ function renderReview(record: LiveAdapterApprovalReview): string {
     `Recorded: ${record.recordedAt}`,
     `Reviewed by: ${record.reviewedBy}`,
     `Packet: ${record.packetRef}`,
+    `Packet generated: ${record.packetGeneratedAt}`,
     `Mutation approved: ${record.mutationApproved}`,
     "",
     "## Evidence",

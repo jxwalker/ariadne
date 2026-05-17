@@ -1,0 +1,91 @@
+{
+  "schemaVersion": 1,
+  "project": "ariadne",
+  "generatedAt": "2026-05-17T00:28:19.922Z",
+  "status": "blocked",
+  "approvalPackRef": "control/live-adapter-approval-pack.json",
+  "summary": {
+    "targets": 6,
+    "packetTargets": 6,
+    "reviewRecords": 0,
+    "currentAcceptedReviews": 0,
+    "staleAcceptedReviews": 0,
+    "invalidRecords": 0,
+    "missingEvidenceRefs": 0
+  },
+  "targets": [
+    {
+      "target": "github",
+      "status": "missing_review",
+      "packetPresent": true,
+      "reviewCount": 0,
+      "acceptedReviewCount": 0,
+      "currentAcceptedReviewCount": 0,
+      "blockers": [
+        "no accepted operator review exists"
+      ],
+      "evidenceRefs": []
+    },
+    {
+      "target": "deployment",
+      "status": "missing_review",
+      "packetPresent": true,
+      "reviewCount": 0,
+      "acceptedReviewCount": 0,
+      "currentAcceptedReviewCount": 0,
+      "blockers": [
+        "no accepted operator review exists"
+      ],
+      "evidenceRefs": []
+    },
+    {
+      "target": "hermes-cron",
+      "status": "missing_review",
+      "packetPresent": true,
+      "reviewCount": 0,
+      "acceptedReviewCount": 0,
+      "currentAcceptedReviewCount": 0,
+      "blockers": [
+        "no accepted operator review exists"
+      ],
+      "evidenceRefs": []
+    },
+    {
+      "target": "openscorpion",
+      "status": "missing_review",
+      "packetPresent": true,
+      "reviewCount": 0,
+      "acceptedReviewCount": 0,
+      "currentAcceptedReviewCount": 0,
+      "blockers": [
+        "no accepted operator review exists"
+      ],
+      "evidenceRefs": []
+    },
+    {
+      "target": "gsd2",
+      "status": "missing_review",
+      "packetPresent": true,
+      "reviewCount": 0,
+      "acceptedReviewCount": 0,
+      "currentAcceptedReviewCount": 0,
+      "blockers": [
+        "no accepted operator review exists"
+      ],
+      "evidenceRefs": []
+    },
+    {
+      "target": "notebooklm",
+      "status": "missing_review",
+      "packetPresent": true,
+      "reviewCount": 0,
+      "acceptedReviewCount": 0,
+      "currentAcceptedReviewCount": 0,
+      "blockers": [
+        "no accepted operator review exists"
+      ],
+      "evidenceRefs": []
+    }
+  ],
+  "invalidRecords": []
+}

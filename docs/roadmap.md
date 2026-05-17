@@ -125,10 +125,11 @@ Implemented:
 - per-target live adapter next-action report that turns readiness blockers into operator steps
 - per-target live adapter approval packs that draft operator evidence checklists without approving or executing adapters
 - operator review records for live-adapter approval packets, with `mutationApproved=false`
+- approval-review audit reports that validate accepted packet reviews before readiness can rely on them
 
 Next:
 
-- target-specific live adapters should replace placeholder shell commands only after external credentials, rollback, post-verification contracts, accepted approval-packet review records, dry-run evidence, and execution evidence are proven per target
+- target-specific live adapters should replace placeholder shell commands only after external credentials, rollback, post-verification contracts, audit-current approval-packet review records, dry-run evidence, and execution evidence are proven per target
 
 ## Milestone 6: Infrastructure Substrate
 
@@ -187,6 +188,7 @@ Implemented:
 - console visual regression checks
 - browser-backed console screenshot checks
 - evaluation trend charts
+- approval-review audit status and current-review counts in the operations console
 
 ## Milestone 9: Sleep, Memory, And Agent Mail
 

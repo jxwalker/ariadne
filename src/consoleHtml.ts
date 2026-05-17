@@ -162,6 +162,7 @@ function renderConsole(data: ConsoleData): string {
     metric("Adapter Actions", data.summary.liveAdapterActionItems ?? "none", "operator"),
     metric("Approval Packs", data.summary.liveAdapterApprovalPackets ?? "none", "operator"),
     metric("Packet Reviews", data.summary.acceptedLiveAdapterApprovalReviews ?? "none", `${data.summary.liveAdapterApprovalReviews ?? 0} total`),
+    metric("Review Audit", data.summary.liveAdapterApprovalReviewAuditStatus ?? "none", `${data.summary.currentLiveAdapterApprovalReviews ?? 0} current`),
     metric("Hermes", data.summary.hermesCronSnapshots, `${data.summary.hermesCronProposals} proposals`),
     metric("Recovery", data.summary.recoveryIssues, "issues"),
     metric("Browser", data.summary.consoleBrowserChecks ?? "none", "console"),
@@ -459,11 +460,7 @@ function liveAdapters(data: ConsoleData): string {
   if (!readiness && !nextActions && !approvalPack) return empty("No live-adapter readiness evidence is available.");
   const actionsByTarget = new Map(nextActions?.targets.map((target) => [target.target, target.actions]) ?? []);
   const approvalTargets = new Set(approvalPack?.packets.map((packet) => packet.target) ?? []);
-  const acceptedReviewsByTarget = new Map(
-    (data.liveAdapterApprovalReviews ?? [])
-      .filter((review) => review.status === "accepted")
-      .map((review) => [review.target, review.id])
-  );
+  const reviewAuditByTarget = new Map(data.liveAdapterApprovalReviewAudit?.targets.map((target) => [target.target, target]) ?? []);
   const rows =
     readiness?.targets.map((target) => ({
       target: target.target,
@@ -472,10 +469,10 @@ function liveAdapters(data: ConsoleData): string {
       actionCount: actionsByTarget.get(target.target)?.length ?? 0,
       nextAction: actionsByTarget.get(target.target)?.[0]?.title ?? "none",
       approvalPacket: approvalTargets.has(target.target) ? "yes" : "no",
-      packetReview: acceptedReviewsByTarget.has(target.target) ? "accepted" : "missing"
+      packetReview: reviewAuditByTarget.get(target.target)?.status ?? "missing"
     })) ?? [];
   return [
-    `<div class="visual-status"><strong class="${statusClass(readiness?.status)}">${escapeHtml(readiness?.status ?? "unknown")}</strong><span>${escapeHtml(`${readiness?.summary.ready ?? 0} ready / ${readiness?.summary.blocked ?? 0} blocked / ${nextActions?.summary.actionItems ?? 0} actions / ${approvalPack?.summary.packets ?? 0} approval packets / ${data.summary.acceptedLiveAdapterApprovalReviews ?? 0} accepted reviews`)}</span></div>`,
+    `<div class="visual-status"><strong class="${statusClass(readiness?.status)}">${escapeHtml(readiness?.status ?? "unknown")}</strong><span>${escapeHtml(`${readiness?.summary.ready ?? 0} ready / ${readiness?.summary.blocked ?? 0} blocked / ${nextActions?.summary.actionItems ?? 0} actions / ${approvalPack?.summary.packets ?? 0} approval packets / ${data.summary.currentLiveAdapterApprovalReviews ?? 0} current reviews`)}</span></div>`,
     '<div class="table-wrap"><table><thead><tr><th>Target</th><th>Status</th><th>Actions</th><th>Approval Pack</th><th>Packet Review</th><th>Next</th><th>Blockers</th></tr></thead><tbody>',
     ...rows.map(
       (row) =>
