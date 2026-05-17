@@ -843,6 +843,12 @@ describe("roadmap adapters", () => {
     expect(deploymentRepair?.approvalCommand).toContain("--target deployment");
     expect(hermesRepair?.status).toBe("missing_plan");
     expect(hermesRepair?.regenerationCommand).toContain("hermes-cron-mutation-plan");
+    const repairPlanMarkdown = await fs.readFile(repairPlan.markdownPath, "utf8");
+    expect(repairPlanMarkdown).toContain("## Target Commands");
+    expect(repairPlanMarkdown).toContain("#### Approval Request");
+    expect(repairPlanMarkdown).toContain("npm run ariadne -- approval-request --project <project> --by <operator> --target deployment");
+    expect(repairPlanMarkdown).toContain("#### Next Action Commands");
+    expect(repairPlanMarkdown).toContain("live-adapter-operator-evidence --project <project> --target deployment");
     const approvalPack = await generateLiveAdapterApprovalPack({ project: "ariadne", vaultRoot });
     expect(approvalPack.report.status).toBe("ready_for_operator_review");
     expect(approvalPack.report.summary.packets).toBe(5);
@@ -1410,6 +1416,8 @@ describe("roadmap adapters", () => {
     expect(liveAdapterHtml).toContain("Assist packets are read-only collection aids");
     expect(liveAdapterHtml).toContain("Operator evidence records do not approve mutation");
     expect(liveAdapterHtml).toContain("Mutation readiness repair is read-only guidance");
+    expect(liveAdapterHtml).toContain("Approval Command");
+    expect(liveAdapterHtml).toContain("approval-request --project");
     expect(liveAdapterHtml).toContain("operator_action_required");
     expect(liveAdapterHtml).toContain("deployment-mutation-plan");
     expect(liveAdapterHtml).toContain("operator evidence hermes-cron");

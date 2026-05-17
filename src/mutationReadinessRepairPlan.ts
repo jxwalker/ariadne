@@ -161,6 +161,32 @@ function renderReport(report: MutationReadinessRepairPlan): string {
         `| ${target.target} | ${target.status} | ${target.latestPlanId ?? "none"} | ${tableCell(inlineList(target.repairableBlockers))} | ${tableCell(inlineList(target.operatorBlockers))} | ${tableCell(target.regenerationCommand)} |`
     ),
     "",
+    "## Target Commands",
+    "",
+    ...report.targets.flatMap((target) => [
+      `### ${target.target}`,
+      "",
+      `Status: ${target.status}`,
+      `Latest plan: ${target.latestPlanId ?? "none"}`,
+      "",
+      ...approvalRequestSection(target.approvalCommand),
+      "",
+      "#### Regeneration",
+      "",
+      "```bash",
+      target.regenerationCommand,
+      "```",
+      "",
+      "#### Next Action Commands",
+      "",
+      ...list(target.nextActionCommands),
+      "",
+      "#### Evidence Refs",
+      "",
+      ...list(target.evidenceRefs),
+      ""
+    ]),
+    "",
     "## Notes",
     "",
     "- This report never imports evidence, grants approval, runs dry-runs, or executes live commands.",
@@ -171,6 +197,15 @@ function renderReport(report: MutationReadinessRepairPlan): string {
 
 function inlineList(items: string[]): string {
   return items.length > 0 ? items.join("; ") : "none";
+}
+
+function approvalRequestSection(command: string | undefined): string[] {
+  if (!command) return ["#### Approval Request", "", "No approval request command is available for this target."];
+  return ["#### Approval Request", "", "```bash", command, "```"];
+}
+
+function list(items: string[]): string[] {
+  return items.length === 0 ? ["- none"] : items.map((item) => `- ${item}`);
 }
 
 function tableCell(value: string): string {
