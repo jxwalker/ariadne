@@ -1464,6 +1464,26 @@ describe("roadmap adapters", () => {
     expect(status.latestE2eSmoke?.passed).toBeGreaterThan(0);
     expect(status.latestE2eSmoke?.reportRef).toContain("evaluation/e2e-smoke-");
 
+    // Simulate a stale audit by zeroing operatorEvidenceAuditJson summary.missingSections
+    // and clearing each missing target's missingSections array at operatorEvidenceAuditPath.
+    // projectStatus should still derive liveAdapterOperatorEvidenceMissingSections from
+    // summary.missingTargets * REQUIRED_OPERATOR_EVIDENCE_SECTION_LABELS.length.
+    const operatorEvidenceAuditPath = path.join(
+      vaultRoot,
+      "projects",
+      "ariadne",
+      "control",
+      "live-adapter-operator-evidence-audit.json"
+    );
+    const operatorEvidenceAuditJson = JSON.parse(await fs.readFile(operatorEvidenceAuditPath, "utf8"));
+    operatorEvidenceAuditJson.summary.missingSections = 0;
+    operatorEvidenceAuditJson.targets = operatorEvidenceAuditJson.targets.map((target: { status: string; missingSections: string[] }) =>
+      target.status === "missing_evidence" ? { ...target, missingSections: [] } : target
+    );
+    await fs.writeFile(operatorEvidenceAuditPath, `${JSON.stringify(operatorEvidenceAuditJson, null, 2)}\n`);
+    const staleStatus = await projectStatus(vaultRoot, "ariadne");
+    expect(staleStatus.liveAdapterOperatorEvidenceMissingSections).toBeGreaterThan(0);
+
     const artifactChecks = await generateArtifactCheckReport({ project: "ariadne", vaultRoot });
     const coordinationCheck = artifactChecks.report.checks.find((check) => check.id === "coordination-records");
     const hermesCheck = artifactChecks.report.checks.find((check) => check.id === "hermes-cron-snapshots");

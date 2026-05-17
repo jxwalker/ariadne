@@ -449,7 +449,7 @@ The control report is the answer to: what is proven, what is missing, and what g
 
 `mutation-readiness-repair-plan` is the non-mutating follow-up when live-adapter readiness is blocked. It refreshes the mutation-readiness audit and live-adapter next-actions report, then classifies each target as audit-passed, missing a plan, repairable by regenerating a target-specific plan, or waiting on operator evidence/approval. The report writes `control/mutation-readiness-repair-plan.json` and `.md` with approval-request and regeneration command scaffolds, but always records `mutationAllowed=false`.
 
-`status` is the quick operator summary for the current vault state. When the artifacts exist, it prints the roadmap-completion blockers, mutation-repair counts, operator-evidence completeness, operator-queue readiness, cutover blocked gates, review-session workload, and latest e2e-smoke result without regenerating or approving anything.
+`status` is the quick operator summary for the current vault state. When the artifacts exist, it prints the roadmap-completion blockers, mutation-repair counts, operator-evidence completeness, operator-queue readiness, cutover blocked gates, review-session workload, and latest e2e-smoke result without regenerating or approving anything. For older operator-evidence audits that predate missing-section expansion, `status` derives the missing section workload from the missing target count rather than reporting a misleading zero.
 
 The static console also reads this artifact. Run `console-data` or `console-html --refresh-data` after the repair plan to see each target's repair status, blockers, and regeneration scaffold in the operations view.
 
