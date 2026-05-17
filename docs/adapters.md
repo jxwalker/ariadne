@@ -210,7 +210,7 @@ Target-specific execute wrappers hard-code that guard for the live adapters: `gi
 
 `live-adapter-readiness` reports whether each target has enough evidence to replace placeholder shell commands with a real adapter. A target is ready only when it has an audit-passed readiness plan, passed dry-run evidence, and passed target-guarded execution evidence. The report is still non-mutating; it writes `control/live-adapter-readiness.json` and `.md`.
 
-`live-adapter-next-actions` turns the readiness blockers into an operator packet. It lists the approval request, target-specific mutation plan, dry-run, target-guarded execution, or placeholder-replacement step still needed for each target. It does not decide approvals or run commands; it writes `control/live-adapter-next-actions.json` and `.md`.
+`live-adapter-next-actions` turns readiness and operator-evidence blockers into an operator packet. It lists the filled-evidence import, approval request, target-specific mutation plan, dry-run, target-guarded execution, or placeholder-replacement step still needed for each target. It does not decide approvals or run commands; it writes `control/live-adapter-next-actions.json` and `.md`.
 
 `live-adapter-approval-pack` turns those next actions into operator review packets. Each packet gives the recommended risk, approval-request command draft, target-specific evidence checklist, mutation-plan command, dry-run step, execution step, rollback requirement, and post-verification requirement. Ariadne does not approve its own adapters; this command writes `control/live-adapter-approval-pack.json` and `.md` for all targets, or `control/live-adapter-approval-pack-<target>.json` and `.md` when `--target` narrows the report.
 

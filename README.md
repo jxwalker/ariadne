@@ -34,7 +34,7 @@ The system starts with source-grounded intake: drawings, white papers, dictated 
 - Record behavior-confidence checks for approved review fixtures, mutation gates, approval workflow records, read-only infrastructure snapshots, and non-submitting governance drafts.
 - Record mutation-readiness plans that bind approval, auth evidence, dry runs, live commands, rollback, and verification gates before live adapters are considered.
 - Audit mutation-readiness plans before any live adapter is implemented or enabled.
-- Report per-target live adapter readiness from approved plans, passed dry-runs, and target-guarded execution evidence.
+- Report per-target live adapter readiness and next actions from missing operator evidence, approved plans, passed dry-runs, and target-guarded execution evidence.
 - Generate live-adapter next-action packets from the current blockers.
 - Generate live-adapter approval packs that draft target-specific operator checklists without approving or executing anything.
 - Record operator reviews of live-adapter approval packets without granting mutation authority.

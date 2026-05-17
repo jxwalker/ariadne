@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "project": "ariadne",
-  "generatedAt": "2026-05-17T03:27:57.977Z",
+  "generatedAt": "2026-05-17T04:46:39.073Z",
   "target": "github",
   "status": "ready_for_operator_review",
   "readinessRef": "projects/ariadne/control/live-adapter-readiness.json",
@@ -12,7 +12,7 @@
   "summary": {
     "blockers": 4,
     "reviewAuditBlockers": 1,
-    "actions": 4,
+    "actions": 5,
     "packetPresent": true,
     "reviewAuditStatus": "missing_review",
     "mutationPlans": 1,
@@ -40,6 +40,17 @@
     ]
   },
   "nextActions": [
+    {
+      "id": "github-operator-evidence",
+      "status": "pending",
+      "title": "Fill and import operator evidence",
+      "rationale": "The target has no imported operator evidence record. Fill the generated template with real observations before packet review or cutover.",
+      "command": "npm run ariadne -- live-adapter-operator-evidence --project <project> --target github --from vault/projects/<project>/control/live-adapter-evidence-templates/live-adapter-evidence-template-github.md --by <operator>",
+      "evidenceRefs": [
+        "control/live-adapter-evidence-templates.json",
+        "control/live-adapter-evidence-templates/live-adapter-evidence-template-github.md"
+      ]
+    },
     {
       "id": "github-approval-pack-review",
       "status": "pending",
@@ -108,12 +119,15 @@
       "no passed target-guarded execution evidence exists"
     ],
     "nextActions": [
+      "pending: Fill and import operator evidence",
       "pending: Record operator review of the approval packet",
       "pending: Resolve existing readiness plan blockers",
       "pending: Run the reviewed dry-run command",
       "blocked: Capture target-guarded execution evidence"
     ],
     "evidenceRefs": [
+      "control/live-adapter-evidence-templates.json",
+      "control/live-adapter-evidence-templates/live-adapter-evidence-template-github.md",
       "control/mutation-readiness-audit.json"
     ]
   },
@@ -179,6 +193,8 @@
     "projects/ariadne/control/live-adapter-next-actions.json",
     "projects/ariadne/control/live-adapter-approval-pack.json",
     "projects/ariadne/control/live-adapter-approval-review-audit.json",
-    "projects/ariadne/control/mutation-readiness-audit.json"
+    "projects/ariadne/control/mutation-readiness-audit.json",
+    "projects/ariadne/control/live-adapter-evidence-templates.json",
+    "projects/ariadne/control/live-adapter-evidence-templates/live-adapter-evidence-template-github.md"
   ]
 }

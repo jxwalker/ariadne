@@ -122,7 +122,7 @@ Implemented:
 - target-guarded live mutation execution wrapper
 - per-target execute wrappers that delegate to target-guarded execution after readiness plans pass audit, dry-run, rollback, and post-verification review
 - per-target live adapter readiness report for approved plans, passed dry-runs, and target-guarded execution evidence
-- per-target live adapter next-action report that turns readiness blockers into operator steps
+- per-target live adapter next-action report that turns operator-evidence and readiness blockers into operator steps
 - per-target live adapter approval packs that draft operator evidence checklists without approving or executing adapters
 - operator review records for live-adapter approval packets, with `mutationApproved=false`
 - approval-review audit reports that validate accepted packet reviews before readiness can rely on them

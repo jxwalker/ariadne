@@ -1,15 +1,16 @@
 {
   "schemaVersion": 1,
   "project": "ariadne",
-  "generatedAt": "2026-05-17T03:27:57.975Z",
+  "generatedAt": "2026-05-17T04:46:39.064Z",
   "status": "actions_required",
   "summary": {
     "targets": 6,
     "ready": 0,
     "blocked": 6,
-    "actionItems": 34
+    "actionItems": 40
   },
   "readinessRef": "projects/ariadne/control/live-adapter-readiness.json",
+  "operatorEvidenceAuditRef": "projects/ariadne/control/live-adapter-operator-evidence-audit.json",
   "targets": [
     {
       "target": "github",
@@ -22,6 +23,17 @@
         "no passed target-guarded execution evidence exists"
       ],
       "actions": [
+        {
+          "id": "github-operator-evidence",
+          "status": "pending",
+          "title": "Fill and import operator evidence",
+          "rationale": "The target has no imported operator evidence record. Fill the generated template with real observations before packet review or cutover.",
+          "command": "npm run ariadne -- live-adapter-operator-evidence --project <project> --target github --from vault/projects/<project>/control/live-adapter-evidence-templates/live-adapter-evidence-template-github.md --by <operator>",
+          "evidenceRefs": [
+            "control/live-adapter-evidence-templates.json",
+            "control/live-adapter-evidence-templates/live-adapter-evidence-template-github.md"
+          ]
+        },
         {
           "id": "github-approval-pack-review",
           "status": "pending",
@@ -76,6 +88,17 @@
         "no passed target-guarded execution evidence exists"
       ],
       "actions": [
+        {
+          "id": "deployment-operator-evidence",
+          "status": "pending",
+          "title": "Fill and import operator evidence",
+          "rationale": "The target has no imported operator evidence record. Fill the generated template with real observations before packet review or cutover.",
+          "command": "npm run ariadne -- live-adapter-operator-evidence --project <project> --target deployment --from vault/projects/<project>/control/live-adapter-evidence-templates/live-adapter-evidence-template-deployment.md --by <operator>",
+          "evidenceRefs": [
+            "control/live-adapter-evidence-templates.json",
+            "control/live-adapter-evidence-templates/live-adapter-evidence-template-deployment.md"
+          ]
+        },
         {
           "id": "deployment-approval-pack-review",
           "status": "pending",
@@ -151,6 +174,17 @@
       ],
       "actions": [
         {
+          "id": "hermes-cron-operator-evidence",
+          "status": "pending",
+          "title": "Fill and import operator evidence",
+          "rationale": "The target has no imported operator evidence record. Fill the generated template with real observations before packet review or cutover.",
+          "command": "npm run ariadne -- live-adapter-operator-evidence --project <project> --target hermes-cron --from vault/projects/<project>/control/live-adapter-evidence-templates/live-adapter-evidence-template-hermes-cron.md --by <operator>",
+          "evidenceRefs": [
+            "control/live-adapter-evidence-templates.json",
+            "control/live-adapter-evidence-templates/live-adapter-evidence-template-hermes-cron.md"
+          ]
+        },
+        {
           "id": "hermes-cron-approval-pack-review",
           "status": "pending",
           "title": "Record operator review of the approval packet",
@@ -224,6 +258,17 @@
         "no passed target-guarded execution evidence exists"
       ],
       "actions": [
+        {
+          "id": "openscorpion-operator-evidence",
+          "status": "pending",
+          "title": "Fill and import operator evidence",
+          "rationale": "The target has no imported operator evidence record. Fill the generated template with real observations before packet review or cutover.",
+          "command": "npm run ariadne -- live-adapter-operator-evidence --project <project> --target openscorpion --from vault/projects/<project>/control/live-adapter-evidence-templates/live-adapter-evidence-template-openscorpion.md --by <operator>",
+          "evidenceRefs": [
+            "control/live-adapter-evidence-templates.json",
+            "control/live-adapter-evidence-templates/live-adapter-evidence-template-openscorpion.md"
+          ]
+        },
         {
           "id": "openscorpion-approval-pack-review",
           "status": "pending",
@@ -299,6 +344,17 @@
       ],
       "actions": [
         {
+          "id": "gsd2-operator-evidence",
+          "status": "pending",
+          "title": "Fill and import operator evidence",
+          "rationale": "The target has no imported operator evidence record. Fill the generated template with real observations before packet review or cutover.",
+          "command": "npm run ariadne -- live-adapter-operator-evidence --project <project> --target gsd2 --from vault/projects/<project>/control/live-adapter-evidence-templates/live-adapter-evidence-template-gsd2.md --by <operator>",
+          "evidenceRefs": [
+            "control/live-adapter-evidence-templates.json",
+            "control/live-adapter-evidence-templates/live-adapter-evidence-template-gsd2.md"
+          ]
+        },
+        {
           "id": "gsd2-approval-pack-review",
           "status": "pending",
           "title": "Record operator review of the approval packet",
@@ -372,6 +428,17 @@
         "no passed target-guarded execution evidence exists"
       ],
       "actions": [
+        {
+          "id": "notebooklm-operator-evidence",
+          "status": "pending",
+          "title": "Fill and import operator evidence",
+          "rationale": "The target has no imported operator evidence record. Fill the generated template with real observations before packet review or cutover.",
+          "command": "npm run ariadne -- live-adapter-operator-evidence --project <project> --target notebooklm --from vault/projects/<project>/control/live-adapter-evidence-templates/live-adapter-evidence-template-notebooklm.md --by <operator>",
+          "evidenceRefs": [
+            "control/live-adapter-evidence-templates.json",
+            "control/live-adapter-evidence-templates/live-adapter-evidence-template-notebooklm.md"
+          ]
+        },
         {
           "id": "notebooklm-approval-pack-review",
           "status": "pending",

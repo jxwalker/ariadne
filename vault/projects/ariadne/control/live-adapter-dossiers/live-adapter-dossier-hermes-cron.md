@@ -2,13 +2,13 @@
 
 Project: ariadne
 Status: ready_for_operator_review
-Generated: 2026-05-17T03:27:57.977Z
+Generated: 2026-05-17T04:46:39.072Z
 
 ## Summary
 
 - Blockers: 5
 - Review audit blockers: 1
-- Actions: 6
+- Actions: 7
 - Approval packet present: true
 - Review audit status: missing_review
 - Mutation plans: 0/0 ready
@@ -25,6 +25,7 @@ Generated: 2026-05-17T03:27:57.977Z
 
 ## Next Actions
 
+- pending: Fill and import operator evidence - npm run ariadne -- live-adapter-operator-evidence --project <project> --target hermes-cron --from vault/projects/<project>/control/live-adapter-evidence-templates/live-adapter-evidence-template-hermes-cron.md --by <operator>
 - pending: Record operator review of the approval packet - npm run ariadne -- live-adapter-approval-review --project <project> --target hermes-cron --by <operator> --status accepted --packet control/live-adapter-approval-pack.json --evidence <operator-review-evidence>
 - pending: Record an operator approval request - npm run ariadne -- approval-request --project <project> --by <operator> --target hermes-cron --action "<bounded action>" --risk <low|medium|high> --reason "<why this target should mutate>" --rollback "<operator rollback path>" --evidence <auth-or-policy-evidence>
 - blocked: Create a target-specific mutation-readiness plan - npm run ariadne -- hermes-cron-mutation-plan --project <project> --action <create|update|enable|disable|delete> --job <id> --scope <scope> --auth-evidence <paths> --dry-run <cmd> --live-command <cmd> --post-verify <cmd> --rollback <text> --approval <approval-id>
@@ -62,3 +63,5 @@ Suggested queries:
 - projects/ariadne/control/live-adapter-approval-pack.json
 - projects/ariadne/control/live-adapter-approval-review-audit.json
 - projects/ariadne/control/mutation-readiness-audit.json
+- projects/ariadne/control/live-adapter-evidence-templates.json
+- projects/ariadne/control/live-adapter-evidence-templates/live-adapter-evidence-template-hermes-cron.md
