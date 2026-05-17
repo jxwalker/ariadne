@@ -1,8 +1,7 @@
 import fs from "node:fs/promises";
 import path from "node:path";
 import { writeJsonArtifact, writeTextArtifact } from "./artifacts.js";
-import { recordLiveAdapterOperatorEvidence } from "./liveAdapterOperatorEvidence.js";
-import { generateLiveAdapterOperatorEvidenceAudit } from "./liveAdapterOperatorEvidence.js";
+import { generateLiveAdapterOperatorEvidenceAudit, recordLiveAdapterOperatorEvidence } from "./liveAdapterOperatorEvidence.js";
 import { generateLiveAdapterOperatorEvidenceQueue } from "./liveAdapterOperatorEvidenceQueue.js";
 import { projectDir, slugifyProject } from "./paths.js";
 import type {
@@ -44,7 +43,7 @@ export async function importReadyLiveAdapterOperatorEvidence(input: {
     }
 
     try {
-      const check = await readCheck(input.vaultRoot, target.latestCheckRef);
+      const check = await readCheck(input.vaultRoot, project, target.latestCheckRef);
       if (check.status !== "complete") {
         targets.push({
           target: target.target,
@@ -119,9 +118,16 @@ export async function importReadyLiveAdapterOperatorEvidence(input: {
   return { jsonPath, markdownPath, batch };
 }
 
-async function readCheck(vaultRoot: string, ref: string): Promise<LiveAdapterOperatorEvidenceCheck> {
-  const parsed = JSON.parse(await fs.readFile(path.join(vaultRoot, ref), "utf8")) as LiveAdapterOperatorEvidenceCheck;
-  if (parsed.schemaVersion !== 1 || parsed.status !== "complete" || parsed.recorded !== false || parsed.mutationApproved !== false) {
+async function readCheck(vaultRoot: string, project: string, ref: string): Promise<LiveAdapterOperatorEvidenceCheck> {
+  const parsed = JSON.parse(await fs.readFile(resolveVaultRef(vaultRoot, project, ref), "utf8")) as LiveAdapterOperatorEvidenceCheck;
+  if (
+    parsed.schemaVersion !== 1 ||
+    parsed.status !== "complete" ||
+    parsed.recorded !== false ||
+    parsed.operatorEvidenceRecordCreated !== false ||
+    parsed.mutationApproved !== false ||
+    parsed.approvalGranted !== false
+  ) {
     throw new Error(`Latest check is not a complete non-recorded preflight: ${ref}`);
   }
   return parsed;
