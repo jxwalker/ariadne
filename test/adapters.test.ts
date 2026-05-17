@@ -2320,13 +2320,15 @@ describe("roadmap adapters", () => {
     expect(console.data.summary.localRuntimeProbes).toBe(1);
     expect(console.data.summary.localRuntimeModels).toBe(3);
     expect(console.data.summary.localRuntimeReachable).toBeGreaterThan(0);
-    expect(console.data.infrastructure.runtimeProbes[0]?.hermes.dashboard.url).toBe("<redacted-url>");
-    expect(console.data.infrastructure.runtimeProbes[0]?.modelEndpoints.map((endpoint) => endpoint.url)).toEqual([
-      "<redacted-url>",
-      "<redacted-url>",
-      "<redacted-url>",
-      "<redacted-url>"
-    ]);
+    for (const probe of console.data.infrastructure.runtimeProbes) {
+      expect(probe.hermes.dashboard.url).toBe("<redacted-url>");
+      expect(probe.modelEndpoints.map((endpoint) => endpoint.url)).toEqual([
+        "<redacted-url>",
+        "<redacted-url>",
+        "<redacted-url>",
+        "<redacted-url>"
+      ]);
+    }
     expect(JSON.stringify(console.data.infrastructure.runtimeProbes)).not.toContain("runtime.test");
     expect(console.data.summary.githubSnapshots).toBe(1);
     expect(console.data.github.snapshots[0]?.summary.pendingChecks).toBe(1);
