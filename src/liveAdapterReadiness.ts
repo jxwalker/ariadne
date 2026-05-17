@@ -1,6 +1,7 @@
 import fs from "node:fs/promises";
 import path from "node:path";
 import { writeJsonArtifact, writeTextArtifact } from "./artifacts.js";
+import { isLiveAdapterTarget, LIVE_ADAPTER_TARGETS, type LiveAdapterTarget } from "./liveAdapterTargets.js";
 import { generateMutationReadinessAudit } from "./mutationReadinessAudit.js";
 import { projectDir, slugifyProject } from "./paths.js";
 import type {
@@ -12,16 +13,19 @@ import type {
   MutationReadinessPlan
 } from "./types.js";
 
-type LiveAdapterTarget = LiveAdapterReadinessReport["targets"][number]["target"];
+const EXECUTE_COMMANDS: Record<LiveAdapterTarget, string> = {
+  github: "github-mutation-execute",
+  deployment: "deployment-mutation-execute",
+  "hermes-cron": "hermes-cron-mutation-execute",
+  openscorpion: "openscorpion-mutation-execute",
+  gsd2: "gsd2-mutation-execute",
+  notebooklm: "notebooklm-mutation-execute"
+};
 
-const TARGETS: Array<{ target: LiveAdapterTarget; executeCommand: string }> = [
-  { target: "github", executeCommand: "github-mutation-execute" },
-  { target: "deployment", executeCommand: "deployment-mutation-execute" },
-  { target: "hermes-cron", executeCommand: "hermes-cron-mutation-execute" },
-  { target: "openscorpion", executeCommand: "openscorpion-mutation-execute" },
-  { target: "gsd2", executeCommand: "gsd2-mutation-execute" },
-  { target: "notebooklm", executeCommand: "notebooklm-mutation-execute" }
-];
+const TARGETS: Array<{ target: LiveAdapterTarget; executeCommand: string }> = LIVE_ADAPTER_TARGETS.map((target) => ({
+  target,
+  executeCommand: EXECUTE_COMMANDS[target]
+}));
 
 export async function generateLiveAdapterReadiness(input: {
   project: string;
@@ -175,6 +179,13 @@ function isLiveAdapterApprovalReview(value: unknown): value is LiveAdapterApprov
     value.schemaVersion === 1 &&
     typeof value.id === "string" &&
     value.id.startsWith("approval-review-") &&
+    isLiveAdapterTarget(value.target) &&
+    (value.status === "accepted" || value.status === "needs_changes" || value.status === "rejected") &&
+    typeof value.reviewedBy === "string" &&
+    value.reviewedBy.trim().length > 0 &&
+    typeof value.packetRef === "string" &&
+    Array.isArray(value.evidenceRefs) &&
+    value.evidenceRefs.every((item) => typeof item === "string") &&
     value.mutationApproved === false
   );
 }

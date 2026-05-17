@@ -1,6 +1,7 @@
 import fs from "node:fs/promises";
 import path from "node:path";
 import { timestampFile, writeJsonArtifact, writeTextArtifact } from "./artifacts.js";
+import { isLiveAdapterTarget, LIVE_ADAPTER_TARGETS } from "./liveAdapterTargets.js";
 import { projectDir, slugifyProject } from "./paths.js";
 import type { LiveAdapterApprovalPack, LiveAdapterApprovalReview, MutationReadinessPlan } from "./types.js";
 
@@ -57,17 +58,8 @@ export async function recordLiveAdapterApprovalReview(input: {
 }
 
 export function liveAdapterApprovalReviewTargetOption(value: string): LiveAdapterApprovalReviewTarget {
-  if (
-    value === "github" ||
-    value === "deployment" ||
-    value === "hermes-cron" ||
-    value === "openscorpion" ||
-    value === "gsd2" ||
-    value === "notebooklm"
-  ) {
-    return value;
-  }
-  throw new Error("--target must be github, deployment, hermes-cron, openscorpion, gsd2, or notebooklm.");
+  if (isLiveAdapterTarget(value)) return value;
+  throw new Error(`--target must be ${LIVE_ADAPTER_TARGETS.join(", ")}.`);
 }
 
 export function liveAdapterApprovalReviewStatusOption(value: string): LiveAdapterApprovalReview["status"] {

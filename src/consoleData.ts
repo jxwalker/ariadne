@@ -1,6 +1,7 @@
 import fs from "node:fs/promises";
 import path from "node:path";
 import { writeJsonArtifact } from "./artifacts.js";
+import { isLiveAdapterTarget } from "./liveAdapterTargets.js";
 import { projectDir, slugifyProject } from "./paths.js";
 import { loadRecords } from "./vault.js";
 import type {
@@ -607,7 +608,7 @@ function isMutationTarget(value: unknown): value is MutationReadinessPlan["targe
 }
 
 function isNonGenericMutationTarget(value: unknown): value is Exclude<MutationReadinessPlan["target"], "generic"> {
-  return isMutationTarget(value) && value !== "generic";
+  return isLiveAdapterTarget(value);
 }
 
 function isSleepRoutine(value: unknown): value is SleepRoutineRecord {
