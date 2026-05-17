@@ -1,0 +1,465 @@
+{
+  "schemaVersion": 1,
+  "project": "e2e-local-stress-alpha",
+  "generatedAt": "2026-05-17T10:45:17.877Z",
+  "status": "passed",
+  "summary": {
+    "required": 13,
+    "optional": 44,
+    "present": 15,
+    "missingRequired": 0
+  },
+  "checks": [
+    {
+      "id": "manifest",
+      "label": "Source manifest",
+      "required": true,
+      "path": "projects/e2e-local-stress-alpha/manifest.jsonl",
+      "status": "present"
+    },
+    {
+      "id": "hot-index",
+      "label": "Hot index",
+      "required": true,
+      "path": "projects/e2e-local-stress-alpha/HOT_INDEX.md",
+      "status": "present"
+    },
+    {
+      "id": "dossier",
+      "label": "Context dossier",
+      "required": true,
+      "path": "projects/e2e-local-stress-alpha/context/dossier-*.md",
+      "status": "present",
+      "count": 1,
+      "matches": [
+        "projects/e2e-local-stress-alpha/context/dossier-2026-05-17T10-45-17-869Z.md"
+      ]
+    },
+    {
+      "id": "prd-json",
+      "label": "PRD JSON",
+      "required": true,
+      "path": "projects/e2e-local-stress-alpha/requirements/prd.json",
+      "status": "present"
+    },
+    {
+      "id": "prd-markdown",
+      "label": "PRD Markdown",
+      "required": true,
+      "path": "projects/e2e-local-stress-alpha/requirements/PRD.md",
+      "status": "present"
+    },
+    {
+      "id": "gsd-roadmap",
+      "label": "GSD roadmap",
+      "required": true,
+      "path": "projects/e2e-local-stress-alpha/gsd/roadmap.json",
+      "status": "present"
+    },
+    {
+      "id": "gsd-tasks",
+      "label": "GSD task list",
+      "required": true,
+      "path": "projects/e2e-local-stress-alpha/gsd/TASKS.md",
+      "status": "present"
+    },
+    {
+      "id": "gsd2-bundle",
+      "label": "GSD2 bundle",
+      "required": true,
+      "path": "projects/e2e-local-stress-alpha/gsd/gsd2-bundle.json",
+      "status": "present"
+    },
+    {
+      "id": "gsd2-process-snapshots",
+      "label": "GSD2 process snapshots",
+      "required": false,
+      "path": "projects/e2e-local-stress-alpha/gsd/process/gsd2-process-*.json",
+      "status": "missing",
+      "count": 0,
+      "matches": []
+    },
+    {
+      "id": "execution-runs",
+      "label": "Execution run JSON",
+      "required": true,
+      "path": "projects/e2e-local-stress-alpha/execution/run-*.json",
+      "status": "present",
+      "count": 1,
+      "matches": [
+        "projects/e2e-local-stress-alpha/execution/run-2026-05-17T10-45-17-872Z.json"
+      ]
+    },
+    {
+      "id": "playwright-plan",
+      "label": "Playwright plan",
+      "required": true,
+      "path": "projects/e2e-local-stress-alpha/verification/playwright-plan.json",
+      "status": "present"
+    },
+    {
+      "id": "playwright-captures",
+      "label": "Target app Playwright screenshots",
+      "required": false,
+      "path": "projects/e2e-local-stress-alpha/verification/playwright-captures/target-*.png",
+      "status": "missing",
+      "count": 0,
+      "matches": []
+    },
+    {
+      "id": "playwright-traces",
+      "label": "Target app Playwright traces",
+      "required": false,
+      "path": "projects/e2e-local-stress-alpha/verification/playwright-captures/target-*.zip",
+      "status": "missing",
+      "count": 0,
+      "matches": []
+    },
+    {
+      "id": "healer-proposals",
+      "label": "Review-gated healer proposals",
+      "required": false,
+      "path": "projects/e2e-local-stress-alpha/verification/healer-proposals/healer-*.json",
+      "status": "missing",
+      "count": 0,
+      "matches": []
+    },
+    {
+      "id": "evaluation-plan",
+      "label": "Evaluation plan",
+      "required": true,
+      "path": "projects/e2e-local-stress-alpha/evaluation/evaluation-plan.json",
+      "status": "present"
+    },
+    {
+      "id": "benchmark-runs",
+      "label": "Benchmark run reports",
+      "required": false,
+      "path": "projects/e2e-local-stress-alpha/evaluation/benchmark-run-*.json",
+      "status": "missing",
+      "count": 0,
+      "matches": []
+    },
+    {
+      "id": "infra-registry",
+      "label": "Infrastructure registry",
+      "required": true,
+      "path": "projects/e2e-local-stress-alpha/infrastructure/registry.json",
+      "status": "present"
+    },
+    {
+      "id": "infra-snapshots",
+      "label": "Infrastructure snapshots",
+      "required": false,
+      "path": "projects/e2e-local-stress-alpha/infrastructure/infra-snapshot-*.json",
+      "status": "missing",
+      "count": 0,
+      "matches": []
+    },
+    {
+      "id": "control-report",
+      "label": "Merge-readiness report",
+      "required": true,
+      "path": "projects/e2e-local-stress-alpha/control/merge-readiness.json",
+      "status": "present"
+    },
+    {
+      "id": "console-data",
+      "label": "Console data projection",
+      "required": false,
+      "path": "projects/e2e-local-stress-alpha/console/console-data.json",
+      "status": "missing"
+    },
+    {
+      "id": "console-html",
+      "label": "Static console",
+      "required": false,
+      "path": "projects/e2e-local-stress-alpha/console/index.html",
+      "status": "missing"
+    },
+    {
+      "id": "console-visual-checks",
+      "label": "Console visual checks",
+      "required": false,
+      "path": "projects/e2e-local-stress-alpha/console/visual-checks.json",
+      "status": "missing"
+    },
+    {
+      "id": "console-browser-checks",
+      "label": "Console browser checks",
+      "required": false,
+      "path": "projects/e2e-local-stress-alpha/console/browser-checks.json",
+      "status": "missing"
+    },
+    {
+      "id": "recovery-report",
+      "label": "Crash recovery report",
+      "required": false,
+      "path": "projects/e2e-local-stress-alpha/control/recovery-report.json",
+      "status": "missing"
+    },
+    {
+      "id": "usage-report",
+      "label": "Usage metrics report",
+      "required": false,
+      "path": "projects/e2e-local-stress-alpha/evaluation/usage-report.json",
+      "status": "missing"
+    },
+    {
+      "id": "behavior-checks",
+      "label": "Behavior checks",
+      "required": false,
+      "path": "projects/e2e-local-stress-alpha/evaluation/behavior-checks.json",
+      "status": "present"
+    },
+    {
+      "id": "gbrain-export",
+      "label": "GBrain export bundle",
+      "required": false,
+      "path": "projects/e2e-local-stress-alpha/integrations/gbrain/gbrain-export.json",
+      "status": "present"
+    },
+    {
+      "id": "github-snapshots",
+      "label": "GitHub PR and check snapshots",
+      "required": false,
+      "path": "projects/e2e-local-stress-alpha/integrations/github/github-snapshot-*.json",
+      "status": "missing",
+      "count": 0,
+      "matches": []
+    },
+    {
+      "id": "approval-records",
+      "label": "Mutation approval records",
+      "required": false,
+      "path": "projects/e2e-local-stress-alpha/control/approvals/approval-*.json",
+      "status": "missing",
+      "count": 0,
+      "matches": []
+    },
+    {
+      "id": "mutation-readiness-plans",
+      "label": "Mutation readiness plans",
+      "required": false,
+      "path": "projects/e2e-local-stress-alpha/control/mutation-readiness/mutation-readiness-*.json",
+      "status": "missing",
+      "count": 0,
+      "matches": []
+    },
+    {
+      "id": "mutation-readiness-audit",
+      "label": "Mutation readiness audit",
+      "required": false,
+      "path": "projects/e2e-local-stress-alpha/control/mutation-readiness-audit.json",
+      "status": "missing"
+    },
+    {
+      "id": "live-adapter-readiness",
+      "label": "Live adapter readiness report",
+      "required": false,
+      "path": "projects/e2e-local-stress-alpha/control/live-adapter-readiness.json",
+      "status": "missing"
+    },
+    {
+      "id": "live-adapter-next-actions",
+      "label": "Live adapter next-action report",
+      "required": false,
+      "path": "projects/e2e-local-stress-alpha/control/live-adapter-next-actions.json",
+      "status": "missing"
+    },
+    {
+      "id": "live-adapter-approval-pack",
+      "label": "Live adapter approval pack",
+      "required": false,
+      "path": "projects/e2e-local-stress-alpha/control/live-adapter-approval-pack.json",
+      "status": "missing"
+    },
+    {
+      "id": "live-adapter-approval-reviews",
+      "label": "Live adapter approval reviews",
+      "required": false,
+      "path": "projects/e2e-local-stress-alpha/control/live-adapter-approval-reviews/approval-review-*.json",
+      "status": "missing",
+      "count": 0,
+      "matches": []
+    },
+    {
+      "id": "live-adapter-approval-review-audit",
+      "label": "Live adapter approval review audit",
+      "required": false,
+      "path": "projects/e2e-local-stress-alpha/control/live-adapter-approval-review-audit.json",
+      "status": "missing"
+    },
+    {
+      "id": "live-adapter-dossiers",
+      "label": "Live adapter target dossiers",
+      "required": false,
+      "path": "projects/e2e-local-stress-alpha/control/live-adapter-dossiers/live-adapter-dossier-*.json",
+      "status": "missing",
+      "count": 0,
+      "matches": []
+    },
+    {
+      "id": "live-adapter-cutover-audit",
+      "label": "Live adapter cutover audit",
+      "required": false,
+      "path": "projects/e2e-local-stress-alpha/control/live-adapter-cutover-audit.json",
+      "status": "missing"
+    },
+    {
+      "id": "live-adapter-review-session",
+      "label": "Live adapter review session",
+      "required": false,
+      "path": "projects/e2e-local-stress-alpha/control/live-adapter-review-session.json",
+      "status": "missing"
+    },
+    {
+      "id": "live-adapter-evidence-templates",
+      "label": "Live adapter evidence templates",
+      "required": false,
+      "path": "projects/e2e-local-stress-alpha/control/live-adapter-evidence-templates.json",
+      "status": "missing"
+    },
+    {
+      "id": "live-adapter-operator-evidence-checks",
+      "label": "Live adapter operator evidence checks",
+      "required": false,
+      "path": "projects/e2e-local-stress-alpha/control/live-adapter-operator-evidence-checks/operator-evidence-check-*.json",
+      "status": "missing",
+      "count": 0,
+      "matches": []
+    },
+    {
+      "id": "live-adapter-operator-evidence-check-all",
+      "label": "Live adapter operator evidence batch check",
+      "required": false,
+      "path": "projects/e2e-local-stress-alpha/control/live-adapter-operator-evidence-check-all.json",
+      "status": "missing"
+    },
+    {
+      "id": "live-adapter-operator-evidence",
+      "label": "Live adapter operator evidence records",
+      "required": false,
+      "path": "projects/e2e-local-stress-alpha/control/live-adapter-operator-evidence/operator-evidence-*.json",
+      "status": "missing",
+      "count": 0,
+      "matches": []
+    },
+    {
+      "id": "live-adapter-operator-evidence-audit",
+      "label": "Live adapter operator evidence audit",
+      "required": false,
+      "path": "projects/e2e-local-stress-alpha/control/live-adapter-operator-evidence-audit.json",
+      "status": "missing"
+    },
+    {
+      "id": "live-adapter-operator-evidence-workplan",
+      "label": "Live adapter operator evidence workplan",
+      "required": false,
+      "path": "projects/e2e-local-stress-alpha/control/live-adapter-operator-evidence-workplan.json",
+      "status": "missing"
+    },
+    {
+      "id": "live-adapter-operator-evidence-queue",
+      "label": "Live adapter operator evidence queue",
+      "required": false,
+      "path": "projects/e2e-local-stress-alpha/control/live-adapter-operator-evidence-queue.json",
+      "status": "missing"
+    },
+    {
+      "id": "live-adapter-operator-evidence-workspace",
+      "label": "Live adapter operator evidence workspace",
+      "required": false,
+      "path": "projects/e2e-local-stress-alpha/control/live-adapter-operator-evidence-workspace.json",
+      "status": "missing"
+    },
+    {
+      "id": "live-adapter-operator-evidence-workspace-files",
+      "label": "Live adapter operator evidence workspace files",
+      "required": false,
+      "path": "projects/e2e-local-stress-alpha/control/operator-evidence/**/*.md",
+      "status": "missing",
+      "count": 0,
+      "matches": []
+    },
+    {
+      "id": "roadmap-completion-audit",
+      "label": "Roadmap completion audit",
+      "required": false,
+      "path": "projects/e2e-local-stress-alpha/control/roadmap-completion-audit.json",
+      "status": "missing"
+    },
+    {
+      "id": "mutation-dry-runs",
+      "label": "Mutation dry-run records",
+      "required": false,
+      "path": "projects/e2e-local-stress-alpha/control/mutation-dry-runs/mutation-dry-run-*.json",
+      "status": "missing",
+      "count": 0,
+      "matches": []
+    },
+    {
+      "id": "mutation-executions",
+      "label": "Mutation execution records",
+      "required": false,
+      "path": "projects/e2e-local-stress-alpha/control/mutation-executions/mutation-execution-*.json",
+      "status": "missing",
+      "count": 0,
+      "matches": []
+    },
+    {
+      "id": "extraction-results",
+      "label": "OCR/transcription extraction results",
+      "required": false,
+      "path": "projects/e2e-local-stress-alpha/extractions/extraction-*.json",
+      "status": "missing",
+      "count": 0,
+      "matches": []
+    },
+    {
+      "id": "extraction-runner-plans",
+      "label": "OCR/transcription runner plans",
+      "required": false,
+      "path": "projects/e2e-local-stress-alpha/extractions/plans/extraction-plan-*.json",
+      "status": "missing",
+      "count": 0,
+      "matches": []
+    },
+    {
+      "id": "coordination-records",
+      "label": "Sleep, memory, or mail records",
+      "required": false,
+      "path": "projects/e2e-local-stress-alpha/coordination/**/*.json",
+      "status": "missing",
+      "count": 0,
+      "matches": []
+    },
+    {
+      "id": "hermes-cron-snapshots",
+      "label": "Hermes cron snapshots",
+      "required": false,
+      "path": "projects/e2e-local-stress-alpha/coordination/hermes/hermes-cron-*.json",
+      "status": "missing",
+      "count": 0,
+      "matches": []
+    },
+    {
+      "id": "hermes-cron-proposals",
+      "label": "Hermes cron proposals",
+      "required": false,
+      "path": "projects/e2e-local-stress-alpha/coordination/hermes/hermes-cron-proposal-*.json",
+      "status": "missing",
+      "count": 0,
+      "matches": []
+    },
+    {
+      "id": "deployment-snapshots",
+      "label": "Deployment snapshots",
+      "required": false,
+      "path": "projects/e2e-local-stress-alpha/deployment/deployment-*.json",
+      "status": "missing",
+      "count": 0,
+      "matches": []
+    }
+  ]
+}

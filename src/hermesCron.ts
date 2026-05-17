@@ -323,7 +323,7 @@ function renderProposal(proposal: HermesCronProposal): string {
     "",
     ...proposal.proposedActions.map(
       (action) =>
-        `- ${action.kind}: ${action.title}${action.schedule ? ` (${action.schedule})` : ""}. ${action.rationale}`
+        `- ${action.kind}: ${action.title}${action.schedule ? ` (\`${action.schedule}\`)` : ""}. ${action.rationale}`
     ),
     ""
   ].join("\n");

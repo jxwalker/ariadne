@@ -421,15 +421,14 @@ const ARTIFACT_SPECS: ArtifactSpec[] = [
   },
   {
     id: "coordination-records",
-    label: "Sleep, memory, or mail records",
+    label: "Coordination records (sleep, memory, mail, leases, Hermes)",
     required: false,
     kind: "matching-files",
     relativePath: "coordination",
     prefix: "",
     suffix: ".json",
     minimumCount: 1,
-    recursive: true,
-    excludeDirs: ["hermes"]
+    recursive: true
   },
   {
     id: "hermes-cron-snapshots",

@@ -1,0 +1,28 @@
+{
+  "schemaVersion": 1,
+  "project": "e2e-local-stress-beta",
+  "importedAt": "2026-05-17T10:45:17.885Z",
+  "sourcePath": "<WORKSPACE_ROOT>/benchmarks/source-packs/stress/imports/odd-infra-snapshot.json",
+  "snapshotKind": "manifest",
+  "summary": {
+    "keys": [
+      "node",
+      "services",
+      "warnings"
+    ],
+    "host": "unknown-lab-host"
+  },
+  "raw": {
+    "node": "unknown-lab-host",
+    "services": [
+      {
+        "name": "runner",
+        "status": "degraded"
+      }
+    ],
+    "warnings": [
+      "missing guest inventory",
+      "stale timestamp"
+    ]
+  }
+}

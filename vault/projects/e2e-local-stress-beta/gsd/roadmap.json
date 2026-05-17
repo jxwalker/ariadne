@@ -1,0 +1,175 @@
+{
+  "schemaVersion": 1,
+  "project": "e2e-local-stress-beta",
+  "generatedAt": "2026-05-17T10:45:17.881Z",
+  "milestones": [
+    {
+      "id": "M1",
+      "title": "Control Spine",
+      "tasks": [
+        {
+          "id": "TASK-001",
+          "title": "Source evidence intake",
+          "requirementIds": [
+            "REQ-001"
+          ],
+          "slice": "core",
+          "successCriteria": [
+            "Raw artifacts are copied into the durable vault.",
+            "Each artifact has a digest, source path, kind, and timestamp.",
+            "Extracted text remains linked to the raw evidence."
+          ],
+          "verificationCommands": [
+            "npm run check",
+            "npm test"
+          ],
+          "canRunInParallel": true,
+          "writes": [
+            "src/vault.ts",
+            "src/extract.ts",
+            "docs/source-contract.md"
+          ]
+        },
+        {
+          "id": "TASK-002",
+          "title": "Source-grounded PRD synthesis",
+          "requirementIds": [
+            "REQ-002"
+          ],
+          "slice": "core",
+          "successCriteria": [
+            "PRD records source references for every major claim.",
+            "Ambiguities are separated from accepted requirements.",
+            "Manual exports work before automation is attempted."
+          ],
+          "verificationCommands": [
+            "npm run check",
+            "npm test"
+          ],
+          "canRunInParallel": true,
+          "writes": [
+            "src/prd.ts",
+            "vault/projects/<project>/requirements/"
+          ]
+        },
+        {
+          "id": "TASK-003",
+          "title": "GSD2 task bridge",
+          "requirementIds": [
+            "REQ-003"
+          ],
+          "slice": "core",
+          "successCriteria": [
+            "Tasks are independently inspectable as JSON and Markdown.",
+            "Each task names expected write areas and verification commands.",
+            "Tasks preserve requirement traceability."
+          ],
+          "verificationCommands": [
+            "npm run check",
+            "npm test"
+          ],
+          "canRunInParallel": false,
+          "writes": [
+            "src/gsd.ts",
+            "vault/projects/<project>/gsd/"
+          ]
+        },
+        {
+          "id": "TASK-004",
+          "title": "Bounded execution loop",
+          "requirementIds": [
+            "REQ-004"
+          ],
+          "slice": "core",
+          "successCriteria": [
+            "Execution runs are recorded before work begins.",
+            "The system can identify planned worktrees and gates.",
+            "External mutations remain blocked unless a later approved adapter is enabled."
+          ],
+          "verificationCommands": [
+            "npm run check",
+            "npm test"
+          ],
+          "canRunInParallel": false,
+          "writes": [
+            "src/execution.ts",
+            "vault/projects/<project>/execution/"
+          ]
+        },
+        {
+          "id": "TASK-006",
+          "title": "Review and CI control plane",
+          "requirementIds": [
+            "REQ-006"
+          ],
+          "slice": "core",
+          "successCriteria": [
+            "Merge readiness lists satisfied and missing gates.",
+            "CI and review records are imported without being treated as hidden authority.",
+            "Blocked states are explicit."
+          ],
+          "verificationCommands": [
+            "npm run check",
+            "npm test"
+          ],
+          "canRunInParallel": true,
+          "writes": [
+            "src/controlPlane.ts",
+            "vault/projects/<project>/control/"
+          ]
+        },
+        {
+          "id": "TASK-007",
+          "title": "Infrastructure substrate registry",
+          "requirementIds": [
+            "REQ-007"
+          ],
+          "slice": "core",
+          "successCriteria": [
+            "Infrastructure records are readable without model calls.",
+            "Runner trust boundaries are explicit.",
+            "Mutation plans require approval and remain non-executing in this slice."
+          ],
+          "verificationCommands": [
+            "npm run check",
+            "npm test"
+          ],
+          "canRunInParallel": true,
+          "writes": [
+            "src/infraSnapshot.ts",
+            "vault/projects/<project>/infrastructure/"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "M2",
+      "title": "Verification Surface",
+      "tasks": [
+        {
+          "id": "TASK-005",
+          "title": "Playwright UI verification evidence",
+          "requirementIds": [
+            "REQ-005"
+          ],
+          "slice": "verification",
+          "successCriteria": [
+            "Generated tests use role-oriented locators where possible.",
+            "Scenario records link back to requirement ids.",
+            "Evidence paths are recorded separately from claims."
+          ],
+          "verificationCommands": [
+            "npm run check",
+            "npm test",
+            "npx playwright test --reporter=list"
+          ],
+          "canRunInParallel": true,
+          "writes": [
+            "src/playwrightEvidence.ts",
+            "vault/projects/<project>/verification/"
+          ]
+        }
+      ]
+    }
+  ]
+}

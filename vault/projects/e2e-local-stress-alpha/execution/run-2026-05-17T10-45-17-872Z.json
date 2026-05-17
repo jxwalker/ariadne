@@ -1,0 +1,68 @@
+{
+  "schemaVersion": 1,
+  "id": "run-2026-05-17T10-45-17-872Z",
+  "project": "e2e-local-stress-alpha",
+  "createdAt": "2026-05-17T10:45:17.872Z",
+  "taskIds": [
+    "TASK-001",
+    "TASK-002",
+    "TASK-003",
+    "TASK-004",
+    "TASK-006",
+    "TASK-007",
+    "TASK-005"
+  ],
+  "repoPath": "<REPO_ROOT>",
+  "branchPrefix": "jxw/ariadne",
+  "status": "planned",
+  "gates": [
+    "npm run check",
+    "npm test",
+    "npm run build",
+    "review evidence",
+    "human approval before external mutation"
+  ],
+  "worktrees": [
+    {
+      "taskId": "TASK-001",
+      "branch": "jxw/ariadne-task-001",
+      "worktreePath": "<REPO_ROOT>-task-001"
+    },
+    {
+      "taskId": "TASK-002",
+      "branch": "jxw/ariadne-task-002",
+      "worktreePath": "<REPO_ROOT>-task-002"
+    },
+    {
+      "taskId": "TASK-003",
+      "branch": "jxw/ariadne-task-003",
+      "worktreePath": "<REPO_ROOT>-task-003"
+    },
+    {
+      "taskId": "TASK-004",
+      "branch": "jxw/ariadne-task-004",
+      "worktreePath": "<REPO_ROOT>-task-004"
+    },
+    {
+      "taskId": "TASK-006",
+      "branch": "jxw/ariadne-task-006",
+      "worktreePath": "<REPO_ROOT>-task-006"
+    },
+    {
+      "taskId": "TASK-007",
+      "branch": "jxw/ariadne-task-007",
+      "worktreePath": "<REPO_ROOT>-task-007"
+    },
+    {
+      "taskId": "TASK-005",
+      "branch": "jxw/ariadne-task-005",
+      "worktreePath": "<REPO_ROOT>-task-005"
+    }
+  ],
+  "stopConditions": [
+    "A verification command fails twice for the same reason.",
+    "A task requires credentials or external mutation not represented by an approved plan.",
+    "The working tree contains unrelated user changes in a write scope.",
+    "Generated tests cannot identify a target URL or stable user workflow."
+  ]
+}

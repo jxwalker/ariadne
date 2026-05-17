@@ -1,0 +1,249 @@
+{
+  "schemaVersion": 1,
+  "id": "benchmark-run-realistic-2026-05-17T10-45-17-863Z",
+  "project": "e2e-local-realistic",
+  "set": "realistic",
+  "generatedAt": "2026-05-17T10:45:17.863Z",
+  "mode": "local_deterministic",
+  "status": "passed",
+  "packPath": "<PACK_ROOT>/benchmark-pack.json",
+  "packRoot": "<PACK_ROOT>",
+  "targetProjects": [
+    "e2e-local-realistic"
+  ],
+  "summary": {
+    "steps": 19,
+    "passed": 19,
+    "failed": 0,
+    "targetProjects": 1,
+    "missingRequiredArtifacts": 0
+  },
+  "steps": [
+    {
+      "id": "ingest",
+      "project": "e2e-local-realistic",
+      "status": "passed",
+      "detail": "completed",
+      "evidenceRefs": [
+        "<PACK_ROOT>/sources/whitepaper.md",
+        "<PACK_ROOT>/sources/dictated-notes.txt",
+        "<PACK_ROOT>/sources/sketch-handoff.md"
+      ]
+    },
+    {
+      "id": "assemble",
+      "project": "e2e-local-realistic",
+      "status": "passed",
+      "detail": "completed",
+      "evidenceRefs": []
+    },
+    {
+      "id": "prd",
+      "project": "e2e-local-realistic",
+      "status": "passed",
+      "detail": "completed",
+      "evidenceRefs": [
+        "<VAULT_ROOT>/projects/e2e-local-realistic/requirements/prd.json",
+        "<VAULT_ROOT>/projects/e2e-local-realistic/requirements/PRD.md"
+      ]
+    },
+    {
+      "id": "gsd",
+      "project": "e2e-local-realistic",
+      "status": "passed",
+      "detail": "completed",
+      "evidenceRefs": [
+        "<VAULT_ROOT>/projects/e2e-local-realistic/gsd/roadmap.json",
+        "<VAULT_ROOT>/projects/e2e-local-realistic/gsd/TASKS.md",
+        "<VAULT_ROOT>/projects/e2e-local-realistic/verification/commands.json"
+      ]
+    },
+    {
+      "id": "gsd2-export",
+      "project": "e2e-local-realistic",
+      "status": "passed",
+      "detail": "completed",
+      "evidenceRefs": [
+        "<VAULT_ROOT>/projects/e2e-local-realistic/gsd/gsd2-bundle.json",
+        "<VAULT_ROOT>/projects/e2e-local-realistic/gsd/gsd2-bundle.md"
+      ]
+    },
+    {
+      "id": "execution",
+      "project": "e2e-local-realistic",
+      "status": "passed",
+      "detail": "completed",
+      "evidenceRefs": [
+        "<VAULT_ROOT>/projects/e2e-local-realistic/execution/run-2026-05-17T10-45-17-848Z.json",
+        "<VAULT_ROOT>/projects/e2e-local-realistic/execution/run-2026-05-17T10-45-17-848Z.md"
+      ]
+    },
+    {
+      "id": "playwright",
+      "project": "e2e-local-realistic",
+      "status": "passed",
+      "detail": "completed",
+      "evidenceRefs": [
+        "<VAULT_ROOT>/projects/e2e-local-realistic/verification/playwright-plan.json",
+        "<VAULT_ROOT>/projects/e2e-local-realistic/verification/playwright-plan.md",
+        "<VAULT_ROOT>/projects/e2e-local-realistic/verification/generated.playwright.spec.ts"
+      ]
+    },
+    {
+      "id": "evaluation",
+      "project": "e2e-local-realistic",
+      "status": "passed",
+      "detail": "completed",
+      "evidenceRefs": [
+        "<VAULT_ROOT>/projects/e2e-local-realistic/evaluation/evaluation-plan.json",
+        "<VAULT_ROOT>/projects/e2e-local-realistic/evaluation/evaluation-plan.md"
+      ]
+    },
+    {
+      "id": "infra",
+      "project": "e2e-local-realistic",
+      "status": "passed",
+      "detail": "completed",
+      "evidenceRefs": [
+        "<VAULT_ROOT>/projects/e2e-local-realistic/infrastructure/registry.json",
+        "<VAULT_ROOT>/projects/e2e-local-realistic/infrastructure/runner-and-model-plan.md"
+      ]
+    },
+    {
+      "id": "notebooklm-import",
+      "project": "e2e-local-realistic",
+      "status": "passed",
+      "detail": "completed",
+      "evidenceRefs": [
+        "<PACK_ROOT>/imports/notebooklm-export.md",
+        "<VAULT_ROOT>/projects/e2e-local-realistic/requirements/notebooklm-import.json",
+        "<VAULT_ROOT>/projects/e2e-local-realistic/requirements/notebooklm-import.md"
+      ]
+    },
+    {
+      "id": "import-ci",
+      "project": "e2e-local-realistic",
+      "status": "passed",
+      "detail": "completed",
+      "evidenceRefs": [
+        "<PACK_ROOT>/imports/ci-checks.json"
+      ]
+    },
+    {
+      "id": "import-coderabbit",
+      "project": "e2e-local-realistic",
+      "status": "passed",
+      "detail": "completed",
+      "evidenceRefs": [
+        "<PACK_ROOT>/imports/coderabbit-review.md"
+      ]
+    },
+    {
+      "id": "usage-import",
+      "project": "e2e-local-realistic",
+      "status": "passed",
+      "detail": "completed",
+      "evidenceRefs": [
+        "<PACK_ROOT>/imports/usage-metrics.json"
+      ]
+    },
+    {
+      "id": "usage-report",
+      "project": "e2e-local-realistic",
+      "status": "passed",
+      "detail": "completed",
+      "evidenceRefs": [
+        "<VAULT_ROOT>/projects/e2e-local-realistic/evaluation/usage-report.json",
+        "<VAULT_ROOT>/projects/e2e-local-realistic/evaluation/usage-report.md"
+      ]
+    },
+    {
+      "id": "infra-snapshot",
+      "project": "e2e-local-realistic",
+      "status": "passed",
+      "detail": "completed",
+      "evidenceRefs": [
+        "<PACK_ROOT>/imports/infra-snapshot.json",
+        "<VAULT_ROOT>/projects/e2e-local-realistic/infrastructure/infra-snapshot-2026-05-17T10-45-17-858Z.json",
+        "<VAULT_ROOT>/projects/e2e-local-realistic/infrastructure/infra-snapshot-2026-05-17T10-45-17-858Z.md"
+      ]
+    },
+    {
+      "id": "control",
+      "project": "e2e-local-realistic",
+      "status": "passed",
+      "detail": "completed",
+      "evidenceRefs": [
+        "<VAULT_ROOT>/projects/e2e-local-realistic/control/merge-readiness.json",
+        "<VAULT_ROOT>/projects/e2e-local-realistic/control/merge-readiness.md"
+      ]
+    },
+    {
+      "id": "behavior-checks",
+      "project": "e2e-local-realistic",
+      "status": "passed",
+      "detail": "completed",
+      "evidenceRefs": [
+        "<VAULT_ROOT>/projects/e2e-local-realistic/evaluation/behavior-checks.json",
+        "<VAULT_ROOT>/projects/e2e-local-realistic/evaluation/behavior-checks.md"
+      ]
+    },
+    {
+      "id": "gbrain-export",
+      "project": "e2e-local-realistic",
+      "status": "passed",
+      "detail": "completed",
+      "evidenceRefs": [
+        "<VAULT_ROOT>/projects/e2e-local-realistic/integrations/gbrain/gbrain-export.json",
+        "<VAULT_ROOT>/projects/e2e-local-realistic/integrations/gbrain/gbrain-export.md"
+      ]
+    },
+    {
+      "id": "artifact-checks",
+      "project": "e2e-local-realistic",
+      "status": "passed",
+      "detail": "completed",
+      "evidenceRefs": [
+        "<VAULT_ROOT>/projects/e2e-local-realistic/evaluation/artifact-checks.json",
+        "<VAULT_ROOT>/projects/e2e-local-realistic/evaluation/artifact-checks.md"
+      ]
+    }
+  ],
+  "acceptance": [
+    {
+      "id": "realistic-pipeline-output",
+      "type": "pipeline_output",
+      "criterion": "Mixed source intake produces three source records.",
+      "status": "passed",
+      "evidenceRefs": [
+        "<VAULT_ROOT>/projects/e2e-local-realistic/evaluation/artifact-checks.md"
+      ]
+    },
+    {
+      "id": "realistic-adapter-evidence",
+      "type": "pipeline_output",
+      "criterion": "Manual NotebookLM, CI, CodeRabbit, usage, and infrastructure imports create evidence records.",
+      "status": "passed",
+      "evidenceRefs": [
+        "<VAULT_ROOT>/projects/e2e-local-realistic/evaluation/artifact-checks.md"
+      ]
+    },
+    {
+      "id": "realistic-fixture-safety",
+      "type": "fixture_safety",
+      "criterion": "Control and artifact-check reports are generated without live mutations.",
+      "status": "passed",
+      "evidenceRefs": [
+        "<VAULT_ROOT>/projects/e2e-local-realistic/evaluation/artifact-checks.md"
+      ]
+    }
+  ],
+  "artifactChecks": [
+    {
+      "project": "e2e-local-realistic",
+      "status": "passed",
+      "missingRequired": 0,
+      "reportPath": "<VAULT_ROOT>/projects/e2e-local-realistic/evaluation/artifact-checks.md"
+    }
+  ]
+}

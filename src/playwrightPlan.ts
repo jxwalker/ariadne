@@ -92,24 +92,33 @@ function testName(value: string): string {
 }
 
 function renderPlaywrightSpec(plan: PlaywrightEvidencePlan): string {
-  const tests = plan.scenarios.map((scenario) =>
-    [
-      `test('${testName(scenario.id)} ${testName(scenario.title)}', async ({ page }) => {`,
-      "  await page.goto(TARGET_URL);",
-      "  await expect(page.getByRole('main').or(page.locator('body'))).toBeVisible();",
-      `  test.info().annotations.push({ type: 'requirements', description: '${scenario.requirementIds.join(", ")}' });`,
-      "});",
-      ""
-    ].join("\n")
-  );
+  const scenarios = plan.scenarios.map((scenario) => ({
+    id: scenario.id,
+    title: scenario.title,
+    requirementIds: scenario.requirementIds,
+    assertions: scenario.assertions
+  }));
 
   return [
     "import { expect, test } from '@playwright/test';",
     "",
-    "// Generated from ariadne requirements. Refine selectors against the real app before using as a hard gate.",
+    "// Generated from Ariadne requirements. Add app-specific locators before using as a release gate.",
     `const TARGET_URL = process.env.PLAYWRIGHT_TARGET_URL;`,
     `if (!TARGET_URL) throw new Error(${JSON.stringify(`PLAYWRIGHT_TARGET_URL is required. Suggested target: ${plan.targetUrl}`)});`,
     "",
-    ...tests
+    `const scenarios = ${JSON.stringify(scenarios, null, 2)} as const;`,
+    "",
+    "for (const scenario of scenarios) {",
+    "  test(`${scenario.id} ${scenario.title}`, async ({ page }) => {",
+    "    await page.goto(TARGET_URL);",
+    "    const documentRoot = page.locator('main, [role=\"main\"], body').first();",
+    "    await expect(documentRoot).toBeVisible();",
+    "    await expect(documentRoot).toContainText(/\\S/);",
+    "    expect(scenario.assertions.length).toBeGreaterThan(0);",
+    "    test.info().annotations.push({ type: 'requirements', description: scenario.requirementIds.join(', ') });",
+    "    test.info().annotations.push({ type: 'ariadne-assertions', description: scenario.assertions.join(' | ') });",
+    "  });",
+    "}",
+    ""
   ].join("\n");
 }

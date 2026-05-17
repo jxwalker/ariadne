@@ -1,0 +1,2061 @@
+{
+  "schemaVersion": 1,
+  "project": "e2e-local-realistic",
+  "generatedAt": "2026-05-17T10:46:13.825Z",
+  "projectDir": "projects/e2e-local-realistic",
+  "summary": {
+    "sources": 3,
+    "extractionResults": 0,
+    "requirements": 7,
+    "tasks": 7,
+    "executionRuns": 1,
+    "checks": 3,
+    "reviews": 1,
+    "decisions": 0,
+    "evaluations": 0,
+    "benchmarkRuns": 1,
+    "infraSnapshots": 2,
+    "gsd2ProcessSnapshots": 0,
+    "sleepRoutines": 0,
+    "memoryProposals": 0,
+    "agentMail": 0,
+    "agentLeases": 0,
+    "hermesCronSnapshots": 1,
+    "hermesCronProposals": 1,
+    "deploymentSnapshots": 1,
+    "healerProposals": 0,
+    "githubSnapshots": 0,
+    "approvals": 0,
+    "pendingApprovals": 0,
+    "mutationReadinessPlans": 0,
+    "mutationDryRuns": 0,
+    "mutationExecutions": 0,
+    "liveAdapterApprovalReviews": 0,
+    "acceptedLiveAdapterApprovalReviews": 0,
+    "liveAdapterTargetDossiers": 0,
+    "liveAdapterOperatorEvidenceChecks": 0,
+    "liveAdapterOperatorEvidenceRecords": 0,
+    "recoveryIssues": 0,
+    "consoleBrowserChecks": "passed",
+    "readinessStatus": "review_required"
+  },
+  "sources": [
+    {
+      "id": "2026-05-17T10-45-17-842Z-2216c2e85d27",
+      "fileName": "whitepaper.md",
+      "kind": "markdown",
+      "sensitivity": "internal",
+      "sha256": "2216c2e85d275ec7717e1ce1f9aa3c8bf1279ca7bc63765c9c41e2fdf36317b8",
+      "ingestedAt": "2026-05-17T10:45:17.842Z",
+      "hasExtractedText": true,
+      "hasHandoff": false,
+      "hygieneStatus": "clean"
+    },
+    {
+      "id": "2026-05-17T10-45-17-843Z-97c0663508f5",
+      "fileName": "dictated-notes.txt",
+      "kind": "text",
+      "sensitivity": "internal",
+      "sha256": "97c0663508f530a902dfad37d63512dbefec19201f064669dc8876f9d8f202d6",
+      "ingestedAt": "2026-05-17T10:45:17.843Z",
+      "hasExtractedText": true,
+      "hasHandoff": false,
+      "hygieneStatus": "clean"
+    },
+    {
+      "id": "2026-05-17T10-45-17-844Z-bb66579a6a09",
+      "fileName": "sketch-handoff.md",
+      "kind": "markdown",
+      "sensitivity": "internal",
+      "sha256": "bb66579a6a09adc3b39263abef3998e34cdef2b7e9f7b84aea301f25551f62f2",
+      "ingestedAt": "2026-05-17T10:45:17.844Z",
+      "hasExtractedText": true,
+      "hasHandoff": false,
+      "hygieneStatus": "clean"
+    }
+  ],
+  "extractionResults": [],
+  "requirements": [
+    {
+      "id": "REQ-001",
+      "title": "Source evidence intake",
+      "description": "Preserve drawings, whitepapers, dictated notes, documents, and related artifacts before any summarisation or automation.",
+      "acceptance": [
+        "Raw artifacts are copied into the durable vault.",
+        "Each artifact has a digest, source path, kind, and timestamp.",
+        "Extracted text remains linked to the raw evidence."
+      ],
+      "priority": "must",
+      "status": "draft",
+      "sourceRefs": [
+        "<VAULT_ROOT>/projects/e2e-local-realistic/context/dossier-2026-05-17T10-45-17-846Z.md",
+        "<VAULT_ROOT>/projects/e2e-local-realistic/context/dossier-2026-05-17T10-45-17-846Z.md:7",
+        "<VAULT_ROOT>/projects/e2e-local-realistic/context/dossier-2026-05-17T10-45-17-846Z.md:9",
+        "<VAULT_ROOT>/projects/e2e-local-realistic/context/dossier-2026-05-17T10-45-17-846Z.md:22",
+        "<VAULT_ROOT>/projects/e2e-local-realistic/context/dossier-2026-05-17T10-45-17-846Z.md:35",
+        "<VAULT_ROOT>/projects/e2e-local-realistic/context/dossier-2026-05-17T10-45-17-846Z.md:37",
+        "<VAULT_ROOT>/projects/e2e-local-realistic/context/dossier-2026-05-17T10-45-17-846Z.md:39",
+        "<VAULT_ROOT>/projects/e2e-local-realistic/context/dossier-2026-05-17T10-45-17-846Z.md:41",
+        "<VAULT_ROOT>/projects/e2e-local-realistic/context/dossier-2026-05-17T10-45-17-846Z.md:49",
+        "<VAULT_ROOT>/projects/e2e-local-realistic/context/dossier-2026-05-17T10-45-17-846Z.md:64",
+        "<VAULT_ROOT>/projects/e2e-local-realistic/context/dossier-2026-05-17T10-45-17-846Z.md:73",
+        "<VAULT_ROOT>/projects/e2e-local-realistic/context/dossier-2026-05-17T10-45-17-846Z.md:88"
+      ]
+    },
+    {
+      "id": "REQ-002",
+      "title": "Source-grounded PRD synthesis",
+      "description": "Convert evidence dossiers and NotebookLM-style grounded exports into requirements, ambiguities, acceptance criteria, and source references.",
+      "acceptance": [
+        "PRD records source references for every major claim.",
+        "Ambiguities are separated from accepted requirements.",
+        "Manual exports work before automation is attempted."
+      ],
+      "priority": "must",
+      "status": "draft",
+      "sourceRefs": [
+        "<VAULT_ROOT>/projects/e2e-local-realistic/context/dossier-2026-05-17T10-45-17-846Z.md",
+        "<VAULT_ROOT>/projects/e2e-local-realistic/context/dossier-2026-05-17T10-45-17-846Z.md:7",
+        "<VAULT_ROOT>/projects/e2e-local-realistic/context/dossier-2026-05-17T10-45-17-846Z.md:9",
+        "<VAULT_ROOT>/projects/e2e-local-realistic/context/dossier-2026-05-17T10-45-17-846Z.md:22",
+        "<VAULT_ROOT>/projects/e2e-local-realistic/context/dossier-2026-05-17T10-45-17-846Z.md:35",
+        "<VAULT_ROOT>/projects/e2e-local-realistic/context/dossier-2026-05-17T10-45-17-846Z.md:37",
+        "<VAULT_ROOT>/projects/e2e-local-realistic/context/dossier-2026-05-17T10-45-17-846Z.md:39",
+        "<VAULT_ROOT>/projects/e2e-local-realistic/context/dossier-2026-05-17T10-45-17-846Z.md:41",
+        "<VAULT_ROOT>/projects/e2e-local-realistic/context/dossier-2026-05-17T10-45-17-846Z.md:49",
+        "<VAULT_ROOT>/projects/e2e-local-realistic/context/dossier-2026-05-17T10-45-17-846Z.md:64",
+        "<VAULT_ROOT>/projects/e2e-local-realistic/context/dossier-2026-05-17T10-45-17-846Z.md:73",
+        "<VAULT_ROOT>/projects/e2e-local-realistic/context/dossier-2026-05-17T10-45-17-846Z.md:88"
+      ]
+    },
+    {
+      "id": "REQ-003",
+      "title": "GSD2 task bridge",
+      "description": "Transform accepted requirements into milestones, vertical slices, tasks, success criteria, and verification commands.",
+      "acceptance": [
+        "Tasks are independently inspectable as JSON and Markdown.",
+        "Each task names expected write areas and verification commands.",
+        "Tasks preserve requirement traceability."
+      ],
+      "priority": "must",
+      "status": "draft",
+      "sourceRefs": [
+        "<VAULT_ROOT>/projects/e2e-local-realistic/context/dossier-2026-05-17T10-45-17-846Z.md",
+        "<VAULT_ROOT>/projects/e2e-local-realistic/context/dossier-2026-05-17T10-45-17-846Z.md:7",
+        "<VAULT_ROOT>/projects/e2e-local-realistic/context/dossier-2026-05-17T10-45-17-846Z.md:9",
+        "<VAULT_ROOT>/projects/e2e-local-realistic/context/dossier-2026-05-17T10-45-17-846Z.md:22",
+        "<VAULT_ROOT>/projects/e2e-local-realistic/context/dossier-2026-05-17T10-45-17-846Z.md:35",
+        "<VAULT_ROOT>/projects/e2e-local-realistic/context/dossier-2026-05-17T10-45-17-846Z.md:37",
+        "<VAULT_ROOT>/projects/e2e-local-realistic/context/dossier-2026-05-17T10-45-17-846Z.md:39",
+        "<VAULT_ROOT>/projects/e2e-local-realistic/context/dossier-2026-05-17T10-45-17-846Z.md:41",
+        "<VAULT_ROOT>/projects/e2e-local-realistic/context/dossier-2026-05-17T10-45-17-846Z.md:49",
+        "<VAULT_ROOT>/projects/e2e-local-realistic/context/dossier-2026-05-17T10-45-17-846Z.md:64",
+        "<VAULT_ROOT>/projects/e2e-local-realistic/context/dossier-2026-05-17T10-45-17-846Z.md:73",
+        "<VAULT_ROOT>/projects/e2e-local-realistic/context/dossier-2026-05-17T10-45-17-846Z.md:88"
+      ]
+    },
+    {
+      "id": "REQ-004",
+      "title": "Bounded execution loop",
+      "description": "Plan isolated worktree execution with explicit branch names, gates, stop conditions, and review points.",
+      "acceptance": [
+        "Execution runs are recorded before work begins.",
+        "The system can identify planned worktrees and gates.",
+        "External mutations remain blocked unless a later approved adapter is enabled."
+      ],
+      "priority": "must",
+      "status": "draft",
+      "sourceRefs": [
+        "<VAULT_ROOT>/projects/e2e-local-realistic/context/dossier-2026-05-17T10-45-17-846Z.md",
+        "<VAULT_ROOT>/projects/e2e-local-realistic/context/dossier-2026-05-17T10-45-17-846Z.md:7",
+        "<VAULT_ROOT>/projects/e2e-local-realistic/context/dossier-2026-05-17T10-45-17-846Z.md:9",
+        "<VAULT_ROOT>/projects/e2e-local-realistic/context/dossier-2026-05-17T10-45-17-846Z.md:22",
+        "<VAULT_ROOT>/projects/e2e-local-realistic/context/dossier-2026-05-17T10-45-17-846Z.md:35",
+        "<VAULT_ROOT>/projects/e2e-local-realistic/context/dossier-2026-05-17T10-45-17-846Z.md:37",
+        "<VAULT_ROOT>/projects/e2e-local-realistic/context/dossier-2026-05-17T10-45-17-846Z.md:39",
+        "<VAULT_ROOT>/projects/e2e-local-realistic/context/dossier-2026-05-17T10-45-17-846Z.md:41",
+        "<VAULT_ROOT>/projects/e2e-local-realistic/context/dossier-2026-05-17T10-45-17-846Z.md:49",
+        "<VAULT_ROOT>/projects/e2e-local-realistic/context/dossier-2026-05-17T10-45-17-846Z.md:64",
+        "<VAULT_ROOT>/projects/e2e-local-realistic/context/dossier-2026-05-17T10-45-17-846Z.md:73",
+        "<VAULT_ROOT>/projects/e2e-local-realistic/context/dossier-2026-05-17T10-45-17-846Z.md:88"
+      ]
+    },
+    {
+      "id": "REQ-005",
+      "title": "Playwright UI verification evidence",
+      "description": "Generate UI test plans and Playwright skeletons from requirements, with room for screenshots, traces, and healer proposals.",
+      "acceptance": [
+        "Generated tests use role-oriented locators where possible.",
+        "Scenario records link back to requirement ids.",
+        "Evidence paths are recorded separately from claims."
+      ],
+      "priority": "should",
+      "status": "draft",
+      "sourceRefs": [
+        "<VAULT_ROOT>/projects/e2e-local-realistic/context/dossier-2026-05-17T10-45-17-846Z.md",
+        "<VAULT_ROOT>/projects/e2e-local-realistic/context/dossier-2026-05-17T10-45-17-846Z.md:7",
+        "<VAULT_ROOT>/projects/e2e-local-realistic/context/dossier-2026-05-17T10-45-17-846Z.md:9",
+        "<VAULT_ROOT>/projects/e2e-local-realistic/context/dossier-2026-05-17T10-45-17-846Z.md:22",
+        "<VAULT_ROOT>/projects/e2e-local-realistic/context/dossier-2026-05-17T10-45-17-846Z.md:35",
+        "<VAULT_ROOT>/projects/e2e-local-realistic/context/dossier-2026-05-17T10-45-17-846Z.md:37",
+        "<VAULT_ROOT>/projects/e2e-local-realistic/context/dossier-2026-05-17T10-45-17-846Z.md:39",
+        "<VAULT_ROOT>/projects/e2e-local-realistic/context/dossier-2026-05-17T10-45-17-846Z.md:41",
+        "<VAULT_ROOT>/projects/e2e-local-realistic/context/dossier-2026-05-17T10-45-17-846Z.md:49",
+        "<VAULT_ROOT>/projects/e2e-local-realistic/context/dossier-2026-05-17T10-45-17-846Z.md:64",
+        "<VAULT_ROOT>/projects/e2e-local-realistic/context/dossier-2026-05-17T10-45-17-846Z.md:73",
+        "<VAULT_ROOT>/projects/e2e-local-realistic/context/dossier-2026-05-17T10-45-17-846Z.md:88"
+      ]
+    },
+    {
+      "id": "REQ-006",
+      "title": "Review and CI control plane",
+      "description": "Collect deterministic checks, CodeRabbit feedback, human review, and merge-readiness state into one evidence surface.",
+      "acceptance": [
+        "Merge readiness lists satisfied and missing gates.",
+        "CI and review records are imported without being treated as hidden authority.",
+        "Blocked states are explicit."
+      ],
+      "priority": "must",
+      "status": "draft",
+      "sourceRefs": [
+        "<VAULT_ROOT>/projects/e2e-local-realistic/context/dossier-2026-05-17T10-45-17-846Z.md",
+        "<VAULT_ROOT>/projects/e2e-local-realistic/context/dossier-2026-05-17T10-45-17-846Z.md:7",
+        "<VAULT_ROOT>/projects/e2e-local-realistic/context/dossier-2026-05-17T10-45-17-846Z.md:9",
+        "<VAULT_ROOT>/projects/e2e-local-realistic/context/dossier-2026-05-17T10-45-17-846Z.md:22",
+        "<VAULT_ROOT>/projects/e2e-local-realistic/context/dossier-2026-05-17T10-45-17-846Z.md:35",
+        "<VAULT_ROOT>/projects/e2e-local-realistic/context/dossier-2026-05-17T10-45-17-846Z.md:37",
+        "<VAULT_ROOT>/projects/e2e-local-realistic/context/dossier-2026-05-17T10-45-17-846Z.md:39",
+        "<VAULT_ROOT>/projects/e2e-local-realistic/context/dossier-2026-05-17T10-45-17-846Z.md:41",
+        "<VAULT_ROOT>/projects/e2e-local-realistic/context/dossier-2026-05-17T10-45-17-846Z.md:49",
+        "<VAULT_ROOT>/projects/e2e-local-realistic/context/dossier-2026-05-17T10-45-17-846Z.md:64",
+        "<VAULT_ROOT>/projects/e2e-local-realistic/context/dossier-2026-05-17T10-45-17-846Z.md:73",
+        "<VAULT_ROOT>/projects/e2e-local-realistic/context/dossier-2026-05-17T10-45-17-846Z.md:88"
+      ]
+    },
+    {
+      "id": "REQ-007",
+      "title": "Infrastructure substrate registry",
+      "description": "Represent Proxmox, DGX Spark, M-series Macs, Hermes, OpenScorpion, local model endpoints, and runner pools as read-only registry records first.",
+      "acceptance": [
+        "Infrastructure records are readable without model calls.",
+        "Runner trust boundaries are explicit.",
+        "Mutation plans require approval and remain non-executing in this slice."
+      ],
+      "priority": "must",
+      "status": "draft",
+      "sourceRefs": [
+        "<VAULT_ROOT>/projects/e2e-local-realistic/context/dossier-2026-05-17T10-45-17-846Z.md",
+        "<VAULT_ROOT>/projects/e2e-local-realistic/context/dossier-2026-05-17T10-45-17-846Z.md:7",
+        "<VAULT_ROOT>/projects/e2e-local-realistic/context/dossier-2026-05-17T10-45-17-846Z.md:9",
+        "<VAULT_ROOT>/projects/e2e-local-realistic/context/dossier-2026-05-17T10-45-17-846Z.md:22",
+        "<VAULT_ROOT>/projects/e2e-local-realistic/context/dossier-2026-05-17T10-45-17-846Z.md:35",
+        "<VAULT_ROOT>/projects/e2e-local-realistic/context/dossier-2026-05-17T10-45-17-846Z.md:37",
+        "<VAULT_ROOT>/projects/e2e-local-realistic/context/dossier-2026-05-17T10-45-17-846Z.md:39",
+        "<VAULT_ROOT>/projects/e2e-local-realistic/context/dossier-2026-05-17T10-45-17-846Z.md:41",
+        "<VAULT_ROOT>/projects/e2e-local-realistic/context/dossier-2026-05-17T10-45-17-846Z.md:49",
+        "<VAULT_ROOT>/projects/e2e-local-realistic/context/dossier-2026-05-17T10-45-17-846Z.md:64",
+        "<VAULT_ROOT>/projects/e2e-local-realistic/context/dossier-2026-05-17T10-45-17-846Z.md:73",
+        "<VAULT_ROOT>/projects/e2e-local-realistic/context/dossier-2026-05-17T10-45-17-846Z.md:88"
+      ]
+    }
+  ],
+  "tasks": [
+    {
+      "id": "TASK-001",
+      "title": "Source evidence intake",
+      "requirementIds": [
+        "REQ-001"
+      ],
+      "slice": "core",
+      "successCriteria": [
+        "Raw artifacts are copied into the durable vault.",
+        "Each artifact has a digest, source path, kind, and timestamp.",
+        "Extracted text remains linked to the raw evidence."
+      ],
+      "verificationCommands": [
+        "npm run check",
+        "npm test"
+      ],
+      "canRunInParallel": true,
+      "writes": [
+        "src/vault.ts",
+        "src/extract.ts",
+        "docs/source-contract.md"
+      ],
+      "milestoneId": "M1",
+      "milestoneTitle": "Control Spine"
+    },
+    {
+      "id": "TASK-002",
+      "title": "Source-grounded PRD synthesis",
+      "requirementIds": [
+        "REQ-002"
+      ],
+      "slice": "core",
+      "successCriteria": [
+        "PRD records source references for every major claim.",
+        "Ambiguities are separated from accepted requirements.",
+        "Manual exports work before automation is attempted."
+      ],
+      "verificationCommands": [
+        "npm run check",
+        "npm test"
+      ],
+      "canRunInParallel": true,
+      "writes": [
+        "src/prd.ts",
+        "vault/projects/<project>/requirements/"
+      ],
+      "milestoneId": "M1",
+      "milestoneTitle": "Control Spine"
+    },
+    {
+      "id": "TASK-003",
+      "title": "GSD2 task bridge",
+      "requirementIds": [
+        "REQ-003"
+      ],
+      "slice": "core",
+      "successCriteria": [
+        "Tasks are independently inspectable as JSON and Markdown.",
+        "Each task names expected write areas and verification commands.",
+        "Tasks preserve requirement traceability."
+      ],
+      "verificationCommands": [
+        "npm run check",
+        "npm test"
+      ],
+      "canRunInParallel": false,
+      "writes": [
+        "src/gsd.ts",
+        "vault/projects/<project>/gsd/"
+      ],
+      "milestoneId": "M1",
+      "milestoneTitle": "Control Spine"
+    },
+    {
+      "id": "TASK-004",
+      "title": "Bounded execution loop",
+      "requirementIds": [
+        "REQ-004"
+      ],
+      "slice": "core",
+      "successCriteria": [
+        "Execution runs are recorded before work begins.",
+        "The system can identify planned worktrees and gates.",
+        "External mutations remain blocked unless a later approved adapter is enabled."
+      ],
+      "verificationCommands": [
+        "npm run check",
+        "npm test"
+      ],
+      "canRunInParallel": false,
+      "writes": [
+        "src/execution.ts",
+        "vault/projects/<project>/execution/"
+      ],
+      "milestoneId": "M1",
+      "milestoneTitle": "Control Spine"
+    },
+    {
+      "id": "TASK-006",
+      "title": "Review and CI control plane",
+      "requirementIds": [
+        "REQ-006"
+      ],
+      "slice": "core",
+      "successCriteria": [
+        "Merge readiness lists satisfied and missing gates.",
+        "CI and review records are imported without being treated as hidden authority.",
+        "Blocked states are explicit."
+      ],
+      "verificationCommands": [
+        "npm run check",
+        "npm test"
+      ],
+      "canRunInParallel": true,
+      "writes": [
+        "src/controlPlane.ts",
+        "vault/projects/<project>/control/"
+      ],
+      "milestoneId": "M1",
+      "milestoneTitle": "Control Spine"
+    },
+    {
+      "id": "TASK-007",
+      "title": "Infrastructure substrate registry",
+      "requirementIds": [
+        "REQ-007"
+      ],
+      "slice": "core",
+      "successCriteria": [
+        "Infrastructure records are readable without model calls.",
+        "Runner trust boundaries are explicit.",
+        "Mutation plans require approval and remain non-executing in this slice."
+      ],
+      "verificationCommands": [
+        "npm run check",
+        "npm test"
+      ],
+      "canRunInParallel": true,
+      "writes": [
+        "src/infraSnapshot.ts",
+        "vault/projects/<project>/infrastructure/"
+      ],
+      "milestoneId": "M1",
+      "milestoneTitle": "Control Spine"
+    },
+    {
+      "id": "TASK-005",
+      "title": "Playwright UI verification evidence",
+      "requirementIds": [
+        "REQ-005"
+      ],
+      "slice": "verification",
+      "successCriteria": [
+        "Generated tests use role-oriented locators where possible.",
+        "Scenario records link back to requirement ids.",
+        "Evidence paths are recorded separately from claims."
+      ],
+      "verificationCommands": [
+        "npm run check",
+        "npm test",
+        "npx playwright test --reporter=list"
+      ],
+      "canRunInParallel": true,
+      "writes": [
+        "src/playwrightEvidence.ts",
+        "vault/projects/<project>/verification/"
+      ],
+      "milestoneId": "M2",
+      "milestoneTitle": "Verification Surface"
+    }
+  ],
+  "executionRuns": [
+    {
+      "schemaVersion": 1,
+      "id": "run-2026-05-17T10-45-17-848Z",
+      "project": "e2e-local-realistic",
+      "createdAt": "2026-05-17T10:45:17.848Z",
+      "taskIds": [
+        "TASK-001",
+        "TASK-002",
+        "TASK-003",
+        "TASK-004",
+        "TASK-006",
+        "TASK-007",
+        "TASK-005"
+      ],
+      "repoPath": "<REPO_ROOT>",
+      "branchPrefix": "jxw/ariadne",
+      "status": "planned",
+      "gates": [
+        "npm run check",
+        "npm test",
+        "npm run build",
+        "review evidence",
+        "human approval before external mutation"
+      ],
+      "worktrees": [
+        {
+          "taskId": "TASK-001",
+          "branch": "jxw/ariadne-task-001",
+          "worktreePath": "<REPO_ROOT>-task-001"
+        },
+        {
+          "taskId": "TASK-002",
+          "branch": "jxw/ariadne-task-002",
+          "worktreePath": "<REPO_ROOT>-task-002"
+        },
+        {
+          "taskId": "TASK-003",
+          "branch": "jxw/ariadne-task-003",
+          "worktreePath": "<REPO_ROOT>-task-003"
+        },
+        {
+          "taskId": "TASK-004",
+          "branch": "jxw/ariadne-task-004",
+          "worktreePath": "<REPO_ROOT>-task-004"
+        },
+        {
+          "taskId": "TASK-006",
+          "branch": "jxw/ariadne-task-006",
+          "worktreePath": "<REPO_ROOT>-task-006"
+        },
+        {
+          "taskId": "TASK-007",
+          "branch": "jxw/ariadne-task-007",
+          "worktreePath": "<REPO_ROOT>-task-007"
+        },
+        {
+          "taskId": "TASK-005",
+          "branch": "jxw/ariadne-task-005",
+          "worktreePath": "<REPO_ROOT>-task-005"
+        }
+      ],
+      "stopConditions": [
+        "A verification command fails twice for the same reason.",
+        "A task requires credentials or external mutation not represented by an approved plan.",
+        "The working tree contains unrelated user changes in a write scope.",
+        "Generated tests cannot identify a target URL or stable user workflow."
+      ]
+    }
+  ],
+  "checks": [
+    {
+      "schemaVersion": 1,
+      "id": "check-typecheck-2026-05-17T10-45-17-851Z",
+      "project": "e2e-local-realistic",
+      "recordedAt": "2026-05-17T10:45:17.851Z",
+      "name": "typecheck",
+      "command": "npm run check",
+      "status": "passed",
+      "evidence": "<WORKSPACE_ROOT>/benchmarks/source-packs/realistic/imports/ci-checks.json"
+    },
+    {
+      "schemaVersion": 1,
+      "id": "check-unit-tests-2026-05-17T10-45-17-852Z",
+      "project": "e2e-local-realistic",
+      "recordedAt": "2026-05-17T10:45:17.852Z",
+      "name": "unit-tests",
+      "command": "npm test",
+      "status": "passed",
+      "evidence": "<WORKSPACE_ROOT>/benchmarks/source-packs/realistic/imports/ci-checks.json"
+    },
+    {
+      "schemaVersion": 1,
+      "id": "check-build-2026-05-17T10-45-17-852Z",
+      "project": "e2e-local-realistic",
+      "recordedAt": "2026-05-17T10:45:17.852Z",
+      "name": "build",
+      "command": "npm run build",
+      "status": "passed",
+      "evidence": "<WORKSPACE_ROOT>/benchmarks/source-packs/realistic/imports/ci-checks.json"
+    }
+  ],
+  "reviews": [
+    {
+      "schemaVersion": 1,
+      "id": "review-coderabbit-2026-05-17T10-45-17-852Z",
+      "project": "e2e-local-realistic",
+      "recordedAt": "2026-05-17T10:45:17.852Z",
+      "source": "coderabbit",
+      "status": "approved",
+      "summary": "Approved",
+      "evidence": "<WORKSPACE_ROOT>/benchmarks/source-packs/realistic/imports/coderabbit-review.md"
+    }
+  ],
+  "approvals": [],
+  "mutationReadinessPlans": [],
+  "mutationDryRuns": [],
+  "mutationExecutions": [],
+  "liveAdapterApprovalReviews": [],
+  "liveAdapterTargetDossiers": [],
+  "liveAdapterOperatorEvidenceChecks": [],
+  "liveAdapterOperatorEvidence": [],
+  "decisions": [],
+  "playwrightEvidence": [],
+  "healerProposals": [],
+  "evaluations": [],
+  "benchmarkRuns": [
+    {
+      "schemaVersion": 1,
+      "id": "benchmark-run-realistic-2026-05-17T10-45-17-863Z",
+      "project": "e2e-local-realistic",
+      "set": "realistic",
+      "generatedAt": "2026-05-17T10:45:17.863Z",
+      "mode": "local_deterministic",
+      "status": "passed",
+      "packPath": "<PACK_ROOT>/benchmark-pack.json",
+      "packRoot": "<PACK_ROOT>",
+      "targetProjects": [
+        "e2e-local-realistic"
+      ],
+      "summary": {
+        "steps": 19,
+        "passed": 19,
+        "failed": 0,
+        "targetProjects": 1,
+        "missingRequiredArtifacts": 0
+      },
+      "steps": [
+        {
+          "id": "ingest",
+          "project": "e2e-local-realistic",
+          "status": "passed",
+          "detail": "completed",
+          "evidenceRefs": [
+            "<PACK_ROOT>/sources/whitepaper.md",
+            "<PACK_ROOT>/sources/dictated-notes.txt",
+            "<PACK_ROOT>/sources/sketch-handoff.md"
+          ]
+        },
+        {
+          "id": "assemble",
+          "project": "e2e-local-realistic",
+          "status": "passed",
+          "detail": "completed",
+          "evidenceRefs": []
+        },
+        {
+          "id": "prd",
+          "project": "e2e-local-realistic",
+          "status": "passed",
+          "detail": "completed",
+          "evidenceRefs": [
+            "<VAULT_ROOT>/projects/e2e-local-realistic/requirements/prd.json",
+            "<VAULT_ROOT>/projects/e2e-local-realistic/requirements/PRD.md"
+          ]
+        },
+        {
+          "id": "gsd",
+          "project": "e2e-local-realistic",
+          "status": "passed",
+          "detail": "completed",
+          "evidenceRefs": [
+            "<VAULT_ROOT>/projects/e2e-local-realistic/gsd/roadmap.json",
+            "<VAULT_ROOT>/projects/e2e-local-realistic/gsd/TASKS.md",
+            "<VAULT_ROOT>/projects/e2e-local-realistic/verification/commands.json"
+          ]
+        },
+        {
+          "id": "gsd2-export",
+          "project": "e2e-local-realistic",
+          "status": "passed",
+          "detail": "completed",
+          "evidenceRefs": [
+            "<VAULT_ROOT>/projects/e2e-local-realistic/gsd/gsd2-bundle.json",
+            "<VAULT_ROOT>/projects/e2e-local-realistic/gsd/gsd2-bundle.md"
+          ]
+        },
+        {
+          "id": "execution",
+          "project": "e2e-local-realistic",
+          "status": "passed",
+          "detail": "completed",
+          "evidenceRefs": [
+            "<VAULT_ROOT>/projects/e2e-local-realistic/execution/run-2026-05-17T10-45-17-848Z.json",
+            "<VAULT_ROOT>/projects/e2e-local-realistic/execution/run-2026-05-17T10-45-17-848Z.md"
+          ]
+        },
+        {
+          "id": "playwright",
+          "project": "e2e-local-realistic",
+          "status": "passed",
+          "detail": "completed",
+          "evidenceRefs": [
+            "<VAULT_ROOT>/projects/e2e-local-realistic/verification/playwright-plan.json",
+            "<VAULT_ROOT>/projects/e2e-local-realistic/verification/playwright-plan.md",
+            "<VAULT_ROOT>/projects/e2e-local-realistic/verification/generated.playwright.spec.ts"
+          ]
+        },
+        {
+          "id": "evaluation",
+          "project": "e2e-local-realistic",
+          "status": "passed",
+          "detail": "completed",
+          "evidenceRefs": [
+            "<VAULT_ROOT>/projects/e2e-local-realistic/evaluation/evaluation-plan.json",
+            "<VAULT_ROOT>/projects/e2e-local-realistic/evaluation/evaluation-plan.md"
+          ]
+        },
+        {
+          "id": "infra",
+          "project": "e2e-local-realistic",
+          "status": "passed",
+          "detail": "completed",
+          "evidenceRefs": [
+            "<VAULT_ROOT>/projects/e2e-local-realistic/infrastructure/registry.json",
+            "<VAULT_ROOT>/projects/e2e-local-realistic/infrastructure/runner-and-model-plan.md"
+          ]
+        },
+        {
+          "id": "notebooklm-import",
+          "project": "e2e-local-realistic",
+          "status": "passed",
+          "detail": "completed",
+          "evidenceRefs": [
+            "<PACK_ROOT>/imports/notebooklm-export.md",
+            "<VAULT_ROOT>/projects/e2e-local-realistic/requirements/notebooklm-import.json",
+            "<VAULT_ROOT>/projects/e2e-local-realistic/requirements/notebooklm-import.md"
+          ]
+        },
+        {
+          "id": "import-ci",
+          "project": "e2e-local-realistic",
+          "status": "passed",
+          "detail": "completed",
+          "evidenceRefs": [
+            "<PACK_ROOT>/imports/ci-checks.json"
+          ]
+        },
+        {
+          "id": "import-coderabbit",
+          "project": "e2e-local-realistic",
+          "status": "passed",
+          "detail": "completed",
+          "evidenceRefs": [
+            "<PACK_ROOT>/imports/coderabbit-review.md"
+          ]
+        },
+        {
+          "id": "usage-import",
+          "project": "e2e-local-realistic",
+          "status": "passed",
+          "detail": "completed",
+          "evidenceRefs": [
+            "<PACK_ROOT>/imports/usage-metrics.json"
+          ]
+        },
+        {
+          "id": "usage-report",
+          "project": "e2e-local-realistic",
+          "status": "passed",
+          "detail": "completed",
+          "evidenceRefs": [
+            "<VAULT_ROOT>/projects/e2e-local-realistic/evaluation/usage-report.json",
+            "<VAULT_ROOT>/projects/e2e-local-realistic/evaluation/usage-report.md"
+          ]
+        },
+        {
+          "id": "infra-snapshot",
+          "project": "e2e-local-realistic",
+          "status": "passed",
+          "detail": "completed",
+          "evidenceRefs": [
+            "<PACK_ROOT>/imports/infra-snapshot.json",
+            "<VAULT_ROOT>/projects/e2e-local-realistic/infrastructure/infra-snapshot-2026-05-17T10-45-17-858Z.json",
+            "<VAULT_ROOT>/projects/e2e-local-realistic/infrastructure/infra-snapshot-2026-05-17T10-45-17-858Z.md"
+          ]
+        },
+        {
+          "id": "control",
+          "project": "e2e-local-realistic",
+          "status": "passed",
+          "detail": "completed",
+          "evidenceRefs": [
+            "<VAULT_ROOT>/projects/e2e-local-realistic/control/merge-readiness.json",
+            "<VAULT_ROOT>/projects/e2e-local-realistic/control/merge-readiness.md"
+          ]
+        },
+        {
+          "id": "behavior-checks",
+          "project": "e2e-local-realistic",
+          "status": "passed",
+          "detail": "completed",
+          "evidenceRefs": [
+            "<VAULT_ROOT>/projects/e2e-local-realistic/evaluation/behavior-checks.json",
+            "<VAULT_ROOT>/projects/e2e-local-realistic/evaluation/behavior-checks.md"
+          ]
+        },
+        {
+          "id": "gbrain-export",
+          "project": "e2e-local-realistic",
+          "status": "passed",
+          "detail": "completed",
+          "evidenceRefs": [
+            "<VAULT_ROOT>/projects/e2e-local-realistic/integrations/gbrain/gbrain-export.json",
+            "<VAULT_ROOT>/projects/e2e-local-realistic/integrations/gbrain/gbrain-export.md"
+          ]
+        },
+        {
+          "id": "artifact-checks",
+          "project": "e2e-local-realistic",
+          "status": "passed",
+          "detail": "completed",
+          "evidenceRefs": [
+            "<VAULT_ROOT>/projects/e2e-local-realistic/evaluation/artifact-checks.json",
+            "<VAULT_ROOT>/projects/e2e-local-realistic/evaluation/artifact-checks.md"
+          ]
+        }
+      ],
+      "acceptance": [
+        {
+          "id": "realistic-pipeline-output",
+          "type": "pipeline_output",
+          "criterion": "Mixed source intake produces three source records.",
+          "status": "passed",
+          "evidenceRefs": [
+            "<VAULT_ROOT>/projects/e2e-local-realistic/evaluation/artifact-checks.md"
+          ]
+        },
+        {
+          "id": "realistic-adapter-evidence",
+          "type": "pipeline_output",
+          "criterion": "Manual NotebookLM, CI, CodeRabbit, usage, and infrastructure imports create evidence records.",
+          "status": "passed",
+          "evidenceRefs": [
+            "<VAULT_ROOT>/projects/e2e-local-realistic/evaluation/artifact-checks.md"
+          ]
+        },
+        {
+          "id": "realistic-fixture-safety",
+          "type": "fixture_safety",
+          "criterion": "Control and artifact-check reports are generated without live mutations.",
+          "status": "passed",
+          "evidenceRefs": [
+            "<VAULT_ROOT>/projects/e2e-local-realistic/evaluation/artifact-checks.md"
+          ]
+        }
+      ],
+      "artifactChecks": [
+        {
+          "project": "e2e-local-realistic",
+          "status": "passed",
+          "missingRequired": 0,
+          "reportPath": "<VAULT_ROOT>/projects/e2e-local-realistic/evaluation/artifact-checks.md"
+        }
+      ]
+    }
+  ],
+  "consoleVisualChecks": {
+    "schemaVersion": 1,
+    "project": "e2e-local-realistic",
+    "generatedAt": "2026-05-17T10:46:12.530Z",
+    "htmlPath": "projects/e2e-local-realistic/console/index.html",
+    "status": "passed",
+    "summary": {
+      "passed": 30,
+      "failed": 0
+    },
+    "checks": [
+      {
+        "id": "doctype",
+        "label": "HTML document shell",
+        "status": "passed",
+        "detail": "Found <!doctype html>."
+      },
+      {
+        "id": "brand",
+        "label": "Ariadne brand lockup",
+        "status": "passed",
+        "detail": "Found Ariadne Console."
+      },
+      {
+        "id": "gate-matrix",
+        "label": "Gate matrix section",
+        "status": "passed",
+        "detail": "Found Gate Matrix."
+      },
+      {
+        "id": "timeline",
+        "label": "Timeline section",
+        "status": "passed",
+        "detail": "Found Timeline."
+      },
+      {
+        "id": "approval-queue",
+        "label": "Approval queue section",
+        "status": "passed",
+        "detail": "Found Approval Queue."
+      },
+      {
+        "id": "approval-pack-metric",
+        "label": "Approval pack metric",
+        "status": "passed",
+        "detail": "Found No approval-pack data required."
+      },
+      {
+        "id": "live-adapter-approval-pack",
+        "label": "Live adapter approval pack data",
+        "status": "passed",
+        "detail": "Found No live adapter approval pack required."
+      },
+      {
+        "id": "approval-review-metric",
+        "label": "Approval review metric",
+        "status": "passed",
+        "detail": "Found Packet Reviews."
+      },
+      {
+        "id": "approval-review-audit-metric",
+        "label": "Approval review audit metric",
+        "status": "passed",
+        "detail": "Found Review Audit."
+      },
+      {
+        "id": "adapter-dossier-metric",
+        "label": "Adapter dossier metric",
+        "status": "passed",
+        "detail": "Found Dossiers."
+      },
+      {
+        "id": "adapter-cutover-metric",
+        "label": "Adapter cutover metric",
+        "status": "passed",
+        "detail": "Found Cutover."
+      },
+      {
+        "id": "adapter-review-session-metric",
+        "label": "Adapter review-session metric",
+        "status": "passed",
+        "detail": "Found Review Session."
+      },
+      {
+        "id": "live-adapter-review-session",
+        "label": "Live adapter review session data",
+        "status": "passed",
+        "detail": "Found No live adapter review session required."
+      },
+      {
+        "id": "adapter-evidence-template-metric",
+        "label": "Adapter evidence-template metric",
+        "status": "passed",
+        "detail": "Found Evidence Templates."
+      },
+      {
+        "id": "live-adapter-evidence-templates",
+        "label": "Live adapter evidence template data",
+        "status": "passed",
+        "detail": "Found No live adapter evidence templates required."
+      },
+      {
+        "id": "adapter-operator-evidence-workplan-metric",
+        "label": "Adapter operator-evidence workplan metric",
+        "status": "passed",
+        "detail": "Found Evidence Workplan."
+      },
+      {
+        "id": "live-adapter-operator-evidence-workplan",
+        "label": "Live adapter operator evidence workplan data",
+        "status": "passed",
+        "detail": "Found No live adapter operator evidence workplan required."
+      },
+      {
+        "id": "adapter-operator-evidence-queue-metric",
+        "label": "Adapter operator-evidence queue metric",
+        "status": "passed",
+        "detail": "Found Evidence Queue."
+      },
+      {
+        "id": "live-adapter-operator-evidence-queue",
+        "label": "Live adapter operator evidence queue data",
+        "status": "passed",
+        "detail": "Found No live-adapter operator evidence queue is available."
+      },
+      {
+        "id": "adapter-operator-evidence-checks-metric",
+        "label": "Adapter operator-evidence checks metric",
+        "status": "passed",
+        "detail": "Found Evidence Checks."
+      },
+      {
+        "id": "live-adapter-operator-evidence-check-command",
+        "label": "Live adapter operator evidence check command",
+        "status": "passed",
+        "detail": "Found No live adapter operator evidence check command required."
+      },
+      {
+        "id": "adapter-operator-evidence-metric",
+        "label": "Adapter operator-evidence metric",
+        "status": "passed",
+        "detail": "Found Operator Evidence."
+      },
+      {
+        "id": "live-adapter-operator-evidence",
+        "label": "Live adapter operator evidence data",
+        "status": "passed",
+        "detail": "Found No live adapter operator evidence audit required."
+      },
+      {
+        "id": "cutover-queue",
+        "label": "Cutover blockers in approval queue",
+        "status": "passed",
+        "detail": "No cutover blockers are present."
+      },
+      {
+        "id": "operator-evidence-queue",
+        "label": "Operator evidence blockers in approval queue",
+        "status": "passed",
+        "detail": "No operator evidence blockers are present."
+      },
+      {
+        "id": "trend-chart",
+        "label": "Evaluation trend empty state",
+        "status": "passed",
+        "detail": "Found No evaluation trend data is available."
+      },
+      {
+        "id": "visual-check-panel",
+        "label": "Visual check panel",
+        "status": "passed",
+        "detail": "Found Visual Checks."
+      },
+      {
+        "id": "embedded-data",
+        "label": "Embedded console data",
+        "status": "passed",
+        "detail": "Found id=\"console-data\"."
+      },
+      {
+        "id": "embedded-data-parse",
+        "label": "Embedded console data parses",
+        "status": "passed",
+        "detail": "Project e2e-local-realistic summary is present."
+      },
+      {
+        "id": "absolute-path-leaks",
+        "label": "No local absolute path leaks",
+        "status": "passed",
+        "detail": "No local absolute paths found."
+      }
+    ]
+  },
+  "consoleBrowserChecks": {
+    "schemaVersion": 1,
+    "project": "e2e-local-realistic",
+    "generatedAt": "2026-05-17T10:46:13.005Z",
+    "htmlPath": "projects/e2e-local-realistic/console/index.html",
+    "screenshotPath": "projects/e2e-local-realistic/console/screenshots/console-2026-05-17T10-46-13-005Z.png",
+    "status": "passed",
+    "viewport": {
+      "width": 1440,
+      "height": 1100
+    },
+    "summary": {
+      "passed": 10,
+      "failed": 0
+    },
+    "checks": [
+      {
+        "id": "brand",
+        "label": "Ariadne brand",
+        "status": "passed",
+        "detail": "Ariadne brand is visible."
+      },
+      {
+        "id": "gate-matrix",
+        "label": "Gate matrix section",
+        "status": "passed",
+        "detail": "Gate matrix section is visible."
+      },
+      {
+        "id": "evaluation-trends",
+        "label": "Evaluation trends section",
+        "status": "passed",
+        "detail": "Evaluation trends section is visible."
+      },
+      {
+        "id": "recovery",
+        "label": "Recovery section",
+        "status": "passed",
+        "detail": "Recovery section is visible."
+      },
+      {
+        "id": "github",
+        "label": "GitHub section",
+        "status": "passed",
+        "detail": "GitHub section is visible."
+      },
+      {
+        "id": "evidence-queue",
+        "label": "Evidence Queue metric",
+        "status": "passed",
+        "detail": "Evidence Queue metric is visible."
+      },
+      {
+        "id": "evidence-checks",
+        "label": "Evidence Checks metric",
+        "status": "passed",
+        "detail": "Evidence Checks metric is visible."
+      },
+      {
+        "id": "operator-evidence-check-command",
+        "label": "Operator evidence check command",
+        "status": "passed",
+        "detail": "No operator evidence workplan is present."
+      },
+      {
+        "id": "embedded-data",
+        "label": "Embedded console data parses",
+        "status": "passed",
+        "detail": "Embedded console data is parseable."
+      },
+      {
+        "id": "screenshot",
+        "label": "Screenshot captured",
+        "status": "passed",
+        "detail": "970100 bytes captured."
+      }
+    ]
+  },
+  "behaviorChecks": {
+    "schemaVersion": 1,
+    "project": "e2e-local-realistic",
+    "generatedAt": "2026-05-17T10:45:17.860Z",
+    "status": "warning",
+    "summary": {
+      "passed": 4,
+      "warnings": 2,
+      "failed": 0
+    },
+    "checks": [
+      {
+        "id": "approved-fixture",
+        "label": "Approved review fixture",
+        "status": "passed",
+        "evidence": [
+          "review-coderabbit-2026-05-17T10-45-17-852Z"
+        ],
+        "notes": "At least one approved review or approved fixture is present."
+      },
+      {
+        "id": "execution-mutation-gates",
+        "label": "Execution mutation gates",
+        "status": "passed",
+        "evidence": [
+          "run-2026-05-17T10-45-17-848Z"
+        ],
+        "notes": "Execution runs include explicit human approval gates before external mutation."
+      },
+      {
+        "id": "approval-workflow-records",
+        "label": "Mutation approval workflow records",
+        "status": "warning",
+        "evidence": [],
+        "notes": "No explicit approval request records exist yet for mutation-capable adapters."
+      },
+      {
+        "id": "infra-read-only",
+        "label": "Infrastructure snapshots are read-only",
+        "status": "passed",
+        "evidence": [
+          "<WORKSPACE_ROOT>/benchmarks/source-packs/realistic/imports/infra-snapshot.json"
+        ],
+        "notes": "Infrastructure evidence is limited to manual, manifest, or live_read_only snapshot kinds."
+      },
+      {
+        "id": "governance-drafts-non-submitting",
+        "label": "Governance drafts do not submit",
+        "status": "passed",
+        "evidence": [],
+        "notes": "OpenScorpion activity records are drafts with submit=false."
+      },
+      {
+        "id": "worktree-guard-fixture",
+        "label": "Worktree guard fixture",
+        "status": "warning",
+        "evidence": [
+          "projects/e2e-local-realistic/execution/run-*-worktree-guard.json"
+        ],
+        "notes": "Worktree guard is available as a behavior fixture; record it for each real execution run before applying worktrees."
+      }
+    ]
+  },
+  "gsd2ProcessSnapshots": [],
+  "gbrain": {
+    "exportBundle": {
+      "schemaVersion": 1,
+      "project": "e2e-local-realistic",
+      "generatedAt": "2026-05-17T10:45:17.861Z",
+      "source": "ariadne",
+      "mode": "read_only_export",
+      "instructions": [
+        "Import this bundle into GBrain as derived memory, not as Ariadne's source of truth.",
+        "Preserve evidenceRefs when returning search or query results.",
+        "Do not write back to Ariadne without an explicit Ariadne import command."
+      ],
+      "documents": [
+        {
+          "slug": "source/2026-05-17T10-45-17-842Z-2216c2e85d27",
+          "title": "whitepaper.md",
+          "kind": "source",
+          "content": "Source kind: markdown\nSensitivity: internal\nSHA-256: 2216c2e85d275ec7717e1ce1f9aa3c8bf1279ca7bc63765c9c41e2fdf36317b8\nNotes: none",
+          "evidenceRefs": [
+            "<VAULT_ROOT>/projects/e2e-local-realistic/raw/2026-05-17T10-45-17-842Z-2216c2e85d27/whitepaper.md",
+            "<VAULT_ROOT>/projects/e2e-local-realistic/raw/2026-05-17T10-45-17-842Z-2216c2e85d27/extracted.md"
+          ],
+          "tags": [
+            "ariadne",
+            "source",
+            "markdown"
+          ]
+        },
+        {
+          "slug": "source/2026-05-17T10-45-17-843Z-97c0663508f5",
+          "title": "dictated-notes.txt",
+          "kind": "source",
+          "content": "Source kind: text\nSensitivity: internal\nSHA-256: 97c0663508f530a902dfad37d63512dbefec19201f064669dc8876f9d8f202d6\nNotes: none",
+          "evidenceRefs": [
+            "<VAULT_ROOT>/projects/e2e-local-realistic/raw/2026-05-17T10-45-17-843Z-97c0663508f5/dictated-notes.txt",
+            "<VAULT_ROOT>/projects/e2e-local-realistic/raw/2026-05-17T10-45-17-843Z-97c0663508f5/extracted.md"
+          ],
+          "tags": [
+            "ariadne",
+            "source",
+            "text"
+          ]
+        },
+        {
+          "slug": "source/2026-05-17T10-45-17-844Z-bb66579a6a09",
+          "title": "sketch-handoff.md",
+          "kind": "source",
+          "content": "Source kind: markdown\nSensitivity: internal\nSHA-256: bb66579a6a09adc3b39263abef3998e34cdef2b7e9f7b84aea301f25551f62f2\nNotes: none",
+          "evidenceRefs": [
+            "<VAULT_ROOT>/projects/e2e-local-realistic/raw/2026-05-17T10-45-17-844Z-bb66579a6a09/sketch-handoff.md",
+            "<VAULT_ROOT>/projects/e2e-local-realistic/raw/2026-05-17T10-45-17-844Z-bb66579a6a09/extracted.md"
+          ],
+          "tags": [
+            "ariadne",
+            "source",
+            "markdown"
+          ]
+        },
+        {
+          "slug": "requirement/req-001",
+          "title": "Source evidence intake",
+          "kind": "requirement",
+          "content": "Preserve drawings, whitepapers, dictated notes, documents, and related artifacts before any summarisation or automation.\n\n- Raw artifacts are copied into the durable vault.\n- Each artifact has a digest, source path, kind, and timestamp.\n- Extracted text remains linked to the raw evidence.",
+          "evidenceRefs": [
+            "<VAULT_ROOT>/projects/e2e-local-realistic/context/dossier-2026-05-17T10-45-17-846Z.md",
+            "<VAULT_ROOT>/projects/e2e-local-realistic/context/dossier-2026-05-17T10-45-17-846Z.md:7",
+            "<VAULT_ROOT>/projects/e2e-local-realistic/context/dossier-2026-05-17T10-45-17-846Z.md:9",
+            "<VAULT_ROOT>/projects/e2e-local-realistic/context/dossier-2026-05-17T10-45-17-846Z.md:22",
+            "<VAULT_ROOT>/projects/e2e-local-realistic/context/dossier-2026-05-17T10-45-17-846Z.md:35",
+            "<VAULT_ROOT>/projects/e2e-local-realistic/context/dossier-2026-05-17T10-45-17-846Z.md:37",
+            "<VAULT_ROOT>/projects/e2e-local-realistic/context/dossier-2026-05-17T10-45-17-846Z.md:39",
+            "<VAULT_ROOT>/projects/e2e-local-realistic/context/dossier-2026-05-17T10-45-17-846Z.md:41",
+            "<VAULT_ROOT>/projects/e2e-local-realistic/context/dossier-2026-05-17T10-45-17-846Z.md:49",
+            "<VAULT_ROOT>/projects/e2e-local-realistic/context/dossier-2026-05-17T10-45-17-846Z.md:64",
+            "<VAULT_ROOT>/projects/e2e-local-realistic/context/dossier-2026-05-17T10-45-17-846Z.md:73",
+            "<VAULT_ROOT>/projects/e2e-local-realistic/context/dossier-2026-05-17T10-45-17-846Z.md:88"
+          ],
+          "tags": [
+            "ariadne",
+            "requirement",
+            "must",
+            "draft"
+          ]
+        },
+        {
+          "slug": "requirement/req-002",
+          "title": "Source-grounded PRD synthesis",
+          "kind": "requirement",
+          "content": "Convert evidence dossiers and NotebookLM-style grounded exports into requirements, ambiguities, acceptance criteria, and source references.\n\n- PRD records source references for every major claim.\n- Ambiguities are separated from accepted requirements.\n- Manual exports work before automation is attempted.",
+          "evidenceRefs": [
+            "<VAULT_ROOT>/projects/e2e-local-realistic/context/dossier-2026-05-17T10-45-17-846Z.md",
+            "<VAULT_ROOT>/projects/e2e-local-realistic/context/dossier-2026-05-17T10-45-17-846Z.md:7",
+            "<VAULT_ROOT>/projects/e2e-local-realistic/context/dossier-2026-05-17T10-45-17-846Z.md:9",
+            "<VAULT_ROOT>/projects/e2e-local-realistic/context/dossier-2026-05-17T10-45-17-846Z.md:22",
+            "<VAULT_ROOT>/projects/e2e-local-realistic/context/dossier-2026-05-17T10-45-17-846Z.md:35",
+            "<VAULT_ROOT>/projects/e2e-local-realistic/context/dossier-2026-05-17T10-45-17-846Z.md:37",
+            "<VAULT_ROOT>/projects/e2e-local-realistic/context/dossier-2026-05-17T10-45-17-846Z.md:39",
+            "<VAULT_ROOT>/projects/e2e-local-realistic/context/dossier-2026-05-17T10-45-17-846Z.md:41",
+            "<VAULT_ROOT>/projects/e2e-local-realistic/context/dossier-2026-05-17T10-45-17-846Z.md:49",
+            "<VAULT_ROOT>/projects/e2e-local-realistic/context/dossier-2026-05-17T10-45-17-846Z.md:64",
+            "<VAULT_ROOT>/projects/e2e-local-realistic/context/dossier-2026-05-17T10-45-17-846Z.md:73",
+            "<VAULT_ROOT>/projects/e2e-local-realistic/context/dossier-2026-05-17T10-45-17-846Z.md:88"
+          ],
+          "tags": [
+            "ariadne",
+            "requirement",
+            "must",
+            "draft"
+          ]
+        },
+        {
+          "slug": "requirement/req-003",
+          "title": "GSD2 task bridge",
+          "kind": "requirement",
+          "content": "Transform accepted requirements into milestones, vertical slices, tasks, success criteria, and verification commands.\n\n- Tasks are independently inspectable as JSON and Markdown.\n- Each task names expected write areas and verification commands.\n- Tasks preserve requirement traceability.",
+          "evidenceRefs": [
+            "<VAULT_ROOT>/projects/e2e-local-realistic/context/dossier-2026-05-17T10-45-17-846Z.md",
+            "<VAULT_ROOT>/projects/e2e-local-realistic/context/dossier-2026-05-17T10-45-17-846Z.md:7",
+            "<VAULT_ROOT>/projects/e2e-local-realistic/context/dossier-2026-05-17T10-45-17-846Z.md:9",
+            "<VAULT_ROOT>/projects/e2e-local-realistic/context/dossier-2026-05-17T10-45-17-846Z.md:22",
+            "<VAULT_ROOT>/projects/e2e-local-realistic/context/dossier-2026-05-17T10-45-17-846Z.md:35",
+            "<VAULT_ROOT>/projects/e2e-local-realistic/context/dossier-2026-05-17T10-45-17-846Z.md:37",
+            "<VAULT_ROOT>/projects/e2e-local-realistic/context/dossier-2026-05-17T10-45-17-846Z.md:39",
+            "<VAULT_ROOT>/projects/e2e-local-realistic/context/dossier-2026-05-17T10-45-17-846Z.md:41",
+            "<VAULT_ROOT>/projects/e2e-local-realistic/context/dossier-2026-05-17T10-45-17-846Z.md:49",
+            "<VAULT_ROOT>/projects/e2e-local-realistic/context/dossier-2026-05-17T10-45-17-846Z.md:64",
+            "<VAULT_ROOT>/projects/e2e-local-realistic/context/dossier-2026-05-17T10-45-17-846Z.md:73",
+            "<VAULT_ROOT>/projects/e2e-local-realistic/context/dossier-2026-05-17T10-45-17-846Z.md:88"
+          ],
+          "tags": [
+            "ariadne",
+            "requirement",
+            "must",
+            "draft"
+          ]
+        },
+        {
+          "slug": "requirement/req-004",
+          "title": "Bounded execution loop",
+          "kind": "requirement",
+          "content": "Plan isolated worktree execution with explicit branch names, gates, stop conditions, and review points.\n\n- Execution runs are recorded before work begins.\n- The system can identify planned worktrees and gates.\n- External mutations remain blocked unless a later approved adapter is enabled.",
+          "evidenceRefs": [
+            "<VAULT_ROOT>/projects/e2e-local-realistic/context/dossier-2026-05-17T10-45-17-846Z.md",
+            "<VAULT_ROOT>/projects/e2e-local-realistic/context/dossier-2026-05-17T10-45-17-846Z.md:7",
+            "<VAULT_ROOT>/projects/e2e-local-realistic/context/dossier-2026-05-17T10-45-17-846Z.md:9",
+            "<VAULT_ROOT>/projects/e2e-local-realistic/context/dossier-2026-05-17T10-45-17-846Z.md:22",
+            "<VAULT_ROOT>/projects/e2e-local-realistic/context/dossier-2026-05-17T10-45-17-846Z.md:35",
+            "<VAULT_ROOT>/projects/e2e-local-realistic/context/dossier-2026-05-17T10-45-17-846Z.md:37",
+            "<VAULT_ROOT>/projects/e2e-local-realistic/context/dossier-2026-05-17T10-45-17-846Z.md:39",
+            "<VAULT_ROOT>/projects/e2e-local-realistic/context/dossier-2026-05-17T10-45-17-846Z.md:41",
+            "<VAULT_ROOT>/projects/e2e-local-realistic/context/dossier-2026-05-17T10-45-17-846Z.md:49",
+            "<VAULT_ROOT>/projects/e2e-local-realistic/context/dossier-2026-05-17T10-45-17-846Z.md:64",
+            "<VAULT_ROOT>/projects/e2e-local-realistic/context/dossier-2026-05-17T10-45-17-846Z.md:73",
+            "<VAULT_ROOT>/projects/e2e-local-realistic/context/dossier-2026-05-17T10-45-17-846Z.md:88"
+          ],
+          "tags": [
+            "ariadne",
+            "requirement",
+            "must",
+            "draft"
+          ]
+        },
+        {
+          "slug": "requirement/req-005",
+          "title": "Playwright UI verification evidence",
+          "kind": "requirement",
+          "content": "Generate UI test plans and Playwright skeletons from requirements, with room for screenshots, traces, and healer proposals.\n\n- Generated tests use role-oriented locators where possible.\n- Scenario records link back to requirement ids.\n- Evidence paths are recorded separately from claims.",
+          "evidenceRefs": [
+            "<VAULT_ROOT>/projects/e2e-local-realistic/context/dossier-2026-05-17T10-45-17-846Z.md",
+            "<VAULT_ROOT>/projects/e2e-local-realistic/context/dossier-2026-05-17T10-45-17-846Z.md:7",
+            "<VAULT_ROOT>/projects/e2e-local-realistic/context/dossier-2026-05-17T10-45-17-846Z.md:9",
+            "<VAULT_ROOT>/projects/e2e-local-realistic/context/dossier-2026-05-17T10-45-17-846Z.md:22",
+            "<VAULT_ROOT>/projects/e2e-local-realistic/context/dossier-2026-05-17T10-45-17-846Z.md:35",
+            "<VAULT_ROOT>/projects/e2e-local-realistic/context/dossier-2026-05-17T10-45-17-846Z.md:37",
+            "<VAULT_ROOT>/projects/e2e-local-realistic/context/dossier-2026-05-17T10-45-17-846Z.md:39",
+            "<VAULT_ROOT>/projects/e2e-local-realistic/context/dossier-2026-05-17T10-45-17-846Z.md:41",
+            "<VAULT_ROOT>/projects/e2e-local-realistic/context/dossier-2026-05-17T10-45-17-846Z.md:49",
+            "<VAULT_ROOT>/projects/e2e-local-realistic/context/dossier-2026-05-17T10-45-17-846Z.md:64",
+            "<VAULT_ROOT>/projects/e2e-local-realistic/context/dossier-2026-05-17T10-45-17-846Z.md:73",
+            "<VAULT_ROOT>/projects/e2e-local-realistic/context/dossier-2026-05-17T10-45-17-846Z.md:88"
+          ],
+          "tags": [
+            "ariadne",
+            "requirement",
+            "should",
+            "draft"
+          ]
+        },
+        {
+          "slug": "requirement/req-006",
+          "title": "Review and CI control plane",
+          "kind": "requirement",
+          "content": "Collect deterministic checks, CodeRabbit feedback, human review, and merge-readiness state into one evidence surface.\n\n- Merge readiness lists satisfied and missing gates.\n- CI and review records are imported without being treated as hidden authority.\n- Blocked states are explicit.",
+          "evidenceRefs": [
+            "<VAULT_ROOT>/projects/e2e-local-realistic/context/dossier-2026-05-17T10-45-17-846Z.md",
+            "<VAULT_ROOT>/projects/e2e-local-realistic/context/dossier-2026-05-17T10-45-17-846Z.md:7",
+            "<VAULT_ROOT>/projects/e2e-local-realistic/context/dossier-2026-05-17T10-45-17-846Z.md:9",
+            "<VAULT_ROOT>/projects/e2e-local-realistic/context/dossier-2026-05-17T10-45-17-846Z.md:22",
+            "<VAULT_ROOT>/projects/e2e-local-realistic/context/dossier-2026-05-17T10-45-17-846Z.md:35",
+            "<VAULT_ROOT>/projects/e2e-local-realistic/context/dossier-2026-05-17T10-45-17-846Z.md:37",
+            "<VAULT_ROOT>/projects/e2e-local-realistic/context/dossier-2026-05-17T10-45-17-846Z.md:39",
+            "<VAULT_ROOT>/projects/e2e-local-realistic/context/dossier-2026-05-17T10-45-17-846Z.md:41",
+            "<VAULT_ROOT>/projects/e2e-local-realistic/context/dossier-2026-05-17T10-45-17-846Z.md:49",
+            "<VAULT_ROOT>/projects/e2e-local-realistic/context/dossier-2026-05-17T10-45-17-846Z.md:64",
+            "<VAULT_ROOT>/projects/e2e-local-realistic/context/dossier-2026-05-17T10-45-17-846Z.md:73",
+            "<VAULT_ROOT>/projects/e2e-local-realistic/context/dossier-2026-05-17T10-45-17-846Z.md:88"
+          ],
+          "tags": [
+            "ariadne",
+            "requirement",
+            "must",
+            "draft"
+          ]
+        },
+        {
+          "slug": "requirement/req-007",
+          "title": "Infrastructure substrate registry",
+          "kind": "requirement",
+          "content": "Represent Proxmox, DGX Spark, M-series Macs, Hermes, OpenScorpion, local model endpoints, and runner pools as read-only registry records first.\n\n- Infrastructure records are readable without model calls.\n- Runner trust boundaries are explicit.\n- Mutation plans require approval and remain non-executing in this slice.",
+          "evidenceRefs": [
+            "<VAULT_ROOT>/projects/e2e-local-realistic/context/dossier-2026-05-17T10-45-17-846Z.md",
+            "<VAULT_ROOT>/projects/e2e-local-realistic/context/dossier-2026-05-17T10-45-17-846Z.md:7",
+            "<VAULT_ROOT>/projects/e2e-local-realistic/context/dossier-2026-05-17T10-45-17-846Z.md:9",
+            "<VAULT_ROOT>/projects/e2e-local-realistic/context/dossier-2026-05-17T10-45-17-846Z.md:22",
+            "<VAULT_ROOT>/projects/e2e-local-realistic/context/dossier-2026-05-17T10-45-17-846Z.md:35",
+            "<VAULT_ROOT>/projects/e2e-local-realistic/context/dossier-2026-05-17T10-45-17-846Z.md:37",
+            "<VAULT_ROOT>/projects/e2e-local-realistic/context/dossier-2026-05-17T10-45-17-846Z.md:39",
+            "<VAULT_ROOT>/projects/e2e-local-realistic/context/dossier-2026-05-17T10-45-17-846Z.md:41",
+            "<VAULT_ROOT>/projects/e2e-local-realistic/context/dossier-2026-05-17T10-45-17-846Z.md:49",
+            "<VAULT_ROOT>/projects/e2e-local-realistic/context/dossier-2026-05-17T10-45-17-846Z.md:64",
+            "<VAULT_ROOT>/projects/e2e-local-realistic/context/dossier-2026-05-17T10-45-17-846Z.md:73",
+            "<VAULT_ROOT>/projects/e2e-local-realistic/context/dossier-2026-05-17T10-45-17-846Z.md:88"
+          ],
+          "tags": [
+            "ariadne",
+            "requirement",
+            "must",
+            "draft"
+          ]
+        },
+        {
+          "slug": "task/task-001",
+          "title": "Source evidence intake",
+          "kind": "task",
+          "content": "Milestone: Control Spine\nSlice: core\n\nSuccess criteria:\n- Raw artifacts are copied into the durable vault.\n- Each artifact has a digest, source path, kind, and timestamp.\n- Extracted text remains linked to the raw evidence.\n\nVerification:\n- npm run check\n- npm test",
+          "evidenceRefs": [
+            "requirement/req-001"
+          ],
+          "tags": [
+            "ariadne",
+            "task",
+            "M1"
+          ]
+        },
+        {
+          "slug": "task/task-002",
+          "title": "Source-grounded PRD synthesis",
+          "kind": "task",
+          "content": "Milestone: Control Spine\nSlice: core\n\nSuccess criteria:\n- PRD records source references for every major claim.\n- Ambiguities are separated from accepted requirements.\n- Manual exports work before automation is attempted.\n\nVerification:\n- npm run check\n- npm test",
+          "evidenceRefs": [
+            "requirement/req-002"
+          ],
+          "tags": [
+            "ariadne",
+            "task",
+            "M1"
+          ]
+        },
+        {
+          "slug": "task/task-003",
+          "title": "GSD2 task bridge",
+          "kind": "task",
+          "content": "Milestone: Control Spine\nSlice: core\n\nSuccess criteria:\n- Tasks are independently inspectable as JSON and Markdown.\n- Each task names expected write areas and verification commands.\n- Tasks preserve requirement traceability.\n\nVerification:\n- npm run check\n- npm test",
+          "evidenceRefs": [
+            "requirement/req-003"
+          ],
+          "tags": [
+            "ariadne",
+            "task",
+            "M1"
+          ]
+        },
+        {
+          "slug": "task/task-004",
+          "title": "Bounded execution loop",
+          "kind": "task",
+          "content": "Milestone: Control Spine\nSlice: core\n\nSuccess criteria:\n- Execution runs are recorded before work begins.\n- The system can identify planned worktrees and gates.\n- External mutations remain blocked unless a later approved adapter is enabled.\n\nVerification:\n- npm run check\n- npm test",
+          "evidenceRefs": [
+            "requirement/req-004"
+          ],
+          "tags": [
+            "ariadne",
+            "task",
+            "M1"
+          ]
+        },
+        {
+          "slug": "task/task-006",
+          "title": "Review and CI control plane",
+          "kind": "task",
+          "content": "Milestone: Control Spine\nSlice: core\n\nSuccess criteria:\n- Merge readiness lists satisfied and missing gates.\n- CI and review records are imported without being treated as hidden authority.\n- Blocked states are explicit.\n\nVerification:\n- npm run check\n- npm test",
+          "evidenceRefs": [
+            "requirement/req-006"
+          ],
+          "tags": [
+            "ariadne",
+            "task",
+            "M1"
+          ]
+        },
+        {
+          "slug": "task/task-007",
+          "title": "Infrastructure substrate registry",
+          "kind": "task",
+          "content": "Milestone: Control Spine\nSlice: core\n\nSuccess criteria:\n- Infrastructure records are readable without model calls.\n- Runner trust boundaries are explicit.\n- Mutation plans require approval and remain non-executing in this slice.\n\nVerification:\n- npm run check\n- npm test",
+          "evidenceRefs": [
+            "requirement/req-007"
+          ],
+          "tags": [
+            "ariadne",
+            "task",
+            "M1"
+          ]
+        },
+        {
+          "slug": "task/task-005",
+          "title": "Playwright UI verification evidence",
+          "kind": "task",
+          "content": "Milestone: Verification Surface\nSlice: verification\n\nSuccess criteria:\n- Generated tests use role-oriented locators where possible.\n- Scenario records link back to requirement ids.\n- Evidence paths are recorded separately from claims.\n\nVerification:\n- npm run check\n- npm test\n- npx playwright test --reporter=list",
+          "evidenceRefs": [
+            "requirement/req-005"
+          ],
+          "tags": [
+            "ariadne",
+            "task",
+            "M2"
+          ]
+        },
+        {
+          "slug": "infrastructure/registry",
+          "title": "Infrastructure Registry",
+          "kind": "infrastructure",
+          "content": "m1-hermes: M1 Mac mini / always-on Hermes supervisor / Control-plane host for long-running supervision; verify live details before automation.\nm1-max: M1 Max / local development and testing / Apple Silicon development machine; use for local validation where available.\nm5-max: M5 Max / high-memory local agent workstation / Primary Mac-class local execution surface mentioned by user.\ndgx-spark: DGX Spark / local inference and memory-heavy workloads / Treat as planned/observed only until live endpoint inventory exists.\nbeast: Proxmox dev server / runners, services, model endpoints, infrastructure substrate / Read-only inventory first; Proxmox live state is authoritative at execution time.\nopenscorpion-router: governed model route / planned\ndgx-local-models: local inference / planned\ntrusted-private-runners: private jxwalker project repositories / persistent self-hosted runners only for trusted private repositories\npublic-repo-safe-path: public repositories / manual or ephemeral approval path; no untrusted public PRs on persistent runners",
+          "evidenceRefs": [
+            "infrastructure/registry.json"
+          ],
+          "tags": [
+            "ariadne",
+            "infrastructure"
+          ]
+        }
+      ]
+    },
+    "reports": []
+  },
+  "coordination": {
+    "sleepRoutines": [],
+    "memoryProposals": [],
+    "agentMail": [],
+    "agentLeases": [],
+    "hermesCronSnapshots": [
+      {
+        "schemaVersion": 1,
+        "project": "e2e-local-realistic",
+        "importedAt": "2026-05-17T10:45:19.784Z",
+        "sourcePath": "<EXTERNAL_PATH>/ariadne-hermes-cron-empty.json",
+        "host": "local-mac",
+        "mode": "read_only",
+        "summary": {
+          "jobs": 0,
+          "enabled": 0,
+          "disabled": 0,
+          "schedules": [],
+          "nextRuns": [],
+          "warnings": [
+            "No Hermes cron jobs were found in the imported snapshot."
+          ]
+        },
+        "jobs": [],
+        "raw": {
+          "jobs": [],
+          "warnings": [
+            "Hermes cron list reported no scheduled jobs during local e2e probe."
+          ]
+        }
+      }
+    ],
+    "hermesCronProposals": [
+      {
+        "schemaVersion": 1,
+        "id": "hermes-cron-proposal-2026-05-17T10-45-20-227Z",
+        "project": "e2e-local-realistic",
+        "generatedAt": "2026-05-17T10:45:20.227Z",
+        "mode": "proposal_only",
+        "snapshotRefs": [
+          "projects/e2e-local-realistic/coordination/hermes/hermes-cron-2026-05-17T10-45-19-784Z.json"
+        ],
+        "summary": {
+          "snapshots": 1,
+          "jobs": 0,
+          "enabled": 0,
+          "disabled": 0,
+          "proposedActions": 1,
+          "warnings": [
+            "No Hermes cron jobs were found in the imported snapshot."
+          ]
+        },
+        "proposedActions": [
+          {
+            "id": "create-candidate-sleep-review",
+            "kind": "create-candidate",
+            "title": "Draft local-e2e Ariadne sleep review job",
+            "rationale": "No imported Hermes scheduler evidence exists yet; create only a proposal until a real Hermes export is imported.",
+            "schedule": "0 2 * * *",
+            "evidenceRefs": []
+          }
+        ]
+      }
+    ]
+  },
+  "infrastructure": {
+    "registry": {
+      "schemaVersion": 1,
+      "project": "e2e-local-realistic",
+      "generatedAt": "2026-05-17T10:45:17.850Z",
+      "hosts": [
+        {
+          "id": "m1-hermes",
+          "label": "M1 Mac mini",
+          "role": "always-on Hermes supervisor",
+          "notes": "Control-plane host for long-running supervision; verify live details before automation."
+        },
+        {
+          "id": "m1-max",
+          "label": "M1 Max",
+          "role": "local development and testing",
+          "notes": "Apple Silicon development machine; use for local validation where available."
+        },
+        {
+          "id": "m5-max",
+          "label": "M5 Max",
+          "role": "high-memory local agent workstation",
+          "notes": "Primary Mac-class local execution surface mentioned by user."
+        },
+        {
+          "id": "dgx-spark",
+          "label": "DGX Spark",
+          "role": "local inference and memory-heavy workloads",
+          "notes": "Treat as planned/observed only until live endpoint inventory exists."
+        },
+        {
+          "id": "beast",
+          "label": "Proxmox dev server",
+          "role": "runners, services, model endpoints, infrastructure substrate",
+          "notes": "Read-only inventory first; Proxmox live state is authoritative at execution time."
+        }
+      ],
+      "modelEndpoints": [
+        {
+          "id": "openscorpion-router",
+          "hostId": "beast",
+          "kind": "governed model route",
+          "url": "http://localhost:8080",
+          "status": "planned"
+        },
+        {
+          "id": "dgx-local-models",
+          "hostId": "dgx-spark",
+          "kind": "local inference",
+          "status": "planned"
+        }
+      ],
+      "runnerPools": [
+        {
+          "id": "trusted-private-runners",
+          "hostId": "beast",
+          "scope": "private jxwalker project repositories",
+          "trustBoundary": "persistent self-hosted runners only for trusted private repositories",
+          "status": "planned"
+        },
+        {
+          "id": "public-repo-safe-path",
+          "hostId": "beast",
+          "scope": "public repositories",
+          "trustBoundary": "manual or ephemeral approval path; no untrusted public PRs on persistent runners",
+          "status": "planned"
+        }
+      ]
+    },
+    "snapshots": [
+      {
+        "schemaVersion": 1,
+        "project": "e2e-local-realistic",
+        "importedAt": "2026-05-17T10:45:17.858Z",
+        "sourcePath": "<WORKSPACE_ROOT>/benchmarks/source-packs/realistic/imports/infra-snapshot.json",
+        "snapshotKind": "manifest",
+        "summary": {
+          "keys": [
+            "guests",
+            "host"
+          ],
+          "host": "beast",
+          "vmCount": 1,
+          "lxcCount": 1
+        },
+        "raw": {
+          "host": {
+            "short_name": "beast",
+            "role": "proxmox-dev"
+          },
+          "guests": {
+            "vms": [
+              {
+                "id": 109,
+                "name": "runner",
+                "status": "observed"
+              }
+            ],
+            "lxc": [
+              {
+                "id": 201,
+                "name": "paperless",
+                "status": "observed"
+              }
+            ]
+          }
+        }
+      },
+      {
+        "schemaVersion": 1,
+        "project": "e2e-local-realistic",
+        "importedAt": "2026-05-17T10:45:20.668Z",
+        "sourcePath": "<LIVE_READ_ONLY>/local-host",
+        "snapshotKind": "live_read_only",
+        "summary": {
+          "collector": "local-node-os",
+          "mode": "read_only",
+          "host": "local-host",
+          "platform": "darwin",
+          "arch": "arm64",
+          "cpuCount": 18,
+          "totalMemoryGiB": 128,
+          "networkInterfaces": 16,
+          "notes": "Local Ariadne e2e runtime probe with Hermes dashboard/gateway, DS4, and Ollama."
+        },
+        "raw": {
+          "collector": "local-node-os",
+          "mode": "read_only",
+          "sanitization": {
+            "hostname": "sha256-12",
+            "networkAddresses": "omitted",
+            "macAddresses": "omitted"
+          },
+          "host": {
+            "hostnameHash": "1cc0a7e81ed7",
+            "platform": "darwin",
+            "arch": "arm64",
+            "release": "25.5.0",
+            "type": "Darwin",
+            "uptimeSeconds": 475204
+          },
+          "runtime": {
+            "nodeVersion": "v25.9.0"
+          },
+          "hardware": {
+            "cpuCount": 18,
+            "cpuModel": "Apple M5 Max",
+            "totalMemoryBytes": 137438953472,
+            "freeMemoryBytes": 24367661056
+          },
+          "network": {
+            "interfaceCount": 16,
+            "interfaces": [
+              {
+                "name": "lo0",
+                "addressCount": 3,
+                "families": [
+                  "IPv4",
+                  "IPv6"
+                ],
+                "internal": true
+              },
+              {
+                "name": "en0",
+                "addressCount": 3,
+                "families": [
+                  "IPv4",
+                  "IPv6"
+                ],
+                "internal": false
+              },
+              {
+                "name": "awdl0",
+                "addressCount": 1,
+                "families": [
+                  "IPv6"
+                ],
+                "internal": false
+              },
+              {
+                "name": "llw0",
+                "addressCount": 1,
+                "families": [
+                  "IPv6"
+                ],
+                "internal": false
+              },
+              {
+                "name": "utun0",
+                "addressCount": 1,
+                "families": [
+                  "IPv6"
+                ],
+                "internal": false
+              },
+              {
+                "name": "utun1",
+                "addressCount": 1,
+                "families": [
+                  "IPv6"
+                ],
+                "internal": false
+              },
+              {
+                "name": "utun2",
+                "addressCount": 1,
+                "families": [
+                  "IPv6"
+                ],
+                "internal": false
+              },
+              {
+                "name": "utun3",
+                "addressCount": 1,
+                "families": [
+                  "IPv6"
+                ],
+                "internal": false
+              },
+              {
+                "name": "utun4",
+                "addressCount": 3,
+                "families": [
+                  "IPv4",
+                  "IPv6"
+                ],
+                "internal": false
+              },
+              {
+                "name": "utun5",
+                "addressCount": 1,
+                "families": [
+                  "IPv6"
+                ],
+                "internal": false
+              },
+              {
+                "name": "utun6",
+                "addressCount": 1,
+                "families": [
+                  "IPv6"
+                ],
+                "internal": false
+              },
+              {
+                "name": "utun7",
+                "addressCount": 1,
+                "families": [
+                  "IPv6"
+                ],
+                "internal": false
+              },
+              {
+                "name": "utun8",
+                "addressCount": 1,
+                "families": [
+                  "IPv6"
+                ],
+                "internal": false
+              },
+              {
+                "name": "utun9",
+                "addressCount": 1,
+                "families": [
+                  "IPv6"
+                ],
+                "internal": false
+              },
+              {
+                "name": "utun10",
+                "addressCount": 1,
+                "families": [
+                  "IPv6"
+                ],
+                "internal": false
+              },
+              {
+                "name": "utun11",
+                "addressCount": 1,
+                "families": [
+                  "IPv4"
+                ],
+                "internal": false
+              }
+            ]
+          }
+        }
+      }
+    ]
+  },
+  "deployment": {
+    "snapshots": [
+      {
+        "schemaVersion": 1,
+        "project": "e2e-local-realistic",
+        "importedAt": "2026-05-17T10:45:18.335Z",
+        "sourcePath": "<EXTERNAL_SOURCE>/ariadne-local-runtime-snapshot-sanitized.json",
+        "system": "mac",
+        "mode": "read_only",
+        "summary": {
+          "keys": [
+            "canaries",
+            "collectedAt",
+            "collector",
+            "hermes",
+            "host",
+            "lmStudio",
+            "mode",
+            "modelEndpoints",
+            "runnerPools",
+            "services",
+            "storagePools"
+          ],
+          "host": "local-mac",
+          "services": 5,
+          "modelEndpoints": 3,
+          "runnerPools": 1,
+          "storagePools": 1
+        },
+        "raw": {
+          "collectedAt": "2026-05-17T10:29:43.465Z",
+          "collector": "ariadne-local-runtime-e2e",
+          "mode": "read_only",
+          "host": "local-mac",
+          "services": [
+            {
+              "name": "hermes-dashboard",
+              "url": "http://127.0.0.1:9119",
+              "status": "running"
+            },
+            {
+              "name": "hermes-gateway",
+              "status": "running"
+            },
+            {
+              "name": "ollama",
+              "url": "http://127.0.0.1:11434",
+              "status": "running"
+            },
+            {
+              "name": "ds4-server",
+              "url": "http://127.0.0.1:8000",
+              "status": "running"
+            },
+            {
+              "name": "lm-studio",
+              "url": "http://127.0.0.1:1234",
+              "status": "unreachable"
+            }
+          ],
+          "modelEndpoints": [
+            {
+              "name": "ds4-openai-compatible",
+              "url": "http://127.0.0.1:8000/v1",
+              "status": "running",
+              "models": [
+                "deepseek-v4-flash"
+              ]
+            },
+            {
+              "name": "ollama",
+              "url": "http://127.0.0.1:11434",
+              "status": "running",
+              "models": [
+                "qwen3.5:35b-a3b-coding-nvfp4",
+                "qwen3.5:35b"
+              ]
+            },
+            {
+              "name": "lm-studio",
+              "url": "http://127.0.0.1:1234/v1",
+              "status": "unreachable",
+              "models": []
+            }
+          ],
+          "runnerPools": [
+            {
+              "name": "local-mac-shell",
+              "status": "available"
+            }
+          ],
+          "storagePools": [
+            {
+              "name": "ariadne-vault",
+              "status": "local-filesystem"
+            }
+          ],
+          "canaries": [
+            {
+              "name": "ds4-chat-completions",
+              "status": "reachable_degraded_semantics",
+              "model": "deepseek-v4-flash",
+              "usage": {
+                "prompt_tokens": 24,
+                "completion_tokens": 24,
+                "total_tokens": 48
+              },
+              "responsePreview": "We need to respond with one short sentence. The instruction: \"Ariadne local model smoke: say READY and"
+            },
+            {
+              "name": "ollama-generate",
+              "status": "reachable_degraded_semantics",
+              "model": "qwen3.5:35b-a3b-coding-nvfp4",
+              "usage": {
+                "promptTokens": 15,
+                "completionTokens": 8,
+                "totalDurationNs": 11001442709
+              },
+              "responsePreview": "",
+              "thinkingPreview": "Thinking Process:\n\n1.  **"
+            }
+          ],
+          "hermes": {
+            "dashboard": {
+              "ok": true,
+              "status": 200,
+              "contentType": "text/html; charset=utf-8"
+            },
+            "gateway": {
+              "status": "running",
+              "ok": true,
+              "stdout": "Launchd plist: <HOME>/Library/LaunchAgents/ai.hermes.gateway.plist\n✓ Service definition matches the current Hermes install\n✓ Gateway service is loaded\n{\n\t\"StandardOutPath\" = \"<HOME>/.hermes/logs/gateway.log\";\n\t\"LimitLoadToSessionType\" = \"Aqua\";\n\t\"StandardErrorPath\" = \"<HOME>/.hermes/logs/gateway.error.log\";\n\t\"Label\" = \"ai.hermes.gateway\";\n\t\"OnDemand\" = true;\n\t\"LastExitStatus\" = 0;\n\t\"PID\" = 11099;\n\t\"Program\" = \"<HOME>/.hermes/hermes-agent/venv/bin/python\";\n\t\"ProgramArguments\" = (\n\t\t\"<HOME>/.hermes/hermes-agent/venv/bin/python\";\n\t\t\"-m\";\n\t\t\"hermes_cli.main\";\n\t\t\"gateway\";\n\t\t\"run\";\n\t\t\"--replace\";\n\t);\n};\n\n",
+              "stderr": "<HOME>/.hermes/hermes-agent/gateway/status.py:221: EncodingWarning: 'encoding' argument not specified\n  raw = pid_path.read_text().strip()\n<HOME>/.hermes/hermes-agent/gateway/status.py:116: EncodingWarning: 'encoding' argument not specified\n  return int(stat_path.read_text().split()[21])\n<HOME>/.hermes/hermes-agent/hermes_cli/gateway.py:112: EncodingWarning: 'encoding' argument not specified.\n  result = subprocess.run(\n<HOME>/.hermes/hermes-agent/hermes_cli/gateway.py:138: EncodingWarning: 'encoding' argument not specified.\n  result = subprocess.run(\n<HOME>/.hermes/hermes-agent/hermes_cli/gateway.py:138: EncodingWarning: 'encoding' argument not specified.\n  result = subprocess.run(\n<HOME>/.hermes/hermes-agent/hermes_cli/gateway.py:138: EncodingWarning: 'encoding' argument not specified.\n  result = subprocess.run(\n<HOME>/.hermes/hermes-agent/hermes_cli/gateway.py:138: EncodingWarning: 'encoding' argument not specified.\n  result = subprocess.run(\n<HOME>/.hermes/hermes-agent/hermes_cli/gateway.py:138: EncodingWarning: 'encoding' argument not specified.\n  result = subprocess.run(\n<HOME>/.hermes/hermes-agent/hermes_cli/gateway.py:336: EncodingWarning: 'encoding' argument not specified.\n  result = subprocess.run(\n<HOME>/.hermes/hermes-agent/hermes_cli/gateway.py:736: EncodingWarning: 'encoding' argument not specified.\n  result = subprocess.run(\n<HOME>/.hermes/hermes-agent/hermes_cli/gateway.py:2734: EncodingWarning: 'encoding' argument not specified.\n  result = subprocess.run(\n<HOME>/.hermes/hermes-agent/hermes_cli/profiles.py:357: EncodingWarning: 'encoding' argument not specified\n  with open(config_path, \"r\") as f:\n<HOME>/.hermes/hermes-agent/gateway/status.py:221: EncodingWarning: 'encoding' argument not specified\n  raw = pid_path.read_text().strip()\n<HOME>/.hermes/hermes-agent/gateway/status.py:116: EncodingWarning: 'encoding' argument not specified\n  return int(stat_path.read_text().split()[21])\n"
+            },
+            "status": {
+              "ok": true,
+              "stdout": "\n┌─────────────────────────────────────────────────────────┐\n│                 ⚕ Hermes Agent Status                  │\n└─────────────────────────────────────────────────────────┘\n\n◆ Environment\n  Project:      <HOME>/.hermes/hermes-agent\n  Python:       3.11.15\n  .env file:    ✓ exists\n  Model:        anthropic/claude-opus-4.6\n  Provider:     Auto\n\n◆ API Keys\n  OpenRouter    ✗ (not set)\n  OpenAI        ✗ (not set)\n  Google / Gemini  ✗ (not set)\n  DeepSeek      ✗ (not set)\n  xAI / Grok    ✗ (not set)\n  NVIDIA NIM    ✗ (not set)\n  Z.AI / GLM    ✗ (not set)\n  Kimi          ✗ (not set)\n  StepFun Step Plan  ✗ (not set)\n  MiniMax       ✗ (not set)\n  MiniMax-CN    ✗ (not set)\n  Firecrawl     ✗ (not set)\n  Tavily        ✗ (not set)\n  Browser Use   ✗ (not set)\n  Browserbase   ✗ (not set)\n  FAL           ✗ (not set)\n  Tinker        ✗ (not set)\n  WandB         ✗ (not set)\n  ElevenLabs    ✗ (not set)\n  GitHub        ✗ (not set)\n  Anthropic     ✗ (not set)\n\n◆ Auth Providers\n  Nous Portal   ✗ not logged in (run: hermes auth add nous --type oauth)\n  OpenAI Codex  ✗ not logged in (run: hermes model)\n    Auth file:  <HOME>/.hermes/auth.json\n    Error:      No Codex credentials stored. Run `hermes auth` to authenticate.\n  Qwen OAuth    ✗ not logged in (run: qwen auth qwen-oauth)\n    Auth file:  <HOME>/.qwen/oauth_creds.json\n    Error:      Qwen CLI credentials not found. Run 'qwen auth qwen-oauth' first.\n  MiniMax OAuth  ✗ not logged in (run: hermes auth add minimax-oauth)\n\n◆ API-Key Providers\n  Z.AI / GLM       ✗ not configured (run: hermes model)\n  Kimi / Moonshot  ✗ not configured (run: hermes model)\n  StepFun Step Plan ✗ not configured (run: hermes model)\n  MiniMax          ✗ not configured (run: hermes model)\n  MiniMax (China)  ✗ not configured (run: hermes model)\n\n◆ Terminal Backend\n  Backend:      local\n  Sudo:         ✗ disabled\n\n◆ Messaging Platforms\n  Telegram      ✗ not configured\n  Discord       ✗ not configured\n  WhatsApp      ✗ not configured\n  Signal        ✗ not configured\n  Slack         ✗ not configured\n  Email         ✗ not configured\n  SMS           ✗ not configured\n  DingTalk      ✗ not configured\n  Feishu        ✗ not configured\n  WeCom         ✗ not configured\n  WeCom Callback  ✗ not configured\n  Weixin        ✗ not configured\n  BlueBubbles   ✗ not configured\n  QQBot         ✗ not configured\n  Yuanbao       ✗ not configured\n\n◆ Gateway Service\n  Status:       ✓ running\n  Manager:      launchd\n  PID(s):       11099\n\n◆ Scheduled Jobs\n  Jobs:         0\n\n◆ Sessions\n  Active:       0\n\n────────────────────────────────────────────────────────────\n  Run 'hermes doctor' for detailed diagnostics\n  Run 'hermes setup' to configure\n\n",
+              "stderr": "<HOME>/.hermes/hermes-agent/hermes_cli/config.py:4132: EncodingWarning: 'encoding' argument not specified\n  with open(env_path, **open_kw) as f:\n<HOME>/.hermes/hermes-agent/hermes_cli/auth.py:896: EncodingWarning: 'encoding' argument not specified\n  with lock_path.open(\"r+\" if msvcrt else \"a+\") as lock_file:\n<HOME>/.hermes/hermes-agent/gateway/status.py:221: EncodingWarning: 'encoding' argument not specified\n  raw = pid_path.read_text().strip()\n<HOME>/.hermes/hermes-agent/gateway/status.py:116: EncodingWarning: 'encoding' argument not specified\n  return int(stat_path.read_text().split()[21])\n<HOME>/.hermes/hermes-agent/hermes_cli/gateway.py:112: EncodingWarning: 'encoding' argument not specified.\n  result = subprocess.run(\n<HOME>/.hermes/hermes-agent/hermes_cli/gateway.py:138: EncodingWarning: 'encoding' argument not specified.\n  result = subprocess.run(\n<HOME>/.hermes/hermes-agent/hermes_cli/gateway.py:138: EncodingWarning: 'encoding' argument not specified.\n  result = subprocess.run(\n<HOME>/.hermes/hermes-agent/hermes_cli/gateway.py:138: EncodingWarning: 'encoding' argument not specified.\n  result = subprocess.run(\n<HOME>/.hermes/hermes-agent/hermes_cli/gateway.py:138: EncodingWarning: 'encoding' argument not specified.\n  result = subprocess.run(\n<HOME>/.hermes/hermes-agent/hermes_cli/gateway.py:138: EncodingWarning: 'encoding' argument not specified.\n  result = subprocess.run(\n<HOME>/.hermes/hermes-agent/hermes_cli/gateway.py:336: EncodingWarning: 'encoding' argument not specified.\n  result = subprocess.run(\n<HOME>/.hermes/hermes-agent/hermes_cli/gateway.py:736: EncodingWarning: 'encoding' argument not specified.\n  result = subprocess.run(\n"
+            },
+            "doctor": {
+              "ok": true,
+              "stdout": "\n┌─────────────────────────────────────────────────────────┐\n│                 🩺 Hermes Doctor                        │\n└─────────────────────────────────────────────────────────┘\n\n◆ Python Environment\n  ✓ Python 3.11.15\n  ✓ Virtual environment active\n\n◆ Required Packages\n  ✓ OpenAI SDK\n  ✓ Rich (terminal UI)\n  ✓ python-dotenv\n  ✓ PyYAML\n  ✓ HTTPX\n  ✓ Croniter (cron expressions) (optional)\n  ✓ python-telegram-bot (optional)\n  ✓ discord.py (optional)\n\n◆ Configuration Files\n  ✓ ~/.hermes/.env file exists\n  ✓ API key or custom endpoint configured\n  ✓ ~/.hermes/config.yaml exists\n  ✓ Config version up to date (v23)\n\n◆ Auth Providers\n  ⚠ Nous Portal auth (not logged in)\n  ⚠ OpenAI Codex auth (not logged in)\n    → No Codex credentials stored. Run `hermes auth` to authenticate.\n  ⚠ Google Gemini OAuth (not logged in)\n  ⚠ MiniMax OAuth (not logged in)\n  ✓ codex CLI\n\n◆ Directory Structure\n  ✓ ~/.hermes directory exists\n  ✓ ~/.hermes/cron/ exists\n  ✓ ~/.hermes/sessions/ exists\n  ✓ ~/.hermes/logs/ exists\n  ✓ ~/.hermes/skills/ exists\n  ✓ ~/.hermes/memories/ exists\n  ✓ ~/.hermes/SOUL.md exists (persona configured)\n  ✓ ~/.hermes/memories/ directory exists\n    → MEMORY.md not created yet (will be created when the agent first writes a memory)\n    → USER.md not created yet (will be created when the agent first writes a memory)\n  ✓ ~/.hermes/state.db exists (0 sessions)\n\n◆ Command Installation\n  ✓ Venv entry point exists (venv/bin/hermes)\n  ✓ ~/.local/bin/hermes exists (non-symlink)\n\n◆ External Tools\n  ✓ git\n  ✓ ripgrep (rg) (faster file search)\n  ✓ docker (optional)\n  ✓ Node.js\n  ✓ agent-browser (Node.js) (browser automation)\n  ✓ Browser tools (agent-browser) deps (no known vulnerabilities)\n\n◆ API Connectivity\n  ⚠ OpenRouter API (not configured)\n\n◆ Submodules\n  ⚠ tinker-atropos not found (run: git submodule update --init --recursive)\n\n◆ Tool Availability\n  ✓ browser\n  ✓ clarify\n  ✓ code_execution\n  ✓ cronjob\n  ✓ terminal\n  ✓ delegation\n  ✓ feishu_doc\n  ✓ feishu_drive\n  ✓ file\n  ✓ memory\n  ✓ messaging\n  ✓ session_search\n  ✓ skills\n  ✓ todo\n  ✓ tts\n  ✓ kanban (runtime-gated; loaded only for dispatcher-spawned workers)\n  ⚠ browser-cdp (system dependency not met)\n  ⚠ discord (missing DISCORD_BOT_TOKEN)\n  ⚠ discord_admin (missing DISCORD_BOT_TOKEN)\n  ⚠ homeassistant (system dependency not met)\n  ⚠ image_gen (system dependency not met)\n  ⚠ moa (missing OPENROUTER_API_KEY)\n  ⚠ rl (missing TINKER_API_KEY, WANDB_API_KEY)\n  ⚠ vision (system dependency not met)\n  ⚠ video (system dependency not met)\n  ⚠ web (missing EXA_API_KEY, PARALLEL_API_KEY, TAVILY_API_KEY, FIRECRAWL_API_KEY, FIRECRAWL_API_URL)\n  ⚠ hermes-yuanbao (system dependency not met)\n  ⚠ spotify (system dependency not met)\n\n◆ Skills Hub\n  ⚠ Skills Hub directory not initialized (run: hermes skills list)\n  ⚠ No GITHUB_TOKEN (60 req/hr rate limit — set in ~/.hermes/.env for better rates)\n\n◆ Memory Provider\n  ✓ Built-in memory active (no external provider configured — this is fine)\n\n────────────────────────────────────────────────────────────\n  Found 1 issue(s) to address:\n\n  1. Run 'hermes setup' to configure missing API keys for full tool access\n\n  Tip: run 'hermes doctor --fix' to auto-fix what's possible.\n\n",
+              "stderr": "<HOME>/.hermes/hermes-agent/hermes_cli/doctor.py:592: EncodingWarning: 'encoding' argument not specified\n  with open(config_path) as f:\n<HOME>/.hermes/hermes-agent/hermes_cli/auth.py:896: EncodingWarning: 'encoding' argument not specified\n  with lock_path.open(\"r+\" if msvcrt else \"a+\") as lock_file:\n<HOME>/.hermes/hermes-agent/hermes_cli/doctor.py:1062: EncodingWarning: 'encoding' argument not specified.\n  audit_result = subprocess.run(\n<HOME>/.hermes/hermes-agent/hermes_cli/config.py:4132: EncodingWarning: 'encoding' argument not specified\n  with open(env_path, **open_kw) as f:\n<HOME>/.hermes/hermes-agent/hermes_cli/plugins.py:873: EncodingWarning: 'encoding' argument not specified\n  data = yaml.safe_load(manifest_file.read_text()) or {}\n<HOME>/.hermes/hermes-agent/hermes_cli/plugins.py:899: EncodingWarning: 'encoding' argument not specified\n  source_text = init_file.read_text(errors=\"replace\")[:8192]\n<HOME>/.hermes/hermes-agent/hermes_cli/config.py:4132: EncodingWarning: 'encoding' argument not specified\n  with open(env_path, **open_kw) as f:\n<HOME>/.hermes/hermes-agent/hermes_cli/auth.py:896: EncodingWarning: 'encoding' argument not specified\n  with lock_path.open(\"r+\" if msvcrt else \"a+\") as lock_file:\n<HOME>/.hermes/hermes-agent/gateway/status.py:221: EncodingWarning: 'encoding' argument not specified\n  raw = pid_path.read_text().strip()\n<HOME>/.hermes/hermes-agent/gateway/status.py:116: EncodingWarning: 'encoding' argument not specified\n  return int(stat_path.read_text().split()[21])\n<HOME>/.hermes/hermes-agent/hermes_cli/doctor.py:1385: EncodingWarning: 'encoding' argument not specified\n  with open(_mem_cfg_path) as _f:\n<HOME>/.hermes/hermes-agent/hermes_cli/profiles.py:357: EncodingWarning: 'encoding' argument not specified\n  with open(config_path, \"r\") as f:\n<HOME>/.hermes/hermes-agent/gateway/status.py:221: EncodingWarning: 'encoding' argument not specified\n  raw = pid_path.read_text().strip()\n<HOME>/.hermes/hermes-agent/gateway/status.py:116: EncodingWarning: 'encoding' argument not specified\n  return int(stat_path.read_text().split()[21])\n"
+            }
+          },
+          "lmStudio": {
+            "status": {
+              "command": "lms status",
+              "ok": true,
+              "stdout": "Server:  OFF \n\n(i) To start the server, run the following command:\n\n    lms server start\n",
+              "stderr": ""
+            }
+          }
+        }
+      }
+    ]
+  },
+  "github": {
+    "snapshots": []
+  },
+  "readiness": {
+    "schemaVersion": 1,
+    "project": "e2e-local-realistic",
+    "generatedAt": "2026-05-17T10:45:17.859Z",
+    "status": "review_required",
+    "evidence": [
+      "requirements/prd.json",
+      "gsd/roadmap.json",
+      "verification/commands.json",
+      "Playwright plan: 7 scenarios for http://127.0.0.1:9119",
+      "Execution run run-2026-05-17T10-45-17-848Z: planned",
+      "GSD tasks: 7",
+      "Check typecheck: passed (npm run check)",
+      "Check unit-tests: passed (npm test)",
+      "Check build: passed (npm run build)",
+      "Review approved by coderabbit: Approved"
+    ],
+    "missing": [
+      "Execution run run-2026-05-17T10-45-17-848Z is not complete"
+    ],
+    "mergeGates": [
+      "typecheck passed",
+      "unit tests passed",
+      "build passed",
+      "Playwright evidence captured for UI work",
+      "CodeRabbit or human review completed",
+      "human approval present for infrastructure or external repo mutation"
+    ]
+  },
+  "artifacts": {
+    "hotIndex": "projects/e2e-local-realistic/HOT_INDEX.md",
+    "prd": "projects/e2e-local-realistic/requirements/prd.json",
+    "roadmap": "projects/e2e-local-realistic/gsd/roadmap.json",
+    "control": "projects/e2e-local-realistic/control/merge-readiness.json",
+    "evaluationPlan": "projects/e2e-local-realistic/evaluation/evaluation-plan.json",
+    "benchmarkRuns": "projects/e2e-local-realistic/evaluation",
+    "artifactChecks": "projects/e2e-local-realistic/evaluation/artifact-checks.json",
+    "usageReport": "projects/e2e-local-realistic/evaluation/usage-report.json",
+    "behaviorChecks": "projects/e2e-local-realistic/evaluation/behavior-checks.json",
+    "gbrainExport": "projects/e2e-local-realistic/integrations/gbrain/gbrain-export.json",
+    "consoleVisualChecks": "projects/e2e-local-realistic/console/visual-checks.json",
+    "consoleBrowserChecks": "projects/e2e-local-realistic/console/browser-checks.json",
+    "hermesCronSnapshots": "projects/e2e-local-realistic/coordination/hermes",
+    "hermesCronProposals": "projects/e2e-local-realistic/coordination/hermes"
+  }
+}

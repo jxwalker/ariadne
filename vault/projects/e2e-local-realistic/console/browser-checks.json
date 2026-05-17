@@ -1,0 +1,78 @@
+{
+  "schemaVersion": 1,
+  "project": "e2e-local-realistic",
+  "generatedAt": "2026-05-17T10:46:13.005Z",
+  "htmlPath": "projects/e2e-local-realistic/console/index.html",
+  "screenshotPath": "projects/e2e-local-realistic/console/screenshots/console-2026-05-17T10-46-13-005Z.png",
+  "status": "passed",
+  "viewport": {
+    "width": 1440,
+    "height": 1100
+  },
+  "summary": {
+    "passed": 10,
+    "failed": 0
+  },
+  "checks": [
+    {
+      "id": "brand",
+      "label": "Ariadne brand",
+      "status": "passed",
+      "detail": "Ariadne brand is visible."
+    },
+    {
+      "id": "gate-matrix",
+      "label": "Gate matrix section",
+      "status": "passed",
+      "detail": "Gate matrix section is visible."
+    },
+    {
+      "id": "evaluation-trends",
+      "label": "Evaluation trends section",
+      "status": "passed",
+      "detail": "Evaluation trends section is visible."
+    },
+    {
+      "id": "recovery",
+      "label": "Recovery section",
+      "status": "passed",
+      "detail": "Recovery section is visible."
+    },
+    {
+      "id": "github",
+      "label": "GitHub section",
+      "status": "passed",
+      "detail": "GitHub section is visible."
+    },
+    {
+      "id": "evidence-queue",
+      "label": "Evidence Queue metric",
+      "status": "passed",
+      "detail": "Evidence Queue metric is visible."
+    },
+    {
+      "id": "evidence-checks",
+      "label": "Evidence Checks metric",
+      "status": "passed",
+      "detail": "Evidence Checks metric is visible."
+    },
+    {
+      "id": "operator-evidence-check-command",
+      "label": "Operator evidence check command",
+      "status": "passed",
+      "detail": "No operator evidence workplan is present."
+    },
+    {
+      "id": "embedded-data",
+      "label": "Embedded console data parses",
+      "status": "passed",
+      "detail": "Embedded console data is parseable."
+    },
+    {
+      "id": "screenshot",
+      "label": "Screenshot captured",
+      "status": "passed",
+      "detail": "970100 bytes captured."
+    }
+  ]
+}

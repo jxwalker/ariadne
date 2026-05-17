@@ -1,0 +1,193 @@
+{
+  "schemaVersion": 1,
+  "project": "e2e-local-smoke",
+  "generatedAt": "2026-05-17T10:46:06.737Z",
+  "htmlPath": "projects/e2e-local-smoke/console/index.html",
+  "status": "passed",
+  "summary": {
+    "passed": 30,
+    "failed": 0
+  },
+  "checks": [
+    {
+      "id": "doctype",
+      "label": "HTML document shell",
+      "status": "passed",
+      "detail": "Found <!doctype html>."
+    },
+    {
+      "id": "brand",
+      "label": "Ariadne brand lockup",
+      "status": "passed",
+      "detail": "Found Ariadne Console."
+    },
+    {
+      "id": "gate-matrix",
+      "label": "Gate matrix section",
+      "status": "passed",
+      "detail": "Found Gate Matrix."
+    },
+    {
+      "id": "timeline",
+      "label": "Timeline section",
+      "status": "passed",
+      "detail": "Found Timeline."
+    },
+    {
+      "id": "approval-queue",
+      "label": "Approval queue section",
+      "status": "passed",
+      "detail": "Found Approval Queue."
+    },
+    {
+      "id": "approval-pack-metric",
+      "label": "Approval pack metric",
+      "status": "passed",
+      "detail": "Found No approval-pack data required."
+    },
+    {
+      "id": "live-adapter-approval-pack",
+      "label": "Live adapter approval pack data",
+      "status": "passed",
+      "detail": "Found No live adapter approval pack required."
+    },
+    {
+      "id": "approval-review-metric",
+      "label": "Approval review metric",
+      "status": "passed",
+      "detail": "Found Packet Reviews."
+    },
+    {
+      "id": "approval-review-audit-metric",
+      "label": "Approval review audit metric",
+      "status": "passed",
+      "detail": "Found Review Audit."
+    },
+    {
+      "id": "adapter-dossier-metric",
+      "label": "Adapter dossier metric",
+      "status": "passed",
+      "detail": "Found Dossiers."
+    },
+    {
+      "id": "adapter-cutover-metric",
+      "label": "Adapter cutover metric",
+      "status": "passed",
+      "detail": "Found Cutover."
+    },
+    {
+      "id": "adapter-review-session-metric",
+      "label": "Adapter review-session metric",
+      "status": "passed",
+      "detail": "Found Review Session."
+    },
+    {
+      "id": "live-adapter-review-session",
+      "label": "Live adapter review session data",
+      "status": "passed",
+      "detail": "Found No live adapter review session required."
+    },
+    {
+      "id": "adapter-evidence-template-metric",
+      "label": "Adapter evidence-template metric",
+      "status": "passed",
+      "detail": "Found Evidence Templates."
+    },
+    {
+      "id": "live-adapter-evidence-templates",
+      "label": "Live adapter evidence template data",
+      "status": "passed",
+      "detail": "Found No live adapter evidence templates required."
+    },
+    {
+      "id": "adapter-operator-evidence-workplan-metric",
+      "label": "Adapter operator-evidence workplan metric",
+      "status": "passed",
+      "detail": "Found Evidence Workplan."
+    },
+    {
+      "id": "live-adapter-operator-evidence-workplan",
+      "label": "Live adapter operator evidence workplan data",
+      "status": "passed",
+      "detail": "Found No live adapter operator evidence workplan required."
+    },
+    {
+      "id": "adapter-operator-evidence-queue-metric",
+      "label": "Adapter operator-evidence queue metric",
+      "status": "passed",
+      "detail": "Found Evidence Queue."
+    },
+    {
+      "id": "live-adapter-operator-evidence-queue",
+      "label": "Live adapter operator evidence queue data",
+      "status": "passed",
+      "detail": "Found No live-adapter operator evidence queue is available."
+    },
+    {
+      "id": "adapter-operator-evidence-checks-metric",
+      "label": "Adapter operator-evidence checks metric",
+      "status": "passed",
+      "detail": "Found Evidence Checks."
+    },
+    {
+      "id": "live-adapter-operator-evidence-check-command",
+      "label": "Live adapter operator evidence check command",
+      "status": "passed",
+      "detail": "Found No live adapter operator evidence check command required."
+    },
+    {
+      "id": "adapter-operator-evidence-metric",
+      "label": "Adapter operator-evidence metric",
+      "status": "passed",
+      "detail": "Found Operator Evidence."
+    },
+    {
+      "id": "live-adapter-operator-evidence",
+      "label": "Live adapter operator evidence data",
+      "status": "passed",
+      "detail": "Found No live adapter operator evidence audit required."
+    },
+    {
+      "id": "cutover-queue",
+      "label": "Cutover blockers in approval queue",
+      "status": "passed",
+      "detail": "No cutover blockers are present."
+    },
+    {
+      "id": "operator-evidence-queue",
+      "label": "Operator evidence blockers in approval queue",
+      "status": "passed",
+      "detail": "No operator evidence blockers are present."
+    },
+    {
+      "id": "trend-chart",
+      "label": "Evaluation trend empty state",
+      "status": "passed",
+      "detail": "Found No evaluation trend data is available."
+    },
+    {
+      "id": "visual-check-panel",
+      "label": "Visual check panel",
+      "status": "passed",
+      "detail": "Found Visual Checks."
+    },
+    {
+      "id": "embedded-data",
+      "label": "Embedded console data",
+      "status": "passed",
+      "detail": "Found id=\"console-data\"."
+    },
+    {
+      "id": "embedded-data-parse",
+      "label": "Embedded console data parses",
+      "status": "passed",
+      "detail": "Project e2e-local-smoke summary is present."
+    },
+    {
+      "id": "absolute-path-leaks",
+      "label": "No local absolute path leaks",
+      "status": "passed",
+      "detail": "No local absolute paths found."
+    }
+  ]
+}

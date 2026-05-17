@@ -1,0 +1,153 @@
+{
+  "schemaVersion": 1,
+  "project": "e2e-local-realistic",
+  "importedAt": "2026-05-17T10:45:18.335Z",
+  "sourcePath": "<EXTERNAL_SOURCE>/ariadne-local-runtime-snapshot-sanitized.json",
+  "system": "mac",
+  "mode": "read_only",
+  "summary": {
+    "keys": [
+      "canaries",
+      "collectedAt",
+      "collector",
+      "hermes",
+      "host",
+      "lmStudio",
+      "mode",
+      "modelEndpoints",
+      "runnerPools",
+      "services",
+      "storagePools"
+    ],
+    "host": "local-mac",
+    "services": 5,
+    "modelEndpoints": 3,
+    "runnerPools": 1,
+    "storagePools": 1
+  },
+  "raw": {
+    "collectedAt": "2026-05-17T10:29:43.465Z",
+    "collector": "ariadne-local-runtime-e2e",
+    "mode": "read_only",
+    "host": "local-mac",
+    "services": [
+      {
+        "name": "hermes-dashboard",
+        "url": "http://127.0.0.1:9119",
+        "status": "running"
+      },
+      {
+        "name": "hermes-gateway",
+        "status": "running"
+      },
+      {
+        "name": "ollama",
+        "url": "http://127.0.0.1:11434",
+        "status": "running"
+      },
+      {
+        "name": "ds4-server",
+        "url": "http://127.0.0.1:8000",
+        "status": "running"
+      },
+      {
+        "name": "lm-studio",
+        "url": "http://127.0.0.1:1234",
+        "status": "unreachable"
+      }
+    ],
+    "modelEndpoints": [
+      {
+        "name": "ds4-openai-compatible",
+        "url": "http://127.0.0.1:8000/v1",
+        "status": "running",
+        "models": [
+          "deepseek-v4-flash"
+        ]
+      },
+      {
+        "name": "ollama",
+        "url": "http://127.0.0.1:11434",
+        "status": "running",
+        "models": [
+          "qwen3.5:35b-a3b-coding-nvfp4",
+          "qwen3.5:35b"
+        ]
+      },
+      {
+        "name": "lm-studio",
+        "url": "http://127.0.0.1:1234/v1",
+        "status": "unreachable",
+        "models": []
+      }
+    ],
+    "runnerPools": [
+      {
+        "name": "local-mac-shell",
+        "status": "available"
+      }
+    ],
+    "storagePools": [
+      {
+        "name": "ariadne-vault",
+        "status": "local-filesystem"
+      }
+    ],
+    "canaries": [
+      {
+        "name": "ds4-chat-completions",
+        "status": "reachable_degraded_semantics",
+        "model": "deepseek-v4-flash",
+        "usage": {
+          "prompt_tokens": 24,
+          "completion_tokens": 24,
+          "total_tokens": 48
+        },
+        "responsePreview": "We need to respond with one short sentence. The instruction: \"Ariadne local model smoke: say READY and"
+      },
+      {
+        "name": "ollama-generate",
+        "status": "reachable_degraded_semantics",
+        "model": "qwen3.5:35b-a3b-coding-nvfp4",
+        "usage": {
+          "promptTokens": 15,
+          "completionTokens": 8,
+          "totalDurationNs": 11001442709
+        },
+        "responsePreview": "",
+        "thinkingPreview": "Thinking Process:\n\n1.  **"
+      }
+    ],
+    "hermes": {
+      "dashboard": {
+        "ok": true,
+        "status": 200,
+        "contentType": "text/html; charset=utf-8"
+      },
+      "gateway": {
+        "status": "running",
+        "ok": true,
+        "stdout": "Launchd plist: <HOME>/Library/LaunchAgents/ai.hermes.gateway.plist\n✓ Service definition matches the current Hermes install\n✓ Gateway service is loaded\n{\n\t\"StandardOutPath\" = \"<HOME>/.hermes/logs/gateway.log\";\n\t\"LimitLoadToSessionType\" = \"Aqua\";\n\t\"StandardErrorPath\" = \"<HOME>/.hermes/logs/gateway.error.log\";\n\t\"Label\" = \"ai.hermes.gateway\";\n\t\"OnDemand\" = true;\n\t\"LastExitStatus\" = 0;\n\t\"PID\" = 11099;\n\t\"Program\" = \"<HOME>/.hermes/hermes-agent/venv/bin/python\";\n\t\"ProgramArguments\" = (\n\t\t\"<HOME>/.hermes/hermes-agent/venv/bin/python\";\n\t\t\"-m\";\n\t\t\"hermes_cli.main\";\n\t\t\"gateway\";\n\t\t\"run\";\n\t\t\"--replace\";\n\t);\n};\n\n",
+        "stderr": "<HOME>/.hermes/hermes-agent/gateway/status.py:221: EncodingWarning: 'encoding' argument not specified\n  raw = pid_path.read_text().strip()\n<HOME>/.hermes/hermes-agent/gateway/status.py:116: EncodingWarning: 'encoding' argument not specified\n  return int(stat_path.read_text().split()[21])\n<HOME>/.hermes/hermes-agent/hermes_cli/gateway.py:112: EncodingWarning: 'encoding' argument not specified.\n  result = subprocess.run(\n<HOME>/.hermes/hermes-agent/hermes_cli/gateway.py:138: EncodingWarning: 'encoding' argument not specified.\n  result = subprocess.run(\n<HOME>/.hermes/hermes-agent/hermes_cli/gateway.py:138: EncodingWarning: 'encoding' argument not specified.\n  result = subprocess.run(\n<HOME>/.hermes/hermes-agent/hermes_cli/gateway.py:138: EncodingWarning: 'encoding' argument not specified.\n  result = subprocess.run(\n<HOME>/.hermes/hermes-agent/hermes_cli/gateway.py:138: EncodingWarning: 'encoding' argument not specified.\n  result = subprocess.run(\n<HOME>/.hermes/hermes-agent/hermes_cli/gateway.py:138: EncodingWarning: 'encoding' argument not specified.\n  result = subprocess.run(\n<HOME>/.hermes/hermes-agent/hermes_cli/gateway.py:336: EncodingWarning: 'encoding' argument not specified.\n  result = subprocess.run(\n<HOME>/.hermes/hermes-agent/hermes_cli/gateway.py:736: EncodingWarning: 'encoding' argument not specified.\n  result = subprocess.run(\n<HOME>/.hermes/hermes-agent/hermes_cli/gateway.py:2734: EncodingWarning: 'encoding' argument not specified.\n  result = subprocess.run(\n<HOME>/.hermes/hermes-agent/hermes_cli/profiles.py:357: EncodingWarning: 'encoding' argument not specified\n  with open(config_path, \"r\") as f:\n<HOME>/.hermes/hermes-agent/gateway/status.py:221: EncodingWarning: 'encoding' argument not specified\n  raw = pid_path.read_text().strip()\n<HOME>/.hermes/hermes-agent/gateway/status.py:116: EncodingWarning: 'encoding' argument not specified\n  return int(stat_path.read_text().split()[21])\n"
+      },
+      "status": {
+        "ok": true,
+        "stdout": "\n┌─────────────────────────────────────────────────────────┐\n│                 ⚕ Hermes Agent Status                  │\n└─────────────────────────────────────────────────────────┘\n\n◆ Environment\n  Project:      <HOME>/.hermes/hermes-agent\n  Python:       3.11.15\n  .env file:    ✓ exists\n  Model:        anthropic/claude-opus-4.6\n  Provider:     Auto\n\n◆ API Keys\n  OpenRouter    ✗ (not set)\n  OpenAI        ✗ (not set)\n  Google / Gemini  ✗ (not set)\n  DeepSeek      ✗ (not set)\n  xAI / Grok    ✗ (not set)\n  NVIDIA NIM    ✗ (not set)\n  Z.AI / GLM    ✗ (not set)\n  Kimi          ✗ (not set)\n  StepFun Step Plan  ✗ (not set)\n  MiniMax       ✗ (not set)\n  MiniMax-CN    ✗ (not set)\n  Firecrawl     ✗ (not set)\n  Tavily        ✗ (not set)\n  Browser Use   ✗ (not set)\n  Browserbase   ✗ (not set)\n  FAL           ✗ (not set)\n  Tinker        ✗ (not set)\n  WandB         ✗ (not set)\n  ElevenLabs    ✗ (not set)\n  GitHub        ✗ (not set)\n  Anthropic     ✗ (not set)\n\n◆ Auth Providers\n  Nous Portal   ✗ not logged in (run: hermes auth add nous --type oauth)\n  OpenAI Codex  ✗ not logged in (run: hermes model)\n    Auth file:  <HOME>/.hermes/auth.json\n    Error:      No Codex credentials stored. Run `hermes auth` to authenticate.\n  Qwen OAuth    ✗ not logged in (run: qwen auth qwen-oauth)\n    Auth file:  <HOME>/.qwen/oauth_creds.json\n    Error:      Qwen CLI credentials not found. Run 'qwen auth qwen-oauth' first.\n  MiniMax OAuth  ✗ not logged in (run: hermes auth add minimax-oauth)\n\n◆ API-Key Providers\n  Z.AI / GLM       ✗ not configured (run: hermes model)\n  Kimi / Moonshot  ✗ not configured (run: hermes model)\n  StepFun Step Plan ✗ not configured (run: hermes model)\n  MiniMax          ✗ not configured (run: hermes model)\n  MiniMax (China)  ✗ not configured (run: hermes model)\n\n◆ Terminal Backend\n  Backend:      local\n  Sudo:         ✗ disabled\n\n◆ Messaging Platforms\n  Telegram      ✗ not configured\n  Discord       ✗ not configured\n  WhatsApp      ✗ not configured\n  Signal        ✗ not configured\n  Slack         ✗ not configured\n  Email         ✗ not configured\n  SMS           ✗ not configured\n  DingTalk      ✗ not configured\n  Feishu        ✗ not configured\n  WeCom         ✗ not configured\n  WeCom Callback  ✗ not configured\n  Weixin        ✗ not configured\n  BlueBubbles   ✗ not configured\n  QQBot         ✗ not configured\n  Yuanbao       ✗ not configured\n\n◆ Gateway Service\n  Status:       ✓ running\n  Manager:      launchd\n  PID(s):       11099\n\n◆ Scheduled Jobs\n  Jobs:         0\n\n◆ Sessions\n  Active:       0\n\n────────────────────────────────────────────────────────────\n  Run 'hermes doctor' for detailed diagnostics\n  Run 'hermes setup' to configure\n\n",
+        "stderr": "<HOME>/.hermes/hermes-agent/hermes_cli/config.py:4132: EncodingWarning: 'encoding' argument not specified\n  with open(env_path, **open_kw) as f:\n<HOME>/.hermes/hermes-agent/hermes_cli/auth.py:896: EncodingWarning: 'encoding' argument not specified\n  with lock_path.open(\"r+\" if msvcrt else \"a+\") as lock_file:\n<HOME>/.hermes/hermes-agent/gateway/status.py:221: EncodingWarning: 'encoding' argument not specified\n  raw = pid_path.read_text().strip()\n<HOME>/.hermes/hermes-agent/gateway/status.py:116: EncodingWarning: 'encoding' argument not specified\n  return int(stat_path.read_text().split()[21])\n<HOME>/.hermes/hermes-agent/hermes_cli/gateway.py:112: EncodingWarning: 'encoding' argument not specified.\n  result = subprocess.run(\n<HOME>/.hermes/hermes-agent/hermes_cli/gateway.py:138: EncodingWarning: 'encoding' argument not specified.\n  result = subprocess.run(\n<HOME>/.hermes/hermes-agent/hermes_cli/gateway.py:138: EncodingWarning: 'encoding' argument not specified.\n  result = subprocess.run(\n<HOME>/.hermes/hermes-agent/hermes_cli/gateway.py:138: EncodingWarning: 'encoding' argument not specified.\n  result = subprocess.run(\n<HOME>/.hermes/hermes-agent/hermes_cli/gateway.py:138: EncodingWarning: 'encoding' argument not specified.\n  result = subprocess.run(\n<HOME>/.hermes/hermes-agent/hermes_cli/gateway.py:138: EncodingWarning: 'encoding' argument not specified.\n  result = subprocess.run(\n<HOME>/.hermes/hermes-agent/hermes_cli/gateway.py:336: EncodingWarning: 'encoding' argument not specified.\n  result = subprocess.run(\n<HOME>/.hermes/hermes-agent/hermes_cli/gateway.py:736: EncodingWarning: 'encoding' argument not specified.\n  result = subprocess.run(\n"
+      },
+      "doctor": {
+        "ok": true,
+        "stdout": "\n┌─────────────────────────────────────────────────────────┐\n│                 🩺 Hermes Doctor                        │\n└─────────────────────────────────────────────────────────┘\n\n◆ Python Environment\n  ✓ Python 3.11.15\n  ✓ Virtual environment active\n\n◆ Required Packages\n  ✓ OpenAI SDK\n  ✓ Rich (terminal UI)\n  ✓ python-dotenv\n  ✓ PyYAML\n  ✓ HTTPX\n  ✓ Croniter (cron expressions) (optional)\n  ✓ python-telegram-bot (optional)\n  ✓ discord.py (optional)\n\n◆ Configuration Files\n  ✓ ~/.hermes/.env file exists\n  ✓ API key or custom endpoint configured\n  ✓ ~/.hermes/config.yaml exists\n  ✓ Config version up to date (v23)\n\n◆ Auth Providers\n  ⚠ Nous Portal auth (not logged in)\n  ⚠ OpenAI Codex auth (not logged in)\n    → No Codex credentials stored. Run `hermes auth` to authenticate.\n  ⚠ Google Gemini OAuth (not logged in)\n  ⚠ MiniMax OAuth (not logged in)\n  ✓ codex CLI\n\n◆ Directory Structure\n  ✓ ~/.hermes directory exists\n  ✓ ~/.hermes/cron/ exists\n  ✓ ~/.hermes/sessions/ exists\n  ✓ ~/.hermes/logs/ exists\n  ✓ ~/.hermes/skills/ exists\n  ✓ ~/.hermes/memories/ exists\n  ✓ ~/.hermes/SOUL.md exists (persona configured)\n  ✓ ~/.hermes/memories/ directory exists\n    → MEMORY.md not created yet (will be created when the agent first writes a memory)\n    → USER.md not created yet (will be created when the agent first writes a memory)\n  ✓ ~/.hermes/state.db exists (0 sessions)\n\n◆ Command Installation\n  ✓ Venv entry point exists (venv/bin/hermes)\n  ✓ ~/.local/bin/hermes exists (non-symlink)\n\n◆ External Tools\n  ✓ git\n  ✓ ripgrep (rg) (faster file search)\n  ✓ docker (optional)\n  ✓ Node.js\n  ✓ agent-browser (Node.js) (browser automation)\n  ✓ Browser tools (agent-browser) deps (no known vulnerabilities)\n\n◆ API Connectivity\n  ⚠ OpenRouter API (not configured)\n\n◆ Submodules\n  ⚠ tinker-atropos not found (run: git submodule update --init --recursive)\n\n◆ Tool Availability\n  ✓ browser\n  ✓ clarify\n  ✓ code_execution\n  ✓ cronjob\n  ✓ terminal\n  ✓ delegation\n  ✓ feishu_doc\n  ✓ feishu_drive\n  ✓ file\n  ✓ memory\n  ✓ messaging\n  ✓ session_search\n  ✓ skills\n  ✓ todo\n  ✓ tts\n  ✓ kanban (runtime-gated; loaded only for dispatcher-spawned workers)\n  ⚠ browser-cdp (system dependency not met)\n  ⚠ discord (missing DISCORD_BOT_TOKEN)\n  ⚠ discord_admin (missing DISCORD_BOT_TOKEN)\n  ⚠ homeassistant (system dependency not met)\n  ⚠ image_gen (system dependency not met)\n  ⚠ moa (missing OPENROUTER_API_KEY)\n  ⚠ rl (missing TINKER_API_KEY, WANDB_API_KEY)\n  ⚠ vision (system dependency not met)\n  ⚠ video (system dependency not met)\n  ⚠ web (missing EXA_API_KEY, PARALLEL_API_KEY, TAVILY_API_KEY, FIRECRAWL_API_KEY, FIRECRAWL_API_URL)\n  ⚠ hermes-yuanbao (system dependency not met)\n  ⚠ spotify (system dependency not met)\n\n◆ Skills Hub\n  ⚠ Skills Hub directory not initialized (run: hermes skills list)\n  ⚠ No GITHUB_TOKEN (60 req/hr rate limit — set in ~/.hermes/.env for better rates)\n\n◆ Memory Provider\n  ✓ Built-in memory active (no external provider configured — this is fine)\n\n────────────────────────────────────────────────────────────\n  Found 1 issue(s) to address:\n\n  1. Run 'hermes setup' to configure missing API keys for full tool access\n\n  Tip: run 'hermes doctor --fix' to auto-fix what's possible.\n\n",
+        "stderr": "<HOME>/.hermes/hermes-agent/hermes_cli/doctor.py:592: EncodingWarning: 'encoding' argument not specified\n  with open(config_path) as f:\n<HOME>/.hermes/hermes-agent/hermes_cli/auth.py:896: EncodingWarning: 'encoding' argument not specified\n  with lock_path.open(\"r+\" if msvcrt else \"a+\") as lock_file:\n<HOME>/.hermes/hermes-agent/hermes_cli/doctor.py:1062: EncodingWarning: 'encoding' argument not specified.\n  audit_result = subprocess.run(\n<HOME>/.hermes/hermes-agent/hermes_cli/config.py:4132: EncodingWarning: 'encoding' argument not specified\n  with open(env_path, **open_kw) as f:\n<HOME>/.hermes/hermes-agent/hermes_cli/plugins.py:873: EncodingWarning: 'encoding' argument not specified\n  data = yaml.safe_load(manifest_file.read_text()) or {}\n<HOME>/.hermes/hermes-agent/hermes_cli/plugins.py:899: EncodingWarning: 'encoding' argument not specified\n  source_text = init_file.read_text(errors=\"replace\")[:8192]\n<HOME>/.hermes/hermes-agent/hermes_cli/config.py:4132: EncodingWarning: 'encoding' argument not specified\n  with open(env_path, **open_kw) as f:\n<HOME>/.hermes/hermes-agent/hermes_cli/auth.py:896: EncodingWarning: 'encoding' argument not specified\n  with lock_path.open(\"r+\" if msvcrt else \"a+\") as lock_file:\n<HOME>/.hermes/hermes-agent/gateway/status.py:221: EncodingWarning: 'encoding' argument not specified\n  raw = pid_path.read_text().strip()\n<HOME>/.hermes/hermes-agent/gateway/status.py:116: EncodingWarning: 'encoding' argument not specified\n  return int(stat_path.read_text().split()[21])\n<HOME>/.hermes/hermes-agent/hermes_cli/doctor.py:1385: EncodingWarning: 'encoding' argument not specified\n  with open(_mem_cfg_path) as _f:\n<HOME>/.hermes/hermes-agent/hermes_cli/profiles.py:357: EncodingWarning: 'encoding' argument not specified\n  with open(config_path, \"r\") as f:\n<HOME>/.hermes/hermes-agent/gateway/status.py:221: EncodingWarning: 'encoding' argument not specified\n  raw = pid_path.read_text().strip()\n<HOME>/.hermes/hermes-agent/gateway/status.py:116: EncodingWarning: 'encoding' argument not specified\n  return int(stat_path.read_text().split()[21])\n"
+      }
+    },
+    "lmStudio": {
+      "status": {
+        "command": "lms status",
+        "ok": true,
+        "stdout": "Server:  OFF \n\n(i) To start the server, run the following command:\n\n    lms server start\n",
+        "stderr": ""
+      }
+    }
+  }
+}

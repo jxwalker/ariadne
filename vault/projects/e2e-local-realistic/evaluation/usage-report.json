@@ -1,0 +1,84 @@
+{
+  "schemaVersion": 1,
+  "project": "e2e-local-realistic",
+  "generatedAt": "2026-05-17T10:45:19.344Z",
+  "recordCount": 4,
+  "totalInputTokens": 1839,
+  "totalOutputTokens": 932,
+  "totalTokens": 3971,
+  "totalCostUsd": 0.99,
+  "bySource": [
+    {
+      "name": "coderabbit",
+      "records": 1,
+      "inputTokens": 0,
+      "outputTokens": 0,
+      "totalTokens": 1200,
+      "costUsd": 0.18
+    },
+    {
+      "name": "hermes",
+      "records": 1,
+      "inputTokens": 1800,
+      "outputTokens": 900,
+      "totalTokens": 2700,
+      "costUsd": 0.81
+    },
+    {
+      "name": "manual",
+      "records": 2,
+      "inputTokens": 39,
+      "outputTokens": 32,
+      "totalTokens": 71,
+      "costUsd": 0
+    }
+  ],
+  "byModel": [
+    {
+      "name": "coderabbit-review",
+      "records": 1,
+      "inputTokens": 0,
+      "outputTokens": 0,
+      "totalTokens": 1200,
+      "costUsd": 0.18
+    },
+    {
+      "name": "deepseek-v4-flash",
+      "records": 1,
+      "inputTokens": 24,
+      "outputTokens": 24,
+      "totalTokens": 48,
+      "costUsd": 0
+    },
+    {
+      "name": "gpt-5.5",
+      "records": 1,
+      "inputTokens": 1800,
+      "outputTokens": 900,
+      "totalTokens": 2700,
+      "costUsd": 0.81
+    },
+    {
+      "name": "qwen3.5:35b-a3b-coding-nvfp4",
+      "records": 1,
+      "inputTokens": 15,
+      "outputTokens": 8,
+      "totalTokens": 23,
+      "costUsd": 0
+    }
+  ],
+  "latest": {
+    "schemaVersion": 1,
+    "id": "usage-manual-2026-05-17T10-45-18-899Z-2",
+    "project": "e2e-local-realistic",
+    "recordedAt": "2026-05-17T10:45:18.899Z",
+    "source": "manual",
+    "model": "qwen3.5:35b-a3b-coding-nvfp4",
+    "operation": "local-runtime-canary",
+    "inputTokens": 15,
+    "outputTokens": 8,
+    "totalTokens": 23,
+    "costUsd": 0,
+    "evidence": "<TMP>/ariadne-local-llm-usage.json"
+  }
+}

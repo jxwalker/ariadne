@@ -73,7 +73,7 @@ function reviewStatus(text: string): ReviewRecord["status"] {
 
   const approvalPattern = /\b(?:review\s+)?approved\b|\blooks\s+good\s+to\s+me\b|\blgtm\b/;
   const negatedApprovalPattern =
-    /\b(?:not|never)\s+approved\b|\bnot\s+approve(?:d)?\b|\bdo\s+not\s+approve\b|\bcannot\s+approve\b|\bcan'?t\s+approve\b|\bhave\s+not\s+approved\b/;
+    /\b(?:not|never)\s+approved\b|\bnot\s+approve(?:d)?\b|\bdo\s+not\s+approve\b|\bcannot\s+(?:be\s+(?:treated\s+as\s+)?)?approved?\b|\bcan'?t\s+(?:be\s+(?:treated\s+as\s+)?)?approved?\b|\bhave\s+not\s+approved\b/;
 
   return approvalPattern.test(lower) && !negatedApprovalPattern.test(lower) ? "approved" : "pending";
 }

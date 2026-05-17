@@ -1,0 +1,31 @@
+{
+  "schemaVersion": 1,
+  "project": "e2e-local-realistic",
+  "importedAt": "2026-05-17T10:45:17.851Z",
+  "sourcePath": "<WORKSPACE_ROOT>/benchmarks/source-packs/realistic/imports/notebooklm-export.md",
+  "title": "Briefing Doc",
+  "sections": [
+    {
+      "heading": "Requirements",
+      "body": "Ariadne should keep source citations visible through planning and execution. [1]"
+    },
+    {
+      "heading": "Risks",
+      "body": "Live automation must remain read-only until evidence paths are proven. [2]\n\nSource: NotebookLM benchmark fixture"
+    }
+  ],
+  "citations": [
+    {
+      "marker": "1",
+      "text": "Ariadne should keep source citations visible through planning and execution. [1]"
+    },
+    {
+      "marker": "2",
+      "text": "Live automation must remain read-only until evidence paths are proven. [2]"
+    },
+    {
+      "marker": "source-3",
+      "text": "Source: NotebookLM benchmark fixture"
+    }
+  ]
+}
