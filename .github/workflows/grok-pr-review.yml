@@ -115,7 +115,7 @@ jobs:
           } > review.md
 
       - name: Post or update PR comment
-        if: steps.grok_config.outputs.configured == 'true'
+        if: steps.grok_config.outputs.configured == 'true' && steps.grok_review.outcome == 'success'
         uses: actions/github-script@v7
         with:
           script: |
