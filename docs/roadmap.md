@@ -195,7 +195,7 @@ Implemented:
 - documented gate matrix and infrastructure map concepts
 - read-only console data projection
 - static read-only console HTML
-- local runtime probe summaries for Hermes, Ollama, DS4/OpenAI-compatible endpoints, and LM Studio in the infrastructure console view
+- local runtime probe summaries for Hermes, Ollama, DS4/OpenAI-compatible endpoints, LM Studio, and Atlas in the infrastructure console view
 - project timeline from artifacts
 - infra topology view for Macs, DGX Spark, Proxmox, TrueNAS, runners, Hermes, and model endpoints
 - approval queue backed by review, decision, and control artifacts

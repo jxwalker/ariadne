@@ -73,6 +73,7 @@ export async function runE2eSmoke(input: {
   ollamaUrl?: string;
   ds4Url?: string;
   lmStudioUrl?: string;
+  atlasUrl?: string;
   canaryEndpointIds?: RuntimeModelEndpointId[];
   canaryModels?: Partial<Record<RuntimeModelEndpointId, string>>;
   runtimeTimeoutMs?: number;
@@ -142,6 +143,7 @@ export async function runE2eSmoke(input: {
       ollamaUrl: input.ollamaUrl,
       ds4Url: input.ds4Url,
       lmStudioUrl: input.lmStudioUrl,
+      atlasUrl: input.atlasUrl,
       canaryEndpointIds: input.canaryEndpointIds,
       canaryModels: input.canaryModels,
       timeoutMs: input.runtimeTimeoutMs

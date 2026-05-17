@@ -285,7 +285,13 @@ Probe the local runtime surface:
 npm run ariadne -- local-runtime-probe --project ariadne --canary --canary-endpoints ds4-openai --ds4-canary-model deepseek-v4-flash
 ```
 
-This checks the Hermes dashboard, Hermes CLI status/doctor/gateway commands, Ollama, DS4/OpenAI-compatible, and LM Studio endpoints. `--canary` sends short local model prompts and appends any observed token counts as `local-llm` usage metrics. Use `--canary-endpoints` to target a subset such as `ds4-openai`, and use `--ollama-canary-model`, `--ds4-canary-model`, or `--lmstudio-canary-model` to avoid cold or resource-intensive default models. Canary prompts run sequentially so local runtimes are not overloaded, and model probes use a 128-token completion budget plus a minimum 30-second generation timeout for reasoning-style local models to reach the `READY` health token. The command writes `infrastructure/runtime/local-runtime-probe-...json` and a matching `.md` human-readable report. It does not start services, load models, edit scheduler state, or mutate infrastructure.
+This checks the Hermes dashboard, Hermes CLI status/doctor/gateway commands, Ollama, DS4/OpenAI-compatible, LM Studio, and Atlas endpoints. `--canary` sends short local model prompts and appends any observed token counts as `local-llm` usage metrics. Use `--canary-endpoints` to target a subset such as `ds4-openai` or `atlas`, and use `--ollama-canary-model`, `--ds4-canary-model`, `--lmstudio-canary-model`, or `--atlas-canary-model` to avoid cold or resource-intensive default models. Canary prompts run sequentially so local runtimes are not overloaded, and model probes use a 128-token completion budget plus a minimum 30-second generation timeout for reasoning-style local models to reach the `READY` health token. The command writes `infrastructure/runtime/local-runtime-probe-...json` and a matching `.md` human-readable report. It does not start services, load models, edit scheduler state, or mutate infrastructure.
+
+Atlas can be probed directly when the fast LAN model endpoint is available:
+
+```bash
+npm run ariadne -- local-runtime-probe --project ariadne --canary --canary-endpoints atlas --atlas-url http://atlas.local:8888/v1 --atlas-canary-model qwen3.6-35b-a3b-nvfp4-atlas --timeout-ms 60000
+```
 
 Run the local end-to-end smoke harness:
 

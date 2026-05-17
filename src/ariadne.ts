@@ -158,7 +158,7 @@ function usage(): string {
     "  ariadne usage-import --project <project> --from <usage.json> [--source <source>]",
     "  ariadne usage-report --project <project>",
     "  ariadne behavior-checks --project <project> [--approved-fixture <review.json|review.md>]",
-    "  ariadne e2e-smoke --project <project> [--target-url <url>] [--with-runtime-probe] [--runtime-canary] [--canary-endpoints <ollama,ds4-openai,lmstudio>] [--ollama-canary-model <id>] [--ds4-canary-model <id>] [--lmstudio-canary-model <id>] [--hermes-dashboard-url <url>] [--ollama-url <url>] [--ds4-url <url>] [--lmstudio-url <url>] [--timeout-ms <ms>] [--width <px>] [--height <px>]",
+    "  ariadne e2e-smoke --project <project> [--target-url <url>] [--with-runtime-probe] [--runtime-canary] [--canary-endpoints <ollama,ds4-openai,lmstudio,atlas>] [--ollama-canary-model <id>] [--ds4-canary-model <id>] [--lmstudio-canary-model <id>] [--atlas-canary-model <id>] [--hermes-dashboard-url <url>] [--ollama-url <url>] [--ds4-url <url>] [--lmstudio-url <url>] [--atlas-url <url>] [--timeout-ms <ms>] [--width <px>] [--height <px>]",
     "  ariadne gbrain-export --project <project>",
     "  ariadne gbrain-report-import --project <project> --from <report.json>",
     "  ariadne github-snapshot --project <project> (--from <snapshot.json> | --repo <owner/name> [--pr <number>] [--limit <number>])",
@@ -179,7 +179,7 @@ function usage(): string {
     "  ariadne infra --project <project>",
     "  ariadne infra-snapshot --project <project> --from <manifest.json>",
     "  ariadne infra-live-local --project <project> [--notes <text>]",
-    "  ariadne local-runtime-probe --project <project> [--canary] [--canary-endpoints <ollama,ds4-openai,lmstudio>] [--ollama-canary-model <id>] [--ds4-canary-model <id>] [--lmstudio-canary-model <id>] [--hermes-dashboard-url <url>] [--ollama-url <url>] [--ds4-url <url>] [--lmstudio-url <url>] [--timeout-ms <ms>]",
+    "  ariadne local-runtime-probe --project <project> [--canary] [--canary-endpoints <ollama,ds4-openai,lmstudio,atlas>] [--ollama-canary-model <id>] [--ds4-canary-model <id>] [--lmstudio-canary-model <id>] [--atlas-canary-model <id>] [--hermes-dashboard-url <url>] [--ollama-url <url>] [--ds4-url <url>] [--lmstudio-url <url>] [--atlas-url <url>] [--timeout-ms <ms>]",
     "  ariadne infra-live-ssh --project <project> --host <id> --target <ssh-target> [--ssh-binary <path>] [--notes <text>]",
     "  ariadne openscorpion-draft --project <project> --title <title> --type <type> --evidence <paths>",
     "  ariadne openscorpion-mutation-plan --project <project> --activity <id> --type <type> --action <submit-activity|update-activity|withdraw-activity> --route <governed|staging> --scope <text> --auth-evidence <paths> --dry-run <cmd> --live-command <cmd> --post-verify <cmd> --rollback <text> [--approval <id|json>] [--risk <low|medium|high>] [--evidence <paths>] [--notes <text>]",
@@ -642,6 +642,7 @@ async function main(): Promise<void> {
       ollamaUrl: optionString(parsed.options, "ollama-url", "") || undefined,
       ds4Url: optionString(parsed.options, "ds4-url", "") || undefined,
       lmStudioUrl: optionString(parsed.options, "lmstudio-url", "") || undefined,
+      atlasUrl: optionString(parsed.options, "atlas-url", "") || undefined,
       canaryEndpointIds: optionalRuntimeCanaryEndpointIds(parsed.options),
       canaryModels: optionalRuntimeCanaryModels(parsed.options),
       runtimeTimeoutMs: optionalNumber(parsed.options, "timeout-ms"),
@@ -961,6 +962,7 @@ async function main(): Promise<void> {
       ollamaUrl: optionString(parsed.options, "ollama-url", "") || undefined,
       ds4Url: optionString(parsed.options, "ds4-url", "") || undefined,
       lmStudioUrl: optionString(parsed.options, "lmstudio-url", "") || undefined,
+      atlasUrl: optionString(parsed.options, "atlas-url", "") || undefined,
       canaryEndpointIds: optionalRuntimeCanaryEndpointIds(parsed.options),
       canaryModels: optionalRuntimeCanaryModels(parsed.options),
       timeoutMs: optionalNumber(parsed.options, "timeout-ms")
@@ -1733,8 +1735,10 @@ function optionalRuntimeCanaryEndpointIds(options: Map<string, string | true>): 
 }
 
 function runtimeModelEndpointIdOption(value: string): RuntimeModelEndpointId {
-  if (value === "ollama" || value === "ds4-openai" || value === "lmstudio") return value;
-  throw new Error(`Invalid endpoint ID: "${value}". --canary-endpoints must be one of: ollama, ds4-openai, lmstudio.`);
+  if (value === "ollama" || value === "ds4-openai" || value === "lmstudio" || value === "atlas") return value;
+  throw new Error(
+    `Invalid endpoint ID: "${value}". --canary-endpoints must be one of: ollama, ds4-openai, lmstudio, atlas.`
+  );
 }
 
 function optionalRuntimeCanaryModels(
@@ -1744,15 +1748,19 @@ function optionalRuntimeCanaryModels(
   const ollamaRaw = options.get("ollama-canary-model");
   const ds4Raw = options.get("ds4-canary-model");
   const lmstudioRaw = options.get("lmstudio-canary-model");
+  const atlasRaw = options.get("atlas-canary-model");
   if (ollamaRaw === true) throw new Error("--ollama-canary-model requires a value.");
   if (ds4Raw === true) throw new Error("--ds4-canary-model requires a value.");
   if (lmstudioRaw === true) throw new Error("--lmstudio-canary-model requires a value.");
+  if (atlasRaw === true) throw new Error("--atlas-canary-model requires a value.");
   const ollama = typeof ollamaRaw === "string" ? ollamaRaw.trim() : "";
   const ds4 = typeof ds4Raw === "string" ? ds4Raw.trim() : "";
   const lmstudio = typeof lmstudioRaw === "string" ? lmstudioRaw.trim() : "";
+  const atlas = typeof atlasRaw === "string" ? atlasRaw.trim() : "";
   if (ollama) canaryModels.ollama = ollama;
   if (ds4) canaryModels["ds4-openai"] = ds4;
   if (lmstudio) canaryModels.lmstudio = lmstudio;
+  if (atlas) canaryModels.atlas = atlas;
   return Object.keys(canaryModels).length > 0 ? canaryModels : undefined;
 }
 

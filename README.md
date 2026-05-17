@@ -27,7 +27,7 @@ The system starts with source-grounded intake: drawings, white papers, dictated 
 - Collect a read-only GSD2 process snapshot from the selected local `gsd` executable.
 - Import manual NotebookLM exports, CI status, CodeRabbit review text, read-only GitHub PR/check snapshots, read-only infrastructure snapshots, and Playwright evidence.
 - Collect a sanitized live read-only local host inventory snapshot.
-- Probe the local runtime surface for Hermes, Ollama, DS4/OpenAI-compatible endpoints, and LM Studio without starting or mutating services.
+- Probe the local runtime surface for Hermes, Ollama, DS4/OpenAI-compatible endpoints, LM Studio, and Atlas without starting or mutating services.
 - Surface local runtime probe evidence in the console so Hermes health, model endpoint status, canary status, and discovered model counts are visible beside infrastructure state.
 - Capture target-app screenshots and Playwright traces from a URL before recording the evidence.
 - Generate review-gated healer proposals from failed Playwright evidence without applying repairs automatically.
@@ -125,6 +125,7 @@ npm run ariadne -- console-browser-checks --project ariadne
 npm run ariadne -- e2e-smoke --project ariadne --with-runtime-probe --runtime-canary --canary-endpoints lmstudio --lmstudio-canary-model google/gemma-3-4b --timeout-ms 60000
 npm run ariadne -- infra-live-local --project ariadne
 npm run ariadne -- local-runtime-probe --project ariadne --canary --canary-endpoints ds4-openai --ds4-canary-model deepseek-v4-flash
+npm run ariadne -- local-runtime-probe --project ariadne --canary --canary-endpoints atlas --atlas-url http://atlas.local:8888/v1 --atlas-canary-model qwen3.6-35b-a3b-nvfp4-atlas --timeout-ms 60000
 npm run ariadne -- infra-live-ssh --project ariadne --host beast --target james@beast.lan
 npm run ariadne -- status --project ariadne
 ```
@@ -255,6 +256,7 @@ npm run ariadne -- infra --project ariadne
 npm run ariadne -- infra-snapshot --project ariadne --from manifest.json
 npm run ariadne -- infra-live-local --project ariadne --notes "Mac workstation read-only snapshot"
 npm run ariadne -- local-runtime-probe --project ariadne --canary --canary-endpoints ds4-openai --ds4-canary-model deepseek-v4-flash
+npm run ariadne -- local-runtime-probe --project ariadne --canary --canary-endpoints atlas --atlas-url http://atlas.local:8888/v1 --atlas-canary-model qwen3.6-35b-a3b-nvfp4-atlas --timeout-ms 60000
 npm run ariadne -- infra-live-ssh --project ariadne --host beast --target james@beast.lan --notes "Approved read-only remote snapshot"
 npm run ariadne -- openscorpion-draft --project ariadne --title "Evidence package" --type ariadne.evidence --evidence path-a,path-b
 npm run ariadne -- openscorpion-mutation-plan --project ariadne --activity activity-001 --type ariadne.evidence --action submit-activity --route governed --scope "Submit reviewed evidence package" --auth-evidence control/approvals/approval-...json --dry-run "openscorpion activity validate activity-001 --route governed" --live-command "openscorpion activity submit activity-001 --route governed" --post-verify "openscorpion activity status activity-001 --route governed" --rollback "openscorpion activity withdraw activity-001 --route governed" --approval approval-...

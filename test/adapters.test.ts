@@ -1715,12 +1715,13 @@ describe("roadmap adapters", () => {
         project: "ariadne",
         vaultRoot,
         canary: true,
-        canaryEndpointIds: ["ollama", "ds4-openai"],
-        canaryModels: { "ds4-openai": "deepseek-v4-flash" },
+        canaryEndpointIds: ["ollama", "ds4-openai", "atlas"],
+        canaryModels: { "ds4-openai": "deepseek-v4-flash", atlas: "qwen3.6-35b-a3b-nvfp4-atlas" },
         hermesDashboardUrl: "http://runtime.test/hermes",
         ollamaUrl: "http://runtime.test/ollama",
         ds4Url: "http://runtime.test/ds4/v1",
         lmStudioUrl: "http://runtime.test/lmstudio/v1",
+        atlasUrl: "http://runtime.test/atlas/v1",
         timeoutMs: 100
       },
       {
@@ -1756,12 +1757,28 @@ describe("roadmap adapters", () => {
               }
             };
           }
+          if (url.endsWith("/atlas/v1/models")) {
+            return { ok: true, status: 200, text: "{}", json: { data: [{ id: "qwen3.6-35b-a3b-nvfp4-atlas" }] } };
+          }
+          if (url.endsWith("/atlas/v1/chat/completions") && init?.method === "POST") {
+            const body = JSON.parse(String(init.body)) as { model: string; max_tokens: number };
+            canaryRequests.push({ url, model: body.model, tokenBudget: body.max_tokens });
+            return {
+              ok: true,
+              status: 200,
+              text: "{}",
+              json: {
+                choices: [{ message: { content: "READY" } }],
+                usage: { prompt_tokens: 6, completion_tokens: 1, total_tokens: 7 }
+              }
+            };
+          }
           return { ok: false, status: 0, text: "", error: "connection refused" };
         }
       }
     );
-    expect(runtimeProbe.probe.summary.models).toBe(2);
-    expect(runtimeProbe.probe.summary.usageRecords).toBe(2);
+    expect(runtimeProbe.probe.summary.models).toBe(3);
+    expect(runtimeProbe.probe.summary.usageRecords).toBe(3);
     expect(runtimeProbe.probe.modelEndpoints.find((endpoint) => endpoint.id === "ollama")?.canary?.status).toBe(
       "passed"
     );
@@ -1771,9 +1788,20 @@ describe("roadmap adapters", () => {
     expect(runtimeProbe.probe.modelEndpoints.find((endpoint) => endpoint.id === "ds4-openai")?.canary?.model).toBe(
       "deepseek-v4-flash"
     );
+    expect(runtimeProbe.probe.modelEndpoints.find((endpoint) => endpoint.id === "atlas")?.canary?.status).toBe(
+      "passed"
+    );
+    expect(runtimeProbe.probe.modelEndpoints.find((endpoint) => endpoint.id === "atlas")?.canary?.model).toBe(
+      "qwen3.6-35b-a3b-nvfp4-atlas"
+    );
     expect(canaryRequests).toEqual([
       { url: "http://runtime.test/ollama/api/generate", model: "qwen-local", tokenBudget: 128 },
-      { url: "http://runtime.test/ds4/v1/chat/completions", model: "deepseek-v4-flash", tokenBudget: 128 }
+      { url: "http://runtime.test/ds4/v1/chat/completions", model: "deepseek-v4-flash", tokenBudget: 128 },
+      {
+        url: "http://runtime.test/atlas/v1/chat/completions",
+        model: "qwen3.6-35b-a3b-nvfp4-atlas",
+        tokenBudget: 128
+      }
     ]);
     expect(runtimeProbe.probe.modelEndpoints.find((endpoint) => endpoint.id === "lmstudio")?.status).toBe("unreachable");
     const runtimeArtifactChecks = await generateArtifactCheckReport({ project: "ariadne", vaultRoot });
@@ -1791,7 +1819,7 @@ describe("roadmap adapters", () => {
       })
     );
     const usageReport = await generateUsageMetricsReport({ project: "ariadne", vaultRoot });
-    expect(usageReport.report.bySource.find((source) => source.name === "local-llm")?.totalTokens).toBe(14);
+    expect(usageReport.report.bySource.find((source) => source.name === "local-llm")?.totalTokens).toBe(21);
 
     const parsedSsh = parseSshInventory(
       [
@@ -1917,7 +1945,7 @@ describe("roadmap adapters", () => {
     expect(console.data.infrastructure.snapshots.some((item) => item.snapshotKind === "live_read_only")).toBe(true);
     expect(console.data.infrastructure.runtimeProbes).toHaveLength(1);
     expect(console.data.summary.localRuntimeProbes).toBe(1);
-    expect(console.data.summary.localRuntimeModels).toBe(2);
+    expect(console.data.summary.localRuntimeModels).toBe(3);
     expect(console.data.summary.localRuntimeReachable).toBeGreaterThan(0);
     expect(console.data.summary.githubSnapshots).toBe(1);
     expect(console.data.github.snapshots[0]?.summary.pendingChecks).toBe(1);
