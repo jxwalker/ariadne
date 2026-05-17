@@ -5,7 +5,7 @@ import { generateLiveAdapterApprovalPack } from "./liveAdapterApprovalPack.js";
 import { generateLiveAdapterApprovalReviewAudit } from "./liveAdapterApprovalReviewAudit.js";
 import { generateLiveAdapterCutoverAudit } from "./liveAdapterCutoverAudit.js";
 import { generateLiveAdapterNextActions } from "./liveAdapterNextActions.js";
-import { generateLiveAdapterOperatorEvidenceAudit, REQUIRED_OPERATOR_EVIDENCE_SECTION_LABELS } from "./liveAdapterOperatorEvidence.js";
+import { generateLiveAdapterOperatorEvidenceAudit } from "./liveAdapterOperatorEvidence.js";
 import { isLiveAdapterTarget, LIVE_ADAPTER_TARGETS } from "./liveAdapterTargets.js";
 import { generateLiveAdapterTargetDossier } from "./liveAdapterTargetDossier.js";
 import { projectDir, slugifyProject } from "./paths.js";
@@ -78,7 +78,7 @@ export async function generateLiveAdapterReviewSession(input: {
       latestOperatorEvidenceCheckRef: queueTarget?.latestCheckRef,
       operatorEvidenceAssistFileRef: assistTarget?.assistFileRef,
       operatorEvidenceAssistNextSteps: assistTarget?.nextSteps ?? [],
-      missingOperatorEvidenceSections: missingOperatorEvidenceSections(operatorEvidenceTarget.status, operatorEvidenceTarget.missingSections),
+      missingOperatorEvidenceSections: operatorEvidenceTarget.missingSections,
       requiredEvidence: packet?.requiredEvidence ?? [],
       blockers: target.blockers,
       cutoverBlockers: cutoverTarget.blockers,
@@ -141,11 +141,6 @@ function reviewSessionTargetStatus(
 function operatorEvidenceStatus(status: "complete" | "incomplete" | "missing_evidence"): LiveAdapterReviewSession["targets"][number]["operatorEvidenceStatus"] {
   if (status === "complete") return "complete";
   return status === "incomplete" ? "needs_rework" : "needs_evidence";
-}
-
-function missingOperatorEvidenceSections(status: "complete" | "incomplete" | "missing_evidence", sections: string[]): string[] {
-  if (sections.length > 0 || status === "complete") return sections;
-  return [...REQUIRED_OPERATOR_EVIDENCE_SECTION_LABELS];
 }
 
 function reviewSessionEvidenceRefs(
