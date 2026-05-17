@@ -86,6 +86,7 @@ Do not add `npm run cli`, `src/cli.ts`, or docs that describe the main runner as
 - `src/liveAdapterOperatorEvidenceCheckAll.ts`: batch preflight over every target workspace file or blank template; writes an aggregate report and refreshes the queue without recording evidence.
 - `src/liveAdapterOperatorEvidenceWorkspace.ts`: fillable per-target operator evidence workspaces and support note files.
 - `src/liveAdapterOperatorEvidenceAssist.ts`: read-only per-target assist packets that gather existing support refs without creating evidence records.
+- `src/liveEvidencePromotion.ts`: sanitized promotion records for local live artifacts; these hash sources and redact private runtime or host details without creating operator evidence records.
 - `src/liveAdapterOperatorEvidenceImportReady.ts`: conservative batch import for targets whose latest operator-evidence preflight check is complete.
 - `src/liveAdapterOperatorEvidence.ts`: filled operator-evidence import plus aggregate audit; records missing sections without granting approval or mutation authority.
 - `src/notebookLmMutation.ts`: target-specific NotebookLM mutation-readiness plan generation for notebook actions.

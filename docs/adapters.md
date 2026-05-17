@@ -242,6 +242,8 @@ Target-specific execute wrappers hard-code that guard for the live adapters: `gi
 
 `live-adapter-operator-evidence-assist` generates `control/live-adapter-operator-evidence-assist.json` and `.md`, then writes a `read-only-assist.md` file beside each target's evidence file. The assist packet gathers existing Ariadne support refs from the current workplan and lists next steps for human review. It is not proof: it keeps `operatorEvidenceRecordCreated=false`, `mutationApproved=false`, and `approvalGranted=false`.
 
+`live-evidence-promote` turns local-only live artifacts into sanitized evidence summaries that can be cited during operator review. It accepts ignored runtime probes, E2E smoke reports, live SSH inventory, deployment snapshots, or other JSON/text files with `--from`, hashes every source, extracts known Ariadne summaries, redacts private URLs, source paths, SSH targets, email-like values, and private IP strings, then writes `control/live-evidence-promotions/live-evidence-promotion-<target>-<timestamp>.json` and `.md`. This is still not operator evidence or approval: it keeps `operatorEvidenceRecordCreated=false`, `mutationApproved=false`, and `approvalGranted=false`.
+
 `live-adapter-operator-evidence` imports a filled operator evidence file for one target. It hashes the source file, checks whether the operator identity, packet review, auth boundary, bounded action, rollback, post-verification, dry-run, target-wrapper, and exact `--confirm-plan` sections are present, and writes `control/live-adapter-operator-evidence/operator-evidence-<target>-<timestamp>.json` and `.md`. It also records whether GBrain notes are present, but GBrain remains advisory only. The record always writes `mutationApproved=false` and `approvalGranted=false`.
 
 `live-adapter-operator-evidence-audit` summarizes those imported records across GitHub, deployment, Hermes cron, OpenScorpion, GSD2, and NotebookLM. Targets with no imported evidence are treated as missing the full required section set, so status and queue summaries show the real collection workload instead of a zero-section placeholder. Missing or incomplete target evidence becomes an approval-queue blocker in the console, while complete operator evidence still does not bypass approval-review, mutation-readiness, dry-run, target execution, or cutover gates.
@@ -326,6 +328,8 @@ Artifacts:
 - `control/live-adapter-operator-evidence-assist.md`
 - `control/live-adapter-operator-evidence-workspace.json`
 - `control/live-adapter-operator-evidence-workspace.md`
+- `control/live-evidence-promotions/live-evidence-promotion-<target>-<timestamp>.json`
+- `control/live-evidence-promotions/live-evidence-promotion-<target>-<timestamp>.md`
 - `control/operator-evidence/<target>/operator-evidence.md`
 - `control/operator-evidence/<target>/{packet-review,auth-boundary,rollback-post-verify,dry-run-review,gbrain-notes,read-only-assist}.md`
 - `control/live-adapter-operator-evidence/operator-evidence-<target>-<timestamp>.json`

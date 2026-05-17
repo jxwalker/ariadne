@@ -67,6 +67,7 @@ import { generateLiveAdapterOperatorEvidenceWorkspace } from "./liveAdapterOpera
 import { generateLiveAdapterReadiness } from "./liveAdapterReadiness.js";
 import { generateLiveAdapterReviewSession } from "./liveAdapterReviewSession.js";
 import { generateLiveAdapterTargetDossier, liveAdapterDossierTargetOption } from "./liveAdapterTargetDossier.js";
+import { promoteLiveEvidence } from "./liveEvidencePromotion.js";
 import { collectLocalRuntimeProbe, type RuntimeModelEndpointId } from "./localRuntimeProbe.js";
 import { importNotebookLmExport } from "./notebooklm.js";
 import { notebookLmMutationActionOption, planNotebookLmMutation } from "./notebookLmMutation.js";
@@ -180,6 +181,7 @@ function usage(): string {
     "  ariadne infra-snapshot --project <project> --from <manifest.json>",
     "  ariadne infra-live-local --project <project> [--notes <text>]",
     "  ariadne local-runtime-probe --project <project> [--canary] [--canary-endpoints <ollama,ds4-openai,lmstudio,atlas>] [--ollama-canary-model <id>] [--ds4-canary-model <id>] [--lmstudio-canary-model <id>] [--atlas-canary-model <id>] [--hermes-dashboard-url <url>] [--ollama-url <url>] [--ds4-url <url>] [--lmstudio-url <url>] [--atlas-url <url>] [--timeout-ms <ms>]",
+    "  ariadne live-evidence-promote --project <project> --target <github|deployment|hermes-cron|openscorpion|gsd2|notebooklm> --title <text> --from <paths> [--notes <text>]",
     "  ariadne infra-live-ssh --project <project> --host <id> --target <ssh-target> [--ssh-binary <path>] [--notes <text>]",
     "  ariadne openscorpion-draft --project <project> --title <title> --type <type> --evidence <paths>",
     "  ariadne openscorpion-mutation-plan --project <project> --activity <id> --type <type> --action <submit-activity|update-activity|withdraw-activity> --route <governed|staging> --scope <text> --auth-evidence <paths> --dry-run <cmd> --live-command <cmd> --post-verify <cmd> --rollback <text> [--approval <id|json>] [--risk <low|medium|high>] [--evidence <paths>] [--notes <text>]",
@@ -973,6 +975,24 @@ async function main(): Promise<void> {
     console.log(`Unreachable: ${result.probe.summary.unreachable}`);
     console.log(`Models: ${result.probe.summary.models}`);
     console.log(`Usage records: ${result.probe.summary.usageRecords}`);
+    return;
+  }
+
+  if (parsed.command === "live-evidence-promote") {
+    const result = await promoteLiveEvidence({
+      project,
+      vaultRoot,
+      target: liveAdapterOperatorEvidenceTargetOption(requiredOption(parsed.options, "target")),
+      title: requiredOption(parsed.options, "title"),
+      sourcePaths: splitList(requiredOption(parsed.options, "from")),
+      notes: optionString(parsed.options, "notes", "") || undefined
+    });
+    console.log(`Live evidence promotion: ${result.markdownPath}`);
+    console.log(`Target: ${result.promotion.target}`);
+    console.log(`Sources: ${result.promotion.summary.sources}`);
+    console.log(`Parsed sources: ${result.promotion.summary.parsedSources}`);
+    console.log(`Redacted values: ${result.promotion.summary.redactedValues}`);
+    console.log(`Mutation approved: ${result.promotion.mutationApproved}`);
     return;
   }
 

@@ -421,6 +421,16 @@ const ARTIFACT_SPECS: ArtifactSpec[] = [
     minimumCount: 1
   },
   {
+    id: "live-evidence-promotions",
+    label: "Sanitized live evidence promotions",
+    required: false,
+    kind: "matching-files",
+    relativePath: "control/live-evidence-promotions",
+    prefix: "live-evidence-promotion-",
+    suffix: ".json",
+    minimumCount: 1
+  },
+  {
     id: "live-adapter-operator-evidence-workspace-files",
     label: "Live adapter operator evidence workspace files",
     required: false,

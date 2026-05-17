@@ -1030,6 +1030,34 @@ export interface LiveAdapterOperatorEvidenceAssist {
   }>;
 }
 
+export interface LiveEvidencePromotion {
+  schemaVersion: 1;
+  id: string;
+  project: string;
+  generatedAt: string;
+  target: Exclude<MutationReadinessPlan["target"], "generic">;
+  title: string;
+  status: "promoted_for_operator_review";
+  mutationApproved: false;
+  approvalGranted: false;
+  operatorEvidenceRecordCreated: false;
+  summary: {
+    sources: number;
+    parsedSources: number;
+    redactedValues: number;
+  };
+  sources: Array<{
+    sourceRef: string;
+    sourceSha256: string;
+    sourceBytes: number;
+    kind: "local-runtime-probe" | "deployment-snapshot" | "infra-snapshot" | "e2e-smoke" | "json-summary" | "file-hash";
+    parsed: boolean;
+    redactedValues: number;
+    summary?: unknown;
+  }>;
+  notes?: string;
+}
+
 export interface LiveAdapterOperatorEvidenceRecord {
   schemaVersion: 1;
   id: string;
