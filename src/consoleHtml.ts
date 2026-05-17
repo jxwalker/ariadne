@@ -144,7 +144,7 @@ function renderConsole(data: ConsoleData): string {
           {
             time: data.liveAdapterOperatorEvidenceWorkplan.generatedAt,
             label: `Operator evidence workplan: ${data.liveAdapterOperatorEvidenceWorkplan.status}`,
-            detail: `${data.liveAdapterOperatorEvidenceWorkplan.summary.importCommands} import commands`
+            detail: `${data.liveAdapterOperatorEvidenceWorkplan.summary.checkCommands ?? 0} check commands / ${data.liveAdapterOperatorEvidenceWorkplan.summary.importCommands} import commands`
           }
         ]
       : []),
@@ -222,6 +222,7 @@ function renderConsole(data: ConsoleData): string {
     metric("Review Session", data.summary.liveAdapterReviewSessionStatus ?? "none", `${data.summary.liveAdapterReviewSessionRequired ?? 0} required`),
     metric("Evidence Templates", data.summary.liveAdapterEvidenceTemplates ?? "none", data.summary.liveAdapterEvidenceTemplateStatus ?? "operator"),
     metric("Evidence Workplan", data.summary.liveAdapterOperatorEvidenceWorkplanStatus ?? "none", `${data.summary.liveAdapterOperatorEvidenceWorkplanTargets ?? 0} targets`),
+    metric("Evidence Checks", data.summary.liveAdapterOperatorEvidenceChecks ?? "none", "preflight"),
     metric("Operator Evidence", data.summary.liveAdapterOperatorEvidenceStatus ?? "none", `${data.summary.liveAdapterOperatorEvidenceComplete ?? 0} complete`),
     metric("Roadmap Audit", data.summary.roadmapCompletionStatus ?? "none", `${data.summary.roadmapCompletionBlocked ?? 0} blocked`),
     metric("Hermes", data.summary.hermesCronSnapshots, `${data.summary.hermesCronProposals} proposals`),
@@ -601,12 +602,12 @@ function operatorEvidenceWorkplan(data: ConsoleData): string {
   const workplan = data.liveAdapterOperatorEvidenceWorkplan;
   if (!workplan) return empty("No live-adapter operator evidence workplan is available.");
   return [
-    `<div class="visual-status"><strong class="${statusClass(workplan.status)}">${escapeHtml(workplan.status)}</strong><span>${escapeHtml(`${workplan.summary.importCommands} import commands / ${workplan.summary.gbrainQueries} GBrain queries`)}</span></div>`,
+    `<div class="visual-status"><strong class="${statusClass(workplan.status)}">${escapeHtml(workplan.status)}</strong><span>${escapeHtml(`${workplan.summary.checkCommands ?? 0} check commands / ${workplan.summary.importCommands} import commands / ${workplan.summary.gbrainQueries} GBrain queries`)}</span></div>`,
     '<p class="metadata">The workplan is an evidence collection queue, not approval evidence.</p>',
-    '<div class="table-wrap"><table><thead><tr><th>Target</th><th>Status</th><th>Template</th><th>Import Command</th><th>Cutover Blockers</th></tr></thead><tbody>',
+    '<div class="table-wrap"><table><thead><tr><th>Target</th><th>Status</th><th>Template</th><th>Check Command</th><th>Import Command</th><th>Cutover Blockers</th></tr></thead><tbody>',
     ...workplan.targets.map(
       (target) =>
-        `<tr><td>${escapeHtml(target.target)}</td><td class="${statusClass(target.status)}">${escapeHtml(target.status)}</td><td>${escapeHtml(target.templateRef)}</td><td>${escapeHtml(target.importCommand)}</td><td>${escapeHtml(String(target.cutoverBlockers.length))}</td></tr>`
+        `<tr><td>${escapeHtml(target.target)}</td><td class="${statusClass(target.status)}">${escapeHtml(target.status)}</td><td>${escapeHtml(target.templateRef)}</td><td>${escapeHtml(target.checkCommand ?? "not generated")}</td><td>${escapeHtml(target.importCommand)}</td><td>${escapeHtml(String(target.cutoverBlockers.length))}</td></tr>`
     ),
     "</tbody></table></div>"
   ].join("");

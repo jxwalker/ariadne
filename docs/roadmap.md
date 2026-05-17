@@ -130,7 +130,8 @@ Implemented:
 - live adapter cutover audits that verify complete operator evidence, current operator review, audit-passed plans, auth evidence, rollback, post-verification, dry-run, target-guarded execution, wrapper, dossier, and advisory GBrain context before placeholder replacement
 - live adapter review sessions that consolidate target dossiers, operator packet-review commands, cutover blockers, and advisory GBrain queries into one non-mutating operator packet
 - live adapter evidence templates that give operators blank, non-authoritative files for packet-review evidence, auth-boundary proof, rollback/post-verification checks, dry-run notes, target-execution notes, and advisory GBrain results
-- live adapter operator-evidence workplans that turn missing evidence into per-target import commands, template refs, cutover blockers, and advisory GBrain queries
+- live adapter operator-evidence workplans that turn missing evidence into per-target check/import commands, template refs, cutover blockers, and advisory GBrain queries
+- live adapter operator-evidence preflight checks that evaluate filled templates without creating evidence records or approving mutation
 - live adapter operator-evidence import and audit that hashes filled evidence files, identifies missing operator proof, and surfaces per-target blockers without granting mutation approval
 
 Next:

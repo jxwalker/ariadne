@@ -39,6 +39,7 @@ import type {
   LiveAdapterEvidenceTemplatePack,
   LiveAdapterNextActionsReport,
   LiveAdapterOperatorEvidenceAudit,
+  LiveAdapterOperatorEvidenceCheck,
   LiveAdapterOperatorEvidenceRecord,
   LiveAdapterOperatorEvidenceWorkplan,
   LiveAdapterReadinessReport,
@@ -169,6 +170,10 @@ export async function collectConsoleData(vaultRoot: string, projectInput: string
     path.join(dir, "control", "live-adapter-operator-evidence"),
     isLiveAdapterOperatorEvidence
   );
+  const liveAdapterOperatorEvidenceChecks = await readJsonFiles<LiveAdapterOperatorEvidenceCheck>(
+    path.join(dir, "control", "live-adapter-operator-evidence-checks"),
+    isLiveAdapterOperatorEvidenceCheck
+  );
   const recovery = await readProjectJson<RecoveryReport>(vaultRoot, project, "control", "recovery-report.json");
   const gbrainExport = await readProjectJson<GbrainExportBundle>(vaultRoot, project, "integrations/gbrain", "gbrain-export.json");
   const checks = await readJsonl<CheckRecord>(path.join(dir, "control", "check-history.jsonl"));
@@ -295,6 +300,7 @@ export async function collectConsoleData(vaultRoot: string, projectInput: string
       liveAdapterEvidenceTemplateStatus: liveAdapterEvidenceTemplatePack?.status,
       liveAdapterOperatorEvidenceWorkplanStatus: liveAdapterOperatorEvidenceWorkplan?.status,
       liveAdapterOperatorEvidenceWorkplanTargets: liveAdapterOperatorEvidenceWorkplan?.summary.targets,
+      liveAdapterOperatorEvidenceChecks: liveAdapterOperatorEvidenceChecks.length,
       liveAdapterOperatorEvidenceRecords: liveAdapterOperatorEvidence.length,
       liveAdapterOperatorEvidenceStatus: liveAdapterOperatorEvidenceAudit?.status,
       liveAdapterOperatorEvidenceComplete: liveAdapterOperatorEvidenceAudit?.summary.completeTargets,
@@ -330,6 +336,7 @@ export async function collectConsoleData(vaultRoot: string, projectInput: string
     liveAdapterReviewSession,
     liveAdapterEvidenceTemplatePack,
     liveAdapterOperatorEvidenceWorkplan,
+    liveAdapterOperatorEvidenceChecks,
     liveAdapterOperatorEvidence,
     liveAdapterOperatorEvidenceAudit,
     roadmapCompletionAudit,
@@ -403,6 +410,10 @@ export async function collectConsoleData(vaultRoot: string, projectInput: string
       liveAdapterOperatorEvidenceWorkplan: await existingPath(
         vaultRoot,
         path.join(dir, "control", "live-adapter-operator-evidence-workplan.json")
+      ),
+      liveAdapterOperatorEvidenceChecks: await existingPath(
+        vaultRoot,
+        path.join(dir, "control", "live-adapter-operator-evidence-checks")
       ),
       liveAdapterOperatorEvidence: await existingPath(vaultRoot, path.join(dir, "control", "live-adapter-operator-evidence")),
       liveAdapterOperatorEvidenceAudit: await existingPath(
@@ -633,6 +644,21 @@ function isLiveAdapterOperatorEvidence(value: unknown): value is LiveAdapterOper
     value.id.startsWith("operator-evidence-") &&
     isNonGenericMutationTarget(value.target) &&
     (value.status === "complete" || value.status === "incomplete") &&
+    value.mutationApproved === false &&
+    value.approvalGranted === false
+  );
+}
+
+function isLiveAdapterOperatorEvidenceCheck(value: unknown): value is LiveAdapterOperatorEvidenceCheck {
+  return (
+    hasSchema(value) &&
+    value.schemaVersion === 1 &&
+    typeof value.id === "string" &&
+    value.id.startsWith("operator-evidence-check-") &&
+    isNonGenericMutationTarget(value.target) &&
+    (value.status === "complete" || value.status === "incomplete") &&
+    value.recorded === false &&
+    value.operatorEvidenceRecordCreated === false &&
     value.mutationApproved === false &&
     value.approvalGranted === false
   );

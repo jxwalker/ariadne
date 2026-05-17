@@ -37,6 +37,8 @@ export async function generateConsoleBrowserCheckReport(input: {
     checks.push(await visibleCheck(page, "evaluation-trends", "Evaluation trends section", "text=Evaluation Trends"));
     checks.push(await visibleCheck(page, "recovery", "Recovery section", "text=Recovery"));
     checks.push(await visibleCheck(page, "github", "GitHub section", "text=GitHub"));
+    checks.push(await visibleCheck(page, "evidence-checks", "Evidence Checks metric", "text=Evidence Checks"));
+    checks.push(await operatorEvidenceCheckCommandCheck(page));
     checks.push(await embeddedDataCheck(page));
     checks.push(await screenshotSizeCheck(screenshotPath));
   } finally {
@@ -106,6 +108,29 @@ async function embeddedDataCheck(page: Page): Promise<ConsoleBrowserCheckReport[
     status: valid ? "passed" : "failed",
     detail: valid ? "Embedded console data is parseable." : "Embedded console data is missing or malformed."
   };
+}
+
+async function operatorEvidenceCheckCommandCheck(page: Page): Promise<ConsoleBrowserCheckReport["checks"][number]> {
+  const required = await page
+    .locator("#console-data")
+    .evaluate((node) => {
+      try {
+        const data = JSON.parse(node.textContent ?? "{}") as { liveAdapterOperatorEvidenceWorkplan?: unknown };
+        return Boolean(data.liveAdapterOperatorEvidenceWorkplan);
+      } catch {
+        return false;
+      }
+    })
+    .catch(() => false);
+  if (!required) {
+    return {
+      id: "operator-evidence-check-command",
+      label: "Operator evidence check command",
+      status: "passed",
+      detail: "No operator evidence workplan is present."
+    };
+  }
+  return visibleCheck(page, "operator-evidence-check-command", "Operator evidence check command", "text=live-adapter-operator-evidence-check");
 }
 
 async function screenshotSizeCheck(filePath: string): Promise<ConsoleBrowserCheckReport["checks"][number]> {

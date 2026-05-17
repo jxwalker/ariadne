@@ -715,6 +715,7 @@ export interface LiveAdapterOperatorEvidenceWorkplan {
     completeTargets: number;
     missingTargets: number;
     incompleteTargets: number;
+    checkCommands: number;
     importCommands: number;
     gbrainQueries: number;
   };
@@ -723,6 +724,7 @@ export interface LiveAdapterOperatorEvidenceWorkplan {
     status: "complete" | "needs_evidence" | "needs_rework";
     templateRef: string;
     firstAction?: string;
+    checkCommand: string;
     importCommand: string;
     reviewCommand: string;
     missingSections: string[];
@@ -731,6 +733,39 @@ export interface LiveAdapterOperatorEvidenceWorkplan {
     gbrainQueries: string[];
     evidenceRefs: string[];
   }>;
+}
+
+export interface LiveAdapterOperatorEvidenceCheck {
+  schemaVersion: 1;
+  id: string;
+  project: string;
+  checkedAt: string;
+  target: Exclude<MutationReadinessPlan["target"], "generic">;
+  sourceRef: string;
+  sourceSha256: string;
+  sourceBytes: number;
+  status: "complete" | "incomplete";
+  recorded: false;
+  operatorEvidenceRecordCreated: false;
+  mutationApproved: false;
+  approvalGranted: false;
+  summary: {
+    requiredSections: number;
+    completeSections: number;
+    missingSections: number;
+    advisoryWarnings: number;
+  };
+  sections: Array<{
+    id: string;
+    label: string;
+    status: "complete" | "missing";
+    detail: string;
+  }>;
+  gbrain: {
+    status: "present" | "missing";
+    detail: string;
+  };
+  notes?: string;
 }
 
 export interface LiveAdapterOperatorEvidenceRecord {
@@ -1415,6 +1450,7 @@ export interface ConsoleData {
     liveAdapterEvidenceTemplateStatus?: LiveAdapterEvidenceTemplatePack["status"];
     liveAdapterOperatorEvidenceWorkplanStatus?: LiveAdapterOperatorEvidenceWorkplan["status"];
     liveAdapterOperatorEvidenceWorkplanTargets?: number;
+    liveAdapterOperatorEvidenceChecks?: number;
     liveAdapterOperatorEvidenceRecords?: number;
     liveAdapterOperatorEvidenceStatus?: LiveAdapterOperatorEvidenceAudit["status"];
     liveAdapterOperatorEvidenceComplete?: number;
@@ -1492,6 +1528,7 @@ export interface ConsoleData {
   liveAdapterReviewSession?: LiveAdapterReviewSession;
   liveAdapterEvidenceTemplatePack?: LiveAdapterEvidenceTemplatePack;
   liveAdapterOperatorEvidenceWorkplan?: LiveAdapterOperatorEvidenceWorkplan;
+  liveAdapterOperatorEvidenceChecks: LiveAdapterOperatorEvidenceCheck[];
   liveAdapterOperatorEvidence: LiveAdapterOperatorEvidenceRecord[];
   liveAdapterOperatorEvidenceAudit?: LiveAdapterOperatorEvidenceAudit;
   roadmapCompletionAudit?: RoadmapCompletionAudit;
@@ -1528,6 +1565,7 @@ export interface ConsoleData {
     liveAdapterReviewSession?: string;
     liveAdapterEvidenceTemplates?: string;
     liveAdapterOperatorEvidenceWorkplan?: string;
+    liveAdapterOperatorEvidenceChecks?: string;
     liveAdapterOperatorEvidence?: string;
     liveAdapterOperatorEvidenceAudit?: string;
     roadmapCompletionAudit?: string;

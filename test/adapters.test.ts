@@ -37,6 +37,7 @@ import { generateLiveAdapterApprovalReviewAudit } from "../src/liveAdapterApprov
 import { generateLiveAdapterCutoverAudit } from "../src/liveAdapterCutoverAudit.js";
 import { generateLiveAdapterEvidenceTemplates } from "../src/liveAdapterEvidenceTemplates.js";
 import {
+  checkLiveAdapterOperatorEvidence,
   generateLiveAdapterOperatorEvidenceAudit,
   recordLiveAdapterOperatorEvidence
 } from "../src/liveAdapterOperatorEvidence.js";
@@ -1080,6 +1081,18 @@ describe("roadmap adapters", () => {
         ""
       ].join("\n")
     );
+    const preflight = await checkLiveAdapterOperatorEvidence({
+      project: "ariadne",
+      vaultRoot,
+      target: "deployment",
+      sourcePath: completeEvidencePath,
+      notes: "Preflight only"
+    });
+    expect(preflight.check.status).toBe("complete");
+    expect(preflight.check.recorded).toBe(false);
+    expect(preflight.check.operatorEvidenceRecordCreated).toBe(false);
+    expect(preflight.check.mutationApproved).toBe(false);
+    expect(preflight.check.approvalGranted).toBe(false);
     const completeOperatorEvidence = await recordLiveAdapterOperatorEvidence({
       project: "ariadne",
       vaultRoot,
@@ -1108,9 +1121,11 @@ describe("roadmap adapters", () => {
     const operatorEvidenceWorkplan = await generateLiveAdapterOperatorEvidenceWorkplan({ project: "ariadne", vaultRoot });
     expect(operatorEvidenceWorkplan.workplan.status).toBe("evidence_required");
     expect(operatorEvidenceWorkplan.workplan.mutationApproved).toBe(false);
+    expect(operatorEvidenceWorkplan.workplan.summary.checkCommands).toBe(6);
     expect(operatorEvidenceWorkplan.workplan.summary.importCommands).toBe(4);
     const hermesWorkplan = operatorEvidenceWorkplan.workplan.targets.find((target) => target.target === "hermes-cron");
     expect(hermesWorkplan?.status).toBe("needs_rework");
+    expect(hermesWorkplan?.checkCommand).toContain("live-adapter-operator-evidence-check");
     expect(hermesWorkplan?.importCommand).toContain("live-adapter-operator-evidence");
     expect(hermesWorkplan?.gbrainQueries.length).toBeGreaterThan(0);
     await generateArtifactCheckReport({ project: "ariadne", vaultRoot });
@@ -1161,7 +1176,9 @@ describe("roadmap adapters", () => {
     expect(console.data.summary.liveAdapterOperatorEvidenceStatus).toBe("blocked");
     expect(console.data.summary.liveAdapterOperatorEvidenceComplete).toBe(2);
     expect(console.data.summary.liveAdapterOperatorEvidenceMissing).toBe(3);
+    expect(console.data.summary.liveAdapterOperatorEvidenceChecks).toBe(1);
     expect(console.data.liveAdapterOperatorEvidenceAudit?.mutationApproved).toBe(false);
+    expect(console.data.liveAdapterOperatorEvidenceChecks[0]?.recorded).toBe(false);
     expect(console.data.liveAdapterOperatorEvidence.some((record) => record.target === "deployment")).toBe(true);
     expect(console.data.liveAdapterCutoverAudit?.targets.some((target) => target.target === "github")).toBe(true);
     expect(console.data.summary.roadmapCompletionStatus).toBe("blocked");
@@ -1207,6 +1224,9 @@ describe("roadmap adapters", () => {
     const cutoverAuditCheck = artifactChecks.report.checks.find((check) => check.id === "live-adapter-cutover-audit");
     const reviewSessionCheck = artifactChecks.report.checks.find((check) => check.id === "live-adapter-review-session");
     const evidenceTemplatesCheck = artifactChecks.report.checks.find((check) => check.id === "live-adapter-evidence-templates");
+    const operatorEvidencePreflightCheck = artifactChecks.report.checks.find(
+      (check) => check.id === "live-adapter-operator-evidence-checks"
+    );
     const operatorEvidenceCheck = artifactChecks.report.checks.find((check) => check.id === "live-adapter-operator-evidence");
     const operatorEvidenceAuditCheck = artifactChecks.report.checks.find(
       (check) => check.id === "live-adapter-operator-evidence-audit"
@@ -1230,6 +1250,7 @@ describe("roadmap adapters", () => {
     expect(cutoverAuditCheck?.status).toBe("present");
     expect(reviewSessionCheck?.status).toBe("present");
     expect(evidenceTemplatesCheck?.status).toBe("present");
+    expect(operatorEvidencePreflightCheck?.count).toBe(1);
     expect(operatorEvidenceCheck?.count).toBe(3);
     expect(operatorEvidenceAuditCheck?.status).toBe("present");
     expect(operatorEvidenceWorkplanCheck?.status).toBe("present");

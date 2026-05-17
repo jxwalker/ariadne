@@ -129,6 +129,7 @@ export async function generateRoadmapCompletionAudit(input: {
       nextCommands: [
         `npm run ariadne -- live-adapter-operator-evidence-workplan --project ${project}`,
         `npm run ariadne -- live-adapter-evidence-templates --project ${project}`,
+        `npm run ariadne -- live-adapter-operator-evidence-check --project ${project} --target <target> --from vault/projects/${project}/control/live-adapter-evidence-templates/live-adapter-evidence-template-<target>.md`,
         `npm run ariadne -- live-adapter-operator-evidence --project ${project} --target <target> --from vault/projects/${project}/control/live-adapter-evidence-templates/live-adapter-evidence-template-<target>.md --by <operator>`,
         `npm run ariadne -- live-adapter-operator-evidence-audit --project ${project}`
       ]
@@ -163,7 +164,7 @@ export async function generateRoadmapCompletionAudit(input: {
   };
   const operatorEvidenceRequirement = requirements.find((requirement) => requirement.id === "operator-evidence");
   if (operatorEvidenceRequirement && operatorEvidenceWorkplan) {
-    operatorEvidenceRequirement.detail += ` Workplan status is ${operatorEvidenceWorkplan.status} with ${operatorEvidenceWorkplan.summary.importCommands} import command(s).`;
+    operatorEvidenceRequirement.detail += ` Workplan status is ${operatorEvidenceWorkplan.status} with ${operatorEvidenceWorkplan.summary.checkCommands} check command(s) and ${operatorEvidenceWorkplan.summary.importCommands} import command(s).`;
     operatorEvidenceRequirement.evidenceRefs.push("projects/" + project + "/control/live-adapter-operator-evidence-workplan.json");
   }
   const audit: RoadmapCompletionAudit = {

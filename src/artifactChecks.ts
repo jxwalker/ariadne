@@ -307,6 +307,16 @@ const ARTIFACT_SPECS: ArtifactSpec[] = [
     relativePath: "control/live-adapter-evidence-templates.json"
   },
   {
+    id: "live-adapter-operator-evidence-checks",
+    label: "Live adapter operator evidence checks",
+    required: false,
+    kind: "matching-files",
+    relativePath: "control/live-adapter-operator-evidence-checks",
+    prefix: "operator-evidence-check-",
+    suffix: ".json",
+    minimumCount: 1
+  },
+  {
     id: "live-adapter-operator-evidence",
     label: "Live adapter operator evidence records",
     required: false,

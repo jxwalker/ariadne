@@ -2,14 +2,14 @@
 
 Project: ariadne
 Status: passed
-Generated: 2026-05-17T06:04:29.502Z
+Generated: 2026-05-17T06:36:53.756Z
 HTML: projects/ariadne/console/index.html
-Screenshot: projects/ariadne/console/screenshots/console-2026-05-17T06-04-29-502Z.png
+Screenshot: projects/ariadne/console/screenshots/console-2026-05-17T06-36-53-756Z.png
 Viewport: 1440x1100
 
 ## Summary
 
-- Passed: 7
+- Passed: 9
 - Failed: 0
 
 ## Checks
@@ -21,5 +21,7 @@ Viewport: 1440x1100
 | evaluation-trends | passed | Evaluation trends section is visible. |
 | recovery | passed | Recovery section is visible. |
 | github | passed | GitHub section is visible. |
+| evidence-checks | passed | Evidence Checks metric is visible. |
+| operator-evidence-check-command | passed | Operator evidence check command is visible. |
 | embedded-data | passed | Embedded console data is parseable. |
-| screenshot | passed | 2213567 bytes captured. |
+| screenshot | passed | 2326433 bytes captured. |
