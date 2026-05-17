@@ -225,6 +225,14 @@ function sanitizeString(value: string): { value: string; redactions: number } {
     .replace(/\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}\b/g, () => {
       redactions += 1;
       return "<redacted-email>";
+    })
+    .replace(/-----BEGIN [A-Z ]*PRIVATE KEY-----[\s\S]*?-----END [A-Z ]*PRIVATE KEY-----/g, () => {
+      redactions += 1;
+      return "<redacted-private-key>";
+    })
+    .replace(/\beyJ[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+\b/g, () => {
+      redactions += 1;
+      return "<redacted-jwt>";
     });
   return { value: sanitized, redactions };
 }
@@ -240,9 +248,11 @@ function shouldRedactKey(key: string): boolean {
     "host",
     "hostname",
     "hostnamehash",
+    "jwt",
     "key",
     "password",
     "passphrase",
+    "privatekey",
     "secret",
     "sourcepath",
     "sshtarget",
@@ -312,11 +322,15 @@ async function resolveSourcePath(vaultRoot: string, project: string, sourcePath:
   } catch {
     throw new Error(`Source file not found or unreadable: ${sourcePath}`);
   }
-  const relativeToProject = path.relative(projectRoot, realResolved);
-  if (relativeToProject === "" || relativeToProject.startsWith("..") || path.isAbsolute(relativeToProject)) {
+  if (!pathContains(projectRoot, realResolved) || path.resolve(projectRoot) === path.resolve(realResolved)) {
     throw new Error(`Source path must resolve inside the project vault: ${sourcePath}`);
   }
   return realResolved;
+}
+
+function pathContains(parent: string, child: string): boolean {
+  const relative = path.relative(path.resolve(parent), path.resolve(child));
+  return relative !== "" && !relative.startsWith("..") && !path.isAbsolute(relative);
 }
 
 function sourceRef(vaultRoot: string, resolved: string): string {

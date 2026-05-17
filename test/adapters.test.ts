@@ -2216,6 +2216,31 @@ describe("roadmap adapters", () => {
     });
     expect(promotedFalsyJson.promotion.sources[0]?.parsed).toBe(true);
     expect(promotedFalsyJson.promotion.sources[0]?.kind).toBe("file-hash");
+    const genericSummary = path.join(vaultRoot, "projects", "ariadne", "deployment", "generic-summary.json");
+    await fs.writeFile(
+      genericSummary,
+      JSON.stringify({
+        summary: {
+          endpointUrl: "http://127.0.0.1:9999/private",
+          host: "localhost",
+          token: "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxMjMifQ.signature",
+          note: "safe model evidence"
+        }
+      })
+    );
+    const promotedGenericSummary = await promoteLiveEvidence({
+      project: "ariadne",
+      vaultRoot,
+      target: "deployment",
+      title: "Generic summary",
+      sourcePaths: [genericSummary]
+    });
+    expect(promotedGenericSummary.promotion.sources[0]?.kind).toBe("json-summary");
+    const genericPromotionJson = JSON.stringify(promotedGenericSummary.promotion);
+    expect(genericPromotionJson).toContain("safe model evidence");
+    expect(genericPromotionJson).not.toContain("127.0.0.1");
+    expect(genericPromotionJson).not.toContain("localhost");
+    expect(genericPromotionJson).not.toContain("eyJhbGciOiJIUzI1NiJ9");
     const outsideVault = path.join(temp, "outside.json");
     await fs.writeFile(outsideVault, "{}");
     await expect(
