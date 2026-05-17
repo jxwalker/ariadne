@@ -126,6 +126,7 @@ Implemented:
 - per-target live adapter approval packs that draft operator evidence checklists without approving or executing adapters
 - operator review records for live-adapter approval packets, with `mutationApproved=false`
 - approval-review audit reports that validate accepted packet reviews before readiness can rely on them
+- target-specific live adapter dossiers that combine readiness, approval packets, review audit, mutation audit, next actions, and GBrain memory context
 
 Next:
 
@@ -189,6 +190,7 @@ Implemented:
 - browser-backed console screenshot checks
 - evaluation trend charts
 - approval-review audit status and current-review counts in the operations console
+- live-adapter dossier count in the operations console
 
 ## Milestone 9: Sleep, Memory, And Agent Mail
 
@@ -201,6 +203,7 @@ Implemented:
 - agent mail inbox/outbox records scoped to project, task, and run ids
 - interagent lease and ownership records
 - optional GBrain read-only export and report import
+- GBrain memory context in live-adapter target dossiers
 - read-only Hermes cron snapshot import
 - proposal-only Hermes cron recommendations from imported scheduler evidence
 - target-specific Hermes cron mutation-readiness plan generation

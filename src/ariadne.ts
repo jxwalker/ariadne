@@ -47,6 +47,7 @@ import {
 import { generateLiveAdapterApprovalReviewAudit } from "./liveAdapterApprovalReviewAudit.js";
 import { generateLiveAdapterNextActions } from "./liveAdapterNextActions.js";
 import { generateLiveAdapterReadiness } from "./liveAdapterReadiness.js";
+import { generateLiveAdapterTargetDossier, liveAdapterDossierTargetOption } from "./liveAdapterTargetDossier.js";
 import { importNotebookLmExport } from "./notebooklm.js";
 import { notebookLmMutationActionOption, planNotebookLmMutation } from "./notebookLmMutation.js";
 import { mutationTargetOption, planMutationReadiness } from "./mutationReadiness.js";
@@ -171,6 +172,7 @@ function usage(): string {
     "  ariadne live-adapter-approval-pack --project <project> [--target <all|github|deployment|hermes-cron|openscorpion|gsd2|notebooklm>]",
     "  ariadne live-adapter-approval-review --project <project> --target <target> --by <operator> --status <accepted|needs_changes|rejected> --evidence <paths> [--packet <path>] [--notes <text>]",
     "  ariadne live-adapter-approval-review-audit --project <project> [--packet <path>]",
+    "  ariadne live-adapter-dossier --project <project> --target <github|deployment|hermes-cron|openscorpion|gsd2|notebooklm>",
     "  ariadne mutation-dry-run --project <project> --plan <id|json> [--timeout-ms <ms>]",
     "  ariadne mutation-execute --project <project> --plan <id|json> --confirm-plan <id> [--timeout-ms <ms>]",
     "  ariadne target-mutation-execute --project <project> --target <target> --plan <id|json> --confirm-plan <id> [--timeout-ms <ms>]",
@@ -1128,6 +1130,19 @@ async function main(): Promise<void> {
     console.log(`Status: ${result.audit.status}`);
     console.log(`Current accepted reviews: ${result.audit.summary.currentAcceptedReviews}`);
     console.log(`Invalid records: ${result.audit.summary.invalidRecords}`);
+    return;
+  }
+
+  if (parsed.command === "live-adapter-dossier") {
+    const result = await generateLiveAdapterTargetDossier({
+      project,
+      vaultRoot,
+      target: liveAdapterDossierTargetOption(requiredOption(parsed.options, "target"))
+    });
+    console.log(`Live adapter dossier: ${result.markdownPath}`);
+    console.log(`Target: ${result.dossier.target}`);
+    console.log(`Status: ${result.dossier.status}`);
+    console.log(`Actions: ${result.dossier.summary.actions}`);
     return;
   }
 

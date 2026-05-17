@@ -1,12 +1,12 @@
 {
   "schemaVersion": 1,
   "project": "ariadne",
-  "generatedAt": "2026-05-17T00:28:31.234Z",
+  "generatedAt": "2026-05-17T00:55:26.466Z",
   "status": "passed",
   "summary": {
     "required": 13,
-    "optional": 31,
-    "present": 36,
+    "optional": 32,
+    "present": 37,
     "missingRequired": 0
   },
   "checks": [
@@ -311,6 +311,22 @@
       "required": false,
       "path": "projects/ariadne/control/live-adapter-approval-review-audit.json",
       "status": "present"
+    },
+    {
+      "id": "live-adapter-dossiers",
+      "label": "Live adapter target dossiers",
+      "required": false,
+      "path": "projects/ariadne/control/live-adapter-dossiers/live-adapter-dossier-*.json",
+      "status": "present",
+      "count": 6,
+      "matches": [
+        "projects/ariadne/control/live-adapter-dossiers/live-adapter-dossier-deployment.json",
+        "projects/ariadne/control/live-adapter-dossiers/live-adapter-dossier-github.json",
+        "projects/ariadne/control/live-adapter-dossiers/live-adapter-dossier-gsd2.json",
+        "projects/ariadne/control/live-adapter-dossiers/live-adapter-dossier-hermes-cron.json",
+        "projects/ariadne/control/live-adapter-dossiers/live-adapter-dossier-notebooklm.json",
+        "projects/ariadne/control/live-adapter-dossiers/live-adapter-dossier-openscorpion.json"
+      ]
     },
     {
       "id": "mutation-dry-runs",

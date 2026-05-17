@@ -37,6 +37,7 @@ import type {
   LiveAdapterApprovalReviewAudit,
   LiveAdapterNextActionsReport,
   LiveAdapterReadinessReport,
+  LiveAdapterTargetDossier,
   MemoryProposalRecord,
   MutationDryRunRecord,
   MutationExecutionRecord,
@@ -116,6 +117,10 @@ export async function collectConsoleData(vaultRoot: string, projectInput: string
   const liveAdapterApprovalReviews = await readJsonFiles<LiveAdapterApprovalReview>(
     path.join(dir, "control", "live-adapter-approval-reviews"),
     isLiveAdapterApprovalReview
+  );
+  const liveAdapterTargetDossiers = await readJsonFiles<LiveAdapterTargetDossier>(
+    path.join(dir, "control", "live-adapter-dossiers"),
+    isLiveAdapterTargetDossier
   );
   const recovery = await readProjectJson<RecoveryReport>(vaultRoot, project, "control", "recovery-report.json");
   const gbrainExport = await readProjectJson<GbrainExportBundle>(vaultRoot, project, "integrations/gbrain", "gbrain-export.json");
@@ -232,6 +237,7 @@ export async function collectConsoleData(vaultRoot: string, projectInput: string
       acceptedLiveAdapterApprovalReviews: liveAdapterApprovalReviews.filter((review) => review.status === "accepted").length,
       liveAdapterApprovalReviewAuditStatus: liveAdapterApprovalReviewAudit?.status,
       currentLiveAdapterApprovalReviews: liveAdapterApprovalReviewAudit?.summary.currentAcceptedReviews,
+      liveAdapterTargetDossiers: liveAdapterTargetDossiers.length,
       recoveryIssues: recovery?.issues.length ?? 0,
       consoleBrowserChecks: consoleBrowserChecks?.status,
       readinessStatus: readiness?.status,
@@ -255,6 +261,7 @@ export async function collectConsoleData(vaultRoot: string, projectInput: string
     liveAdapterApprovalPack,
     liveAdapterApprovalReviews,
     liveAdapterApprovalReviewAudit,
+    liveAdapterTargetDossiers,
     decisions,
     playwrightEvidence,
     healerProposals,
@@ -315,6 +322,7 @@ export async function collectConsoleData(vaultRoot: string, projectInput: string
       liveAdapterApprovalPack: await existingPath(vaultRoot, path.join(dir, "control", "live-adapter-approval-pack.json")),
       liveAdapterApprovalReviews: await existingPath(vaultRoot, path.join(dir, "control", "live-adapter-approval-reviews")),
       liveAdapterApprovalReviewAudit: await existingPath(vaultRoot, path.join(dir, "control", "live-adapter-approval-review-audit.json")),
+      liveAdapterTargetDossiers: await existingPath(vaultRoot, path.join(dir, "control", "live-adapter-dossiers")),
       recoveryReport: await existingPath(vaultRoot, path.join(dir, "control", "recovery-report.json")),
       extractionResults: await existingPath(vaultRoot, path.join(dir, "extractions")),
       healerProposals: await existingPath(vaultRoot, path.join(dir, "verification", "healer-proposals")),
@@ -514,6 +522,17 @@ function isLiveAdapterApprovalReview(value: unknown): value is LiveAdapterApprov
     (value.status === "accepted" || value.status === "needs_changes" || value.status === "rejected") &&
     typeof value.packetGeneratedAt === "string" &&
     value.mutationApproved === false
+  );
+}
+
+function isLiveAdapterTargetDossier(value: unknown): value is LiveAdapterTargetDossier {
+  return (
+    hasSchema(value) &&
+    value.schemaVersion === 1 &&
+    isNonGenericMutationTarget(value.target) &&
+    (value.status === "ready_for_operator_review" || value.status === "blocked") &&
+    hasSchema(value.summary) &&
+    typeof value.summary.actions === "number"
   );
 }
 

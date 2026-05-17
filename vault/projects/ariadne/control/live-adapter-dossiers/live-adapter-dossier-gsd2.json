@@ -1,0 +1,181 @@
+{
+  "schemaVersion": 1,
+  "project": "ariadne",
+  "generatedAt": "2026-05-17T00:55:14.984Z",
+  "target": "gsd2",
+  "status": "ready_for_operator_review",
+  "readinessRef": "projects/ariadne/control/live-adapter-readiness.json",
+  "nextActionsRef": "projects/ariadne/control/live-adapter-next-actions.json",
+  "approvalPackRef": "projects/ariadne/control/live-adapter-approval-pack.json",
+  "approvalReviewAuditRef": "projects/ariadne/control/live-adapter-approval-review-audit.json",
+  "mutationReadinessAuditRef": "projects/ariadne/control/mutation-readiness-audit.json",
+  "summary": {
+    "blockers": 5,
+    "reviewAuditBlockers": 1,
+    "actions": 6,
+    "packetPresent": true,
+    "reviewAuditStatus": "missing_review",
+    "mutationPlans": 0,
+    "readyMutationPlans": 0,
+    "gbrainReports": 0
+  },
+  "readiness": {
+    "target": "gsd2",
+    "status": "blocked",
+    "planCount": 0,
+    "passedPlanCount": 0,
+    "passedDryRunCount": 0,
+    "passedExecutionCount": 0,
+    "approvalReviewCount": 0,
+    "acceptedApprovalReviewCount": 0,
+    "executeCommand": "gsd2-mutation-execute",
+    "blockers": [
+      "no accepted operator review exists for live-adapter approval packet",
+      "no target-specific readiness plan exists",
+      "no readiness plan passes audit",
+      "no passed dry-run evidence exists for an audit-passed plan",
+      "no passed target-guarded execution evidence exists"
+    ],
+    "evidenceRefs": [
+      "control/mutation-readiness-audit.json"
+    ]
+  },
+  "nextActions": [
+    {
+      "id": "gsd2-approval-pack-review",
+      "status": "pending",
+      "title": "Record operator review of the approval packet",
+      "rationale": "Before a live adapter can replace placeholder shell commands, an operator must review the target packet and record whether the packet is accepted, rejected, or needs changes. This does not approve live mutation.",
+      "command": "npm run ariadne -- live-adapter-approval-review --project <project> --target gsd2 --by <operator> --status accepted --packet control/live-adapter-approval-pack.json --evidence <operator-review-evidence>",
+      "evidenceRefs": [
+        "control/mutation-readiness-audit.json"
+      ]
+    },
+    {
+      "id": "gsd2-approval-request",
+      "status": "pending",
+      "title": "Record an operator approval request",
+      "rationale": "Live adapters need explicit human authorization before any target-specific readiness plan can be treated as reviewable.",
+      "command": "npm run ariadne -- approval-request --project <project> --by <operator> --target gsd2 --action \"<bounded action>\" --risk <low|medium|high> --reason \"<why this target should mutate>\" --rollback \"<operator rollback path>\" --evidence <auth-or-policy-evidence>",
+      "evidenceRefs": [
+        "control/mutation-readiness-audit.json"
+      ]
+    },
+    {
+      "id": "gsd2-mutation-plan",
+      "status": "blocked",
+      "title": "Create a target-specific mutation-readiness plan",
+      "rationale": "Ariadne needs reviewed dry-run, live, post-verification, rollback, auth evidence, and approval refs before any live adapter can be wired.",
+      "command": "npm run ariadne -- gsd2-mutation-plan --project <project> --task <id> --mode <headless|auto|worktree> --scope <scope> --auth-evidence <paths> --dry-run <cmd> --live-command <cmd> --post-verify <cmd> --rollback <text> --approval <approval-id>",
+      "evidenceRefs": [
+        "control/mutation-readiness-audit.json"
+      ]
+    },
+    {
+      "id": "gsd2-audit-fix",
+      "status": "pending",
+      "title": "Fix readiness audit blockers",
+      "rationale": "The readiness audit must pass before dry-run or execution evidence can count for a live adapter.",
+      "command": "npm run ariadne -- mutation-readiness-audit --project <project>",
+      "evidenceRefs": [
+        "control/mutation-readiness-audit.json"
+      ]
+    },
+    {
+      "id": "gsd2-dry-run",
+      "status": "blocked",
+      "title": "Run the reviewed dry-run command",
+      "rationale": "Dry-run evidence proves the reviewed command path before the live command is eligible for target-guarded execution.",
+      "command": "Create and audit-pass a target-specific readiness plan first.",
+      "evidenceRefs": [
+        "control/mutation-readiness-audit.json"
+      ]
+    },
+    {
+      "id": "gsd2-target-execution",
+      "status": "blocked",
+      "title": "Capture target-guarded execution evidence",
+      "rationale": "The live adapter should only replace placeholder shell commands after the audited target wrapper has successfully verified the same target and recorded post-action verification evidence.",
+      "command": "Run a passed dry-run for an audit-passed plan first.",
+      "evidenceRefs": [
+        "control/mutation-readiness-audit.json"
+      ]
+    }
+  ],
+  "approvalPacket": {
+    "target": "gsd2",
+    "readinessStatus": "blocked",
+    "recommendedRisk": "medium",
+    "operatorDecisionRequired": true,
+    "approvalRequestCommand": "npm run ariadne -- approval-request --project ariadne --by <operator> --target gsd2 --action \"Enable one reviewed GSD2 task submission action\" --risk medium --reason \"Permit a bounded GSD2 task operation after process contract and workspace effects are proven\" --rollback \"Document generated worktree cleanup and task-state restoration.\" --evidence <auth-or-policy-evidence>",
+    "requiredEvidence": [
+      "operator approval request record",
+      "authentication or authorization evidence",
+      "bounded scope statement",
+      "dry-run command output evidence",
+      "post-action verification command",
+      "rollback or disable path",
+      "local GSD2 binary/process snapshot and package/task identity evidence"
+    ],
+    "mutationPlanCommand": "npm run ariadne -- gsd2-mutation-plan --project <project> --task <id> --mode <headless|auto|worktree> --scope <scope> --auth-evidence <paths> --dry-run <cmd> --live-command <cmd> --post-verify <cmd> --rollback <text> --approval <approval-id>",
+    "dryRunCommand": "Create and audit-pass a target-specific readiness plan first.",
+    "executionCommand": "Run a passed dry-run for an audit-passed plan first.",
+    "rollbackRequirement": "Document generated worktree cleanup and task-state restoration.",
+    "postVerificationRequirement": "Verify task/package state and generated workspace effects after execution.",
+    "blockers": [
+      "no accepted operator review exists for live-adapter approval packet",
+      "no target-specific readiness plan exists",
+      "no readiness plan passes audit",
+      "no passed dry-run evidence exists for an audit-passed plan",
+      "no passed target-guarded execution evidence exists"
+    ],
+    "nextActions": [
+      "pending: Record operator review of the approval packet",
+      "pending: Record an operator approval request",
+      "blocked: Create a target-specific mutation-readiness plan",
+      "pending: Fix readiness audit blockers",
+      "blocked: Run the reviewed dry-run command",
+      "blocked: Capture target-guarded execution evidence"
+    ],
+    "evidenceRefs": [
+      "control/mutation-readiness-audit.json"
+    ]
+  },
+  "approvalReviewAudit": {
+    "target": "gsd2",
+    "status": "missing_review",
+    "packetPresent": true,
+    "reviewCount": 0,
+    "acceptedReviewCount": 0,
+    "currentAcceptedReviewCount": 0,
+    "blockers": [
+      "no accepted operator review exists"
+    ],
+    "evidenceRefs": []
+  },
+  "mutationReadinessChecks": [],
+  "operatorChecklist": [
+    "Read the target approval packet.",
+    "Check authentication or authorization evidence for the exact target account, host, or service.",
+    "Check rollback and post-verification commands are concrete enough to execute later.",
+    "Check dry-run and target-guarded execution steps remain non-placeholder and bounded.",
+    "Query GBrain for prior decisions, stale assumptions, and related evidence before accepting the packet.",
+    "Record an approval-packet review only after the packet and evidence are complete."
+  ],
+  "gbrainContext": {
+    "exportRef": "projects/ariadne/integrations/gbrain/gbrain-export.json",
+    "reportRefs": [],
+    "suggestedQueries": [
+      "Find prior Ariadne decisions and evidence for the gsd2 live adapter.",
+      "List risks, rollback requirements, and stale assumptions for gsd2 approval.",
+      "Summarize operator-review evidence still missing before gsd2 mutation readiness."
+    ]
+  },
+  "evidenceRefs": [
+    "projects/ariadne/control/live-adapter-readiness.json",
+    "projects/ariadne/control/live-adapter-next-actions.json",
+    "projects/ariadne/control/live-adapter-approval-pack.json",
+    "projects/ariadne/control/live-adapter-approval-review-audit.json",
+    "projects/ariadne/control/mutation-readiness-audit.json"
+  ]
+}

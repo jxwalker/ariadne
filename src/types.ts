@@ -556,6 +556,41 @@ export interface LiveAdapterApprovalReviewAudit {
   }>;
 }
 
+export interface LiveAdapterTargetDossier {
+  schemaVersion: 1;
+  project: string;
+  generatedAt: string;
+  target: Exclude<MutationReadinessPlan["target"], "generic">;
+  status: "ready_for_operator_review" | "ready_for_adapter_work" | "blocked";
+  readinessRef: string;
+  nextActionsRef: string;
+  approvalPackRef: string;
+  approvalReviewAuditRef: string;
+  mutationReadinessAuditRef: string;
+  summary: {
+    blockers: number;
+    reviewAuditBlockers: number;
+    actions: number;
+    packetPresent: boolean;
+    reviewAuditStatus: LiveAdapterApprovalReviewAudit["targets"][number]["status"];
+    mutationPlans: number;
+    readyMutationPlans: number;
+    gbrainReports: number;
+  };
+  readiness: LiveAdapterReadinessReport["targets"][number];
+  nextActions: LiveAdapterNextActionsReport["targets"][number]["actions"];
+  approvalPacket?: LiveAdapterApprovalPack["packets"][number];
+  approvalReviewAudit?: LiveAdapterApprovalReviewAudit["targets"][number];
+  mutationReadinessChecks: MutationReadinessAudit["checks"];
+  operatorChecklist: string[];
+  gbrainContext: {
+    exportRef?: string;
+    reportRefs: string[];
+    suggestedQueries: string[];
+  };
+  evidenceRefs: string[];
+}
+
 export interface InfraRegistry {
   schemaVersion: 1;
   project: string;
@@ -1146,6 +1181,7 @@ export interface ConsoleData {
     acceptedLiveAdapterApprovalReviews?: number;
     liveAdapterApprovalReviewAuditStatus?: LiveAdapterApprovalReviewAudit["status"];
     currentLiveAdapterApprovalReviews?: number;
+    liveAdapterTargetDossiers?: number;
     recoveryIssues: number;
     consoleBrowserChecks?: ConsoleBrowserCheckReport["status"];
     readinessStatus?: ControlReport["status"];
@@ -1211,6 +1247,7 @@ export interface ConsoleData {
   liveAdapterApprovalPack?: LiveAdapterApprovalPack;
   liveAdapterApprovalReviews?: LiveAdapterApprovalReview[];
   liveAdapterApprovalReviewAudit?: LiveAdapterApprovalReviewAudit;
+  liveAdapterTargetDossiers: LiveAdapterTargetDossier[];
   recovery?: RecoveryReport;
   readiness?: ControlReport;
   artifacts: {
@@ -1239,6 +1276,7 @@ export interface ConsoleData {
     liveAdapterApprovalPack?: string;
     liveAdapterApprovalReviews?: string;
     liveAdapterApprovalReviewAudit?: string;
+    liveAdapterTargetDossiers?: string;
     recoveryReport?: string;
     extractionResults?: string;
     healerProposals?: string;
