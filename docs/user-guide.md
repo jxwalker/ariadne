@@ -423,7 +423,7 @@ npm run ariadne -- live-adapter-operator-evidence-workplan --project ariadne
 npm run ariadne -- live-adapter-operator-evidence-queue --project ariadne
 npm run ariadne -- live-adapter-operator-evidence-workspace --project ariadne
 npm run ariadne -- live-adapter-operator-evidence-assist --project ariadne
-npm run ariadne -- live-evidence-promote --project ariadne --target deployment --title "Sanitized deployment runtime evidence" --from "projects/ariadne/infrastructure/runtime/local-runtime-probe-...json,projects/ariadne/deployment/deployment-live-ssh-proxmox-beast-...json"
+npm run ariadne -- live-evidence-promote --project ariadne --target deployment --title "Sanitized deployment runtime evidence" --from "vault/projects/ariadne/infrastructure/runtime/local-runtime-probe-...json,vault/projects/ariadne/deployment/deployment-live-ssh-proxmox-beast-...json"
 npm run ariadne -- live-adapter-operator-evidence-check --project ariadne --target github --from vault/projects/ariadne/control/operator-evidence/github/operator-evidence.md
 npm run ariadne -- live-adapter-operator-evidence-check-all --project ariadne --source workspace
 npm run ariadne -- live-adapter-operator-evidence --project ariadne --target github --from vault/projects/ariadne/control/operator-evidence/github/operator-evidence.md --by james

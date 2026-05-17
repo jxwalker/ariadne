@@ -2205,6 +2205,39 @@ describe("roadmap adapters", () => {
     expect(promotionArtifactChecks.report.checks.find((check) => check.id === "live-evidence-promotions")?.status).toBe(
       "present"
     );
+    const falseJson = path.join(vaultRoot, "projects", "ariadne", "deployment", "false.json");
+    await fs.writeFile(falseJson, "false");
+    const promotedFalsyJson = await promoteLiveEvidence({
+      project: "ariadne",
+      vaultRoot,
+      target: "deployment",
+      title: "Falsy JSON root",
+      sourcePaths: [falseJson]
+    });
+    expect(promotedFalsyJson.promotion.sources[0]?.parsed).toBe(true);
+    expect(promotedFalsyJson.promotion.sources[0]?.kind).toBe("file-hash");
+    const outsideVault = path.join(temp, "outside.json");
+    await fs.writeFile(outsideVault, "{}");
+    await expect(
+      promoteLiveEvidence({
+        project: "ariadne",
+        vaultRoot,
+        target: "deployment",
+        title: "Outside vault",
+        sourcePaths: [outsideVault]
+      })
+    ).rejects.toThrow(/project vault/);
+    const oversizedSource = path.join(vaultRoot, "projects", "ariadne", "deployment", "oversized.txt");
+    await fs.writeFile(oversizedSource, "x".repeat(2 * 1024 * 1024 + 1));
+    await expect(
+      promoteLiveEvidence({
+        project: "ariadne",
+        vaultRoot,
+        target: "deployment",
+        title: "Oversized source",
+        sourcePaths: [oversizedSource]
+      })
+    ).rejects.toThrow(/too large/);
 
     const activity = await draftOpenScorpionActivity({
       project: "ariadne",

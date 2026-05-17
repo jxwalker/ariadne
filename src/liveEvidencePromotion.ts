@@ -7,6 +7,7 @@ import { projectDir, slugifyProject } from "./paths.js";
 import type { LiveEvidencePromotion } from "./types.js";
 
 type PromotionSource = LiveEvidencePromotion["sources"][number];
+const MAX_PROMOTION_SOURCE_BYTES = 2 * 1024 * 1024;
 
 export async function promoteLiveEvidence(input: {
   project: string;
@@ -64,23 +65,40 @@ export async function promoteLiveEvidence(input: {
 
 async function promoteSource(vaultRoot: string, project: string, sourcePath: string): Promise<PromotionSource> {
   const resolved = resolveSourcePath(vaultRoot, project, sourcePath);
-  const [content, stat, sourceSha256] = await Promise.all([
-    fs.readFile(resolved, "utf8"),
-    fs.stat(resolved),
-    sha256File(resolved)
-  ]);
+  const stat = await readSourceStat(resolved, sourcePath);
+  if (stat.size > MAX_PROMOTION_SOURCE_BYTES) {
+    throw new Error(`Source file is too large to promote safely: ${sourcePath} (${stat.size} bytes).`);
+  }
+  const [content, sourceSha256] = await Promise.all([readSourceText(resolved, sourcePath), sha256File(resolved)]);
   const parsed = parseJson(content);
-  const summary = parsed ? summarizeKnownArtifact(parsed) : undefined;
+  const didParse = parsed !== undefined;
+  const summary = didParse ? summarizeKnownArtifact(parsed) : undefined;
   const sanitized = summary ? sanitizeValue(summary) : undefined;
   return {
     sourceRef: sourceRef(vaultRoot, resolved),
     sourceSha256,
     sourceBytes: stat.size,
-    kind: parsed ? artifactKind(parsed) : "file-hash",
-    parsed: Boolean(parsed),
+    kind: didParse ? artifactKind(parsed) : "file-hash",
+    parsed: didParse,
     redactedValues: sanitized?.redactions ?? 0,
     summary: sanitized?.value
   };
+}
+
+async function readSourceStat(resolved: string, sourcePath: string): Promise<{ size: number }> {
+  try {
+    return await fs.stat(resolved);
+  } catch (error) {
+    throw new Error(`Source file not found or unreadable: ${sourcePath} (${(error as Error).message})`);
+  }
+}
+
+async function readSourceText(resolved: string, sourcePath: string): Promise<string> {
+  try {
+    return await fs.readFile(resolved, "utf8");
+  } catch (error) {
+    throw new Error(`Source file not found or unreadable: ${sourcePath} (${(error as Error).message})`);
+  }
 }
 
 function summarizeKnownArtifact(value: unknown): unknown {
@@ -205,7 +223,7 @@ function sanitizeString(value: string): { value: string; redactions: number } {
 
 function shouldRedactKey(key: string): boolean {
   const normalized = key.toLowerCase();
-  return normalized === "url" || normalized.endsWith("url") || normalized === "target" || normalized === "sourcepath";
+  return ["url", "baseurl", "endpointurl", "sourcepath", "sshtarget", "targethash", "hostnamehash"].includes(normalized);
 }
 
 function renderPromotion(promotion: LiveEvidencePromotion): string {
@@ -255,11 +273,18 @@ function renderPromotion(promotion: LiveEvidencePromotion): string {
 }
 
 function resolveSourcePath(vaultRoot: string, project: string, sourcePath: string): string {
+  const projectRoot = projectDir(vaultRoot, project);
   const resolved = path.isAbsolute(sourcePath)
     ? path.resolve(sourcePath)
     : sourcePath.startsWith("projects/")
       ? path.resolve(vaultRoot, sourcePath)
-      : path.resolve(projectDir(vaultRoot, project), sourcePath);
+      : sourcePath.startsWith(`vault${path.sep}`) || sourcePath.startsWith("vault/")
+        ? path.resolve(process.cwd(), sourcePath)
+        : path.resolve(projectRoot, sourcePath);
+  const relativeToProject = path.relative(path.resolve(projectRoot), resolved);
+  if (relativeToProject === "" || relativeToProject.startsWith("..") || path.isAbsolute(relativeToProject)) {
+    throw new Error(`Source path must resolve inside the project vault: ${sourcePath}`);
+  }
   return resolved;
 }
 
