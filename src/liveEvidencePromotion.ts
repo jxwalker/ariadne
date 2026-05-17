@@ -8,6 +8,7 @@ import type { LiveEvidencePromotion } from "./types.js";
 
 type PromotionSource = LiveEvidencePromotion["sources"][number];
 const MAX_PROMOTION_SOURCE_BYTES = 2 * 1024 * 1024;
+const MAX_PROMOTION_TITLE_CHARS = 160;
 
 export async function promoteLiveEvidence(input: {
   project: string;
@@ -19,6 +20,7 @@ export async function promoteLiveEvidence(input: {
 }): Promise<{ jsonPath: string; markdownPath: string; promotion: LiveEvidencePromotion }> {
   const project = slugifyProject(input.project);
   if (input.sourcePaths.length === 0) throw new Error("--from requires at least one source path.");
+  const title = validatePromotionTitle(input.title);
 
   const generatedAt = new Date();
   const sources: PromotionSource[] = [];
@@ -32,7 +34,7 @@ export async function promoteLiveEvidence(input: {
     project,
     generatedAt: generatedAt.toISOString(),
     target: input.target,
-    title: input.title,
+    title,
     status: "promoted_for_operator_review",
     mutationApproved: false,
     approvalGranted: false,
@@ -184,12 +186,21 @@ function sanitizeValue(value: unknown): { value: unknown; redactions: number } {
   if (value && typeof value === "object") {
     let redactions = 0;
     const output: Record<string, unknown> = {};
-    for (const [key, raw] of Object.entries(value)) {
+    for (const key of Object.keys(value)) {
+      if (!Object.prototype.hasOwnProperty.call(value, key)) continue;
       if (shouldRedactKey(key)) {
         output[key] = "<redacted>";
         redactions += 1;
         continue;
       }
+      const descriptor = Object.getOwnPropertyDescriptor(value, key);
+      if (!descriptor) continue;
+      if (!("value" in descriptor)) {
+        output[key] = "<redacted>";
+        redactions += 1;
+        continue;
+      }
+      const raw = descriptor.value;
       const sanitized = sanitizeValue(raw);
       output[key] = sanitized.value;
       redactions += sanitized.redactions;
@@ -230,11 +241,20 @@ function sanitizeString(value: string): { value: string; redactions: number } {
       redactions += 1;
       return "<redacted-private-key>";
     })
-    .replace(/\beyJ[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+\b/g, () => {
+    .replace(/\beyJ[A-Za-z0-9_-]{8,}\.[A-Za-z0-9_-]{8,}\.[A-Za-z0-9_-]{8,}\b/g, () => {
       redactions += 1;
       return "<redacted-jwt>";
     });
   return { value: sanitized, redactions };
+}
+
+function validatePromotionTitle(title: string): string {
+  const normalized = title.trim();
+  if (!normalized) throw new Error("--title must not be empty.");
+  if (normalized.length > MAX_PROMOTION_TITLE_CHARS) {
+    throw new Error(`--title must be ${MAX_PROMOTION_TITLE_CHARS} characters or fewer.`);
+  }
+  return normalized;
 }
 
 function shouldRedactKey(key: string): boolean {

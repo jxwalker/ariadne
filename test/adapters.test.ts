@@ -2232,15 +2232,34 @@ describe("roadmap adapters", () => {
       project: "ariadne",
       vaultRoot,
       target: "deployment",
-      title: "Generic summary",
+      title: "  Generic summary  ",
       sourcePaths: [genericSummary]
     });
+    expect(promotedGenericSummary.promotion.title).toBe("Generic summary");
     expect(promotedGenericSummary.promotion.sources[0]?.kind).toBe("json-summary");
     const genericPromotionJson = JSON.stringify(promotedGenericSummary.promotion);
     expect(genericPromotionJson).toContain("safe model evidence");
     expect(genericPromotionJson).not.toContain("127.0.0.1");
     expect(genericPromotionJson).not.toContain("localhost");
     expect(genericPromotionJson).not.toContain("eyJhbGciOiJIUzI1NiJ9");
+    await expect(
+      promoteLiveEvidence({
+        project: "ariadne",
+        vaultRoot,
+        target: "deployment",
+        title: "   ",
+        sourcePaths: [genericSummary]
+      })
+    ).rejects.toThrow(/title/);
+    await expect(
+      promoteLiveEvidence({
+        project: "ariadne",
+        vaultRoot,
+        target: "deployment",
+        title: "x".repeat(161),
+        sourcePaths: [genericSummary]
+      })
+    ).rejects.toThrow(/160 characters/);
     const outsideVault = path.join(temp, "outside.json");
     await fs.writeFile(outsideVault, "{}");
     await expect(

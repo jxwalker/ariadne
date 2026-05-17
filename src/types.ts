@@ -357,12 +357,15 @@ export interface OpenScorpionActivityDraft {
   submit: false;
 }
 
+export type LiveAdapterEvidenceTarget = "github" | "deployment" | "hermes-cron" | "openscorpion" | "gsd2" | "notebooklm";
+export type MutationReadinessTarget = LiveAdapterEvidenceTarget | "generic";
+
 export interface MutationReadinessPlan {
   schemaVersion: 1;
   id: string;
   project: string;
   generatedAt: string;
-  target: "github" | "deployment" | "hermes-cron" | "openscorpion" | "gsd2" | "notebooklm" | "generic";
+  target: MutationReadinessTarget;
   status: "approval_required" | "approval_rejected" | "ready_for_bounded_review";
   risk: "low" | "medium" | "high";
   scope: string;
@@ -1035,7 +1038,7 @@ export interface LiveEvidencePromotion {
   id: string;
   project: string;
   generatedAt: string;
-  target: Exclude<MutationReadinessPlan["target"], "generic">;
+  target: LiveAdapterEvidenceTarget;
   title: string;
   status: "promoted_for_operator_review";
   mutationApproved: false;
