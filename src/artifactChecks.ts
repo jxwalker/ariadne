@@ -334,6 +334,13 @@ const ARTIFACT_SPECS: ArtifactSpec[] = [
     relativePath: "control/live-adapter-operator-evidence-check-all.json"
   },
   {
+    id: "live-adapter-operator-evidence-import-ready",
+    label: "Live adapter operator evidence ready import batch",
+    required: false,
+    kind: "file",
+    relativePath: "control/live-adapter-operator-evidence-import-ready.json"
+  },
+  {
     id: "live-adapter-operator-evidence",
     label: "Live adapter operator evidence records",
     required: false,
@@ -370,6 +377,13 @@ const ARTIFACT_SPECS: ArtifactSpec[] = [
     required: false,
     kind: "file",
     relativePath: "control/live-adapter-operator-evidence-workspace.json"
+  },
+  {
+    id: "live-adapter-operator-evidence-assist",
+    label: "Live adapter operator evidence assist packet",
+    required: false,
+    kind: "file",
+    relativePath: "control/live-adapter-operator-evidence-assist.json"
   },
   {
     id: "live-adapter-operator-evidence-workspace-files",

@@ -136,6 +136,7 @@ Implemented:
 - live adapter operator-evidence queue that ranks targets by latest preflight and import state without granting approval
 - live adapter operator-evidence ready-import batches that import only complete preflighted evidence files without granting approval
 - live adapter operator-evidence workspaces that generate fillable per-target evidence files and supporting notes without granting approval
+- live adapter operator-evidence assist packets that gather existing read-only support refs beside the workspace without creating operator evidence
 - live adapter operator-evidence import and audit that hashes filled evidence files, identifies missing operator proof, and surfaces per-target blockers without granting mutation approval
 
 Next:

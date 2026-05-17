@@ -58,6 +58,7 @@ import {
   checkAllLiveAdapterOperatorEvidence,
   liveAdapterOperatorEvidenceCheckAllSourceOption
 } from "./liveAdapterOperatorEvidenceCheckAll.js";
+import { generateLiveAdapterOperatorEvidenceAssist } from "./liveAdapterOperatorEvidenceAssist.js";
 import { importReadyLiveAdapterOperatorEvidence } from "./liveAdapterOperatorEvidenceImportReady.js";
 import { generateLiveAdapterOperatorEvidenceWorkplan } from "./liveAdapterOperatorEvidenceWorkplan.js";
 import { generateLiveAdapterOperatorEvidenceQueue } from "./liveAdapterOperatorEvidenceQueue.js";
@@ -198,6 +199,7 @@ function usage(): string {
     "  ariadne live-adapter-evidence-templates --project <project>",
     "  ariadne live-adapter-operator-evidence-check --project <project> --target <github|deployment|hermes-cron|openscorpion|gsd2|notebooklm> --from <operator-evidence.md> [--notes <text>]",
     "  ariadne live-adapter-operator-evidence-check-all --project <project> [--source auto|workspace|templates] [--notes <text>]",
+    "  ariadne live-adapter-operator-evidence-assist --project <project>",
     "  ariadne live-adapter-operator-evidence-import-ready --project <project> --by <operator> [--notes <text>]",
     "  ariadne live-adapter-operator-evidence --project <project> --target <github|deployment|hermes-cron|openscorpion|gsd2|notebooklm> --from <operator-evidence.md> --by <operator> [--notes <text>]",
     "  ariadne live-adapter-operator-evidence-audit --project <project>",
@@ -1277,6 +1279,17 @@ async function main(): Promise<void> {
     console.log(`Incomplete checks: ${result.batch.summary.incompleteChecks}`);
     console.log(`Missing sources: ${result.batch.summary.missingSources}`);
     console.log(`Mutation approved: ${result.batch.mutationApproved}`);
+    return;
+  }
+
+  if (parsed.command === "live-adapter-operator-evidence-assist") {
+    const result = await generateLiveAdapterOperatorEvidenceAssist({ project, vaultRoot });
+    console.log(`Live adapter operator evidence assist: ${result.markdownPath}`);
+    console.log(`Status: ${result.assist.status}`);
+    console.log(`Targets: ${result.assist.summary.targets}`);
+    console.log(`Assist files: ${result.assist.summary.assistFiles}`);
+    console.log(`Existing evidence refs: ${result.assist.summary.existingEvidenceRefs}`);
+    console.log(`Mutation approved: ${result.assist.mutationApproved}`);
     return;
   }
 

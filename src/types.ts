@@ -908,6 +908,44 @@ export interface LiveAdapterOperatorEvidenceWorkspace {
   }>;
 }
 
+export interface LiveAdapterOperatorEvidenceAssist {
+  schemaVersion: 1;
+  project: string;
+  generatedAt: string;
+  status: "awaiting_operator_review" | "no_targets";
+  mutationApproved: false;
+  approvalGranted: false;
+  operatorEvidenceRecordCreated: false;
+  workspaceRef: string;
+  queueRef: string;
+  workplanRef: string;
+  summary: {
+    targets: number;
+    assistFiles: number;
+    existingEvidenceRefs: number;
+    supportFileRefs: number;
+    missingSections: number;
+    cutoverBlockers: number;
+    gbrainQueries: number;
+  };
+  targets: Array<{
+    target: Exclude<MutationReadinessPlan["target"], "generic">;
+    status: LiveAdapterOperatorEvidenceQueue["targets"][number]["status"];
+    assistFileRef: string;
+    workspaceDirRef: string;
+    evidenceFileRef: string;
+    checkCommand: string;
+    importCommand: string;
+    existingEvidenceRefs: string[];
+    supportFileRefs: string[];
+    missingSections: string[];
+    requiredEvidence: string[];
+    cutoverBlockers: string[];
+    gbrainQueries: string[];
+    nextSteps: string[];
+  }>;
+}
+
 export interface LiveAdapterOperatorEvidenceRecord {
   schemaVersion: 1;
   id: string;
