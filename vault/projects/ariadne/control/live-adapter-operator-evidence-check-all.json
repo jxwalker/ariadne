@@ -1,0 +1,75 @@
+{
+  "schemaVersion": 1,
+  "project": "ariadne",
+  "checkedAt": "2026-05-17T07:32:10.564Z",
+  "status": "incomplete",
+  "mutationApproved": false,
+  "approvalGranted": false,
+  "templatePackRef": "projects/ariadne/control/live-adapter-evidence-templates.json",
+  "queueRef": "projects/ariadne/control/live-adapter-operator-evidence-queue.json",
+  "summary": {
+    "targets": 6,
+    "checks": 6,
+    "completeChecks": 0,
+    "incompleteChecks": 6,
+    "failedChecks": 0,
+    "missingTemplates": 0,
+    "missingSections": 54
+  },
+  "targets": [
+    {
+      "target": "github",
+      "status": "incomplete",
+      "templateRef": "projects/ariadne/control/live-adapter-evidence-templates/live-adapter-evidence-template-github.md",
+      "checkRef": "projects/ariadne/control/live-adapter-operator-evidence-checks/operator-evidence-check-github-2026-05-17T07-32-10-440Z.json",
+      "checkMarkdownRef": "projects/ariadne/control/live-adapter-operator-evidence-checks/operator-evidence-check-github-2026-05-17T07-32-10-440Z.md",
+      "missingSections": 9,
+      "sourceRef": "projects/ariadne/control/live-adapter-evidence-templates/live-adapter-evidence-template-github.md"
+    },
+    {
+      "target": "deployment",
+      "status": "incomplete",
+      "templateRef": "projects/ariadne/control/live-adapter-evidence-templates/live-adapter-evidence-template-deployment.md",
+      "checkRef": "projects/ariadne/control/live-adapter-operator-evidence-checks/operator-evidence-check-deployment-2026-05-17T07-32-10-447Z.json",
+      "checkMarkdownRef": "projects/ariadne/control/live-adapter-operator-evidence-checks/operator-evidence-check-deployment-2026-05-17T07-32-10-447Z.md",
+      "missingSections": 9,
+      "sourceRef": "projects/ariadne/control/live-adapter-evidence-templates/live-adapter-evidence-template-deployment.md"
+    },
+    {
+      "target": "hermes-cron",
+      "status": "incomplete",
+      "templateRef": "projects/ariadne/control/live-adapter-evidence-templates/live-adapter-evidence-template-hermes-cron.md",
+      "checkRef": "projects/ariadne/control/live-adapter-operator-evidence-checks/operator-evidence-check-hermes-cron-2026-05-17T07-32-10-448Z.json",
+      "checkMarkdownRef": "projects/ariadne/control/live-adapter-operator-evidence-checks/operator-evidence-check-hermes-cron-2026-05-17T07-32-10-448Z.md",
+      "missingSections": 9,
+      "sourceRef": "projects/ariadne/control/live-adapter-evidence-templates/live-adapter-evidence-template-hermes-cron.md"
+    },
+    {
+      "target": "openscorpion",
+      "status": "incomplete",
+      "templateRef": "projects/ariadne/control/live-adapter-evidence-templates/live-adapter-evidence-template-openscorpion.md",
+      "checkRef": "projects/ariadne/control/live-adapter-operator-evidence-checks/operator-evidence-check-openscorpion-2026-05-17T07-32-10-449Z.json",
+      "checkMarkdownRef": "projects/ariadne/control/live-adapter-operator-evidence-checks/operator-evidence-check-openscorpion-2026-05-17T07-32-10-449Z.md",
+      "missingSections": 9,
+      "sourceRef": "projects/ariadne/control/live-adapter-evidence-templates/live-adapter-evidence-template-openscorpion.md"
+    },
+    {
+      "target": "gsd2",
+      "status": "incomplete",
+      "templateRef": "projects/ariadne/control/live-adapter-evidence-templates/live-adapter-evidence-template-gsd2.md",
+      "checkRef": "projects/ariadne/control/live-adapter-operator-evidence-checks/operator-evidence-check-gsd2-2026-05-17T07-32-10-450Z.json",
+      "checkMarkdownRef": "projects/ariadne/control/live-adapter-operator-evidence-checks/operator-evidence-check-gsd2-2026-05-17T07-32-10-450Z.md",
+      "missingSections": 9,
+      "sourceRef": "projects/ariadne/control/live-adapter-evidence-templates/live-adapter-evidence-template-gsd2.md"
+    },
+    {
+      "target": "notebooklm",
+      "status": "incomplete",
+      "templateRef": "projects/ariadne/control/live-adapter-evidence-templates/live-adapter-evidence-template-notebooklm.md",
+      "checkRef": "projects/ariadne/control/live-adapter-operator-evidence-checks/operator-evidence-check-notebooklm-2026-05-17T07-32-10-451Z.json",
+      "checkMarkdownRef": "projects/ariadne/control/live-adapter-operator-evidence-checks/operator-evidence-check-notebooklm-2026-05-17T07-32-10-451Z.md",
+      "missingSections": 9,
+      "sourceRef": "projects/ariadne/control/live-adapter-evidence-templates/live-adapter-evidence-template-notebooklm.md"
+    }
+  ]
+}

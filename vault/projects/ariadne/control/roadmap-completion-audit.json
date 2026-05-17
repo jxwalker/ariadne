@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "project": "ariadne",
-  "generatedAt": "2026-05-17T06:56:33.818Z",
+  "generatedAt": "2026-05-17T07:32:26.190Z",
   "status": "blocked",
   "summary": {
     "requirements": 9,
@@ -14,7 +14,7 @@
       "id": "core-artifact-contracts",
       "title": "Core pipeline artifacts are present",
       "status": "passed",
-      "detail": "44 artifacts present; 0 required missing.",
+      "detail": "46 artifacts present; 0 required missing.",
       "evidenceRefs": [
         "projects/ariadne/evaluation/artifact-checks.json"
       ],
@@ -80,7 +80,7 @@
       "id": "operator-evidence",
       "title": "All live-adapter targets have complete operator evidence",
       "status": "blocked",
-      "detail": "0/6 targets complete; 6 missing evidence. Workplan status is evidence_required with 6 check command(s) and 6 import command(s). Queue status is evidence_required with 0 target(s) ready for import and 5 unchecked target(s).",
+      "detail": "0/6 targets complete; 6 missing evidence. Workplan status is evidence_required with 6 check command(s) and 6 import command(s). Queue status is evidence_required with 0 target(s) ready for import and 0 unchecked target(s).",
       "evidenceRefs": [
         "projects/ariadne/control/live-adapter-operator-evidence-audit.json",
         "projects/ariadne/control/live-adapter-operator-evidence-workplan.json",

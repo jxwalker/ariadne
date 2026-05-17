@@ -230,6 +230,8 @@ Target-specific execute wrappers hard-code that guard for the live adapters: `gi
 
 `live-adapter-operator-evidence-check` preflights one filled operator evidence file without recording it as evidence. It hashes the source file, evaluates the same required sections as the importer, and writes `control/live-adapter-operator-evidence-checks/operator-evidence-check-<target>-<timestamp>.json` and `.md` with `recorded=false`, `operatorEvidenceRecordCreated=false`, `mutationApproved=false`, and `approvalGranted=false`. Use it before import when an operator wants a deterministic missing-section list without changing the authoritative evidence set.
 
+`live-adapter-operator-evidence-check-all` reads the current evidence-template pack, runs the same preflight checker once for every live-adapter target, writes `control/live-adapter-operator-evidence-check-all.json` and `.md`, and refreshes the operator-evidence queue. It is useful before an operator work session because it turns unchecked targets into explicit missing-section counts without creating evidence records or approvals.
+
 `live-adapter-operator-evidence-queue` combines the operator-evidence audit, workplan, and latest preflight checks into one target queue. It writes `control/live-adapter-operator-evidence-queue.json` and `.md`, classifying each target as `unchecked`, `needs_evidence`, `ready_for_import`, `needs_rework`, or `complete`. It is an operator aid only and keeps `mutationApproved=false`.
 
 `live-adapter-operator-evidence` imports a filled operator evidence file for one target. It hashes the source file, checks whether the operator identity, packet review, auth boundary, bounded action, rollback, post-verification, dry-run, target-wrapper, and exact `--confirm-plan` sections are present, and writes `control/live-adapter-operator-evidence/operator-evidence-<target>-<timestamp>.json` and `.md`. It also records whether GBrain notes are present, but GBrain remains advisory only. The record always writes `mutationApproved=false` and `approvalGranted=false`.
@@ -258,6 +260,7 @@ npm run ariadne -- live-adapter-review-session --project ariadne
 npm run ariadne -- live-adapter-evidence-templates --project ariadne
 npm run ariadne -- live-adapter-operator-evidence-workplan --project ariadne
 npm run ariadne -- live-adapter-operator-evidence-check --project ariadne --target github --from vault/projects/ariadne/control/live-adapter-evidence-templates/live-adapter-evidence-template-github.md
+npm run ariadne -- live-adapter-operator-evidence-check-all --project ariadne
 npm run ariadne -- live-adapter-operator-evidence-queue --project ariadne
 npm run ariadne -- live-adapter-operator-evidence --project ariadne --target github --from vault/projects/ariadne/control/live-adapter-evidence-templates/live-adapter-evidence-template-github.md --by james
 npm run ariadne -- live-adapter-operator-evidence-audit --project ariadne
@@ -298,6 +301,8 @@ Artifacts:
 - `control/live-adapter-operator-evidence-workplan.md`
 - `control/live-adapter-operator-evidence-checks/operator-evidence-check-<target>-<timestamp>.json`
 - `control/live-adapter-operator-evidence-checks/operator-evidence-check-<target>-<timestamp>.md`
+- `control/live-adapter-operator-evidence-check-all.json`
+- `control/live-adapter-operator-evidence-check-all.md`
 - `control/live-adapter-operator-evidence-queue.json`
 - `control/live-adapter-operator-evidence-queue.md`
 - `control/live-adapter-operator-evidence/operator-evidence-<target>-<timestamp>.json`

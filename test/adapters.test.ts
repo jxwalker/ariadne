@@ -41,6 +41,7 @@ import {
   generateLiveAdapterOperatorEvidenceAudit,
   recordLiveAdapterOperatorEvidence
 } from "../src/liveAdapterOperatorEvidence.js";
+import { checkAllLiveAdapterOperatorEvidence } from "../src/liveAdapterOperatorEvidenceCheckAll.js";
 import { generateLiveAdapterOperatorEvidenceWorkplan } from "../src/liveAdapterOperatorEvidenceWorkplan.js";
 import { generateLiveAdapterOperatorEvidenceQueue } from "../src/liveAdapterOperatorEvidenceQueue.js";
 import { generateLiveAdapterNextActions } from "../src/liveAdapterNextActions.js";
@@ -1027,6 +1028,20 @@ describe("roadmap adapters", () => {
     expect(deploymentTemplate?.templateRef).toContain("live-adapter-evidence-template-deployment.md");
     expect(deploymentTemplate?.requiredEvidence).toContain("rollback or disable path checked by the operator");
     expect(deploymentTemplate?.notes.some((note) => note.includes("not approval evidence"))).toBe(true);
+    const batchPreflight = await checkAllLiveAdapterOperatorEvidence({
+      project: "ariadne",
+      vaultRoot,
+      notes: "Batch preflight only"
+    });
+    expect(batchPreflight.batch.status).toBe("incomplete");
+    expect(batchPreflight.batch.mutationApproved).toBe(false);
+    expect(batchPreflight.batch.approvalGranted).toBe(false);
+    expect(batchPreflight.batch.summary.targets).toBe(6);
+    expect(batchPreflight.batch.summary.checks).toBe(6);
+    expect(batchPreflight.batch.summary.incompleteChecks).toBe(6);
+    expect(batchPreflight.batch.summary.failedChecks).toBe(0);
+    expect(batchPreflight.batch.summary.missingTemplates).toBe(0);
+    expect(batchPreflight.batch.queueRef).toBe("projects/ariadne/control/live-adapter-operator-evidence-queue.json");
     const completeEvidencePath = path.join(temp, "complete-operator-evidence.md");
     await fs.writeFile(
       completeEvidencePath,
@@ -1134,7 +1149,9 @@ describe("roadmap adapters", () => {
     expect(operatorEvidenceQueue.queue.mutationApproved).toBe(false);
     expect(operatorEvidenceQueue.queue.summary.readyForImport).toBe(1);
     expect(operatorEvidenceQueue.queue.summary.needsRework).toBe(1);
-    expect(operatorEvidenceQueue.queue.summary.uncheckedTargets).toBe(2);
+    expect(operatorEvidenceQueue.queue.summary.needsEvidence).toBe(2);
+    expect(operatorEvidenceQueue.queue.summary.uncheckedTargets).toBe(0);
+    expect(operatorEvidenceQueue.queue.summary.latestChecks).toBe(6);
     const notebookQueue = operatorEvidenceQueue.queue.targets.find((target) => target.target === "notebooklm");
     expect(notebookQueue?.status).toBe("ready_for_import");
     expect(notebookQueue?.latestCheckMissingSections).toBe(0);
@@ -1190,8 +1207,8 @@ describe("roadmap adapters", () => {
     expect(console.data.summary.liveAdapterOperatorEvidenceMissing).toBe(3);
     expect(console.data.summary.liveAdapterOperatorEvidenceQueueStatus).toBe("ready_for_import");
     expect(console.data.summary.liveAdapterOperatorEvidenceQueueReady).toBe(1);
-    expect(console.data.liveAdapterOperatorEvidenceQueue?.summary.uncheckedTargets).toBe(2);
-    expect(console.data.summary.liveAdapterOperatorEvidenceChecks).toBe(1);
+    expect(console.data.liveAdapterOperatorEvidenceQueue?.summary.uncheckedTargets).toBe(0);
+    expect(console.data.summary.liveAdapterOperatorEvidenceChecks).toBe(7);
     expect(console.data.liveAdapterOperatorEvidenceAudit?.mutationApproved).toBe(false);
     expect(console.data.liveAdapterOperatorEvidenceChecks[0]?.recorded).toBe(false);
     expect(console.data.liveAdapterOperatorEvidence.some((record) => record.target === "deployment")).toBe(true);
@@ -1243,6 +1260,9 @@ describe("roadmap adapters", () => {
     const operatorEvidencePreflightCheck = artifactChecks.report.checks.find(
       (check) => check.id === "live-adapter-operator-evidence-checks"
     );
+    const operatorEvidenceBatchCheck = artifactChecks.report.checks.find(
+      (check) => check.id === "live-adapter-operator-evidence-check-all"
+    );
     const operatorEvidenceQueueCheck = artifactChecks.report.checks.find(
       (check) => check.id === "live-adapter-operator-evidence-queue"
     );
@@ -1269,7 +1289,8 @@ describe("roadmap adapters", () => {
     expect(cutoverAuditCheck?.status).toBe("present");
     expect(reviewSessionCheck?.status).toBe("present");
     expect(evidenceTemplatesCheck?.status).toBe("present");
-    expect(operatorEvidencePreflightCheck?.count).toBe(1);
+    expect(operatorEvidencePreflightCheck?.count).toBe(7);
+    expect(operatorEvidenceBatchCheck?.status).toBe("present");
     expect(operatorEvidenceQueueCheck?.status).toBe("present");
     expect(operatorEvidenceCheck?.count).toBe(3);
     expect(operatorEvidenceAuditCheck?.status).toBe("present");

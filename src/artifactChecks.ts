@@ -317,6 +317,13 @@ const ARTIFACT_SPECS: ArtifactSpec[] = [
     minimumCount: 1
   },
   {
+    id: "live-adapter-operator-evidence-check-all",
+    label: "Live adapter operator evidence batch check",
+    required: false,
+    kind: "file",
+    relativePath: "control/live-adapter-operator-evidence-check-all.json"
+  },
+  {
     id: "live-adapter-operator-evidence",
     label: "Live adapter operator evidence records",
     required: false,

@@ -2,13 +2,13 @@
 
 Project: ariadne
 Status: passed
-Generated: 2026-05-17T06:56:33.814Z
+Generated: 2026-05-17T07:32:19.485Z
 
 ## Summary
 
 - Required checks: 13
-- Optional checks: 41
-- Present artifacts: 45
+- Optional checks: 42
+- Present artifacts: 46
 - Missing required artifacts: 0
 
 ## Checks
@@ -55,7 +55,8 @@ Generated: 2026-05-17T06:56:33.814Z
 | live-adapter-cutover-audit | no | present | - | projects/ariadne/control/live-adapter-cutover-audit.json |
 | live-adapter-review-session | no | present | - | projects/ariadne/control/live-adapter-review-session.json |
 | live-adapter-evidence-templates | no | present | - | projects/ariadne/control/live-adapter-evidence-templates.json |
-| live-adapter-operator-evidence-checks | no | present | 1 | projects/ariadne/control/live-adapter-operator-evidence-checks/operator-evidence-check-*.json |
+| live-adapter-operator-evidence-checks | no | present | 7 | projects/ariadne/control/live-adapter-operator-evidence-checks/operator-evidence-check-*.json |
+| live-adapter-operator-evidence-check-all | no | present | - | projects/ariadne/control/live-adapter-operator-evidence-check-all.json |
 | live-adapter-operator-evidence | no | missing | 0 | projects/ariadne/control/live-adapter-operator-evidence/operator-evidence-*.json |
 | live-adapter-operator-evidence-audit | no | present | - | projects/ariadne/control/live-adapter-operator-evidence-audit.json |
 | live-adapter-operator-evidence-workplan | no | present | - | projects/ariadne/control/live-adapter-operator-evidence-workplan.json |

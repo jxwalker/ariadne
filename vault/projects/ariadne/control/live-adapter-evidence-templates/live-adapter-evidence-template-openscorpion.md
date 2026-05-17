@@ -1,7 +1,7 @@
 # Live Adapter Operator Evidence Template: openscorpion
 
 Project: ariadne
-Generated: 2026-05-17T06:55:42.791Z
+Generated: 2026-05-17T07:32:10.547Z
 Status: awaiting_operator_evidence
 Mutation approved: false
 

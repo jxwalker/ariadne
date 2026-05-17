@@ -802,6 +802,36 @@ export interface LiveAdapterOperatorEvidenceQueue {
   }>;
 }
 
+export interface LiveAdapterOperatorEvidenceCheckBatch {
+  schemaVersion: 1;
+  project: string;
+  checkedAt: string;
+  status: "complete" | "incomplete";
+  mutationApproved: false;
+  approvalGranted: false;
+  templatePackRef: string;
+  queueRef: string;
+  summary: {
+    targets: number;
+    checks: number;
+    completeChecks: number;
+    incompleteChecks: number;
+    failedChecks: number;
+    missingTemplates: number;
+    missingSections: number;
+  };
+  targets: Array<{
+    target: Exclude<MutationReadinessPlan["target"], "generic">;
+    status: "complete" | "incomplete" | "missing_template" | "error";
+    templateRef?: string;
+    checkRef?: string;
+    checkMarkdownRef?: string;
+    missingSections: number;
+    sourceRef?: string;
+    errorDetail?: string;
+  }>;
+}
+
 export interface LiveAdapterOperatorEvidenceRecord {
   schemaVersion: 1;
   id: string;

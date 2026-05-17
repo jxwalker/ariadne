@@ -54,6 +54,7 @@ import {
   liveAdapterOperatorEvidenceTargetOption,
   recordLiveAdapterOperatorEvidence
 } from "./liveAdapterOperatorEvidence.js";
+import { checkAllLiveAdapterOperatorEvidence } from "./liveAdapterOperatorEvidenceCheckAll.js";
 import { generateLiveAdapterOperatorEvidenceWorkplan } from "./liveAdapterOperatorEvidenceWorkplan.js";
 import { generateLiveAdapterOperatorEvidenceQueue } from "./liveAdapterOperatorEvidenceQueue.js";
 import { generateLiveAdapterReadiness } from "./liveAdapterReadiness.js";
@@ -189,6 +190,7 @@ function usage(): string {
     "  ariadne live-adapter-review-session --project <project>",
     "  ariadne live-adapter-evidence-templates --project <project>",
     "  ariadne live-adapter-operator-evidence-check --project <project> --target <github|deployment|hermes-cron|openscorpion|gsd2|notebooklm> --from <filled-template.md> [--notes <text>]",
+    "  ariadne live-adapter-operator-evidence-check-all --project <project> [--notes <text>]",
     "  ariadne live-adapter-operator-evidence --project <project> --target <github|deployment|hermes-cron|openscorpion|gsd2|notebooklm> --from <filled-template.md> --by <operator> [--notes <text>]",
     "  ariadne live-adapter-operator-evidence-audit --project <project>",
     "  ariadne live-adapter-operator-evidence-workplan --project <project>",
@@ -1225,6 +1227,21 @@ async function main(): Promise<void> {
     console.log(`Missing sections: ${result.check.summary.missingSections}`);
     console.log(`Recorded: ${result.check.recorded}`);
     console.log(`Mutation approved: ${result.check.mutationApproved}`);
+    return;
+  }
+
+  if (parsed.command === "live-adapter-operator-evidence-check-all") {
+    const result = await checkAllLiveAdapterOperatorEvidence({
+      project,
+      vaultRoot,
+      notes: optionString(parsed.options, "notes", "") || undefined
+    });
+    console.log(`Live adapter operator evidence check all: ${result.markdownPath}`);
+    console.log(`Status: ${result.batch.status}`);
+    console.log(`Checks: ${result.batch.summary.checks}`);
+    console.log(`Incomplete checks: ${result.batch.summary.incompleteChecks}`);
+    console.log(`Missing templates: ${result.batch.summary.missingTemplates}`);
+    console.log(`Mutation approved: ${result.batch.mutationApproved}`);
     return;
   }
 
