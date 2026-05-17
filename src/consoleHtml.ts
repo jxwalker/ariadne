@@ -90,7 +90,7 @@ function renderConsole(data: ConsoleData): string {
           {
             time: data.mutationReadinessRepairPlan.generatedAt,
             label: `Mutation repair: ${data.mutationReadinessRepairPlan.status}`,
-            detail: `${data.mutationReadinessRepairPlan.summary.missingPlans} missing / ${data.mutationReadinessRepairPlan.summary.operatorActionRequired} operator action`
+            detail: `${data.mutationReadinessRepairPlan.summary.missingPlans} missing / ${data.mutationReadinessRepairPlan.summary.repairablePlans} repairable / ${data.mutationReadinessRepairPlan.summary.operatorActionRequired} operator action / ${data.mutationReadinessRepairPlan.summary.blocked} blocked`
           }
         ]
       : []),
@@ -233,7 +233,7 @@ function renderConsole(data: ConsoleData): string {
     metric(
       "Repair Plan",
       data.summary.mutationReadinessRepairStatus ?? "none",
-      `${data.summary.mutationReadinessRepairOperatorActionRequired ?? 0} operator`
+      `${data.summary.mutationReadinessRepairMissingPlans ?? 0} missing, ${data.summary.mutationReadinessRepairRepairablePlans ?? 0} repair, ${data.summary.mutationReadinessRepairOperatorActionRequired ?? 0} op, ${data.summary.mutationReadinessRepairBlocked ?? 0} blocked`
     ),
     metric("Live Adapters", data.summary.liveAdapterBlocked ?? "none", `${data.summary.liveAdapterReady ?? 0} ready`),
     metric("Adapter Actions", data.summary.liveAdapterActionItems ?? "none", "operator"),
@@ -579,10 +579,10 @@ function mutationReadinessRepairPlan(data: ConsoleData): string {
   return [
     `<div class="visual-status"><strong class="${statusClass(repairPlan.status)}">${escapeHtml(repairPlan.status)}</strong><span>${escapeHtml(`${repairPlan.summary.auditPassed} audit-passed / ${repairPlan.summary.missingPlans} missing / ${repairPlan.summary.repairablePlans} repairable / ${repairPlan.summary.operatorActionRequired} operator-action-required`)}</span></div>`,
     '<p class="metadata">Mutation readiness repair is read-only guidance; mutationAllowed=false and every command remains a scaffold until operator evidence fills the placeholders.</p>',
-    '<div class="table-wrap"><table><thead><tr><th>Target</th><th>Status</th><th>Latest Plan</th><th>Repairable</th><th>Operator</th><th>Regeneration Command</th></tr></thead><tbody>',
+    '<div class="table-wrap"><table><thead><tr><th>Target</th><th>Status</th><th>Latest Plan</th><th>Repairable</th><th>Operator</th><th>Remaining</th><th>Regeneration Command</th></tr></thead><tbody>',
     ...repairPlan.targets.map(
       (target) =>
-        `<tr><td>${escapeHtml(target.target)}</td><td class="${statusClass(target.status)}">${escapeHtml(target.status)}</td><td>${escapeHtml(target.latestPlanId ?? "none")}</td><td>${escapeHtml(target.repairableBlockers.length === 0 ? "none" : target.repairableBlockers.join("; "))}</td><td>${escapeHtml(target.operatorBlockers.length === 0 ? "none" : target.operatorBlockers.join("; "))}</td><td>${escapeHtml(target.regenerationCommand)}</td></tr>`
+        `<tr><td>${escapeHtml(target.target)}</td><td class="${statusClass(target.status)}">${escapeHtml(target.status)}</td><td>${escapeHtml(target.latestPlanId ?? "none")}</td><td>${escapeHtml(target.repairableBlockers.length === 0 ? "none" : target.repairableBlockers.join("; "))}</td><td>${escapeHtml(target.operatorBlockers.length === 0 ? "none" : target.operatorBlockers.join("; "))}</td><td>${escapeHtml(target.remainingBlockers.length === 0 ? "none" : target.remainingBlockers.join("; "))}</td><td>${escapeHtml(target.regenerationCommand)}</td></tr>`
     ),
     "</tbody></table></div>"
   ].join("");
