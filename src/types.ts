@@ -1584,6 +1584,11 @@ export interface ConsoleData {
     evaluations: number;
     benchmarkRuns: number;
     infraSnapshots: number;
+    localRuntimeProbes: number;
+    localRuntimeReachable?: number;
+    localRuntimeDegraded?: number;
+    localRuntimeUnreachable?: number;
+    localRuntimeModels?: number;
     gsd2ProcessSnapshots: number;
     sleepRoutines: number;
     memoryProposals: number;
@@ -1678,6 +1683,7 @@ export interface ConsoleData {
   infrastructure: {
     registry?: InfraRegistry;
     snapshots: InfraSnapshot[];
+    runtimeProbes: LocalRuntimeProbe[];
   };
   deployment: {
     snapshots: DeploymentSnapshot[];
@@ -1718,6 +1724,7 @@ export interface ConsoleData {
     evaluationTrends?: string;
     usageReport?: string;
     behaviorChecks?: string;
+    localRuntimeProbes?: string;
     gsd2ProcessSnapshots?: string;
     gbrainExport?: string;
     consoleVisualChecks?: string;

@@ -1694,6 +1694,10 @@ describe("roadmap adapters", () => {
     expect(console.data.sources[0]?.hygieneStatus).toBe("clean");
     expect(console.data.infrastructure.registry?.hosts.length).toBeGreaterThan(0);
     expect(console.data.infrastructure.snapshots.some((item) => item.snapshotKind === "live_read_only")).toBe(true);
+    expect(console.data.infrastructure.runtimeProbes).toHaveLength(1);
+    expect(console.data.summary.localRuntimeProbes).toBe(1);
+    expect(console.data.summary.localRuntimeModels).toBe(2);
+    expect(console.data.summary.localRuntimeReachable).toBeGreaterThan(0);
     expect(console.data.summary.githubSnapshots).toBe(1);
     expect(console.data.github.snapshots[0]?.summary.pendingChecks).toBe(1);
     expect(console.data.summary.recoveryIssues).toBe(recovery.report.issues.length);
@@ -1714,6 +1718,8 @@ describe("roadmap adapters", () => {
     expect(html).toContain("Visual Checks");
     expect(html).toContain("Recovery");
     expect(html).toContain("GitHub");
+    expect(html).toContain("Runtime");
+    expect(html).toContain("ds4-openai");
     expect(html).toContain("console-data");
     expect(html).not.toContain(temp);
     expect(visual.report.status).toBe("passed");

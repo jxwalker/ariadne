@@ -28,6 +28,7 @@ The system starts with source-grounded intake: drawings, white papers, dictated 
 - Import manual NotebookLM exports, CI status, CodeRabbit review text, read-only GitHub PR/check snapshots, read-only infrastructure snapshots, and Playwright evidence.
 - Collect a sanitized live read-only local host inventory snapshot.
 - Probe the local runtime surface for Hermes, Ollama, DS4/OpenAI-compatible endpoints, and LM Studio without starting or mutating services.
+- Surface local runtime probe evidence in the console so Hermes health, model endpoint status, canary status, and discovered model counts are visible beside infrastructure state.
 - Capture target-app screenshots and Playwright traces from a URL before recording the evidence.
 - Generate review-gated healer proposals from failed Playwright evidence without applying repairs automatically.
 - Import token and cost metrics from Hermes, CodeRabbit, OpenAI, CI, local LLM canaries, or manual JSON exports.

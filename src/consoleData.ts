@@ -32,6 +32,7 @@ import type {
   GsdRoadmap,
   InfraRegistry,
   InfraSnapshot,
+  LocalRuntimeProbe,
   LiveAdapterApprovalPack,
   LiveAdapterApprovalReview,
   LiveAdapterApprovalReviewAudit,
@@ -214,6 +215,10 @@ export async function collectConsoleData(vaultRoot: string, projectInput: string
   const evaluations = await readJsonFiles<EvaluationRun>(path.join(dir, "evaluation"), isEvaluationRun);
   const benchmarkRuns = await readJsonFiles<BenchmarkRun>(path.join(dir, "evaluation"), isBenchmarkRun);
   const infraSnapshots = await readJsonFiles<InfraSnapshot>(path.join(dir, "infrastructure"), isInfraSnapshot);
+  const localRuntimeProbes = await readJsonFiles<LocalRuntimeProbe>(
+    path.join(dir, "infrastructure", "runtime"),
+    isLocalRuntimeProbe
+  );
   const gsd2ProcessSnapshots = await readJsonFiles<Gsd2ProcessSnapshot>(path.join(dir, "gsd", "process"), isGsd2ProcessSnapshot);
   const gbrainReports = await readJsonFiles<GbrainReportImport>(path.join(dir, "integrations", "gbrain"), isGbrainReport);
   const githubSnapshots = await readJsonFiles<GithubSnapshot>(path.join(dir, "integrations", "github"), isGithubSnapshot);
@@ -253,6 +258,7 @@ export async function collectConsoleData(vaultRoot: string, projectInput: string
         milestoneTitle: milestone.title
       }))
     ) ?? [];
+  const latestRuntimeProbe = latestLocalRuntimeProbe(localRuntimeProbes);
 
   const data: ConsoleData = {
     schemaVersion: 1,
@@ -271,6 +277,11 @@ export async function collectConsoleData(vaultRoot: string, projectInput: string
       evaluations: evaluations.length,
       benchmarkRuns: benchmarkRuns.length,
       infraSnapshots: infraSnapshots.length,
+      localRuntimeProbes: localRuntimeProbes.length,
+      localRuntimeReachable: latestRuntimeProbe?.summary.reachable,
+      localRuntimeDegraded: latestRuntimeProbe?.summary.degraded,
+      localRuntimeUnreachable: latestRuntimeProbe?.summary.unreachable,
+      localRuntimeModels: latestRuntimeProbe?.summary.models,
       gsd2ProcessSnapshots: gsd2ProcessSnapshots.length,
       sleepRoutines: sleepRoutines.length,
       memoryProposals: memoryProposals.length,
@@ -374,7 +385,8 @@ export async function collectConsoleData(vaultRoot: string, projectInput: string
     },
     infrastructure: {
       registry,
-      snapshots: infraSnapshots
+      snapshots: infraSnapshots,
+      runtimeProbes: localRuntimeProbes
     },
     deployment: {
       snapshots: deploymentSnapshots
@@ -395,6 +407,7 @@ export async function collectConsoleData(vaultRoot: string, projectInput: string
       evaluationTrends: await existingPath(vaultRoot, path.join(dir, "evaluation", "evaluation-trends.json")),
       usageReport: await existingPath(vaultRoot, path.join(dir, "evaluation", "usage-report.json")),
       behaviorChecks: await existingPath(vaultRoot, path.join(dir, "evaluation", "behavior-checks.json")),
+      localRuntimeProbes: await existingPath(vaultRoot, path.join(dir, "infrastructure", "runtime")),
       gsd2ProcessSnapshots: await existingPath(vaultRoot, path.join(dir, "gsd", "process")),
       gbrainExport: await existingPath(vaultRoot, path.join(dir, "integrations", "gbrain", "gbrain-export.json")),
       consoleVisualChecks: await existingPath(vaultRoot, path.join(dir, "console", "visual-checks.json")),
@@ -600,6 +613,27 @@ function isBenchmarkRun(value: unknown): value is BenchmarkRun {
 
 function isInfraSnapshot(value: unknown): value is InfraSnapshot {
   return hasSchema(value) && value.schemaVersion === 1 && "snapshotKind" in value && "summary" in value;
+}
+
+function isLocalRuntimeProbe(value: unknown): value is LocalRuntimeProbe {
+  if (!hasSchema(value)) return false;
+  const summary = value.summary;
+  const modelEndpoints = value.modelEndpoints;
+  return (
+    value.schemaVersion === 1 &&
+    (value.mode === "read_only" || value.mode === "read_only_with_canary") &&
+    typeof value.generatedAt === "string" &&
+    hasSchema(summary) &&
+    typeof summary.reachable === "number" &&
+    typeof summary.degraded === "number" &&
+    typeof summary.unreachable === "number" &&
+    typeof summary.models === "number" &&
+    Array.isArray(modelEndpoints)
+  );
+}
+
+function latestLocalRuntimeProbe(probes: LocalRuntimeProbe[]): LocalRuntimeProbe | undefined {
+  return [...probes].sort((left, right) => left.generatedAt.localeCompare(right.generatedAt)).at(-1);
 }
 
 function isGsd2ProcessSnapshot(value: unknown): value is Gsd2ProcessSnapshot {
