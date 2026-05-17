@@ -38,6 +38,8 @@ import type {
   LiveAdapterCutoverAudit,
   LiveAdapterEvidenceTemplatePack,
   LiveAdapterNextActionsReport,
+  LiveAdapterOperatorEvidenceAudit,
+  LiveAdapterOperatorEvidenceRecord,
   LiveAdapterReadinessReport,
   LiveAdapterReviewSession,
   LiveAdapterTargetDossier,
@@ -142,6 +144,16 @@ export async function collectConsoleData(vaultRoot: string, projectInput: string
     project,
     "control",
     "live-adapter-evidence-templates.json"
+  );
+  const liveAdapterOperatorEvidenceAudit = await readProjectJson<LiveAdapterOperatorEvidenceAudit>(
+    vaultRoot,
+    project,
+    "control",
+    "live-adapter-operator-evidence-audit.json"
+  );
+  const liveAdapterOperatorEvidence = await readJsonFiles<LiveAdapterOperatorEvidenceRecord>(
+    path.join(dir, "control", "live-adapter-operator-evidence"),
+    isLiveAdapterOperatorEvidence
   );
   const recovery = await readProjectJson<RecoveryReport>(vaultRoot, project, "control", "recovery-report.json");
   const gbrainExport = await readProjectJson<GbrainExportBundle>(vaultRoot, project, "integrations/gbrain", "gbrain-export.json");
@@ -267,6 +279,11 @@ export async function collectConsoleData(vaultRoot: string, projectInput: string
       liveAdapterReviewSessionRequired: liveAdapterReviewSession?.summary.operatorReviewRequired,
       liveAdapterEvidenceTemplates: liveAdapterEvidenceTemplatePack?.summary.templates,
       liveAdapterEvidenceTemplateStatus: liveAdapterEvidenceTemplatePack?.status,
+      liveAdapterOperatorEvidenceRecords: liveAdapterOperatorEvidence.length,
+      liveAdapterOperatorEvidenceStatus: liveAdapterOperatorEvidenceAudit?.status,
+      liveAdapterOperatorEvidenceComplete: liveAdapterOperatorEvidenceAudit?.summary.completeTargets,
+      liveAdapterOperatorEvidenceIncomplete: liveAdapterOperatorEvidenceAudit?.summary.incompleteTargets,
+      liveAdapterOperatorEvidenceMissing: liveAdapterOperatorEvidenceAudit?.summary.missingTargets,
       recoveryIssues: recovery?.issues.length ?? 0,
       consoleBrowserChecks: consoleBrowserChecks?.status,
       readinessStatus: readiness?.status,
@@ -294,6 +311,8 @@ export async function collectConsoleData(vaultRoot: string, projectInput: string
     liveAdapterCutoverAudit,
     liveAdapterReviewSession,
     liveAdapterEvidenceTemplatePack,
+    liveAdapterOperatorEvidence,
+    liveAdapterOperatorEvidenceAudit,
     decisions,
     playwrightEvidence,
     healerProposals,
@@ -360,6 +379,11 @@ export async function collectConsoleData(vaultRoot: string, projectInput: string
       liveAdapterEvidenceTemplates: await existingPath(
         vaultRoot,
         path.join(dir, "control", "live-adapter-evidence-templates.json")
+      ),
+      liveAdapterOperatorEvidence: await existingPath(vaultRoot, path.join(dir, "control", "live-adapter-operator-evidence")),
+      liveAdapterOperatorEvidenceAudit: await existingPath(
+        vaultRoot,
+        path.join(dir, "control", "live-adapter-operator-evidence-audit.json")
       ),
       recoveryReport: await existingPath(vaultRoot, path.join(dir, "control", "recovery-report.json")),
       extractionResults: await existingPath(vaultRoot, path.join(dir, "extractions")),
@@ -573,6 +597,19 @@ function isLiveAdapterTargetDossier(value: unknown): value is LiveAdapterTargetD
       value.status === "blocked") &&
     hasSchema(value.summary) &&
     typeof value.summary.actions === "number"
+  );
+}
+
+function isLiveAdapterOperatorEvidence(value: unknown): value is LiveAdapterOperatorEvidenceRecord {
+  return (
+    hasSchema(value) &&
+    value.schemaVersion === 1 &&
+    typeof value.id === "string" &&
+    value.id.startsWith("operator-evidence-") &&
+    isNonGenericMutationTarget(value.target) &&
+    (value.status === "complete" || value.status === "incomplete") &&
+    value.mutationApproved === false &&
+    value.approvalGranted === false
   );
 }
 

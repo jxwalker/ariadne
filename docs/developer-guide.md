@@ -80,6 +80,7 @@ Do not add `npm run cli`, `src/cli.ts`, or docs that describe the main runner as
 - `src/liveAdapterCutoverAudit.ts`: final non-mutating cutover audit before placeholder commands can be replaced by target adapters.
 - `src/liveAdapterReviewSession.ts`: non-mutating operator review-session packet across all target dossiers, cutover blockers, commands, and advisory GBrain queries.
 - `src/liveAdapterEvidenceTemplates.ts`: blank operator evidence templates for packet review, auth-boundary, rollback, dry-run, target execution, and GBrain notes.
+- `src/liveAdapterOperatorEvidence.ts`: filled operator-evidence import plus aggregate audit; records missing sections without granting approval or mutation authority.
 - `src/notebookLmMutation.ts`: target-specific NotebookLM mutation-readiness plan generation for notebook actions.
 - `src/openScorpionMutation.ts`: target-specific OpenScorpion mutation-readiness plan generation for activity routes.
 - `src/types.ts`: shared record contracts.

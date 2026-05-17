@@ -99,6 +99,8 @@ The audit is a non-mutating evaluator. It checks approval state, evidence refs, 
 
 `live-adapter-evidence-templates` turns that review workload into blank per-target collection files. It improves evaluation by making missing proof explicit without letting placeholders pass gates: templates are marked `awaiting_operator_evidence` and are not counted as approval evidence until a human fills them with concrete observations and artifact refs.
 
+`live-adapter-operator-evidence` and `live-adapter-operator-evidence-audit` evaluate those filled operator files. The importer hashes the source, checks required evidence sections, keeps GBrain notes advisory, and writes `mutationApproved=false` plus `approvalGranted=false`. The audit reports complete, incomplete, and missing targets so the console can show evidence blockers before any live-adapter implementation work proceeds.
+
 `hermes-cron-import` writes read-only scheduler evidence:
 
 ```text

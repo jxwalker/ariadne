@@ -20,6 +20,7 @@ The first visualisation should be an operations surface over evidence, not a cha
 - Live adapter cutover audit: final per-target gate state before placeholder commands can be replaced with real adapters.
 - Live adapter review session: consolidated target dossiers, first actions, review commands, cutover blockers, and advisory GBrain queries without approving mutation.
 - Live adapter evidence templates: blank per-target operator files for collecting review, auth, rollback, dry-run, execution, and GBrain notes without creating proof automatically.
+- Live adapter operator evidence: imported filled operator files and aggregate missing-evidence audit, still non-approving and non-mutating.
 - Verification: typecheck, tests, build, Playwright evidence, CI, CodeRabbit, GitHub PR/check snapshots.
 - Decisions: accepted decisions and source references.
 - Infrastructure: hosts, runner pools, model endpoints, snapshots.

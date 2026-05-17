@@ -2,9 +2,9 @@
 
 Project: ariadne
 Status: passed
-Generated: 2026-05-17T02:57:46.863Z
+Generated: 2026-05-17T03:17:04.530Z
 HTML: projects/ariadne/console/index.html
-Screenshot: projects/ariadne/console/screenshots/console-2026-05-17T02-57-46-863Z.png
+Screenshot: projects/ariadne/console/screenshots/console-2026-05-17T03-17-04-530Z.png
 Viewport: 1440x1100
 
 ## Summary
@@ -22,4 +22,4 @@ Viewport: 1440x1100
 | recovery | passed | Recovery section is visible. |
 | github | passed | GitHub section is visible. |
 | embedded-data | passed | Embedded console data is parseable. |
-| screenshot | passed | 1770450 bytes captured. |
+| screenshot | passed | 1881426 bytes captured. |

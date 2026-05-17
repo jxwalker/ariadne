@@ -138,6 +138,15 @@ function renderConsole(data: ConsoleData): string {
             detail: `${data.liveAdapterEvidenceTemplatePack.summary.templates} templates / ${data.liveAdapterEvidenceTemplatePack.summary.evidenceItems} evidence items`
           }
         ]
+      : []),
+    ...(data.liveAdapterOperatorEvidenceAudit
+      ? [
+          {
+            time: data.liveAdapterOperatorEvidenceAudit.generatedAt,
+            label: `Live adapter operator evidence: ${data.liveAdapterOperatorEvidenceAudit.status}`,
+            detail: `${data.liveAdapterOperatorEvidenceAudit.summary.completeTargets} complete / ${data.liveAdapterOperatorEvidenceAudit.summary.missingTargets} missing`
+          }
+        ]
       : [])
   ].sort((left, right) => right.time.localeCompare(left.time));
 
@@ -194,6 +203,7 @@ function renderConsole(data: ConsoleData): string {
     metric("Cutover", data.summary.liveAdapterCutoverAuditStatus ?? "none", `${data.summary.liveAdapterCutoverReady ?? 0} ready`),
     metric("Review Session", data.summary.liveAdapterReviewSessionStatus ?? "none", `${data.summary.liveAdapterReviewSessionRequired ?? 0} required`),
     metric("Evidence Templates", data.summary.liveAdapterEvidenceTemplates ?? "none", data.summary.liveAdapterEvidenceTemplateStatus ?? "operator"),
+    metric("Operator Evidence", data.summary.liveAdapterOperatorEvidenceStatus ?? "none", `${data.summary.liveAdapterOperatorEvidenceComplete ?? 0} complete`),
     metric("Hermes", data.summary.hermesCronSnapshots, `${data.summary.hermesCronProposals} proposals`),
     metric("Recovery", data.summary.recoveryIssues, "issues"),
     metric("Browser", data.summary.consoleBrowserChecks ?? "none", "console"),
@@ -215,6 +225,7 @@ function renderConsole(data: ConsoleData): string {
     section("Live Adapters", liveAdapters(data)),
     section("Review Session", reviewSession(data)),
     section("Evidence Templates", evidenceTemplates(data)),
+    section("Operator Evidence", operatorEvidence(data)),
     section("Timeline", timelineList(timeline.slice(0, 12))),
     "</div>",
     '<aside class="side-column">',
@@ -453,6 +464,13 @@ function approvalQueue(data: ConsoleData): string {
         detail: blocker
       }))
     ) ?? [];
+  const operatorEvidenceBlockers =
+    data.liveAdapterOperatorEvidenceAudit?.targets.flatMap((target) =>
+      target.blockers.map((blocker) => ({
+        kind: `operator evidence ${target.target}`,
+        detail: blocker
+      }))
+    ) ?? [];
   const healerReviews = data.healerProposals.filter((proposal) => proposal.status === "review_required");
   const rows = [
     ...missing.map((item) => ({ kind: "missing gate", detail: item })),
@@ -470,7 +488,8 @@ function approvalQueue(data: ConsoleData): string {
       detail: `${plan.target}: ${plan.scope}`
     })),
     ...auditBlockers,
-    ...cutoverBlockers
+    ...cutoverBlockers,
+    ...operatorEvidenceBlockers
   ];
   if (rows.length === 0) return empty("No approval queue items are available.");
   return [
@@ -551,6 +570,21 @@ function evidenceTemplates(data: ConsoleData): string {
     ...pack.templates.map(
       (template) =>
         `<tr><td>${escapeHtml(template.target)}</td><td class="${statusClass(template.status)}">${escapeHtml(template.status)}</td><td>${escapeHtml(template.templateRef)}</td><td>${escapeHtml(String(template.requiredEvidence.length))}</td><td>${escapeHtml(String(template.gbrainQueries.length))}</td></tr>`
+    ),
+    "</tbody></table></div>"
+  ].join("");
+}
+
+function operatorEvidence(data: ConsoleData): string {
+  const audit = data.liveAdapterOperatorEvidenceAudit;
+  if (!audit) return empty("No live-adapter operator evidence audit is available.");
+  return [
+    `<div class="visual-status"><strong class="${statusClass(audit.status)}">${escapeHtml(audit.status)}</strong><span>${escapeHtml(`${audit.summary.completeTargets} complete / ${audit.summary.incompleteTargets} incomplete / ${audit.summary.missingTargets} missing / ${audit.summary.records} records`)}</span></div>`,
+    '<p class="metadata">Operator evidence records do not approve mutation and GBrain notes remain advisory.</p>',
+    '<div class="table-wrap"><table><thead><tr><th>Target</th><th>Status</th><th>Records</th><th>Latest</th><th>Missing</th><th>GBrain</th></tr></thead><tbody>',
+    ...audit.targets.map(
+      (target) =>
+        `<tr><td>${escapeHtml(target.target)}</td><td class="${statusClass(target.status)}">${escapeHtml(target.status)}</td><td>${escapeHtml(String(target.recordCount))}</td><td>${escapeHtml(target.latestRecordId ?? "none")}</td><td>${escapeHtml(target.missingSections.length === 0 ? "none" : target.missingSections.join("; "))}</td><td>${escapeHtml(String(target.advisoryWarnings.length))}</td></tr>`
     ),
     "</tbody></table></div>"
   ].join("");
@@ -671,6 +705,8 @@ function statusClass(value: string | undefined): string {
   if (
     value === "review_required" ||
     value === "operator_review_required" ||
+    value === "incomplete" ||
+    value === "missing_evidence" ||
     value === "pending" ||
     value === "skipped" ||
     value === "warning" ||
