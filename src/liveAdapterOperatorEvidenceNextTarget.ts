@@ -55,7 +55,7 @@ export function selectNextOperatorEvidenceTarget(
       target: auditTarget.target,
       status: auditTarget.status,
       missingSections: auditTarget.missingSections.length,
-      nextAction: auditTarget.blockers[0]
+      nextAction: auditTarget.blockers[0] ?? auditFallbackNextAction(auditTarget)
     };
   }
   return undefined;
@@ -74,4 +74,10 @@ export function nextOperatorEvidenceCommands(project: string, target: OperatorEv
 
 function orderedTargets<T extends { target: string }>(targets: T[]): T[] {
   return [...targets].sort((left, right) => left.target.localeCompare(right.target));
+}
+
+function auditFallbackNextAction(target: LiveAdapterOperatorEvidenceAudit["targets"][number]): string {
+  const missingSection = target.missingSections[0];
+  if (missingSection) return `Collect missing operator evidence section: ${missingSection}.`;
+  return `Review operator evidence for ${target.target}.`;
 }
