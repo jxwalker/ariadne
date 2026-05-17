@@ -3,6 +3,7 @@ import path from "node:path";
 import { writeJsonArtifact, writeTextArtifact } from "./artifacts.js";
 import { generateLiveAdapterOperatorEvidenceAudit, recordLiveAdapterOperatorEvidence } from "./liveAdapterOperatorEvidence.js";
 import { generateLiveAdapterOperatorEvidenceQueue } from "./liveAdapterOperatorEvidenceQueue.js";
+import type { LiveAdapterTarget } from "./liveAdapterTargets.js";
 import { projectDir, slugifyProject } from "./paths.js";
 import type {
   LiveAdapterOperatorEvidenceCheck,
@@ -16,14 +17,19 @@ export async function importReadyLiveAdapterOperatorEvidence(input: {
   project: string;
   vaultRoot: string;
   reviewedBy: string;
+  target?: LiveAdapterTarget;
   notes?: string;
 }): Promise<{ jsonPath: string; markdownPath: string; batch: LiveAdapterOperatorEvidenceImportReadyBatch }> {
   const project = slugifyProject(input.project);
   const queueResult = await generateLiveAdapterOperatorEvidenceQueue({ project, vaultRoot: input.vaultRoot });
   const queue = queueResult.queue;
+  const queueTargets = input.target ? queue.targets.filter((target) => target.target === input.target) : queue.targets;
+  if (input.target && queueTargets.length === 0) {
+    throw new Error(`Missing operator evidence queue target for ${input.target}.`);
+  }
   const targets: ImportTarget[] = [];
 
-  for (const target of queue.targets) {
+  for (const target of queueTargets) {
     if (target.status !== "ready_for_import") {
       targets.push({
         target: target.target,
@@ -86,8 +92,8 @@ export async function importReadyLiveAdapterOperatorEvidence(input: {
   const audit = await generateLiveAdapterOperatorEvidenceAudit({ project, vaultRoot: input.vaultRoot });
   const refreshedQueue = await generateLiveAdapterOperatorEvidenceQueue({ project, vaultRoot: input.vaultRoot });
   const summary = {
-    targets: queue.targets.length,
-    readyForImport: queue.summary.readyForImport,
+    targets: queueTargets.length,
+    readyForImport: queueTargets.filter((target) => target.status === "ready_for_import").length,
     imported: targets.filter((target) => target.status === "imported").length,
     skipped: targets.filter((target) => target.status === "skipped").length,
     failed: targets.filter((target) => target.status === "failed").length
@@ -96,6 +102,7 @@ export async function importReadyLiveAdapterOperatorEvidence(input: {
     schemaVersion: 1,
     project,
     importedAt: new Date().toISOString(),
+    target: input.target,
     status: summary.failed > 0 ? "partial" : summary.imported > 0 ? "imported" : "nothing_ready",
     mutationApproved: false,
     approvalGranted: false,
@@ -107,12 +114,15 @@ export async function importReadyLiveAdapterOperatorEvidence(input: {
     summary,
     targets
   };
-  const jsonPath = await writeJsonArtifact(input.vaultRoot, project, "control", "live-adapter-operator-evidence-import-ready.json", batch);
+  const fileStem = input.target
+    ? `live-adapter-operator-evidence-import-ready-${input.target}`
+    : "live-adapter-operator-evidence-import-ready";
+  const jsonPath = await writeJsonArtifact(input.vaultRoot, project, "control", `${fileStem}.json`, batch);
   const markdownPath = await writeTextArtifact(
     input.vaultRoot,
     project,
     "control",
-    "live-adapter-operator-evidence-import-ready.md",
+    `${fileStem}.md`,
     renderBatch(batch)
   );
   return { jsonPath, markdownPath, batch };
@@ -151,6 +161,7 @@ function renderBatch(batch: LiveAdapterOperatorEvidenceImportReadyBatch): string
     "# Live Adapter Operator Evidence Import Ready",
     "",
     `Project: ${batch.project}`,
+    `Target: ${batch.target ?? "all"}`,
     `Status: ${batch.status}`,
     `Imported: ${batch.importedAt}`,
     `Reviewed by: ${batch.reviewedBy}`,

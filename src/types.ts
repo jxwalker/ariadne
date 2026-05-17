@@ -885,6 +885,7 @@ export interface LiveAdapterOperatorEvidenceCheckBatch {
   schemaVersion: 1;
   project: string;
   checkedAt: string;
+  target?: Exclude<MutationReadinessPlan["target"], "generic">;
   status: "complete" | "incomplete";
   mutationApproved: false;
   approvalGranted: false;
@@ -922,6 +923,7 @@ export interface LiveAdapterOperatorEvidenceImportReadyBatch {
   schemaVersion: 1;
   project: string;
   importedAt: string;
+  target?: Exclude<MutationReadinessPlan["target"], "generic">;
   status: "imported" | "nothing_ready" | "partial";
   mutationApproved: false;
   approvalGranted: false;
