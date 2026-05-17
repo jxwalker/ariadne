@@ -1,0 +1,162 @@
+name: Grok PR Review
+
+# This workflow sends pull request diffs to xAI. Enable it only for repositories
+# where that external review path is approved.
+
+on:
+  pull_request:
+    types: [opened, synchronize]
+
+permissions:
+  contents: read
+  # Pull request timeline comments are created through the Issues API.
+  issues: write
+  pull-requests: write
+
+concurrency:
+  group: grok-pr-review-${{ github.event.pull_request.number }}-${{ github.event.pull_request.head.sha }}
+  cancel-in-progress: true
+
+jobs:
+  review:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Check Grok API key
+        id: grok_config
+        env:
+          XAI_API_KEY: ${{ secrets.XAI_API_KEY }}
+        run: |
+          if [ -z "$XAI_API_KEY" ]; then
+            echo "configured=false" >> "$GITHUB_OUTPUT"
+            echo "XAI_API_KEY is not configured; skipping Grok PR review." >> "$GITHUB_STEP_SUMMARY"
+            exit 0
+          fi
+
+          echo "configured=true" >> "$GITHUB_OUTPUT"
+
+      - name: Checkout code
+        if: steps.grok_config.outputs.configured == 'true'
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          ref: ${{ github.event.pull_request.head.sha }}
+
+      - name: Get PR diff
+        if: steps.grok_config.outputs.configured == 'true'
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+        run: |
+          git fetch --no-tags origin "$BASE_SHA"
+          git diff --no-ext-diff --find-renames "$BASE_SHA...HEAD" > pr.diff
+
+      - name: Call Grok API
+        if: steps.grok_config.outputs.configured == 'true'
+        id: grok_review
+        env:
+          XAI_API_KEY: ${{ secrets.XAI_API_KEY }}
+        run: |
+          max_diff_bytes=750000
+          diff_bytes=$(wc -c < pr.diff | awk '{print $1}')
+          if [ "$diff_bytes" -gt "$max_diff_bytes" ]; then
+            {
+              echo "<!-- grok-pr-review -->"
+              echo "### Grok Code Review"
+              echo
+              echo "Skipped Grok review because this PR diff is ${diff_bytes} bytes, which exceeds the ${max_diff_bytes}-byte workflow limit."
+            } > review.md
+            echo "Skipped Grok review because the PR diff is ${diff_bytes} bytes." >> "$GITHUB_STEP_SUMMARY"
+            exit 0
+          fi
+
+          jq -n \
+            --rawfile diff pr.diff \
+            '{
+              model: "grok-4.3-latest",
+              stream: false,
+              messages: [
+                {
+                  role: "system",
+                  content: "You are a senior software engineer reviewing a pull request. Provide constructive, brief code review feedback in Markdown. Group feedback by file when useful. Prioritize bugs, edge cases, security risks, test gaps, and performance problems. If there are no actionable findings, say so clearly. Be concise."
+                },
+                {
+                  role: "user",
+                  content: "Please review this git diff:\n\n\($diff)"
+                }
+              ]
+            }' > grok-payload.json
+
+          http_status=$(
+            curl -sS \
+              --retry 2 \
+              --retry-delay 5 \
+              --retry-all-errors \
+              --connect-timeout 10 \
+              --max-time 900 \
+              -w "%{http_code}" \
+              -o grok-response.json \
+              https://api.x.ai/v1/chat/completions \
+              -H "Content-Type: application/json" \
+              -H "Authorization: Bearer $XAI_API_KEY" \
+              -d @grok-payload.json
+          )
+
+          if [ "$http_status" -lt 200 ] || [ "$http_status" -ge 300 ]; then
+            echo "Grok API request failed with HTTP $http_status" >&2
+            if jq -e . grok-response.json >/dev/null 2>&1; then
+              jq -r '.error.message // .message // .' grok-response.json >&2
+            else
+              cat grok-response.json >&2
+            fi
+            exit 1
+          fi
+
+          review="$(jq -er '.choices[0].message.content // empty' grok-response.json)"
+          if [ -z "$(printf '%s' "$review" | tr -d '[:space:]')" ]; then
+            echo "Grok returned no review content." >&2
+            exit 1
+          fi
+
+          {
+            echo "<!-- grok-pr-review -->"
+            echo "### Grok Code Review"
+            echo
+            echo "$review"
+          } > review.md
+
+      - name: Post or update PR comment
+        if: steps.grok_config.outputs.configured == 'true' && steps.grok_review.outcome == 'success'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require("fs");
+
+            const marker = "<!-- grok-pr-review -->";
+            const body = fs.readFileSync("review.md", "utf8");
+            const { owner, repo } = context.repo;
+            const issue_number = context.issue.number;
+
+            const comments = await github.paginate(github.rest.issues.listComments, {
+              owner,
+              repo,
+              issue_number,
+              per_page: 100,
+            });
+
+            const previous = comments.find((comment) => comment.body?.includes(marker));
+
+            if (previous) {
+              await github.rest.issues.updateComment({
+                owner,
+                repo,
+                comment_id: previous.id,
+                body,
+              });
+            } else {
+              await github.rest.issues.createComment({
+                owner,
+                repo,
+                issue_number,
+                body,
+              });
+            }
