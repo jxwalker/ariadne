@@ -461,6 +461,7 @@ export interface LiveAdapterNextActionsReport {
     actionItems: number;
   };
   readinessRef: string;
+  operatorEvidenceAuditRef?: string;
   targets: Array<{
     target: Exclude<MutationReadinessPlan["target"], "generic">;
     readinessStatus: LiveAdapterReadinessReport["targets"][number]["status"];

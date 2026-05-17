@@ -2,7 +2,7 @@
 
 Project: ariadne
 Status: operator_review_required
-Generated: 2026-05-17T03:27:57.982Z
+Generated: 2026-05-17T04:46:39.079Z
 Mutation approved: false
 Operator decision required: true
 
@@ -12,7 +12,7 @@ Operator decision required: true
 - Operator review required: 6
 - Ready for adapter work: 0
 - Blocked: 0
-- Action items: 34
+- Action items: 40
 - Current accepted reviews: 0
 - Cutover-ready targets: 0
 - GBrain reports: 0
@@ -37,7 +37,7 @@ Status: operator_review_required
 Readiness: blocked
 Cutover: blocked
 Review audit: missing_review
-First action: Record operator review of the approval packet
+First action: Fill and import operator evidence
 Dossier: projects/ariadne/control/live-adapter-dossiers/live-adapter-dossier-github.json
 
 #### Review Command
@@ -103,6 +103,8 @@ Queries:
 - projects/ariadne/control/live-adapter-approval-pack.json
 - projects/ariadne/control/live-adapter-approval-review-audit.json
 - projects/ariadne/control/mutation-readiness-audit.json
+- projects/ariadne/control/live-adapter-evidence-templates.json
+- projects/ariadne/control/live-adapter-evidence-templates/live-adapter-evidence-template-github.md
 
 ### deployment
 
@@ -110,7 +112,7 @@ Status: operator_review_required
 Readiness: blocked
 Cutover: blocked
 Review audit: missing_review
-First action: Record operator review of the approval packet
+First action: Fill and import operator evidence
 Dossier: projects/ariadne/control/live-adapter-dossiers/live-adapter-dossier-deployment.json
 
 #### Review Command
@@ -177,6 +179,8 @@ Queries:
 - projects/ariadne/control/live-adapter-approval-pack.json
 - projects/ariadne/control/live-adapter-approval-review-audit.json
 - projects/ariadne/control/mutation-readiness-audit.json
+- projects/ariadne/control/live-adapter-evidence-templates.json
+- projects/ariadne/control/live-adapter-evidence-templates/live-adapter-evidence-template-deployment.md
 
 ### hermes-cron
 
@@ -184,7 +188,7 @@ Status: operator_review_required
 Readiness: blocked
 Cutover: blocked
 Review audit: missing_review
-First action: Record operator review of the approval packet
+First action: Fill and import operator evidence
 Dossier: projects/ariadne/control/live-adapter-dossiers/live-adapter-dossier-hermes-cron.json
 
 #### Review Command
@@ -251,6 +255,8 @@ Queries:
 - projects/ariadne/control/live-adapter-approval-pack.json
 - projects/ariadne/control/live-adapter-approval-review-audit.json
 - projects/ariadne/control/mutation-readiness-audit.json
+- projects/ariadne/control/live-adapter-evidence-templates.json
+- projects/ariadne/control/live-adapter-evidence-templates/live-adapter-evidence-template-hermes-cron.md
 
 ### openscorpion
 
@@ -258,7 +264,7 @@ Status: operator_review_required
 Readiness: blocked
 Cutover: blocked
 Review audit: missing_review
-First action: Record operator review of the approval packet
+First action: Fill and import operator evidence
 Dossier: projects/ariadne/control/live-adapter-dossiers/live-adapter-dossier-openscorpion.json
 
 #### Review Command
@@ -325,6 +331,8 @@ Queries:
 - projects/ariadne/control/live-adapter-approval-pack.json
 - projects/ariadne/control/live-adapter-approval-review-audit.json
 - projects/ariadne/control/mutation-readiness-audit.json
+- projects/ariadne/control/live-adapter-evidence-templates.json
+- projects/ariadne/control/live-adapter-evidence-templates/live-adapter-evidence-template-openscorpion.md
 
 ### gsd2
 
@@ -332,7 +340,7 @@ Status: operator_review_required
 Readiness: blocked
 Cutover: blocked
 Review audit: missing_review
-First action: Record operator review of the approval packet
+First action: Fill and import operator evidence
 Dossier: projects/ariadne/control/live-adapter-dossiers/live-adapter-dossier-gsd2.json
 
 #### Review Command
@@ -399,6 +407,8 @@ Queries:
 - projects/ariadne/control/live-adapter-approval-pack.json
 - projects/ariadne/control/live-adapter-approval-review-audit.json
 - projects/ariadne/control/mutation-readiness-audit.json
+- projects/ariadne/control/live-adapter-evidence-templates.json
+- projects/ariadne/control/live-adapter-evidence-templates/live-adapter-evidence-template-gsd2.md
 
 ### notebooklm
 
@@ -406,7 +416,7 @@ Status: operator_review_required
 Readiness: blocked
 Cutover: blocked
 Review audit: missing_review
-First action: Record operator review of the approval packet
+First action: Fill and import operator evidence
 Dossier: projects/ariadne/control/live-adapter-dossiers/live-adapter-dossier-notebooklm.json
 
 #### Review Command
@@ -473,3 +483,5 @@ Queries:
 - projects/ariadne/control/live-adapter-approval-pack.json
 - projects/ariadne/control/live-adapter-approval-review-audit.json
 - projects/ariadne/control/mutation-readiness-audit.json
+- projects/ariadne/control/live-adapter-evidence-templates.json
+- projects/ariadne/control/live-adapter-evidence-templates/live-adapter-evidence-template-notebooklm.md

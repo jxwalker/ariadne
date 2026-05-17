@@ -786,7 +786,11 @@ describe("roadmap adapters", () => {
     const githubActions = nextActions.report.targets.find((target) => target.target === "github");
     const deploymentActions = nextActions.report.targets.find((target) => target.target === "deployment");
     expect(nextActions.report.status).toBe("actions_required");
+    expect(nextActions.report.operatorEvidenceAuditRef).toContain("live-adapter-operator-evidence-audit.json");
+    expect(githubActions?.actions[0]?.id).toBe("github-operator-evidence");
+    expect(githubActions?.actions[0]?.command).toContain("live-adapter-operator-evidence");
     expect(githubActions?.actions.some((action) => action.id === "github-replace-placeholder" && action.status === "ready")).toBe(true);
+    expect(deploymentActions?.actions[0]?.id).toBe("deployment-operator-evidence");
     expect(deploymentActions?.actions.some((action) => action.id === "deployment-approval-pack-review")).toBe(true);
     expect(deploymentActions?.actions.some((action) => action.id === "deployment-audit-fix")).toBe(true);
     expect(deploymentActions?.actions.some((action) => action.id === "deployment-dry-run" && action.status === "pending")).toBe(true);

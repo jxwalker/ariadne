@@ -1,13 +1,20 @@
 import fs from "node:fs/promises";
 import path from "node:path";
 import { writeJsonArtifact, writeTextArtifact } from "./artifacts.js";
+import { generateLiveAdapterOperatorEvidenceAudit } from "./liveAdapterOperatorEvidence.js";
 import { generateLiveAdapterReadiness } from "./liveAdapterReadiness.js";
 import { projectDir, slugifyProject } from "./paths.js";
-import type { LiveAdapterNextActionsReport, LiveAdapterReadinessReport, MutationReadinessAudit } from "./types.js";
+import type {
+  LiveAdapterNextActionsReport,
+  LiveAdapterOperatorEvidenceAudit,
+  LiveAdapterReadinessReport,
+  MutationReadinessAudit
+} from "./types.js";
 
 type ReadinessTarget = LiveAdapterReadinessReport["targets"][number];
 type NextAction = LiveAdapterNextActionsReport["targets"][number]["actions"][number];
 type AuditCheck = MutationReadinessAudit["checks"][number];
+type OperatorEvidenceTarget = LiveAdapterOperatorEvidenceAudit["targets"][number];
 
 export async function generateLiveAdapterNextActions(input: {
   project: string;
@@ -15,11 +22,15 @@ export async function generateLiveAdapterNextActions(input: {
 }): Promise<{ jsonPath: string; markdownPath: string; report: LiveAdapterNextActionsReport }> {
   const project = slugifyProject(input.project);
   const readiness = await generateLiveAdapterReadiness({ project, vaultRoot: input.vaultRoot });
+  const operatorEvidenceAuditResult = await generateLiveAdapterOperatorEvidenceAudit({ project, vaultRoot: input.vaultRoot });
+  const operatorEvidenceAudit = operatorEvidenceAuditResult.audit;
   const audit = await readMutationReadinessAudit(input.vaultRoot, project);
+  const operatorEvidenceByTarget = new Map(operatorEvidenceAudit.targets.map((target) => [target.target, target]));
   const targets = readiness.report.targets.map((target) =>
     targetNextActions(
       target,
-      audit.checks.filter((check) => check.target === target.target)
+      audit.checks.filter((check) => check.target === target.target),
+      operatorEvidenceByTarget.get(target.target)
     )
   );
   const actionItems = targets.reduce((count, target) => count + target.actions.length, 0);
@@ -35,6 +46,7 @@ export async function generateLiveAdapterNextActions(input: {
       actionItems
     },
     readinessRef: path.relative(input.vaultRoot, readiness.jsonPath),
+    operatorEvidenceAuditRef: path.relative(input.vaultRoot, operatorEvidenceAuditResult.jsonPath),
     targets
   };
   const jsonPath = await writeJsonArtifact(input.vaultRoot, project, "control", "live-adapter-next-actions.json", report);
@@ -53,12 +65,33 @@ async function readMutationReadinessAudit(vaultRoot: string, project: string): P
   return JSON.parse(await fs.readFile(auditPath, "utf8")) as MutationReadinessAudit;
 }
 
-function targetNextActions(target: ReadinessTarget, auditChecks: AuditCheck[]): LiveAdapterNextActionsReport["targets"][number] {
+function targetNextActions(
+  target: ReadinessTarget,
+  auditChecks: AuditCheck[],
+  operatorEvidence: OperatorEvidenceTarget | undefined
+): LiveAdapterNextActionsReport["targets"][number] {
   const actions: NextAction[] = [];
   const latestExistingPlanId = auditChecks
     .map((check) => check.planId)
     .sort()
     .at(-1);
+  if (operatorEvidence?.status !== "complete") {
+    actions.push({
+      id: `${target.target}-operator-evidence`,
+      status: "pending",
+      title: "Fill and import operator evidence",
+      rationale:
+        operatorEvidence?.status === "incomplete"
+          ? `The latest operator evidence record is incomplete: ${inlineList(operatorEvidence.missingSections)}. Complete the template and import it again before packet review or cutover.`
+          : "The target has no imported operator evidence record. Fill the generated template with real observations before packet review or cutover.",
+      command: `npm run ariadne -- live-adapter-operator-evidence --project <project> --target ${target.target} --from vault/projects/<project>/control/live-adapter-evidence-templates/live-adapter-evidence-template-${target.target}.md --by <operator>`,
+      evidenceRefs: [
+        ...(operatorEvidence?.evidenceRefs ?? []),
+        "control/live-adapter-evidence-templates.json",
+        `control/live-adapter-evidence-templates/live-adapter-evidence-template-${target.target}.md`
+      ]
+    });
+  }
   if (target.blockers.includes("no accepted operator review exists for live-adapter approval packet")) {
     actions.push({
       id: `${target.target}-approval-pack-review`,
@@ -176,6 +209,7 @@ function renderReport(report: LiveAdapterNextActionsReport): string {
     `Status: ${report.status}`,
     `Generated: ${report.generatedAt}`,
     `Readiness: ${report.readinessRef}`,
+    `Operator evidence audit: ${report.operatorEvidenceAuditRef ?? "missing"}`,
     "",
     "## Summary",
     "",

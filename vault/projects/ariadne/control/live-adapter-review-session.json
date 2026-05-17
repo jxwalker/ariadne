@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "project": "ariadne",
-  "generatedAt": "2026-05-17T03:27:57.982Z",
+  "generatedAt": "2026-05-17T04:46:39.079Z",
   "status": "operator_review_required",
   "mutationApproved": false,
   "operatorDecisionRequired": true,
@@ -15,7 +15,7 @@
     "operatorReviewRequired": 6,
     "readyForAdapterWork": 0,
     "blocked": 0,
-    "actionItems": 34,
+    "actionItems": 40,
     "currentAcceptedReviews": 0,
     "cutoverReady": 0,
     "gbrainReports": 0
@@ -27,7 +27,7 @@
       "readinessStatus": "blocked",
       "cutoverStatus": "blocked",
       "reviewAuditStatus": "missing_review",
-      "firstAction": "Record operator review of the approval packet",
+      "firstAction": "Fill and import operator evidence",
       "reviewCommand": "npm run ariadne -- live-adapter-approval-review --project <project> --target github --by <operator> --status accepted --packet control/live-adapter-approval-pack.json --evidence <operator-review-evidence>",
       "approvalRequestCommand": "npm run ariadne -- approval-request --project ariadne --by <operator> --target github --action \"Enable one reviewed GitHub mutation adapter action\" --risk medium --reason \"Permit a bounded PR or workflow operation after checks, review, and branch policy are verified\" --rollback \"Document how to revert or undo the PR/workflow operation and restore manual review flow.\" --evidence <auth-or-policy-evidence>",
       "mutationPlanCommand": "npm run ariadne -- github-mutation-plan --project <project> --repo <owner/name> --action <merge-pr|rerun-failed-run> --auth-evidence <paths> --approval <approval-id>",
@@ -71,7 +71,9 @@
         "projects/ariadne/control/live-adapter-next-actions.json",
         "projects/ariadne/control/live-adapter-approval-pack.json",
         "projects/ariadne/control/live-adapter-approval-review-audit.json",
-        "projects/ariadne/control/mutation-readiness-audit.json"
+        "projects/ariadne/control/mutation-readiness-audit.json",
+        "projects/ariadne/control/live-adapter-evidence-templates.json",
+        "projects/ariadne/control/live-adapter-evidence-templates/live-adapter-evidence-template-github.md"
       ]
     },
     {
@@ -80,7 +82,7 @@
       "readinessStatus": "blocked",
       "cutoverStatus": "blocked",
       "reviewAuditStatus": "missing_review",
-      "firstAction": "Record operator review of the approval packet",
+      "firstAction": "Fill and import operator evidence",
       "reviewCommand": "npm run ariadne -- live-adapter-approval-review --project <project> --target deployment --by <operator> --status accepted --packet control/live-adapter-approval-pack.json --evidence <operator-review-evidence>",
       "approvalRequestCommand": "npm run ariadne -- approval-request --project ariadne --by <operator> --target deployment --action \"Enable one reviewed deployment mutation adapter action\" --risk high --reason \"Permit a bounded estate operation after host auth, rollback, and service verification are proven\" --rollback \"Document the exact host-level rollback command or service restore path before execution.\" --evidence <auth-or-policy-evidence>",
       "mutationPlanCommand": "npm run ariadne -- deployment-mutation-plan --project <project> --system <proxmox|truenas|dgx-spark|mac> --host <host> --scope <scope> --auth-evidence <paths> --dry-run <cmd> --live-command <cmd> --post-verify <cmd> --rollback <text> --approval <approval-id>",
@@ -125,7 +127,9 @@
         "projects/ariadne/control/live-adapter-next-actions.json",
         "projects/ariadne/control/live-adapter-approval-pack.json",
         "projects/ariadne/control/live-adapter-approval-review-audit.json",
-        "projects/ariadne/control/mutation-readiness-audit.json"
+        "projects/ariadne/control/mutation-readiness-audit.json",
+        "projects/ariadne/control/live-adapter-evidence-templates.json",
+        "projects/ariadne/control/live-adapter-evidence-templates/live-adapter-evidence-template-deployment.md"
       ]
     },
     {
@@ -134,7 +138,7 @@
       "readinessStatus": "blocked",
       "cutoverStatus": "blocked",
       "reviewAuditStatus": "missing_review",
-      "firstAction": "Record operator review of the approval packet",
+      "firstAction": "Fill and import operator evidence",
       "reviewCommand": "npm run ariadne -- live-adapter-approval-review --project <project> --target hermes-cron --by <operator> --status accepted --packet control/live-adapter-approval-pack.json --evidence <operator-review-evidence>",
       "approvalRequestCommand": "npm run ariadne -- approval-request --project ariadne --by <operator> --target hermes-cron --action \"Enable one reviewed Hermes cron mutation adapter action\" --risk medium --reason \"Permit a bounded scheduler change after auth, next-run behavior, and disable path are proven\" --rollback \"Document the exact disable or restore command for the scheduler job.\" --evidence <auth-or-policy-evidence>",
       "mutationPlanCommand": "npm run ariadne -- hermes-cron-mutation-plan --project <project> --action <create|update|enable|disable|delete> --job <id> --scope <scope> --auth-evidence <paths> --dry-run <cmd> --live-command <cmd> --post-verify <cmd> --rollback <text> --approval <approval-id>",
@@ -179,7 +183,9 @@
         "projects/ariadne/control/live-adapter-next-actions.json",
         "projects/ariadne/control/live-adapter-approval-pack.json",
         "projects/ariadne/control/live-adapter-approval-review-audit.json",
-        "projects/ariadne/control/mutation-readiness-audit.json"
+        "projects/ariadne/control/mutation-readiness-audit.json",
+        "projects/ariadne/control/live-adapter-evidence-templates.json",
+        "projects/ariadne/control/live-adapter-evidence-templates/live-adapter-evidence-template-hermes-cron.md"
       ]
     },
     {
@@ -188,7 +194,7 @@
       "readinessStatus": "blocked",
       "cutoverStatus": "blocked",
       "reviewAuditStatus": "missing_review",
-      "firstAction": "Record operator review of the approval packet",
+      "firstAction": "Fill and import operator evidence",
       "reviewCommand": "npm run ariadne -- live-adapter-approval-review --project <project> --target openscorpion --by <operator> --status accepted --packet control/live-adapter-approval-pack.json --evidence <operator-review-evidence>",
       "approvalRequestCommand": "npm run ariadne -- approval-request --project ariadne --by <operator> --target openscorpion --action \"Enable one reviewed OpenScorpion governed activity action\" --risk medium --reason \"Permit a bounded governed activity submission after route and non-public payload policy are proven\" --rollback \"Document the withdraw/update path and governed audit trail for the activity.\" --evidence <auth-or-policy-evidence>",
       "mutationPlanCommand": "npm run ariadne -- openscorpion-mutation-plan --project <project> --activity <id> --type <type> --action <submit-activity|update-activity|withdraw-activity> --route <governed|staging> --scope <scope> --auth-evidence <paths> --dry-run <cmd> --live-command <cmd> --post-verify <cmd> --rollback <text> --approval <approval-id>",
@@ -233,7 +239,9 @@
         "projects/ariadne/control/live-adapter-next-actions.json",
         "projects/ariadne/control/live-adapter-approval-pack.json",
         "projects/ariadne/control/live-adapter-approval-review-audit.json",
-        "projects/ariadne/control/mutation-readiness-audit.json"
+        "projects/ariadne/control/mutation-readiness-audit.json",
+        "projects/ariadne/control/live-adapter-evidence-templates.json",
+        "projects/ariadne/control/live-adapter-evidence-templates/live-adapter-evidence-template-openscorpion.md"
       ]
     },
     {
@@ -242,7 +250,7 @@
       "readinessStatus": "blocked",
       "cutoverStatus": "blocked",
       "reviewAuditStatus": "missing_review",
-      "firstAction": "Record operator review of the approval packet",
+      "firstAction": "Fill and import operator evidence",
       "reviewCommand": "npm run ariadne -- live-adapter-approval-review --project <project> --target gsd2 --by <operator> --status accepted --packet control/live-adapter-approval-pack.json --evidence <operator-review-evidence>",
       "approvalRequestCommand": "npm run ariadne -- approval-request --project ariadne --by <operator> --target gsd2 --action \"Enable one reviewed GSD2 task submission action\" --risk medium --reason \"Permit a bounded GSD2 task operation after process contract and workspace effects are proven\" --rollback \"Document generated worktree cleanup and task-state restoration.\" --evidence <auth-or-policy-evidence>",
       "mutationPlanCommand": "npm run ariadne -- gsd2-mutation-plan --project <project> --task <id> --mode <headless|auto|worktree> --scope <scope> --auth-evidence <paths> --dry-run <cmd> --live-command <cmd> --post-verify <cmd> --rollback <text> --approval <approval-id>",
@@ -287,7 +295,9 @@
         "projects/ariadne/control/live-adapter-next-actions.json",
         "projects/ariadne/control/live-adapter-approval-pack.json",
         "projects/ariadne/control/live-adapter-approval-review-audit.json",
-        "projects/ariadne/control/mutation-readiness-audit.json"
+        "projects/ariadne/control/mutation-readiness-audit.json",
+        "projects/ariadne/control/live-adapter-evidence-templates.json",
+        "projects/ariadne/control/live-adapter-evidence-templates/live-adapter-evidence-template-gsd2.md"
       ]
     },
     {
@@ -296,7 +306,7 @@
       "readinessStatus": "blocked",
       "cutoverStatus": "blocked",
       "reviewAuditStatus": "missing_review",
-      "firstAction": "Record operator review of the approval packet",
+      "firstAction": "Fill and import operator evidence",
       "reviewCommand": "npm run ariadne -- live-adapter-approval-review --project <project> --target notebooklm --by <operator> --status accepted --packet control/live-adapter-approval-pack.json --evidence <operator-review-evidence>",
       "approvalRequestCommand": "npm run ariadne -- approval-request --project ariadne --by <operator> --target notebooklm --action \"Enable one reviewed NotebookLM notebook action\" --risk medium --reason \"Permit a bounded NotebookLM operation after account terms, auth, and export stability are proven\" --rollback \"Document how to remove generated exports or revert source changes and return to manual import.\" --evidence <auth-or-policy-evidence>",
       "mutationPlanCommand": "npm run ariadne -- notebooklm-mutation-plan --project <project> --notebook <id> --action <create-source|refresh-source|generate-summary|export-notes> --scope <scope> --auth-evidence <paths> --dry-run <cmd> --live-command <cmd> --post-verify <cmd> --rollback <text> --approval <approval-id>",
@@ -341,7 +351,9 @@
         "projects/ariadne/control/live-adapter-next-actions.json",
         "projects/ariadne/control/live-adapter-approval-pack.json",
         "projects/ariadne/control/live-adapter-approval-review-audit.json",
-        "projects/ariadne/control/mutation-readiness-audit.json"
+        "projects/ariadne/control/mutation-readiness-audit.json",
+        "projects/ariadne/control/live-adapter-evidence-templates.json",
+        "projects/ariadne/control/live-adapter-evidence-templates/live-adapter-evidence-template-notebooklm.md"
       ]
     }
   ]

@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "project": "ariadne",
-  "generatedAt": "2026-05-17T03:27:57.976Z",
+  "generatedAt": "2026-05-17T04:46:39.066Z",
   "status": "ready_for_operator_review",
   "summary": {
     "targets": 6,
@@ -38,12 +38,15 @@
         "no passed target-guarded execution evidence exists"
       ],
       "nextActions": [
+        "pending: Fill and import operator evidence",
         "pending: Record operator review of the approval packet",
         "pending: Resolve existing readiness plan blockers",
         "pending: Run the reviewed dry-run command",
         "blocked: Capture target-guarded execution evidence"
       ],
       "evidenceRefs": [
+        "control/live-adapter-evidence-templates.json",
+        "control/live-adapter-evidence-templates/live-adapter-evidence-template-github.md",
         "control/mutation-readiness-audit.json"
       ]
     },
@@ -75,6 +78,7 @@
         "no passed target-guarded execution evidence exists"
       ],
       "nextActions": [
+        "pending: Fill and import operator evidence",
         "pending: Record operator review of the approval packet",
         "pending: Record an operator approval request",
         "blocked: Create a target-specific mutation-readiness plan",
@@ -83,6 +87,8 @@
         "blocked: Capture target-guarded execution evidence"
       ],
       "evidenceRefs": [
+        "control/live-adapter-evidence-templates.json",
+        "control/live-adapter-evidence-templates/live-adapter-evidence-template-deployment.md",
         "control/mutation-readiness-audit.json"
       ]
     },
@@ -114,6 +120,7 @@
         "no passed target-guarded execution evidence exists"
       ],
       "nextActions": [
+        "pending: Fill and import operator evidence",
         "pending: Record operator review of the approval packet",
         "pending: Record an operator approval request",
         "blocked: Create a target-specific mutation-readiness plan",
@@ -122,6 +129,8 @@
         "blocked: Capture target-guarded execution evidence"
       ],
       "evidenceRefs": [
+        "control/live-adapter-evidence-templates.json",
+        "control/live-adapter-evidence-templates/live-adapter-evidence-template-hermes-cron.md",
         "control/mutation-readiness-audit.json"
       ]
     },
@@ -153,6 +162,7 @@
         "no passed target-guarded execution evidence exists"
       ],
       "nextActions": [
+        "pending: Fill and import operator evidence",
         "pending: Record operator review of the approval packet",
         "pending: Record an operator approval request",
         "blocked: Create a target-specific mutation-readiness plan",
@@ -161,6 +171,8 @@
         "blocked: Capture target-guarded execution evidence"
       ],
       "evidenceRefs": [
+        "control/live-adapter-evidence-templates.json",
+        "control/live-adapter-evidence-templates/live-adapter-evidence-template-openscorpion.md",
         "control/mutation-readiness-audit.json"
       ]
     },
@@ -192,6 +204,7 @@
         "no passed target-guarded execution evidence exists"
       ],
       "nextActions": [
+        "pending: Fill and import operator evidence",
         "pending: Record operator review of the approval packet",
         "pending: Record an operator approval request",
         "blocked: Create a target-specific mutation-readiness plan",
@@ -200,6 +213,8 @@
         "blocked: Capture target-guarded execution evidence"
       ],
       "evidenceRefs": [
+        "control/live-adapter-evidence-templates.json",
+        "control/live-adapter-evidence-templates/live-adapter-evidence-template-gsd2.md",
         "control/mutation-readiness-audit.json"
       ]
     },
@@ -231,6 +246,7 @@
         "no passed target-guarded execution evidence exists"
       ],
       "nextActions": [
+        "pending: Fill and import operator evidence",
         "pending: Record operator review of the approval packet",
         "pending: Record an operator approval request",
         "blocked: Create a target-specific mutation-readiness plan",
@@ -239,6 +255,8 @@
         "blocked: Capture target-guarded execution evidence"
       ],
       "evidenceRefs": [
+        "control/live-adapter-evidence-templates.json",
+        "control/live-adapter-evidence-templates/live-adapter-evidence-template-notebooklm.md",
         "control/mutation-readiness-audit.json"
       ]
     }
