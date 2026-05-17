@@ -1,11 +1,11 @@
 {
   "schemaVersion": 1,
   "project": "ariadne",
-  "generatedAt": "2026-05-17T01:54:42.657Z",
+  "generatedAt": "2026-05-17T02:16:15.511Z",
   "htmlPath": "projects/ariadne/console/index.html",
   "status": "passed",
   "summary": {
-    "passed": 17,
+    "passed": 19,
     "failed": 0
   },
   "checks": [
@@ -74,6 +74,18 @@
       "label": "Adapter cutover metric",
       "status": "passed",
       "detail": "Found Cutover."
+    },
+    {
+      "id": "adapter-review-session-metric",
+      "label": "Adapter review-session metric",
+      "status": "passed",
+      "detail": "Found Review Session."
+    },
+    {
+      "id": "live-adapter-review-session",
+      "label": "Live adapter review session data",
+      "status": "passed",
+      "detail": "Found mutationApproved=false."
     },
     {
       "id": "cutover-queue",

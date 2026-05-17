@@ -128,6 +128,7 @@ Implemented:
 - approval-review audit reports that validate accepted packet reviews before readiness can rely on them
 - target-specific live adapter dossiers that combine readiness, approval packets, review audit, mutation audit, next actions, and GBrain memory context
 - live adapter cutover audits that verify current operator review, audit-passed plans, auth evidence, rollback, post-verification, dry-run, target-guarded execution, wrapper, dossier, and advisory GBrain context before placeholder replacement
+- live adapter review sessions that consolidate target dossiers, operator packet-review commands, cutover blockers, and advisory GBrain queries into one non-mutating operator packet
 
 Next:
 
@@ -193,6 +194,7 @@ Implemented:
 - approval-review audit status and current-review counts in the operations console
 - live-adapter dossier count in the operations console
 - live-adapter cutover status and target readiness in the operations console
+- live-adapter review-session status and per-target review table in the operations console
 
 ## Milestone 9: Sleep, Memory, And Agent Mail
 

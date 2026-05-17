@@ -222,6 +222,8 @@ Target-specific execute wrappers hard-code that guard for the live adapters: `gi
 
 `live-adapter-cutover-audit` is the final non-mutating audit before implementation work replaces placeholder shell commands with a real target adapter. It requires current accepted packet-review evidence, an audit-passed mutation-readiness plan, auth evidence accepted by that audit, rollback and post-verification acceptance, passed dry-run evidence, passed target-guarded execution evidence, a known target wrapper, and a target dossier. GBrain context is carried as advisory memory, never as approval authority.
 
+`live-adapter-review-session` consolidates the current operator review work into one non-mutating packet. It regenerates the target dossiers, approval pack, approval-review audit, and cutover audit, then writes `control/live-adapter-review-session.json` and `.md` with one row per target: first action, packet-review command, approval request draft, mutation-plan draft, required evidence, cutover blockers, dossier refs, and GBrain advisory queries. It always writes `mutationApproved=false`; it helps an operator review the packet but does not approve live mutation.
+
 ```bash
 npm run ariadne -- approval-request --project ariadne --by planner --target github --action "Enable PR mutation adapter" --risk medium --reason "Manual gate before live mutation" --rollback "Disable adapter and return to manual PR flow"
 npm run ariadne -- approval-decision --project ariadne --approval approval-... --status approved --by james --notes "Approved for a bounded test only."
@@ -240,6 +242,7 @@ npm run ariadne -- live-adapter-approval-review --project ariadne --target githu
 npm run ariadne -- live-adapter-approval-review-audit --project ariadne
 npm run ariadne -- live-adapter-dossier --project ariadne --target github
 npm run ariadne -- live-adapter-cutover-audit --project ariadne
+npm run ariadne -- live-adapter-review-session --project ariadne
 npm run ariadne -- github-mutation-execute --project ariadne --plan mutation-readiness-github-... --confirm-plan mutation-readiness-github-...
 npm run ariadne -- target-mutation-execute --project ariadne --target github --plan mutation-readiness-github-... --confirm-plan mutation-readiness-github-...
 npm run ariadne -- mutation-execute --project ariadne --plan mutation-readiness-github-... --confirm-plan mutation-readiness-github-...
@@ -268,6 +271,8 @@ Artifacts:
 - `control/live-adapter-dossiers/live-adapter-dossier-<target>.md`
 - `control/live-adapter-cutover-audit.json`
 - `control/live-adapter-cutover-audit.md`
+- `control/live-adapter-review-session.json`
+- `control/live-adapter-review-session.md`
 
 ## Evaluation
 
