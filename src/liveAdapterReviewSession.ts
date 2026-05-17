@@ -1,3 +1,4 @@
+import fs from "node:fs/promises";
 import path from "node:path";
 import { writeJsonArtifact, writeTextArtifact } from "./artifacts.js";
 import { generateLiveAdapterApprovalPack } from "./liveAdapterApprovalPack.js";
@@ -5,10 +6,15 @@ import { generateLiveAdapterApprovalReviewAudit } from "./liveAdapterApprovalRev
 import { generateLiveAdapterCutoverAudit } from "./liveAdapterCutoverAudit.js";
 import { generateLiveAdapterNextActions } from "./liveAdapterNextActions.js";
 import { generateLiveAdapterOperatorEvidenceAudit, REQUIRED_OPERATOR_EVIDENCE_SECTION_LABELS } from "./liveAdapterOperatorEvidence.js";
-import { LIVE_ADAPTER_TARGETS } from "./liveAdapterTargets.js";
+import { isLiveAdapterTarget, LIVE_ADAPTER_TARGETS } from "./liveAdapterTargets.js";
 import { generateLiveAdapterTargetDossier } from "./liveAdapterTargetDossier.js";
 import { projectDir, slugifyProject } from "./paths.js";
-import type { LiveAdapterReviewSession, LiveAdapterTargetDossier } from "./types.js";
+import type {
+  LiveAdapterOperatorEvidenceAssist,
+  LiveAdapterOperatorEvidenceQueue,
+  LiveAdapterReviewSession,
+  LiveAdapterTargetDossier
+} from "./types.js";
 
 export async function generateLiveAdapterReviewSession(input: {
   project: string;
@@ -19,15 +25,21 @@ export async function generateLiveAdapterReviewSession(input: {
   const approvalPack = await generateLiveAdapterApprovalPack({ project, vaultRoot: input.vaultRoot });
   const approvalReviewAudit = await generateLiveAdapterApprovalReviewAudit({ project, vaultRoot: input.vaultRoot });
   const operatorEvidenceAudit = await generateLiveAdapterOperatorEvidenceAudit({ project, vaultRoot: input.vaultRoot });
-  const dossiers = await Promise.all(
-    LIVE_ADAPTER_TARGETS.map((target) => generateLiveAdapterTargetDossier({ project, vaultRoot: input.vaultRoot, target }))
-  );
+  const [operatorEvidenceQueue, operatorEvidenceAssist, dossiers] = await Promise.all([
+    readExistingOperatorEvidenceQueue(input.vaultRoot, project),
+    readExistingOperatorEvidenceAssist(input.vaultRoot, project),
+    Promise.all(
+      LIVE_ADAPTER_TARGETS.map((target) => generateLiveAdapterTargetDossier({ project, vaultRoot: input.vaultRoot, target }))
+    )
+  ]);
   const cutoverAudit = await generateLiveAdapterCutoverAudit({ project, vaultRoot: input.vaultRoot });
   const dossierByTarget = new Map(dossiers.map((dossier) => [dossier.dossier.target, dossier]));
   const approvalPacketByTarget = new Map(approvalPack.report.packets.map((packet) => [packet.target, packet]));
   const reviewAuditByTarget = new Map(approvalReviewAudit.audit.targets.map((target) => [target.target, target]));
   const cutoverByTarget = new Map(cutoverAudit.audit.targets.map((target) => [target.target, target]));
   const operatorEvidenceByTarget = new Map(operatorEvidenceAudit.audit.targets.map((target) => [target.target, target]));
+  const queueByTarget = new Map(operatorEvidenceQueue?.targets.map((target) => [target.target, target]) ?? []);
+  const assistByTarget = new Map(operatorEvidenceAssist?.targets.map((target) => [target.target, target]) ?? []);
 
   const targets = nextActions.report.targets.map((target) => {
     const dossierResult = dossierByTarget.get(target.target);
@@ -37,6 +49,8 @@ export async function generateLiveAdapterReviewSession(input: {
     const reviewAuditTarget = reviewAuditByTarget.get(target.target);
     const cutoverTarget = cutoverByTarget.get(target.target);
     const operatorEvidenceTarget = operatorEvidenceByTarget.get(target.target);
+    const queueTarget = queueByTarget.get(target.target);
+    const assistTarget = assistByTarget.get(target.target);
     if (!reviewAuditTarget) throw new Error(`Missing live-adapter approval-review audit target for ${target.target}.`);
     if (!cutoverTarget) throw new Error(`Missing live-adapter cutover target for ${target.target}.`);
     if (!operatorEvidenceTarget) throw new Error(`Missing live-adapter operator evidence audit target for ${target.target}.`);
@@ -57,9 +71,13 @@ export async function generateLiveAdapterReviewSession(input: {
       approvalRequestCommand: packet?.approvalRequestCommand,
       mutationPlanCommand: packet?.mutationPlanCommand,
       operatorEvidenceStatus: operatorEvidenceStatus(operatorEvidenceTarget.status),
+      operatorEvidenceQueueStatus: queueTarget?.status,
       operatorEvidenceFileRef,
       operatorEvidenceCheckCommand: `npm run ariadne -- live-adapter-operator-evidence-check --project ${project} --target ${operatorEvidenceTarget.target} --from ${operatorEvidenceFile}`,
       operatorEvidenceImportCommand: `npm run ariadne -- live-adapter-operator-evidence --project ${project} --target ${operatorEvidenceTarget.target} --from ${operatorEvidenceFile} --by <operator>`,
+      latestOperatorEvidenceCheckRef: queueTarget?.latestCheckRef,
+      operatorEvidenceAssistFileRef: assistTarget?.assistFileRef,
+      operatorEvidenceAssistNextSteps: assistTarget?.nextSteps ?? [],
       missingOperatorEvidenceSections: missingOperatorEvidenceSections(operatorEvidenceTarget.status, operatorEvidenceTarget.missingSections),
       requiredEvidence: packet?.requiredEvidence ?? [],
       blockers: target.blockers,
@@ -92,6 +110,8 @@ export async function generateLiveAdapterReviewSession(input: {
     approvalReviewAuditRef: path.relative(input.vaultRoot, approvalReviewAudit.jsonPath),
     cutoverAuditRef: path.relative(input.vaultRoot, cutoverAudit.jsonPath),
     operatorEvidenceAuditRef: path.relative(input.vaultRoot, operatorEvidenceAudit.jsonPath),
+    operatorEvidenceQueueRef: operatorEvidenceQueue ? `projects/${project}/control/live-adapter-operator-evidence-queue.json` : undefined,
+    operatorEvidenceAssistRef: operatorEvidenceAssist ? `projects/${project}/control/live-adapter-operator-evidence-assist.json` : undefined,
     dossierDirRef: vaultRelative(input.vaultRoot, path.join(projectDir(input.vaultRoot, project), "control", "live-adapter-dossiers")),
     summary,
     targets
@@ -147,6 +167,75 @@ function reviewSessionEvidenceRefs(
   );
 }
 
+async function readExistingOperatorEvidenceQueue(
+  vaultRoot: string,
+  project: string
+): Promise<LiveAdapterOperatorEvidenceQueue | undefined> {
+  return readExistingJson<LiveAdapterOperatorEvidenceQueue>(
+    path.join(projectDir(vaultRoot, project), "control", "live-adapter-operator-evidence-queue.json"),
+    isOperatorEvidenceQueue
+  );
+}
+
+async function readExistingOperatorEvidenceAssist(
+  vaultRoot: string,
+  project: string
+): Promise<LiveAdapterOperatorEvidenceAssist | undefined> {
+  return readExistingJson<LiveAdapterOperatorEvidenceAssist>(
+    path.join(projectDir(vaultRoot, project), "control", "live-adapter-operator-evidence-assist.json"),
+    isOperatorEvidenceAssist
+  );
+}
+
+async function readExistingJson<T>(filePath: string, guard: (value: unknown) => value is T): Promise<T | undefined> {
+  try {
+    const parsed = JSON.parse(await fs.readFile(filePath, "utf8")) as unknown;
+    return guard(parsed) ? parsed : undefined;
+  } catch (error) {
+    if ((error as NodeJS.ErrnoException).code === "ENOENT") return undefined;
+    throw error;
+  }
+}
+
+function isOperatorEvidenceQueue(value: unknown): value is LiveAdapterOperatorEvidenceQueue {
+  return (
+    Boolean(value && typeof value === "object" && !Array.isArray(value)) &&
+    (value as LiveAdapterOperatorEvidenceQueue).schemaVersion === 1 &&
+    Array.isArray((value as LiveAdapterOperatorEvidenceQueue).targets) &&
+    (value as LiveAdapterOperatorEvidenceQueue).targets.every(isOperatorEvidenceQueueTarget)
+  );
+}
+
+function isOperatorEvidenceAssist(value: unknown): value is LiveAdapterOperatorEvidenceAssist {
+  return (
+    Boolean(value && typeof value === "object" && !Array.isArray(value)) &&
+    (value as LiveAdapterOperatorEvidenceAssist).schemaVersion === 1 &&
+    Array.isArray((value as LiveAdapterOperatorEvidenceAssist).targets) &&
+    (value as LiveAdapterOperatorEvidenceAssist).targets.every(isOperatorEvidenceAssistTarget) &&
+    (value as LiveAdapterOperatorEvidenceAssist).operatorEvidenceRecordCreated === false &&
+    (value as LiveAdapterOperatorEvidenceAssist).mutationApproved === false &&
+    (value as LiveAdapterOperatorEvidenceAssist).approvalGranted === false
+  );
+}
+
+function isOperatorEvidenceQueueTarget(value: unknown): value is LiveAdapterOperatorEvidenceQueue["targets"][number] {
+  return (
+    Boolean(value && typeof value === "object" && !Array.isArray(value)) &&
+    isLiveAdapterTarget((value as LiveAdapterOperatorEvidenceQueue["targets"][number]).target) &&
+    typeof (value as LiveAdapterOperatorEvidenceQueue["targets"][number]).status === "string"
+  );
+}
+
+function isOperatorEvidenceAssistTarget(value: unknown): value is LiveAdapterOperatorEvidenceAssist["targets"][number] {
+  return (
+    Boolean(value && typeof value === "object" && !Array.isArray(value)) &&
+    isLiveAdapterTarget((value as LiveAdapterOperatorEvidenceAssist["targets"][number]).target) &&
+    typeof (value as LiveAdapterOperatorEvidenceAssist["targets"][number]).assistFileRef === "string" &&
+    Array.isArray((value as LiveAdapterOperatorEvidenceAssist["targets"][number]).nextSteps) &&
+    (value as LiveAdapterOperatorEvidenceAssist["targets"][number]).nextSteps.every((step) => typeof step === "string")
+  );
+}
+
 function canonicalEvidenceRef(project: string, ref: string): string {
   const normalized = ref.split(path.sep).join("/");
   return normalized.startsWith(`projects/${project}/`) ? normalized : `projects/${project}/${normalized}`;
@@ -188,6 +277,8 @@ function renderSession(session: LiveAdapterReviewSession): string {
     `- Approval-review audit: ${session.approvalReviewAuditRef}`,
     `- Cutover audit: ${session.cutoverAuditRef}`,
     `- Operator evidence audit: ${session.operatorEvidenceAuditRef}`,
+    ...(session.operatorEvidenceQueueRef ? [`- Operator evidence queue: ${session.operatorEvidenceQueueRef}`] : []),
+    ...(session.operatorEvidenceAssistRef ? [`- Operator evidence assist: ${session.operatorEvidenceAssistRef}`] : []),
     `- Dossiers: ${session.dossierDirRef}`,
     "",
     "## Targets",
@@ -200,6 +291,7 @@ function renderSession(session: LiveAdapterReviewSession): string {
       `Cutover: ${target.cutoverStatus}`,
       `Review audit: ${target.reviewAuditStatus}`,
       `Operator evidence: ${target.operatorEvidenceStatus}`,
+      ...(target.operatorEvidenceQueueStatus ? [`Operator evidence queue: ${target.operatorEvidenceQueueStatus}`] : []),
       `First action: ${target.firstAction ?? "none"}`,
       `Dossier: ${target.dossierRef}`,
       "",
@@ -214,6 +306,18 @@ function renderSession(session: LiveAdapterReviewSession): string {
       "",
       "Missing operator evidence sections:",
       ...list(target.missingOperatorEvidenceSections),
+      ...(target.latestOperatorEvidenceCheckRef
+        ? ["", `Latest preflight: ${target.latestOperatorEvidenceCheckRef}`]
+        : []),
+      ...(target.operatorEvidenceAssistFileRef
+        ? [
+            "",
+            `Read-only assist: ${target.operatorEvidenceAssistFileRef}`,
+            "",
+            "Assist next steps:",
+            ...list(target.operatorEvidenceAssistNextSteps)
+          ]
+        : []),
       "",
       "#### Review Command",
       "",

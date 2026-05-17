@@ -1032,6 +1032,24 @@ describe("roadmap adapters", () => {
     const reviewSessionMarkdown = await fs.readFile(reviewSession.markdownPath, "utf8");
     expect(reviewSessionMarkdown).toContain("Operator Evidence Action");
     expect(reviewSessionMarkdown).toContain("Missing operator evidence sections");
+    const malformedQueue = path.join(vaultRoot, "projects", "ariadne", "control", "live-adapter-operator-evidence-queue.json");
+    const malformedAssist = path.join(vaultRoot, "projects", "ariadne", "control", "live-adapter-operator-evidence-assist.json");
+    await fs.writeFile(malformedQueue, JSON.stringify({ schemaVersion: 1, targets: [{ target: 123 }] }));
+    await fs.writeFile(
+      malformedAssist,
+      JSON.stringify({
+        schemaVersion: 1,
+        operatorEvidenceRecordCreated: false,
+        mutationApproved: false,
+        approvalGranted: false,
+        targets: [{ target: "github", assistFileRef: 123, nextSteps: [false] }]
+      })
+    );
+    const malformedOptionalReviewSession = await generateLiveAdapterReviewSession({ project: "ariadne", vaultRoot });
+    expect(malformedOptionalReviewSession.session.operatorEvidenceQueueRef).toBeUndefined();
+    expect(malformedOptionalReviewSession.session.operatorEvidenceAssistRef).toBeUndefined();
+    await fs.rm(malformedQueue, { force: true });
+    await fs.rm(malformedAssist, { force: true });
     const evidenceTemplates = await generateLiveAdapterEvidenceTemplates({ project: "ariadne", vaultRoot });
     expect(evidenceTemplates.pack.status).toBe("awaiting_operator_evidence");
     expect(evidenceTemplates.pack.mutationApproved).toBe(false);
@@ -1208,6 +1226,23 @@ describe("roadmap adapters", () => {
     expect(githubAssistMarkdown).toContain("This file is generated from existing Ariadne artifacts.");
     expect(githubAssistMarkdown).toContain("GBrain Advisory Queries");
     expect(await fs.readFile(githubWorkspaceFile, "utf8")).toContain("Operator draft marker: keep me");
+    const assistedReviewSession = await generateLiveAdapterReviewSession({ project: "ariadne", vaultRoot });
+    const assistedGithubSession = assistedReviewSession.session.targets.find((target) => target.target === "github");
+    expect(assistedReviewSession.session.operatorEvidenceQueueRef).toBe(
+      "projects/ariadne/control/live-adapter-operator-evidence-queue.json"
+    );
+    expect(assistedReviewSession.session.operatorEvidenceAssistRef).toBe(
+      "projects/ariadne/control/live-adapter-operator-evidence-assist.json"
+    );
+    expect(assistedGithubSession?.operatorEvidenceQueueStatus).toBe("complete");
+    expect(assistedGithubSession?.operatorEvidenceAssistFileRef).toBe(
+      "projects/ariadne/control/operator-evidence/github/read-only-assist.md"
+    );
+    expect(assistedGithubSession?.latestOperatorEvidenceCheckRef).toContain("operator-evidence-check-github-");
+    expect(assistedGithubSession?.operatorEvidenceAssistNextSteps.length).toBeGreaterThan(0);
+    const assistedReviewMarkdown = await fs.readFile(assistedReviewSession.markdownPath, "utf8");
+    expect(assistedReviewMarkdown).toContain("Operator evidence queue");
+    expect(assistedReviewMarkdown).toContain("Read-only assist");
     const workspaceBatchPreflight = await checkAllLiveAdapterOperatorEvidence({
       project: "ariadne",
       vaultRoot,

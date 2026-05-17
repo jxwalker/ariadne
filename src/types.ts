@@ -642,6 +642,8 @@ export interface LiveAdapterReviewSession {
   approvalReviewAuditRef: string;
   cutoverAuditRef: string;
   operatorEvidenceAuditRef: string;
+  operatorEvidenceQueueRef?: string;
+  operatorEvidenceAssistRef?: string;
   dossierDirRef: string;
   summary: {
     targets: number;
@@ -664,9 +666,13 @@ export interface LiveAdapterReviewSession {
     approvalRequestCommand?: string;
     mutationPlanCommand?: string;
     operatorEvidenceStatus: "complete" | "needs_evidence" | "needs_rework";
+    operatorEvidenceQueueStatus?: LiveAdapterOperatorEvidenceQueue["targets"][number]["status"];
     operatorEvidenceFileRef: string;
     operatorEvidenceCheckCommand: string;
     operatorEvidenceImportCommand: string;
+    latestOperatorEvidenceCheckRef?: string;
+    operatorEvidenceAssistFileRef?: string;
+    operatorEvidenceAssistNextSteps: string[];
     missingOperatorEvidenceSections: string[];
     requiredEvidence: string[];
     blockers: string[];
