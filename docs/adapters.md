@@ -234,6 +234,8 @@ Target-specific execute wrappers hard-code that guard for the live adapters: `gi
 
 `live-adapter-operator-evidence-queue` combines the operator-evidence audit, workplan, and latest preflight checks into one target queue. It writes `control/live-adapter-operator-evidence-queue.json` and `.md`, classifying each target as `unchecked`, `needs_evidence`, `ready_for_import`, `needs_rework`, or `complete`. It is an operator aid only and keeps `mutationApproved=false`.
 
+`live-adapter-operator-evidence-workspace` turns the queue and workplan into fillable operator files under `control/operator-evidence/<target>/`. Each target gets `operator-evidence.md` plus support files for packet review, auth boundary, rollback/post-verification, dry-run review, and GBrain notes. The generated commands point at the workspace evidence file, but the workspace remains paperwork only until an operator fills and imports it.
+
 `live-adapter-operator-evidence` imports a filled operator evidence file for one target. It hashes the source file, checks whether the operator identity, packet review, auth boundary, bounded action, rollback, post-verification, dry-run, target-wrapper, and exact `--confirm-plan` sections are present, and writes `control/live-adapter-operator-evidence/operator-evidence-<target>-<timestamp>.json` and `.md`. It also records whether GBrain notes are present, but GBrain remains advisory only. The record always writes `mutationApproved=false` and `approvalGranted=false`.
 
 `live-adapter-operator-evidence-audit` summarizes those imported records across GitHub, deployment, Hermes cron, OpenScorpion, GSD2, and NotebookLM. Missing or incomplete target evidence becomes an approval-queue blocker in the console, while complete operator evidence still does not bypass approval-review, mutation-readiness, dry-run, target execution, or cutover gates.
@@ -262,6 +264,7 @@ npm run ariadne -- live-adapter-operator-evidence-workplan --project ariadne
 npm run ariadne -- live-adapter-operator-evidence-check --project ariadne --target github --from vault/projects/ariadne/control/live-adapter-evidence-templates/live-adapter-evidence-template-github.md
 npm run ariadne -- live-adapter-operator-evidence-check-all --project ariadne
 npm run ariadne -- live-adapter-operator-evidence-queue --project ariadne
+npm run ariadne -- live-adapter-operator-evidence-workspace --project ariadne
 npm run ariadne -- live-adapter-operator-evidence --project ariadne --target github --from vault/projects/ariadne/control/live-adapter-evidence-templates/live-adapter-evidence-template-github.md --by james
 npm run ariadne -- live-adapter-operator-evidence-audit --project ariadne
 npm run ariadne -- github-mutation-execute --project ariadne --plan mutation-readiness-github-... --confirm-plan mutation-readiness-github-...
@@ -305,6 +308,10 @@ Artifacts:
 - `control/live-adapter-operator-evidence-check-all.md`
 - `control/live-adapter-operator-evidence-queue.json`
 - `control/live-adapter-operator-evidence-queue.md`
+- `control/live-adapter-operator-evidence-workspace.json`
+- `control/live-adapter-operator-evidence-workspace.md`
+- `control/operator-evidence/<target>/operator-evidence.md`
+- `control/operator-evidence/<target>/{packet-review,auth-boundary,rollback-post-verify,dry-run-review,gbrain-notes}.md`
 - `control/live-adapter-operator-evidence/operator-evidence-<target>-<timestamp>.json`
 - `control/live-adapter-operator-evidence/operator-evidence-<target>-<timestamp>.md`
 - `control/live-adapter-operator-evidence-audit.json`

@@ -57,6 +57,7 @@ import {
 import { checkAllLiveAdapterOperatorEvidence } from "./liveAdapterOperatorEvidenceCheckAll.js";
 import { generateLiveAdapterOperatorEvidenceWorkplan } from "./liveAdapterOperatorEvidenceWorkplan.js";
 import { generateLiveAdapterOperatorEvidenceQueue } from "./liveAdapterOperatorEvidenceQueue.js";
+import { generateLiveAdapterOperatorEvidenceWorkspace } from "./liveAdapterOperatorEvidenceWorkspace.js";
 import { generateLiveAdapterReadiness } from "./liveAdapterReadiness.js";
 import { generateLiveAdapterReviewSession } from "./liveAdapterReviewSession.js";
 import { generateLiveAdapterTargetDossier, liveAdapterDossierTargetOption } from "./liveAdapterTargetDossier.js";
@@ -195,6 +196,7 @@ function usage(): string {
     "  ariadne live-adapter-operator-evidence-audit --project <project>",
     "  ariadne live-adapter-operator-evidence-workplan --project <project>",
     "  ariadne live-adapter-operator-evidence-queue --project <project>",
+    "  ariadne live-adapter-operator-evidence-workspace --project <project>",
     "  ariadne roadmap-completion-audit --project <project>",
     "  ariadne mutation-dry-run --project <project> --plan <id|json> [--timeout-ms <ms>]",
     "  ariadne mutation-execute --project <project> --plan <id|json> --confirm-plan <id> [--timeout-ms <ms>]",
@@ -1273,6 +1275,17 @@ async function main(): Promise<void> {
     console.log(`Ready for import: ${result.queue.summary.readyForImport}`);
     console.log(`Unchecked targets: ${result.queue.summary.uncheckedTargets}`);
     console.log(`Mutation approved: ${result.queue.mutationApproved}`);
+    return;
+  }
+
+  if (parsed.command === "live-adapter-operator-evidence-workspace") {
+    const result = await generateLiveAdapterOperatorEvidenceWorkspace({ project, vaultRoot });
+    console.log(`Live adapter operator evidence workspace: ${result.markdownPath}`);
+    console.log(`Status: ${result.workspace.status}`);
+    console.log(`Targets: ${result.workspace.summary.targets}`);
+    console.log(`Workspace files: ${result.workspace.summary.workspaceFiles}`);
+    console.log(`Support files: ${result.workspace.summary.supportFiles}`);
+    console.log(`Mutation approved: ${result.workspace.mutationApproved}`);
     return;
   }
 

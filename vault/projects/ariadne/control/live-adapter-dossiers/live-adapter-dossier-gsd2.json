@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "project": "ariadne",
-  "generatedAt": "2026-05-17T07:32:10.540Z",
+  "generatedAt": "2026-05-17T08:33:54.735Z",
   "target": "gsd2",
   "status": "ready_for_operator_review",
   "readinessRef": "projects/ariadne/control/live-adapter-readiness.json",
