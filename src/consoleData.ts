@@ -63,6 +63,8 @@ import type {
   SourceHygieneReport
 } from "./types.js";
 
+const CONSOLE_REDACTED_URL = "<redacted-url>";
+
 export async function generateConsoleData(input: {
   project: string;
   vaultRoot: string;
@@ -232,6 +234,7 @@ export async function collectConsoleData(vaultRoot: string, projectInput: string
   const localRuntimeProbes = sortLocalRuntimeProbes(
     await readJsonFiles<LocalRuntimeProbe>(path.join(dir, "infrastructure", "runtime"), isLocalRuntimeProbe)
   );
+  const localRuntimeProbesForConsole = localRuntimeProbes.map(redactLocalRuntimeProbeForConsole);
   const gsd2ProcessSnapshots = await readJsonFiles<Gsd2ProcessSnapshot>(path.join(dir, "gsd", "process"), isGsd2ProcessSnapshot);
   const gbrainReports = await readJsonFiles<GbrainReportImport>(path.join(dir, "integrations", "gbrain"), isGbrainReport);
   const githubSnapshots = await readJsonFiles<GithubSnapshot>(path.join(dir, "integrations", "github"), isGithubSnapshot);
@@ -271,7 +274,7 @@ export async function collectConsoleData(vaultRoot: string, projectInput: string
         milestoneTitle: milestone.title
       }))
     ) ?? [];
-  const latestRuntimeProbe = latestLocalRuntimeProbe(localRuntimeProbes);
+  const latestRuntimeProbe = latestLocalRuntimeProbe(localRuntimeProbesForConsole);
 
   const data: ConsoleData = {
     schemaVersion: 1,
@@ -409,7 +412,7 @@ export async function collectConsoleData(vaultRoot: string, projectInput: string
     infrastructure: {
       registry,
       snapshots: infraSnapshots,
-      runtimeProbes: localRuntimeProbes
+      runtimeProbes: localRuntimeProbesForConsole
     },
     deployment: {
       snapshots: deploymentSnapshots
@@ -649,7 +652,15 @@ function isInfraSnapshot(value: unknown): value is InfraSnapshot {
 function isLocalRuntimeProbe(value: unknown): value is LocalRuntimeProbe {
   if (!hasSchema(value)) return false;
   const summary = value.summary;
+  const hermes = value.hermes;
   const modelEndpoints = value.modelEndpoints;
+  const hermesValid =
+    hermes === undefined ||
+    (hasSchema(hermes) &&
+      isRuntimeServiceProbe(hermes.dashboard) &&
+      isRuntimeCommandProbe(hermes.statusCommand) &&
+      isRuntimeCommandProbe(hermes.doctorCommand) &&
+      isRuntimeCommandProbe(hermes.gatewayCommand));
   return (
     value.schemaVersion === 1 &&
     (value.mode === "read_only" || value.mode === "read_only_with_canary") &&
@@ -659,8 +670,33 @@ function isLocalRuntimeProbe(value: unknown): value is LocalRuntimeProbe {
     typeof summary.degraded === "number" &&
     typeof summary.unreachable === "number" &&
     typeof summary.models === "number" &&
+    hermesValid &&
     Array.isArray(modelEndpoints) &&
     modelEndpoints.every(isRuntimeModelEndpointProbe)
+  );
+}
+
+function isRuntimeServiceProbe(value: unknown): boolean {
+  if (!hasSchema(value)) return false;
+  return (
+    typeof value.id === "string" &&
+    (value.url === undefined || typeof value.url === "string") &&
+    (value.status === "reachable" || value.status === "degraded" || value.status === "unreachable") &&
+    (value.httpStatus === undefined || typeof value.httpStatus === "number") &&
+    typeof value.detail === "string"
+  );
+}
+
+function isRuntimeCommandProbe(value: unknown): boolean {
+  if (!hasSchema(value)) return false;
+  return (
+    typeof value.command === "string" &&
+    (value.url === undefined || typeof value.url === "string") &&
+    (value.status === "reachable" || value.status === "degraded" || value.status === "unreachable") &&
+    (value.exitCode === undefined || typeof value.exitCode === "number") &&
+    (value.stdoutPreview === undefined || typeof value.stdoutPreview === "string") &&
+    (value.stderrPreview === undefined || typeof value.stderrPreview === "string") &&
+    typeof value.detail === "string"
   );
 }
 
@@ -669,6 +705,7 @@ function isRuntimeModelEndpointProbe(value: unknown): boolean {
   return (
     typeof value.id === "string" &&
     (value.kind === "ollama" || value.kind === "openai-compatible") &&
+    (value.url === undefined || typeof value.url === "string") &&
     (value.status === "reachable" || value.status === "degraded" || value.status === "unreachable") &&
     Array.isArray(value.models) &&
     value.models.every((model) => typeof model === "string") &&
@@ -686,6 +723,33 @@ function sortLocalRuntimeProbes(probes: LocalRuntimeProbe[]): LocalRuntimeProbe[
 
 function latestLocalRuntimeProbe(probes: LocalRuntimeProbe[]): LocalRuntimeProbe | undefined {
   return sortLocalRuntimeProbes(probes).at(-1);
+}
+
+function redactLocalRuntimeProbeForConsole(probe: LocalRuntimeProbe): LocalRuntimeProbe {
+  const redacted: LocalRuntimeProbe = {
+    ...probe,
+    modelEndpoints: probe.modelEndpoints.map((endpoint) => ({
+      ...endpoint,
+      url: endpoint.url !== undefined ? CONSOLE_REDACTED_URL : endpoint.url
+    }))
+  };
+  if (redacted.hermes) {
+    redacted.hermes = {
+      ...redacted.hermes,
+      dashboard: redactObjectUrl(redacted.hermes.dashboard),
+      statusCommand: redactObjectUrl(redacted.hermes.statusCommand),
+      doctorCommand: redactObjectUrl(redacted.hermes.doctorCommand),
+      gatewayCommand: redactObjectUrl(redacted.hermes.gatewayCommand)
+    };
+  }
+  return redacted;
+}
+
+function redactObjectUrl<T>(value: T): T {
+  if (!value || typeof value !== "object") return value;
+  const object = value as T & { url?: unknown };
+  if (object.url === undefined) return value;
+  return { ...object, url: CONSOLE_REDACTED_URL };
 }
 
 function isGsd2ProcessSnapshot(value: unknown): value is Gsd2ProcessSnapshot {
