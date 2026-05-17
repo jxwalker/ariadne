@@ -37,7 +37,8 @@ export async function checkAllLiveAdapterOperatorEvidence(input: {
       targets.push({
         target,
         status: sourceSet.source === "templates" ? "missing_template" : "missing_source",
-        missingSections: 0
+        missingSections: 0,
+        missingSectionLabels: []
       });
       continue;
     }
@@ -58,6 +59,7 @@ export async function checkAllLiveAdapterOperatorEvidence(input: {
         checkRef: path.relative(input.vaultRoot, result.jsonPath),
         checkMarkdownRef: path.relative(input.vaultRoot, result.markdownPath),
         missingSections: result.check.summary.missingSections,
+        missingSectionLabels: result.check.sections.filter((section) => section.status === "missing").map((section) => section.label),
         sourceRef: result.check.sourceRef
       });
     } catch (error) {
@@ -68,6 +70,7 @@ export async function checkAllLiveAdapterOperatorEvidence(input: {
         templateRef: sourceSet.source === "templates" ? sourceFileRef : undefined,
         evidenceFileRef: sourceSet.source === "workspace" ? sourceFileRef : undefined,
         missingSections: 0,
+        missingSectionLabels: [],
         errorDetail: (error as Error).message
       });
     }
@@ -240,12 +243,16 @@ function renderBatch(batch: LiveAdapterOperatorEvidenceCheckBatch): string {
     "",
     "## Targets",
     "",
-    "| Target | Status | Missing sections | Source file | Check | Detail |",
-    "| --- | --- | ---: | --- | --- | --- |",
+    "| Target | Status | Missing sections | Missing section labels | Source file | Check | Detail |",
+    "| --- | --- | ---: | --- | --- | --- | --- |",
     ...batch.targets.map(
       (target) =>
-        `| ${target.target} | ${target.status} | ${target.missingSections} | ${target.sourceFileRef ?? "missing"} | ${target.checkRef ?? "not run"} | ${target.errorDetail ?? ""} |`
+        `| ${tableCell(target.target)} | ${tableCell(target.status)} | ${tableCell(String(target.missingSections))} | ${tableCell(target.missingSectionLabels.join(", ") || "none")} | ${tableCell(target.sourceFileRef ?? "missing")} | ${tableCell(target.checkRef ?? "not run")} | ${tableCell(target.errorDetail ?? "")} |`
     ),
     ""
   ].join("\n");
+}
+
+function tableCell(value: string): string {
+  return value.replace(/\|/g, "\\|").replace(/\n/g, " ");
 }

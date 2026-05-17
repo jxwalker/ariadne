@@ -1179,9 +1179,13 @@ describe("roadmap adapters", () => {
     });
     expect(workspaceBatchPreflight.batch.source).toBe("workspace");
     expect(workspaceBatchPreflight.batch.workspaceRef).toBe("projects/ariadne/control/live-adapter-operator-evidence-workspace.json");
-    expect(workspaceBatchPreflight.batch.targets.find((target) => target.target === "github")?.evidenceFileRef).toContain(
-      "control/operator-evidence/github/operator-evidence.md"
-    );
+    const githubBatchPreflight = workspaceBatchPreflight.batch.targets.find((target) => target.target === "github");
+    expect(githubBatchPreflight?.evidenceFileRef).toContain("control/operator-evidence/github/operator-evidence.md");
+    expect(githubBatchPreflight?.missingSectionLabels).toContain("Operator identity and timestamp");
+    expect(githubBatchPreflight?.missingSectionLabels).toContain("Exact confirm-plan proof");
+    const batchMarkdown = await fs.readFile(workspaceBatchPreflight.markdownPath, "utf8");
+    expect(batchMarkdown).toContain("Missing section labels");
+    expect(batchMarkdown).toContain("Operator identity and timestamp");
     await generateArtifactCheckReport({ project: "ariadne", vaultRoot });
     const roadmapCompletion = await generateRoadmapCompletionAudit({ project: "ariadne", vaultRoot });
     expect(roadmapCompletion.audit.status).toBe("blocked");

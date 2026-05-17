@@ -833,6 +833,7 @@ export interface LiveAdapterOperatorEvidenceCheckBatch {
     checkRef?: string;
     checkMarkdownRef?: string;
     missingSections: number;
+    missingSectionLabels: string[];
     sourceRef?: string;
     errorDetail?: string;
   }>;
