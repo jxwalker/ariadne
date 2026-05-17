@@ -46,6 +46,7 @@ import {
 } from "./liveAdapterApprovalReview.js";
 import { generateLiveAdapterApprovalReviewAudit } from "./liveAdapterApprovalReviewAudit.js";
 import { generateLiveAdapterCutoverAudit } from "./liveAdapterCutoverAudit.js";
+import { generateLiveAdapterEvidenceTemplates } from "./liveAdapterEvidenceTemplates.js";
 import { generateLiveAdapterNextActions } from "./liveAdapterNextActions.js";
 import { generateLiveAdapterReadiness } from "./liveAdapterReadiness.js";
 import { generateLiveAdapterReviewSession } from "./liveAdapterReviewSession.js";
@@ -177,6 +178,7 @@ function usage(): string {
     "  ariadne live-adapter-dossier --project <project> --target <github|deployment|hermes-cron|openscorpion|gsd2|notebooklm>",
     "  ariadne live-adapter-cutover-audit --project <project>",
     "  ariadne live-adapter-review-session --project <project>",
+    "  ariadne live-adapter-evidence-templates --project <project>",
     "  ariadne mutation-dry-run --project <project> --plan <id|json> [--timeout-ms <ms>]",
     "  ariadne mutation-execute --project <project> --plan <id|json> --confirm-plan <id> [--timeout-ms <ms>]",
     "  ariadne target-mutation-execute --project <project> --target <target> --plan <id|json> --confirm-plan <id> [--timeout-ms <ms>]",
@@ -1165,6 +1167,15 @@ async function main(): Promise<void> {
     console.log(`Status: ${result.session.status}`);
     console.log(`Operator review required: ${result.session.summary.operatorReviewRequired}`);
     console.log(`Mutation approved: ${result.session.mutationApproved}`);
+    return;
+  }
+
+  if (parsed.command === "live-adapter-evidence-templates") {
+    const result = await generateLiveAdapterEvidenceTemplates({ project, vaultRoot });
+    console.log(`Live adapter evidence templates: ${result.markdownPath}`);
+    console.log(`Status: ${result.pack.status}`);
+    console.log(`Templates: ${result.pack.summary.templates}`);
+    console.log(`Mutation approved: ${result.pack.mutationApproved}`);
     return;
   }
 

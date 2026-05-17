@@ -2,7 +2,7 @@
 
 Project: ariadne
 Status: operator_review_required
-Generated: 2026-05-17T02:14:46.132Z
+Generated: 2026-05-17T02:57:44.473Z
 Mutation approved: false
 Operator decision required: true
 
@@ -55,7 +55,7 @@ npm run ariadne -- approval-request --project ariadne --by <operator> --target g
 #### Mutation Plan Draft
 
 ```bash
-Create or repair the target-specific mutation-readiness plan after operator approval exists. npm run ariadne -- github-mutation-plan --project <project> --repo <owner/name> --action <merge-pr|rerun-failed-run> --auth-evidence <paths> --approval <approval-id>
+npm run ariadne -- github-mutation-plan --project <project> --repo <owner/name> --action <merge-pr|rerun-failed-run> --auth-evidence <paths> --approval <approval-id>
 ```
 
 #### Required Evidence

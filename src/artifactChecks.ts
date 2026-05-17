@@ -300,6 +300,13 @@ const ARTIFACT_SPECS: ArtifactSpec[] = [
     relativePath: "control/live-adapter-review-session.json"
   },
   {
+    id: "live-adapter-evidence-templates",
+    label: "Live adapter evidence templates",
+    required: false,
+    kind: "file",
+    relativePath: "control/live-adapter-evidence-templates.json"
+  },
+  {
     id: "mutation-dry-runs",
     label: "Mutation dry-run records",
     required: false,

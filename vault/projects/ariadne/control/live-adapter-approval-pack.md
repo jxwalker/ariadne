@@ -2,7 +2,7 @@
 
 Project: ariadne
 Status: ready_for_operator_review
-Generated: 2026-05-17T02:14:46.125Z
+Generated: 2026-05-17T02:57:44.467Z
 Next actions: projects/ariadne/control/live-adapter-next-actions.json
 
 ## Summary
@@ -43,7 +43,7 @@ npm run ariadne -- approval-request --project ariadne --by <operator> --target g
 #### Mutation Plan
 
 ```bash
-Create or repair the target-specific mutation-readiness plan after operator approval exists. npm run ariadne -- github-mutation-plan --project <project> --repo <owner/name> --action <merge-pr|rerun-failed-run> --auth-evidence <paths> --approval <approval-id>
+npm run ariadne -- github-mutation-plan --project <project> --repo <owner/name> --action <merge-pr|rerun-failed-run> --auth-evidence <paths> --approval <approval-id>
 ```
 
 #### Dry Run

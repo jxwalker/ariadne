@@ -40,6 +40,7 @@ The system starts with source-grounded intake: drawings, white papers, dictated 
 - Record operator reviews of live-adapter approval packets without granting mutation authority.
 - Audit live-adapter cutover readiness before any placeholder command is replaced with a real external adapter.
 - Generate live-adapter review sessions that consolidate operator actions, target dossiers, cutover blockers, and advisory GBrain queries into one non-mutating review packet.
+- Generate blank live-adapter evidence templates so operators have a safe place to collect packet-review, auth-boundary, rollback, dry-run, and GBrain notes without creating approval evidence automatically.
 - Record file-backed sleep routines, memory proposals, agent mail, interagent leases, read-only Hermes cron snapshots/proposals, and read-only deployment snapshots.
 - Render evaluation trend charts in the static console and generate deterministic plus browser-backed console checks.
 - Guard worktree creation without mutating by default.
@@ -89,6 +90,7 @@ npm run ariadne -- live-adapter-approval-review-audit --project ariadne
 npm run ariadne -- live-adapter-dossier --project ariadne --target github
 npm run ariadne -- live-adapter-cutover-audit --project ariadne
 npm run ariadne -- live-adapter-review-session --project ariadne
+npm run ariadne -- live-adapter-evidence-templates --project ariadne
 npm run ariadne -- github-mutation-execute --project ariadne --plan mutation-readiness-github-... --confirm-plan mutation-readiness-github-...
 npm run ariadne -- target-mutation-execute --project ariadne --target github --plan mutation-readiness-github-... --confirm-plan mutation-readiness-github-...
 npm run ariadne -- mutation-execute --project ariadne --plan mutation-readiness-github-... --confirm-plan mutation-readiness-github-...
@@ -149,6 +151,7 @@ vault/projects/<project>/
 17. Use `live-adapter-dossier` to assemble the target packet, blockers, actions, mutation audit, and GBrain memory queries for operator review.
 18. Use `live-adapter-cutover-audit` to prove whether a target is actually ready to replace placeholder commands with a live adapter implementation.
 19. Use `live-adapter-review-session` to consolidate all target review commands, dossier refs, cutover blockers, and GBrain advisory queries into a single operator session before recording packet reviews.
+20. Use `live-adapter-evidence-templates` to generate blank operator templates for the evidence refs that must exist before packet reviews, approvals, dry-runs, and execution gates can pass.
 
 ## Adapter Commands
 
@@ -201,6 +204,7 @@ npm run ariadne -- live-adapter-approval-review-audit --project ariadne
 npm run ariadne -- live-adapter-dossier --project ariadne --target github
 npm run ariadne -- live-adapter-cutover-audit --project ariadne
 npm run ariadne -- live-adapter-review-session --project ariadne
+npm run ariadne -- live-adapter-evidence-templates --project ariadne
 npm run ariadne -- recovery-report --project ariadne
 npm run ariadne -- console-data --project ariadne
 npm run ariadne -- console-html --project ariadne --refresh-data

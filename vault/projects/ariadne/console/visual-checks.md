@@ -2,12 +2,12 @@
 
 Project: ariadne
 Status: passed
-Generated: 2026-05-17T02:16:15.511Z
+Generated: 2026-05-17T02:57:46.384Z
 HTML: projects/ariadne/console/index.html
 
 ## Summary
 
-- Passed: 19
+- Passed: 21
 - Failed: 0
 
 ## Checks
@@ -27,6 +27,8 @@ HTML: projects/ariadne/console/index.html
 | adapter-cutover-metric | passed | Found Cutover. |
 | adapter-review-session-metric | passed | Found Review Session. |
 | live-adapter-review-session | passed | Found mutationApproved=false. |
+| adapter-evidence-template-metric | passed | Found Evidence Templates. |
+| live-adapter-evidence-templates | passed | Found Templates are blank collection aids. |
 | cutover-queue | passed | 6 cutover-blocked target(s) are visible in the approval queue. |
 | trend-chart | passed | Found data-visual-role="evaluation-trend-chart". |
 | visual-check-panel | passed | Found Visual Checks. |

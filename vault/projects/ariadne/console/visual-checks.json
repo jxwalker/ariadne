@@ -1,11 +1,11 @@
 {
   "schemaVersion": 1,
   "project": "ariadne",
-  "generatedAt": "2026-05-17T02:16:15.511Z",
+  "generatedAt": "2026-05-17T02:57:46.384Z",
   "htmlPath": "projects/ariadne/console/index.html",
   "status": "passed",
   "summary": {
-    "passed": 19,
+    "passed": 21,
     "failed": 0
   },
   "checks": [
@@ -86,6 +86,18 @@
       "label": "Live adapter review session data",
       "status": "passed",
       "detail": "Found mutationApproved=false."
+    },
+    {
+      "id": "adapter-evidence-template-metric",
+      "label": "Adapter evidence-template metric",
+      "status": "passed",
+      "detail": "Found Evidence Templates."
+    },
+    {
+      "id": "live-adapter-evidence-templates",
+      "label": "Live adapter evidence template data",
+      "status": "passed",
+      "detail": "Found Templates are blank collection aids."
     },
     {
       "id": "cutover-queue",

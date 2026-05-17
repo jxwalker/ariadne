@@ -129,6 +129,15 @@ function renderConsole(data: ConsoleData): string {
             detail: `${data.liveAdapterReviewSession.summary.operatorReviewRequired} review-required / ${data.liveAdapterReviewSession.summary.readyForAdapterWork} adapter-ready`
           }
         ]
+      : []),
+    ...(data.liveAdapterEvidenceTemplatePack
+      ? [
+          {
+            time: data.liveAdapterEvidenceTemplatePack.generatedAt,
+            label: `Live adapter evidence templates: ${data.liveAdapterEvidenceTemplatePack.status}`,
+            detail: `${data.liveAdapterEvidenceTemplatePack.summary.templates} templates / ${data.liveAdapterEvidenceTemplatePack.summary.evidenceItems} evidence items`
+          }
+        ]
       : [])
   ].sort((left, right) => right.time.localeCompare(left.time));
 
@@ -184,6 +193,7 @@ function renderConsole(data: ConsoleData): string {
     metric("Dossiers", data.summary.liveAdapterTargetDossiers ?? "none", "adapter"),
     metric("Cutover", data.summary.liveAdapterCutoverAuditStatus ?? "none", `${data.summary.liveAdapterCutoverReady ?? 0} ready`),
     metric("Review Session", data.summary.liveAdapterReviewSessionStatus ?? "none", `${data.summary.liveAdapterReviewSessionRequired ?? 0} required`),
+    metric("Evidence Templates", data.summary.liveAdapterEvidenceTemplates ?? "none", data.summary.liveAdapterEvidenceTemplateStatus ?? "operator"),
     metric("Hermes", data.summary.hermesCronSnapshots, `${data.summary.hermesCronProposals} proposals`),
     metric("Recovery", data.summary.recoveryIssues, "issues"),
     metric("Browser", data.summary.consoleBrowserChecks ?? "none", "console"),
@@ -204,6 +214,7 @@ function renderConsole(data: ConsoleData): string {
     section("Mutation Audit", mutationReadinessAudit(data)),
     section("Live Adapters", liveAdapters(data)),
     section("Review Session", reviewSession(data)),
+    section("Evidence Templates", evidenceTemplates(data)),
     section("Timeline", timelineList(timeline.slice(0, 12))),
     "</div>",
     '<aside class="side-column">',
@@ -530,6 +541,21 @@ function reviewSession(data: ConsoleData): string {
   ].join("");
 }
 
+function evidenceTemplates(data: ConsoleData): string {
+  const pack = data.liveAdapterEvidenceTemplatePack;
+  if (!pack) return empty("No live-adapter evidence templates are available.");
+  return [
+    `<div class="visual-status"><strong class="${statusClass(pack.status)}">${escapeHtml(pack.status)}</strong><span>${escapeHtml(`${pack.summary.templates} templates / ${pack.summary.evidenceItems} evidence items / ${pack.summary.gbrainQueryItems} GBrain queries`)}</span></div>`,
+    '<p class="metadata">Templates are blank collection aids, not approval records or evidence.</p>',
+    '<div class="table-wrap"><table><thead><tr><th>Target</th><th>Status</th><th>Template</th><th>Evidence Items</th><th>GBrain Queries</th></tr></thead><tbody>',
+    ...pack.templates.map(
+      (template) =>
+        `<tr><td>${escapeHtml(template.target)}</td><td class="${statusClass(template.status)}">${escapeHtml(template.status)}</td><td>${escapeHtml(template.templateRef)}</td><td>${escapeHtml(String(template.requiredEvidence.length))}</td><td>${escapeHtml(String(template.gbrainQueries.length))}</td></tr>`
+    ),
+    "</tbody></table></div>"
+  ].join("");
+}
+
 function recovery(data: ConsoleData): string {
   const report = data.recovery;
   if (!report) return empty("No recovery report is available.");
@@ -649,6 +675,7 @@ function statusClass(value: string | undefined): string {
     value === "skipped" ||
     value === "warning" ||
     value === "attention_required" ||
+    value === "awaiting_operator_evidence" ||
     value === "actions_required"
   ) {
     return "warn";
