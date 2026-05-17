@@ -81,6 +81,7 @@ npm run ariadne -- live-adapter-readiness --project ariadne
 npm run ariadne -- live-adapter-next-actions --project ariadne
 npm run ariadne -- live-adapter-approval-pack --project ariadne
 npm run ariadne -- live-adapter-approval-review --project ariadne --target github --by james --status accepted --evidence control/live-adapter-approval-pack.json --notes "Packet reviewed; this does not approve mutation."
+npm run ariadne -- live-adapter-approval-review-audit --project ariadne
 npm run ariadne -- github-mutation-execute --project ariadne --plan mutation-readiness-github-... --confirm-plan mutation-readiness-github-...
 npm run ariadne -- target-mutation-execute --project ariadne --target github --plan mutation-readiness-github-... --confirm-plan mutation-readiness-github-...
 npm run ariadne -- mutation-execute --project ariadne --plan mutation-readiness-github-... --confirm-plan mutation-readiness-github-...
@@ -137,6 +138,7 @@ vault/projects/<project>/
 13. Use `console-html` to generate a static local console at `console/index.html`.
 14. Use `live-adapter-approval-pack` to prepare operator review packets before any live adapter approval decision.
 15. Use `live-adapter-approval-review` only when an operator has reviewed a packet; it does not approve live mutation.
+16. Use `live-adapter-approval-review-audit` to prove accepted packet reviews are current, evidence-backed, and non-mutating.
 
 ## Adapter Commands
 
@@ -185,6 +187,7 @@ npm run ariadne -- mutation-readiness --project ariadne --target github --scope 
 npm run ariadne -- mutation-readiness-audit --project ariadne
 npm run ariadne -- live-adapter-approval-pack --project ariadne --target all
 npm run ariadne -- live-adapter-approval-review --project ariadne --target github --by james --status accepted --packet control/live-adapter-approval-pack.json --evidence control/live-adapter-approval-pack.json
+npm run ariadne -- live-adapter-approval-review-audit --project ariadne
 npm run ariadne -- recovery-report --project ariadne
 npm run ariadne -- console-data --project ariadne
 npm run ariadne -- console-html --project ariadne --refresh-data

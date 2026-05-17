@@ -184,6 +184,7 @@ function isLiveAdapterApprovalReview(value: unknown): value is LiveAdapterApprov
     typeof value.reviewedBy === "string" &&
     value.reviewedBy.trim().length > 0 &&
     typeof value.packetRef === "string" &&
+    typeof value.packetGeneratedAt === "string" &&
     Array.isArray(value.evidenceRefs) &&
     value.evidenceRefs.every((item) => typeof item === "string") &&
     value.mutationApproved === false

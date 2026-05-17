@@ -517,9 +517,43 @@ export interface LiveAdapterApprovalReview {
   status: "accepted" | "needs_changes" | "rejected";
   reviewedBy: string;
   packetRef: string;
+  packetGeneratedAt: string;
   evidenceRefs: string[];
   notes?: string;
   mutationApproved: false;
+}
+
+export interface LiveAdapterApprovalReviewAudit {
+  schemaVersion: 1;
+  project: string;
+  generatedAt: string;
+  status: "passed" | "blocked";
+  approvalPackRef: string;
+  summary: {
+    targets: number;
+    packetTargets: number;
+    reviewRecords: number;
+    currentAcceptedReviews: number;
+    staleAcceptedReviews: number;
+    invalidRecords: number;
+    missingEvidenceRefs: number;
+  };
+  targets: Array<{
+    target: Exclude<MutationReadinessPlan["target"], "generic">;
+    status: "current_accepted" | "missing_review" | "needs_changes" | "rejected" | "stale";
+    packetPresent: boolean;
+    reviewCount: number;
+    acceptedReviewCount: number;
+    currentAcceptedReviewCount: number;
+    latestReviewId?: string;
+    latestAcceptedReviewId?: string;
+    blockers: string[];
+    evidenceRefs: string[];
+  }>;
+  invalidRecords: Array<{
+    path: string;
+    reason: string;
+  }>;
 }
 
 export interface InfraRegistry {
@@ -1110,6 +1144,8 @@ export interface ConsoleData {
     liveAdapterApprovalPackets?: number;
     liveAdapterApprovalReviews?: number;
     acceptedLiveAdapterApprovalReviews?: number;
+    liveAdapterApprovalReviewAuditStatus?: LiveAdapterApprovalReviewAudit["status"];
+    currentLiveAdapterApprovalReviews?: number;
     recoveryIssues: number;
     consoleBrowserChecks?: ConsoleBrowserCheckReport["status"];
     readinessStatus?: ControlReport["status"];
@@ -1174,6 +1210,7 @@ export interface ConsoleData {
   liveAdapterNextActions?: LiveAdapterNextActionsReport;
   liveAdapterApprovalPack?: LiveAdapterApprovalPack;
   liveAdapterApprovalReviews?: LiveAdapterApprovalReview[];
+  liveAdapterApprovalReviewAudit?: LiveAdapterApprovalReviewAudit;
   recovery?: RecoveryReport;
   readiness?: ControlReport;
   artifacts: {
@@ -1201,6 +1238,7 @@ export interface ConsoleData {
     liveAdapterNextActions?: string;
     liveAdapterApprovalPack?: string;
     liveAdapterApprovalReviews?: string;
+    liveAdapterApprovalReviewAudit?: string;
     recoveryReport?: string;
     extractionResults?: string;
     healerProposals?: string;

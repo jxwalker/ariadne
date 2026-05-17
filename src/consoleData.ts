@@ -34,6 +34,7 @@ import type {
   InfraSnapshot,
   LiveAdapterApprovalPack,
   LiveAdapterApprovalReview,
+  LiveAdapterApprovalReviewAudit,
   LiveAdapterNextActionsReport,
   LiveAdapterReadinessReport,
   MemoryProposalRecord,
@@ -105,6 +106,12 @@ export async function collectConsoleData(vaultRoot: string, projectInput: string
     project,
     "control",
     "live-adapter-approval-pack.json"
+  );
+  const liveAdapterApprovalReviewAudit = await readProjectJson<LiveAdapterApprovalReviewAudit>(
+    vaultRoot,
+    project,
+    "control",
+    "live-adapter-approval-review-audit.json"
   );
   const liveAdapterApprovalReviews = await readJsonFiles<LiveAdapterApprovalReview>(
     path.join(dir, "control", "live-adapter-approval-reviews"),
@@ -223,6 +230,8 @@ export async function collectConsoleData(vaultRoot: string, projectInput: string
       liveAdapterApprovalPackets: liveAdapterApprovalPack?.summary.packets,
       liveAdapterApprovalReviews: liveAdapterApprovalReviews.length,
       acceptedLiveAdapterApprovalReviews: liveAdapterApprovalReviews.filter((review) => review.status === "accepted").length,
+      liveAdapterApprovalReviewAuditStatus: liveAdapterApprovalReviewAudit?.status,
+      currentLiveAdapterApprovalReviews: liveAdapterApprovalReviewAudit?.summary.currentAcceptedReviews,
       recoveryIssues: recovery?.issues.length ?? 0,
       consoleBrowserChecks: consoleBrowserChecks?.status,
       readinessStatus: readiness?.status,
@@ -245,6 +254,7 @@ export async function collectConsoleData(vaultRoot: string, projectInput: string
     liveAdapterNextActions,
     liveAdapterApprovalPack,
     liveAdapterApprovalReviews,
+    liveAdapterApprovalReviewAudit,
     decisions,
     playwrightEvidence,
     healerProposals,
@@ -304,6 +314,7 @@ export async function collectConsoleData(vaultRoot: string, projectInput: string
       liveAdapterNextActions: await existingPath(vaultRoot, path.join(dir, "control", "live-adapter-next-actions.json")),
       liveAdapterApprovalPack: await existingPath(vaultRoot, path.join(dir, "control", "live-adapter-approval-pack.json")),
       liveAdapterApprovalReviews: await existingPath(vaultRoot, path.join(dir, "control", "live-adapter-approval-reviews")),
+      liveAdapterApprovalReviewAudit: await existingPath(vaultRoot, path.join(dir, "control", "live-adapter-approval-review-audit.json")),
       recoveryReport: await existingPath(vaultRoot, path.join(dir, "control", "recovery-report.json")),
       extractionResults: await existingPath(vaultRoot, path.join(dir, "extractions")),
       healerProposals: await existingPath(vaultRoot, path.join(dir, "verification", "healer-proposals")),
@@ -501,6 +512,7 @@ function isLiveAdapterApprovalReview(value: unknown): value is LiveAdapterApprov
     value.id.startsWith("approval-review-") &&
     isNonGenericMutationTarget(value.target) &&
     (value.status === "accepted" || value.status === "needs_changes" || value.status === "rejected") &&
+    typeof value.packetGeneratedAt === "string" &&
     value.mutationApproved === false
   );
 }

@@ -2,12 +2,12 @@
 
 Project: ariadne
 Status: passed
-Generated: 2026-05-16T23:27:08.005Z
+Generated: 2026-05-17T00:28:31.282Z
 HTML: projects/ariadne/console/index.html
 
 ## Summary
 
-- Passed: 13
+- Passed: 14
 - Failed: 0
 
 ## Checks
@@ -22,6 +22,7 @@ HTML: projects/ariadne/console/index.html
 | approval-pack-metric | passed | Found Approval Packs. |
 | live-adapter-approval-pack | passed | Found approval packets. |
 | approval-review-metric | passed | Found Packet Reviews. |
+| approval-review-audit-metric | passed | Found Review Audit. |
 | trend-chart | passed | Found data-visual-role="evaluation-trend-chart". |
 | visual-check-panel | passed | Found Visual Checks. |
 | embedded-data | passed | Found id="console-data". |
