@@ -58,6 +58,7 @@ import {
   checkAllLiveAdapterOperatorEvidence,
   liveAdapterOperatorEvidenceCheckAllSourceOption
 } from "./liveAdapterOperatorEvidenceCheckAll.js";
+import { importReadyLiveAdapterOperatorEvidence } from "./liveAdapterOperatorEvidenceImportReady.js";
 import { generateLiveAdapterOperatorEvidenceWorkplan } from "./liveAdapterOperatorEvidenceWorkplan.js";
 import { generateLiveAdapterOperatorEvidenceQueue } from "./liveAdapterOperatorEvidenceQueue.js";
 import { generateLiveAdapterOperatorEvidenceWorkspace } from "./liveAdapterOperatorEvidenceWorkspace.js";
@@ -197,6 +198,7 @@ function usage(): string {
     "  ariadne live-adapter-evidence-templates --project <project>",
     "  ariadne live-adapter-operator-evidence-check --project <project> --target <github|deployment|hermes-cron|openscorpion|gsd2|notebooklm> --from <operator-evidence.md> [--notes <text>]",
     "  ariadne live-adapter-operator-evidence-check-all --project <project> [--source auto|workspace|templates] [--notes <text>]",
+    "  ariadne live-adapter-operator-evidence-import-ready --project <project> --by <operator> [--notes <text>]",
     "  ariadne live-adapter-operator-evidence --project <project> --target <github|deployment|hermes-cron|openscorpion|gsd2|notebooklm> --from <operator-evidence.md> --by <operator> [--notes <text>]",
     "  ariadne live-adapter-operator-evidence-audit --project <project>",
     "  ariadne live-adapter-operator-evidence-workplan --project <project>",
@@ -1274,6 +1276,23 @@ async function main(): Promise<void> {
     console.log(`Checks: ${result.batch.summary.checks}`);
     console.log(`Incomplete checks: ${result.batch.summary.incompleteChecks}`);
     console.log(`Missing sources: ${result.batch.summary.missingSources}`);
+    console.log(`Mutation approved: ${result.batch.mutationApproved}`);
+    return;
+  }
+
+  if (parsed.command === "live-adapter-operator-evidence-import-ready") {
+    const result = await importReadyLiveAdapterOperatorEvidence({
+      project,
+      vaultRoot,
+      reviewedBy: requiredOption(parsed.options, "by"),
+      notes: optionString(parsed.options, "notes", "") || undefined
+    });
+    console.log(`Live adapter operator evidence import ready: ${result.markdownPath}`);
+    console.log(`Status: ${result.batch.status}`);
+    console.log(`Ready for import: ${result.batch.summary.readyForImport}`);
+    console.log(`Imported: ${result.batch.summary.imported}`);
+    console.log(`Skipped: ${result.batch.summary.skipped}`);
+    console.log(`Failed: ${result.batch.summary.failed}`);
     console.log(`Mutation approved: ${result.batch.mutationApproved}`);
     return;
   }

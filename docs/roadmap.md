@@ -134,6 +134,7 @@ Implemented:
 - live adapter operator-evidence preflight checks that evaluate filled workspace files without creating evidence records or approving mutation
 - live adapter operator-evidence batch preflight checks that evaluate every target workspace file and refresh the queue without creating evidence records
 - live adapter operator-evidence queue that ranks targets by latest preflight and import state without granting approval
+- live adapter operator-evidence ready-import batches that import only complete preflighted evidence files without granting approval
 - live adapter operator-evidence workspaces that generate fillable per-target evidence files and supporting notes without granting approval
 - live adapter operator-evidence import and audit that hashes filled evidence files, identifies missing operator proof, and surfaces per-target blockers without granting mutation approval
 
