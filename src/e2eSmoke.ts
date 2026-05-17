@@ -9,6 +9,7 @@ import { generateControlReport } from "./controlPlane.js";
 import { exportGsd2Bundle } from "./gsdAdapter.js";
 import { generateInfrastructureRegistry } from "./infrastructure.js";
 import { collectLocalRuntimeProbe, type RuntimeModelEndpointId } from "./localRuntimeProbe.js";
+import { generateMutationReadinessRepairPlan } from "./mutationReadinessRepairPlan.js";
 import { slugifyProject } from "./paths.js";
 import { generatePlaywrightPlan } from "./playwrightPlan.js";
 import { generateRoadmapCompletionAudit } from "./roadmapCompletionAudit.js";
@@ -18,6 +19,7 @@ import type {
   ConsoleBrowserCheckReport,
   ConsoleVisualCheckReport,
   LocalRuntimeProbe,
+  MutationReadinessRepairPlan,
   RoadmapCompletionAudit
 } from "./types.js";
 
@@ -48,6 +50,7 @@ export interface E2eSmokeReport {
     gsd2Bundle?: string;
     infrastructureRegistry?: string;
     playwrightPlan?: string;
+    mutationReadinessRepairPlan?: string;
     artifactChecks?: string;
     roadmapCompletionAudit?: string;
   };
@@ -147,6 +150,10 @@ export async function runE2eSmoke(input: {
     steps.push(runtimeStep(runtime.probe, artifacts.localRuntimeProbe));
   }
 
+  const repairPlan = await generateMutationReadinessRepairPlan({ project, vaultRoot: input.vaultRoot });
+  artifacts.mutationReadinessRepairPlan = relative(input.vaultRoot, repairPlan.jsonPath);
+  steps.push(repairPlanStep(repairPlan.report, artifacts.mutationReadinessRepairPlan));
+
   const consoleHtml = await generateConsoleHtml({ project, vaultRoot: input.vaultRoot, refreshData: true });
   artifacts.consoleHtml = relative(input.vaultRoot, consoleHtml.htmlPath);
   artifacts.consoleData = consoleHtml.dataPath ? relative(input.vaultRoot, consoleHtml.dataPath) : undefined;
@@ -231,6 +238,16 @@ function runtimeStep(probe: LocalRuntimeProbe, artifactRef: string): E2eSmokeSte
   };
 }
 
+function repairPlanStep(report: MutationReadinessRepairPlan, artifactRef: string): E2eSmokeStep {
+  return {
+    id: "mutation-readiness-repair-plan",
+    label: "Mutation repair plan",
+    status: "passed",
+    detail: `${report.status}; ${report.summary.auditPassed} audit-passed, ${report.summary.missingPlans} missing, ${report.summary.repairablePlans} repairable, ${report.summary.operatorActionRequired} operator-action-required, ${report.summary.blocked} blocked.`,
+    artifactRefs: [artifactRef]
+  };
+}
+
 function visualStep(report: ConsoleVisualCheckReport, artifactRef: string): E2eSmokeStep {
   return {
     id: "console-visual-checks",
@@ -299,6 +316,7 @@ function renderReport(report: E2eSmokeReport): string {
     "## Notes",
     "",
     "- This command does not create approvals, import operator evidence, start services, or mutate external systems.",
+    "- The mutation repair step is read-only guidance and records mutationAllowed=false.",
     "- A blocked roadmap audit means Ariadne is waiting for explicit operator evidence or cutover gates, not that the smoke command failed."
   ];
   return `${lines.join("\n")}\n`;
