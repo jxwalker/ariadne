@@ -1303,6 +1303,8 @@ describe("roadmap adapters", () => {
     expect(scopedHermesWorkspace.workspace.summary.workspaceFiles).toBe(1);
     expect(scopedHermesWorkspace.workspace.summary.supportFiles).toBe(6);
     expect(scopedHermesWorkspace.workspace.targets.map((target) => target.target)).toEqual(["hermes-cron"]);
+    expect(scopedHermesWorkspace.workspace.workplanRef).toBe(operatorEvidenceQueue.queue.workplanRef);
+    expect(scopedHermesWorkspace.workspace.targets[0]?.missingSections).toEqual(hermesQueue?.missingSections);
     await expect(fs.readFile(operatorEvidenceQueue.jsonPath, "utf8")).resolves.toBe(queueJsonBeforeScopedWorkspace);
     await expect(fs.readFile(operatorEvidenceWorkplan.jsonPath, "utf8")).resolves.toBe(workplanJsonBeforeScopedWorkspace);
     const operatorEvidenceAssist = await generateLiveAdapterOperatorEvidenceAssist({ project: "ariadne", vaultRoot });
