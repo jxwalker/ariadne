@@ -1376,6 +1376,8 @@ describe("roadmap adapters", () => {
     const batchMarkdown = await fs.readFile(workspaceBatchPreflight.markdownPath, "utf8");
     expect(batchMarkdown).toContain("Missing section labels");
     expect(batchMarkdown).toContain("Operator identity and timestamp");
+    const queueJsonBeforeScopedPreflight = await fs.readFile(operatorEvidenceQueue.jsonPath, "utf8");
+    const workplanJsonBeforeScopedPreflight = await fs.readFile(operatorEvidenceWorkplan.jsonPath, "utf8");
     const scopedHermesPreflight = await checkAllLiveAdapterOperatorEvidence({
       project: "ariadne",
       vaultRoot,
@@ -1390,6 +1392,8 @@ describe("roadmap adapters", () => {
     );
     expect(scopedHermesPreflight.batch.summary.targets).toBe(1);
     expect(scopedHermesPreflight.batch.targets.map((target) => target.target)).toEqual(["hermes-cron"]);
+    await expect(fs.readFile(operatorEvidenceQueue.jsonPath, "utf8")).resolves.toBe(queueJsonBeforeScopedPreflight);
+    await expect(fs.readFile(operatorEvidenceWorkplan.jsonPath, "utf8")).resolves.toBe(workplanJsonBeforeScopedPreflight);
     const gsd2Workspace = operatorEvidenceWorkspace.workspace.targets.find((target) => target.target === "gsd2");
     expect(gsd2Workspace?.evidenceFileRef).toContain("control/operator-evidence/gsd2/operator-evidence.md");
     const gsd2WorkspaceFile = path.join(vaultRoot, gsd2Workspace?.evidenceFileRef ?? "");

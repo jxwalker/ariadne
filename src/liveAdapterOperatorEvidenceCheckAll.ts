@@ -8,6 +8,7 @@ import { projectDir, slugifyProject } from "./paths.js";
 import type {
   LiveAdapterEvidenceTemplatePack,
   LiveAdapterOperatorEvidenceCheckBatch,
+  LiveAdapterOperatorEvidenceQueue,
   LiveAdapterOperatorEvidenceWorkspace
 } from "./types.js";
 
@@ -20,6 +21,7 @@ type EvidenceSourceSet = {
   workspaceRef?: string;
   refsByTarget: Map<LiveAdapterTarget, string>;
 };
+type QueueResult = { jsonPath: string; queue: LiveAdapterOperatorEvidenceQueue };
 
 export async function checkAllLiveAdapterOperatorEvidence(input: {
   project: string;
@@ -78,7 +80,9 @@ export async function checkAllLiveAdapterOperatorEvidence(input: {
     }
   }
 
-  const queueResult = await generateLiveAdapterOperatorEvidenceQueue({ project, vaultRoot: input.vaultRoot });
+  const queueResult =
+    (input.target ? await readExistingQueue(input.vaultRoot, project) : undefined) ??
+    (await generateLiveAdapterOperatorEvidenceQueue({ project, vaultRoot: input.vaultRoot }));
   const summary = {
     targets: targets.length,
     checks: targets.filter((target) => target.status !== "missing_template" && target.status !== "missing_source").length,
@@ -181,6 +185,44 @@ async function readOptionalWorkspace(
     if ((error as NodeJS.ErrnoException).code === "ENOENT") return undefined;
     throw error;
   }
+}
+
+async function readExistingQueue(vaultRoot: string, project: string): Promise<QueueResult | undefined> {
+  const jsonPath = path.join(projectDir(vaultRoot, project), "control", "live-adapter-operator-evidence-queue.json");
+  try {
+    const parsed = JSON.parse(await fs.readFile(jsonPath, "utf8")) as unknown;
+    if (isQueue(parsed, project)) return { jsonPath, queue: parsed };
+    throw new Error(`Invalid live adapter operator evidence queue: ${path.relative(vaultRoot, jsonPath)}`);
+  } catch (error) {
+    if ((error as NodeJS.ErrnoException).code === "ENOENT") return undefined;
+    throw error;
+  }
+}
+
+function isQueue(value: unknown, project: string): value is LiveAdapterOperatorEvidenceQueue {
+  return (
+    Boolean(value && typeof value === "object" && !Array.isArray(value)) &&
+    (value as LiveAdapterOperatorEvidenceQueue).schemaVersion === 1 &&
+    (value as LiveAdapterOperatorEvidenceQueue).project === project &&
+    typeof (value as LiveAdapterOperatorEvidenceQueue).workplanRef === "string" &&
+    Array.isArray((value as LiveAdapterOperatorEvidenceQueue).targets) &&
+    (value as LiveAdapterOperatorEvidenceQueue).targets.every(
+      (target) =>
+        Boolean(target && typeof target === "object" && !Array.isArray(target)) &&
+        isLiveAdapterTargetValue((target as LiveAdapterOperatorEvidenceQueue["targets"][number]).target) &&
+        isQueueTargetStatus((target as LiveAdapterOperatorEvidenceQueue["targets"][number]).status)
+    )
+  );
+}
+
+function isQueueTargetStatus(value: unknown): value is LiveAdapterOperatorEvidenceQueue["targets"][number]["status"] {
+  return (
+    value === "complete" ||
+    value === "ready_for_import" ||
+    value === "needs_evidence" ||
+    value === "needs_rework" ||
+    value === "unchecked"
+  );
 }
 
 function isTemplatePack(value: unknown): value is LiveAdapterEvidenceTemplatePack {
