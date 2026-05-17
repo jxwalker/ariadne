@@ -1483,6 +1483,11 @@ describe("roadmap adapters", () => {
     await fs.writeFile(operatorEvidenceAuditPath, `${JSON.stringify(operatorEvidenceAuditJson, null, 2)}\n`);
     const staleStatus = await projectStatus(vaultRoot, "ariadne");
     expect(staleStatus.liveAdapterOperatorEvidenceMissingSections).toBeGreaterThan(0);
+    const staleRoadmapCompletion = await generateRoadmapCompletionAudit({ project: "ariadne", vaultRoot });
+    const staleOperatorEvidenceRequirement = staleRoadmapCompletion.audit.requirements.find(
+      (requirement) => requirement.id === "operator-evidence"
+    );
+    expect(staleOperatorEvidenceRequirement?.detail).toContain("27 missing section(s)");
 
     const artifactChecks = await generateArtifactCheckReport({ project: "ariadne", vaultRoot });
     const coordinationCheck = artifactChecks.report.checks.find((check) => check.id === "coordination-records");

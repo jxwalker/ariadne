@@ -2,7 +2,7 @@ import path from "node:path";
 import { writeJsonArtifact, writeTextArtifact } from "./artifacts.js";
 import { generateLiveAdapterCutoverAudit } from "./liveAdapterCutoverAudit.js";
 import { generateLiveAdapterEvidenceTemplates } from "./liveAdapterEvidenceTemplates.js";
-import { generateLiveAdapterOperatorEvidenceAudit } from "./liveAdapterOperatorEvidence.js";
+import { generateLiveAdapterOperatorEvidenceAudit, operatorEvidenceTargetMissingSections } from "./liveAdapterOperatorEvidence.js";
 import { generateLiveAdapterReviewSession } from "./liveAdapterReviewSession.js";
 import { slugifyProject } from "./paths.js";
 import type {
@@ -84,6 +84,7 @@ function workplanTarget(
 ): WorkplanTarget {
   const status: WorkplanTarget["status"] =
     auditTarget.status === "complete" ? "complete" : auditTarget.status === "incomplete" ? "needs_rework" : "needs_evidence";
+  const missingSections = operatorEvidenceTargetMissingSections(auditTarget);
   return {
     target: auditTarget.target,
     status,
@@ -92,7 +93,7 @@ function workplanTarget(
     checkCommand: `npm run ariadne -- live-adapter-operator-evidence-check --project ${project} --target ${auditTarget.target} --from vault/projects/${project}/control/operator-evidence/${auditTarget.target}/operator-evidence.md`,
     importCommand: `npm run ariadne -- live-adapter-operator-evidence --project ${project} --target ${auditTarget.target} --from vault/projects/${project}/control/operator-evidence/${auditTarget.target}/operator-evidence.md --by <operator>`,
     reviewCommand: review.reviewCommand.replace("--project <project>", `--project ${project}`),
-    missingSections: auditTarget.missingSections,
+    missingSections,
     requiredEvidence: template.requiredEvidence,
     cutoverBlockers: cutover.blockers,
     gbrainQueries: template.gbrainQueries,
