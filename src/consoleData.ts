@@ -654,6 +654,13 @@ function isLocalRuntimeProbe(value: unknown): value is LocalRuntimeProbe {
   const summary = value.summary;
   const hermes = value.hermes;
   const modelEndpoints = value.modelEndpoints;
+  const hermesValid =
+    hermes === undefined ||
+    (hasSchema(hermes) &&
+      isRuntimeServiceProbe(hermes.dashboard) &&
+      isRuntimeCommandProbe(hermes.statusCommand) &&
+      isRuntimeCommandProbe(hermes.doctorCommand) &&
+      isRuntimeCommandProbe(hermes.gatewayCommand));
   return (
     value.schemaVersion === 1 &&
     (value.mode === "read_only" || value.mode === "read_only_with_canary") &&
@@ -663,11 +670,7 @@ function isLocalRuntimeProbe(value: unknown): value is LocalRuntimeProbe {
     typeof summary.degraded === "number" &&
     typeof summary.unreachable === "number" &&
     typeof summary.models === "number" &&
-    hasSchema(hermes) &&
-    isRuntimeServiceProbe(hermes.dashboard) &&
-    isRuntimeCommandProbe(hermes.statusCommand) &&
-    isRuntimeCommandProbe(hermes.doctorCommand) &&
-    isRuntimeCommandProbe(hermes.gatewayCommand) &&
+    hermesValid &&
     Array.isArray(modelEndpoints) &&
     modelEndpoints.every(isRuntimeModelEndpointProbe)
   );
