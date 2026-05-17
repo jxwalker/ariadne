@@ -2,12 +2,12 @@
 
 Project: ariadne
 Status: passed
-Generated: 2026-05-17T06:36:53.757Z
+Generated: 2026-05-17T07:05:57.635Z
 HTML: projects/ariadne/console/index.html
 
 ## Summary
 
-- Passed: 28
+- Passed: 30
 - Failed: 0
 
 ## Checks
@@ -31,6 +31,8 @@ HTML: projects/ariadne/console/index.html
 | live-adapter-evidence-templates | passed | Found Templates are blank collection aids. |
 | adapter-operator-evidence-workplan-metric | passed | Found Evidence Workplan. |
 | live-adapter-operator-evidence-workplan | passed | Found The workplan is an evidence collection queue. |
+| adapter-operator-evidence-queue-metric | passed | Found Evidence Queue. |
+| live-adapter-operator-evidence-queue | passed | Found The queue orders operator work from preflight checks. |
 | adapter-operator-evidence-checks-metric | passed | Found Evidence Checks. |
 | live-adapter-operator-evidence-check-command | passed | Found live-adapter-operator-evidence-check. |
 | adapter-operator-evidence-metric | passed | Found Operator Evidence. |

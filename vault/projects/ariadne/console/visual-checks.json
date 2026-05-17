@@ -1,11 +1,11 @@
 {
   "schemaVersion": 1,
   "project": "ariadne",
-  "generatedAt": "2026-05-17T06:36:53.757Z",
+  "generatedAt": "2026-05-17T07:05:57.635Z",
   "htmlPath": "projects/ariadne/console/index.html",
   "status": "passed",
   "summary": {
-    "passed": 28,
+    "passed": 30,
     "failed": 0
   },
   "checks": [
@@ -110,6 +110,18 @@
       "label": "Live adapter operator evidence workplan data",
       "status": "passed",
       "detail": "Found The workplan is an evidence collection queue."
+    },
+    {
+      "id": "adapter-operator-evidence-queue-metric",
+      "label": "Adapter operator-evidence queue metric",
+      "status": "passed",
+      "detail": "Found Evidence Queue."
+    },
+    {
+      "id": "live-adapter-operator-evidence-queue",
+      "label": "Live adapter operator evidence queue data",
+      "status": "passed",
+      "detail": "Found The queue orders operator work from preflight checks."
     },
     {
       "id": "adapter-operator-evidence-checks-metric",

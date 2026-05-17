@@ -768,6 +768,40 @@ export interface LiveAdapterOperatorEvidenceCheck {
   notes?: string;
 }
 
+export interface LiveAdapterOperatorEvidenceQueue {
+  schemaVersion: 1;
+  project: string;
+  generatedAt: string;
+  status: "evidence_required" | "ready_for_import" | "complete";
+  mutationApproved: false;
+  operatorEvidenceAuditRef: string;
+  workplanRef: string;
+  summary: {
+    targets: number;
+    completeTargets: number;
+    readyForImport: number;
+    needsEvidence: number;
+    needsRework: number;
+    uncheckedTargets: number;
+    latestChecks: number;
+  };
+  targets: Array<{
+    target: Exclude<MutationReadinessPlan["target"], "generic">;
+    status: "complete" | "ready_for_import" | "needs_evidence" | "needs_rework" | "unchecked";
+    operatorEvidenceStatus: "complete" | "incomplete" | "missing_evidence";
+    latestCheckId?: string;
+    latestCheckRef?: string;
+    latestCheckStatus?: "complete" | "incomplete";
+    latestCheckMissingSections?: number;
+    missingSections: string[];
+    nextAction: string;
+    checkCommand: string;
+    importCommand: string;
+    templateRef: string;
+    evidenceRefs: string[];
+  }>;
+}
+
 export interface LiveAdapterOperatorEvidenceRecord {
   schemaVersion: 1;
   id: string;
@@ -1450,6 +1484,8 @@ export interface ConsoleData {
     liveAdapterEvidenceTemplateStatus?: LiveAdapterEvidenceTemplatePack["status"];
     liveAdapterOperatorEvidenceWorkplanStatus?: LiveAdapterOperatorEvidenceWorkplan["status"];
     liveAdapterOperatorEvidenceWorkplanTargets?: number;
+    liveAdapterOperatorEvidenceQueueStatus?: LiveAdapterOperatorEvidenceQueue["status"];
+    liveAdapterOperatorEvidenceQueueReady?: number;
     liveAdapterOperatorEvidenceChecks?: number;
     liveAdapterOperatorEvidenceRecords?: number;
     liveAdapterOperatorEvidenceStatus?: LiveAdapterOperatorEvidenceAudit["status"];
@@ -1528,6 +1564,7 @@ export interface ConsoleData {
   liveAdapterReviewSession?: LiveAdapterReviewSession;
   liveAdapterEvidenceTemplatePack?: LiveAdapterEvidenceTemplatePack;
   liveAdapterOperatorEvidenceWorkplan?: LiveAdapterOperatorEvidenceWorkplan;
+  liveAdapterOperatorEvidenceQueue?: LiveAdapterOperatorEvidenceQueue;
   liveAdapterOperatorEvidenceChecks: LiveAdapterOperatorEvidenceCheck[];
   liveAdapterOperatorEvidence: LiveAdapterOperatorEvidenceRecord[];
   liveAdapterOperatorEvidenceAudit?: LiveAdapterOperatorEvidenceAudit;
@@ -1565,6 +1602,7 @@ export interface ConsoleData {
     liveAdapterReviewSession?: string;
     liveAdapterEvidenceTemplates?: string;
     liveAdapterOperatorEvidenceWorkplan?: string;
+    liveAdapterOperatorEvidenceQueue?: string;
     liveAdapterOperatorEvidenceChecks?: string;
     liveAdapterOperatorEvidence?: string;
     liveAdapterOperatorEvidenceAudit?: string;

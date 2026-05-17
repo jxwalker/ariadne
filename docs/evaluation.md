@@ -101,6 +101,8 @@ The audit is a non-mutating evaluator. It checks approval state, evidence refs, 
 
 `live-adapter-operator-evidence-check` evaluates a filled operator file without creating an evidence record. It is a preflight path for catching missing sections while writing `recorded=false`, `operatorEvidenceRecordCreated=false`, `mutationApproved=false`, and `approvalGranted=false`.
 
+`live-adapter-operator-evidence-queue` evaluates the operator work queue after preflight checks. It does not prove evidence by itself; it tells the operator which targets are unchecked, which need more evidence, and which checked files are ready to import.
+
 `live-adapter-operator-evidence` and `live-adapter-operator-evidence-audit` evaluate those filled operator files. The importer hashes the source, checks required evidence sections, keeps GBrain notes advisory, and writes `mutationApproved=false` plus `approvalGranted=false`. The audit reports complete, incomplete, and missing targets so the console can show evidence blockers before any live-adapter implementation work proceeds.
 
 `hermes-cron-import` writes read-only scheduler evidence:

@@ -55,6 +55,7 @@ import {
   recordLiveAdapterOperatorEvidence
 } from "./liveAdapterOperatorEvidence.js";
 import { generateLiveAdapterOperatorEvidenceWorkplan } from "./liveAdapterOperatorEvidenceWorkplan.js";
+import { generateLiveAdapterOperatorEvidenceQueue } from "./liveAdapterOperatorEvidenceQueue.js";
 import { generateLiveAdapterReadiness } from "./liveAdapterReadiness.js";
 import { generateLiveAdapterReviewSession } from "./liveAdapterReviewSession.js";
 import { generateLiveAdapterTargetDossier, liveAdapterDossierTargetOption } from "./liveAdapterTargetDossier.js";
@@ -191,6 +192,7 @@ function usage(): string {
     "  ariadne live-adapter-operator-evidence --project <project> --target <github|deployment|hermes-cron|openscorpion|gsd2|notebooklm> --from <filled-template.md> --by <operator> [--notes <text>]",
     "  ariadne live-adapter-operator-evidence-audit --project <project>",
     "  ariadne live-adapter-operator-evidence-workplan --project <project>",
+    "  ariadne live-adapter-operator-evidence-queue --project <project>",
     "  ariadne roadmap-completion-audit --project <project>",
     "  ariadne mutation-dry-run --project <project> --plan <id|json> [--timeout-ms <ms>]",
     "  ariadne mutation-execute --project <project> --plan <id|json> --confirm-plan <id> [--timeout-ms <ms>]",
@@ -1244,6 +1246,16 @@ async function main(): Promise<void> {
     console.log(`Check commands: ${result.workplan.summary.checkCommands}`);
     console.log(`Import commands: ${result.workplan.summary.importCommands}`);
     console.log(`Mutation approved: ${result.workplan.mutationApproved}`);
+    return;
+  }
+
+  if (parsed.command === "live-adapter-operator-evidence-queue") {
+    const result = await generateLiveAdapterOperatorEvidenceQueue({ project, vaultRoot });
+    console.log(`Live adapter operator evidence queue: ${result.markdownPath}`);
+    console.log(`Status: ${result.queue.status}`);
+    console.log(`Ready for import: ${result.queue.summary.readyForImport}`);
+    console.log(`Unchecked targets: ${result.queue.summary.uncheckedTargets}`);
+    console.log(`Mutation approved: ${result.queue.mutationApproved}`);
     return;
   }
 

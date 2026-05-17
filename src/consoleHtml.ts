@@ -222,6 +222,7 @@ function renderConsole(data: ConsoleData): string {
     metric("Review Session", data.summary.liveAdapterReviewSessionStatus ?? "none", `${data.summary.liveAdapterReviewSessionRequired ?? 0} required`),
     metric("Evidence Templates", data.summary.liveAdapterEvidenceTemplates ?? "none", data.summary.liveAdapterEvidenceTemplateStatus ?? "operator"),
     metric("Evidence Workplan", data.summary.liveAdapterOperatorEvidenceWorkplanStatus ?? "none", `${data.summary.liveAdapterOperatorEvidenceWorkplanTargets ?? 0} targets`),
+    metric("Evidence Queue", data.summary.liveAdapterOperatorEvidenceQueueStatus ?? "none", `${data.summary.liveAdapterOperatorEvidenceQueueReady ?? 0} ready`),
     metric("Evidence Checks", data.summary.liveAdapterOperatorEvidenceChecks ?? "none", "preflight"),
     metric("Operator Evidence", data.summary.liveAdapterOperatorEvidenceStatus ?? "none", `${data.summary.liveAdapterOperatorEvidenceComplete ?? 0} complete`),
     metric("Roadmap Audit", data.summary.roadmapCompletionStatus ?? "none", `${data.summary.roadmapCompletionBlocked ?? 0} blocked`),
@@ -247,6 +248,7 @@ function renderConsole(data: ConsoleData): string {
     section("Review Session", reviewSession(data)),
     section("Evidence Templates", evidenceTemplates(data)),
     section("Evidence Workplan", operatorEvidenceWorkplan(data)),
+    section("Evidence Queue", operatorEvidenceQueue(data)),
     section("Operator Evidence", operatorEvidence(data)),
     section("Roadmap Audit", roadmapCompletion(data)),
     section("Timeline", timelineList(timeline.slice(0, 12))),
@@ -613,6 +615,21 @@ function operatorEvidenceWorkplan(data: ConsoleData): string {
   ].join("");
 }
 
+function operatorEvidenceQueue(data: ConsoleData): string {
+  const queue = data.liveAdapterOperatorEvidenceQueue;
+  if (!queue) return empty("No live-adapter operator evidence queue is available.");
+  return [
+    `<div class="visual-status"><strong class="${statusClass(queue.status)}">${escapeHtml(queue.status)}</strong><span>${escapeHtml(`${queue.summary.readyForImport} ready for import / ${queue.summary.uncheckedTargets} unchecked / ${queue.summary.needsEvidence} need evidence`)}</span></div>`,
+    '<p class="metadata">The queue orders operator work from preflight checks; it is not approval evidence.</p>',
+    '<div class="table-wrap"><table><thead><tr><th>Target</th><th>Status</th><th>Latest Check</th><th>Missing</th><th>Next Action</th></tr></thead><tbody>',
+    ...queue.targets.map(
+      (target) =>
+        `<tr><td>${escapeHtml(target.target)}</td><td class="${statusClass(target.status)}">${escapeHtml(target.status)}</td><td>${escapeHtml(target.latestCheckId ?? "none")}</td><td>${escapeHtml(String(target.latestCheckMissingSections ?? target.missingSections.length))}</td><td>${escapeHtml(target.nextAction)}</td></tr>`
+    ),
+    "</tbody></table></div>"
+  ].join("");
+}
+
 function operatorEvidence(data: ConsoleData): string {
   const audit = data.liveAdapterOperatorEvidenceAudit;
   if (!audit) return empty("No live-adapter operator evidence audit is available.");
@@ -753,6 +770,7 @@ function statusClass(value: string | undefined): string {
     value === "approved" ||
     value === "complete" ||
     value === "ready_for_review" ||
+    value === "ready_for_import" ||
     value === "ready_for_adapter" ||
     value === "info"
   ) {
@@ -772,7 +790,8 @@ function statusClass(value: string | undefined): string {
     value === "actions_required" ||
     value === "evidence_required" ||
     value === "needs_evidence" ||
-    value === "needs_rework"
+    value === "needs_rework" ||
+    value === "unchecked"
   ) {
     return "warn";
   }

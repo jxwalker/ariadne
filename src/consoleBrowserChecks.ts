@@ -37,6 +37,7 @@ export async function generateConsoleBrowserCheckReport(input: {
     checks.push(await visibleCheck(page, "evaluation-trends", "Evaluation trends section", "text=Evaluation Trends"));
     checks.push(await visibleCheck(page, "recovery", "Recovery section", "text=Recovery"));
     checks.push(await visibleCheck(page, "github", "GitHub section", "text=GitHub"));
+    checks.push(await visibleCheck(page, "evidence-queue", "Evidence Queue metric", "text=Evidence Queue"));
     checks.push(await visibleCheck(page, "evidence-checks", "Evidence Checks metric", "text=Evidence Checks"));
     checks.push(await operatorEvidenceCheckCommandCheck(page));
     checks.push(await embeddedDataCheck(page));
