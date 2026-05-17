@@ -9,6 +9,10 @@ import type {
   DossierOptions,
   IngestOptions,
   IngestRecord,
+  LiveAdapterCutoverAudit,
+  LiveAdapterOperatorEvidenceAudit,
+  LiveAdapterOperatorEvidenceQueue,
+  LiveAdapterReviewSession,
   MutationReadinessRepairPlan,
   ProjectStatus,
   RoadmapCompletionAudit,
@@ -316,11 +320,29 @@ function renderHandoff(input: {
 export async function projectStatus(vaultRoot: string, project: string): Promise<ProjectStatus> {
   const projectSlug = slugifyProject(project);
   const dir = projectDir(vaultRoot, project);
-  const [records, readiness, roadmapCompletion, repairPlan, e2eSmoke] = await Promise.all([
+  const [
+    records,
+    readiness,
+    roadmapCompletion,
+    repairPlan,
+    operatorEvidenceAudit,
+    operatorEvidenceQueue,
+    cutoverAudit,
+    reviewSession,
+    e2eSmoke
+  ] = await Promise.all([
     loadRecords(vaultRoot, project),
     readJson<ControlReport>(path.join(dir, "control", "merge-readiness.json")),
     readJson<RoadmapCompletionAudit>(path.join(dir, "control", "roadmap-completion-audit.json")),
     readJson<MutationReadinessRepairPlan>(path.join(dir, "control", "mutation-readiness-repair-plan.json")),
+    readJson<LiveAdapterOperatorEvidenceAudit>(
+      path.join(dir, "control", "live-adapter-operator-evidence-audit.json")
+    ),
+    readJson<LiveAdapterOperatorEvidenceQueue>(
+      path.join(dir, "control", "live-adapter-operator-evidence-queue.json")
+    ),
+    readJson<LiveAdapterCutoverAudit>(path.join(dir, "control", "live-adapter-cutover-audit.json")),
+    readJson<LiveAdapterReviewSession>(path.join(dir, "control", "live-adapter-review-session.json")),
     readLatestE2eSmoke(vaultRoot, path.join(dir, "evaluation"))
   ]);
   const latest = records.at(-1);
@@ -337,6 +359,23 @@ export async function projectStatus(vaultRoot: string, project: string): Promise
     mutationReadinessRepairStatus: repairPlan?.status,
     mutationReadinessRepairMissingPlans: repairPlan?.summary.missingPlans,
     mutationReadinessRepairOperatorActionRequired: repairPlan?.summary.operatorActionRequired,
+    liveAdapterOperatorEvidenceStatus: operatorEvidenceAudit?.status,
+    liveAdapterOperatorEvidenceCompleteTargets: operatorEvidenceAudit?.summary.completeTargets,
+    liveAdapterOperatorEvidenceMissingTargets: operatorEvidenceAudit?.summary.missingTargets,
+    liveAdapterOperatorEvidenceMissingSections: operatorEvidenceAudit?.summary.missingSections,
+    liveAdapterOperatorEvidenceQueueStatus: operatorEvidenceQueue?.status,
+    liveAdapterOperatorEvidenceQueueReadyForImport: operatorEvidenceQueue?.summary.readyForImport,
+    liveAdapterOperatorEvidenceQueueNeedsEvidence: operatorEvidenceQueue?.summary.needsEvidence,
+    liveAdapterOperatorEvidenceQueueNeedsRework: operatorEvidenceQueue?.summary.needsRework,
+    liveAdapterOperatorEvidenceQueueUnchecked: operatorEvidenceQueue?.summary.uncheckedTargets,
+    liveAdapterCutoverStatus: cutoverAudit?.status,
+    liveAdapterCutoverReady: cutoverAudit?.summary.ready,
+    liveAdapterCutoverBlocked: cutoverAudit?.summary.blocked,
+    liveAdapterCutoverBlockedGates: cutoverAudit?.summary.blockedGates,
+    liveAdapterReviewSessionStatus: reviewSession?.status,
+    liveAdapterReviewSessionReadyForAdapterWork: reviewSession?.summary.readyForAdapterWork,
+    liveAdapterReviewSessionOperatorReviewRequired: reviewSession?.summary.operatorReviewRequired,
+    liveAdapterReviewSessionActionItems: reviewSession?.summary.actionItems,
     latestE2eSmoke: e2eSmoke
   };
 }
