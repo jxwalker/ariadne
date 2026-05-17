@@ -1267,6 +1267,17 @@ describe("roadmap adapters", () => {
     expect(githubWorkspace?.supportFileRefs).toContain("projects/ariadne/control/operator-evidence/github/read-only-assist.md");
     const githubWorkspaceFile = path.join(vaultRoot, githubWorkspace?.evidenceFileRef ?? "");
     await fs.appendFile(githubWorkspaceFile, "\nOperator draft marker: keep me\n");
+    const scopedHermesWorkspace = await generateLiveAdapterOperatorEvidenceWorkspace({
+      project: "ariadne",
+      vaultRoot,
+      target: "hermes-cron"
+    });
+    expect(scopedHermesWorkspace.jsonPath).toContain("live-adapter-operator-evidence-workspace-hermes-cron.json");
+    expect(scopedHermesWorkspace.workspace.target).toBe("hermes-cron");
+    expect(scopedHermesWorkspace.workspace.summary.targets).toBe(1);
+    expect(scopedHermesWorkspace.workspace.summary.workspaceFiles).toBe(1);
+    expect(scopedHermesWorkspace.workspace.summary.supportFiles).toBe(6);
+    expect(scopedHermesWorkspace.workspace.targets.map((target) => target.target)).toEqual(["hermes-cron"]);
     const operatorEvidenceAssist = await generateLiveAdapterOperatorEvidenceAssist({ project: "ariadne", vaultRoot });
     expect(operatorEvidenceAssist.assist.status).toBe("awaiting_operator_review");
     expect(operatorEvidenceAssist.assist.mutationApproved).toBe(false);
@@ -1285,6 +1296,15 @@ describe("roadmap adapters", () => {
     expect(githubAssistMarkdown).toContain("This file is generated from existing Ariadne artifacts.");
     expect(githubAssistMarkdown).toContain("GBrain Advisory Queries");
     expect(await fs.readFile(githubWorkspaceFile, "utf8")).toContain("Operator draft marker: keep me");
+    const scopedHermesAssist = await generateLiveAdapterOperatorEvidenceAssist({
+      project: "ariadne",
+      vaultRoot,
+      target: "hermes-cron"
+    });
+    expect(scopedHermesAssist.jsonPath).toContain("live-adapter-operator-evidence-assist-hermes-cron.json");
+    expect(scopedHermesAssist.assist.target).toBe("hermes-cron");
+    expect(scopedHermesAssist.assist.summary.targets).toBe(1);
+    expect(scopedHermesAssist.assist.targets.map((target) => target.target)).toEqual(["hermes-cron"]);
     const assistedReviewSession = await generateLiveAdapterReviewSession({ project: "ariadne", vaultRoot });
     const assistedGithubSession = assistedReviewSession.session.targets.find((target) => target.target === "github");
     expect(assistedReviewSession.session.operatorEvidenceQueueRef).toBe(
