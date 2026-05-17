@@ -2,7 +2,7 @@
 
 Project: ariadne
 Status: operator_review_required
-Generated: 2026-05-17T08:33:54.742Z
+Generated: 2026-05-17T09:47:18.483Z
 Mutation approved: false
 Operator decision required: true
 
@@ -103,8 +103,8 @@ Queries:
 - projects/ariadne/control/live-adapter-approval-pack.json
 - projects/ariadne/control/live-adapter-approval-review-audit.json
 - projects/ariadne/control/mutation-readiness-audit.json
-- projects/ariadne/control/live-adapter-evidence-templates.json
-- projects/ariadne/control/live-adapter-evidence-templates/live-adapter-evidence-template-github.md
+- projects/ariadne/control/live-adapter-operator-evidence-workspace.json
+- projects/ariadne/control/operator-evidence/github/operator-evidence.md
 
 ### deployment
 
@@ -179,8 +179,8 @@ Queries:
 - projects/ariadne/control/live-adapter-approval-pack.json
 - projects/ariadne/control/live-adapter-approval-review-audit.json
 - projects/ariadne/control/mutation-readiness-audit.json
-- projects/ariadne/control/live-adapter-evidence-templates.json
-- projects/ariadne/control/live-adapter-evidence-templates/live-adapter-evidence-template-deployment.md
+- projects/ariadne/control/live-adapter-operator-evidence-workspace.json
+- projects/ariadne/control/operator-evidence/deployment/operator-evidence.md
 
 ### hermes-cron
 
@@ -255,8 +255,8 @@ Queries:
 - projects/ariadne/control/live-adapter-approval-pack.json
 - projects/ariadne/control/live-adapter-approval-review-audit.json
 - projects/ariadne/control/mutation-readiness-audit.json
-- projects/ariadne/control/live-adapter-evidence-templates.json
-- projects/ariadne/control/live-adapter-evidence-templates/live-adapter-evidence-template-hermes-cron.md
+- projects/ariadne/control/live-adapter-operator-evidence-workspace.json
+- projects/ariadne/control/operator-evidence/hermes-cron/operator-evidence.md
 
 ### openscorpion
 
@@ -331,8 +331,8 @@ Queries:
 - projects/ariadne/control/live-adapter-approval-pack.json
 - projects/ariadne/control/live-adapter-approval-review-audit.json
 - projects/ariadne/control/mutation-readiness-audit.json
-- projects/ariadne/control/live-adapter-evidence-templates.json
-- projects/ariadne/control/live-adapter-evidence-templates/live-adapter-evidence-template-openscorpion.md
+- projects/ariadne/control/live-adapter-operator-evidence-workspace.json
+- projects/ariadne/control/operator-evidence/openscorpion/operator-evidence.md
 
 ### gsd2
 
@@ -407,8 +407,8 @@ Queries:
 - projects/ariadne/control/live-adapter-approval-pack.json
 - projects/ariadne/control/live-adapter-approval-review-audit.json
 - projects/ariadne/control/mutation-readiness-audit.json
-- projects/ariadne/control/live-adapter-evidence-templates.json
-- projects/ariadne/control/live-adapter-evidence-templates/live-adapter-evidence-template-gsd2.md
+- projects/ariadne/control/live-adapter-operator-evidence-workspace.json
+- projects/ariadne/control/operator-evidence/gsd2/operator-evidence.md
 
 ### notebooklm
 
@@ -483,5 +483,5 @@ Queries:
 - projects/ariadne/control/live-adapter-approval-pack.json
 - projects/ariadne/control/live-adapter-approval-review-audit.json
 - projects/ariadne/control/mutation-readiness-audit.json
-- projects/ariadne/control/live-adapter-evidence-templates.json
-- projects/ariadne/control/live-adapter-evidence-templates/live-adapter-evidence-template-notebooklm.md
+- projects/ariadne/control/live-adapter-operator-evidence-workspace.json
+- projects/ariadne/control/operator-evidence/notebooklm/operator-evidence.md

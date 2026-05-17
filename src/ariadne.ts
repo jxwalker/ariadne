@@ -54,7 +54,10 @@ import {
   liveAdapterOperatorEvidenceTargetOption,
   recordLiveAdapterOperatorEvidence
 } from "./liveAdapterOperatorEvidence.js";
-import { checkAllLiveAdapterOperatorEvidence } from "./liveAdapterOperatorEvidenceCheckAll.js";
+import {
+  checkAllLiveAdapterOperatorEvidence,
+  liveAdapterOperatorEvidenceCheckAllSourceOption
+} from "./liveAdapterOperatorEvidenceCheckAll.js";
 import { generateLiveAdapterOperatorEvidenceWorkplan } from "./liveAdapterOperatorEvidenceWorkplan.js";
 import { generateLiveAdapterOperatorEvidenceQueue } from "./liveAdapterOperatorEvidenceQueue.js";
 import { generateLiveAdapterOperatorEvidenceWorkspace } from "./liveAdapterOperatorEvidenceWorkspace.js";
@@ -190,9 +193,9 @@ function usage(): string {
     "  ariadne live-adapter-cutover-audit --project <project>",
     "  ariadne live-adapter-review-session --project <project>",
     "  ariadne live-adapter-evidence-templates --project <project>",
-    "  ariadne live-adapter-operator-evidence-check --project <project> --target <github|deployment|hermes-cron|openscorpion|gsd2|notebooklm> --from <filled-template.md> [--notes <text>]",
-    "  ariadne live-adapter-operator-evidence-check-all --project <project> [--notes <text>]",
-    "  ariadne live-adapter-operator-evidence --project <project> --target <github|deployment|hermes-cron|openscorpion|gsd2|notebooklm> --from <filled-template.md> --by <operator> [--notes <text>]",
+    "  ariadne live-adapter-operator-evidence-check --project <project> --target <github|deployment|hermes-cron|openscorpion|gsd2|notebooklm> --from <operator-evidence.md> [--notes <text>]",
+    "  ariadne live-adapter-operator-evidence-check-all --project <project> [--source auto|workspace|templates] [--notes <text>]",
+    "  ariadne live-adapter-operator-evidence --project <project> --target <github|deployment|hermes-cron|openscorpion|gsd2|notebooklm> --from <operator-evidence.md> --by <operator> [--notes <text>]",
     "  ariadne live-adapter-operator-evidence-audit --project <project>",
     "  ariadne live-adapter-operator-evidence-workplan --project <project>",
     "  ariadne live-adapter-operator-evidence-queue --project <project>",
@@ -1233,16 +1236,20 @@ async function main(): Promise<void> {
   }
 
   if (parsed.command === "live-adapter-operator-evidence-check-all") {
+    const sourceOption = parsed.options.get("source");
+    if (sourceOption === true) throw new Error("--source requires a value.");
     const result = await checkAllLiveAdapterOperatorEvidence({
       project,
       vaultRoot,
+      source: liveAdapterOperatorEvidenceCheckAllSourceOption(typeof sourceOption === "string" ? sourceOption : "auto"),
       notes: optionString(parsed.options, "notes", "") || undefined
     });
     console.log(`Live adapter operator evidence check all: ${result.markdownPath}`);
+    console.log(`Source: ${result.batch.source}`);
     console.log(`Status: ${result.batch.status}`);
     console.log(`Checks: ${result.batch.summary.checks}`);
     console.log(`Incomplete checks: ${result.batch.summary.incompleteChecks}`);
-    console.log(`Missing templates: ${result.batch.summary.missingTemplates}`);
+    console.log(`Missing sources: ${result.batch.summary.missingSources}`);
     console.log(`Mutation approved: ${result.batch.mutationApproved}`);
     return;
   }

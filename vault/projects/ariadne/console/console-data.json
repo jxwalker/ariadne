@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "project": "ariadne",
-  "generatedAt": "2026-05-17T08:16:05.283Z",
+  "generatedAt": "2026-05-17T09:52:01.350Z",
   "projectDir": "projects/ariadne",
   "summary": {
     "sources": 3,
@@ -53,7 +53,7 @@
     "liveAdapterOperatorEvidenceWorkplanTargets": 6,
     "liveAdapterOperatorEvidenceQueueStatus": "evidence_required",
     "liveAdapterOperatorEvidenceQueueReady": 0,
-    "liveAdapterOperatorEvidenceChecks": 7,
+    "liveAdapterOperatorEvidenceChecks": 13,
     "liveAdapterOperatorEvidenceRecords": 0,
     "liveAdapterOperatorEvidenceStatus": "blocked",
     "liveAdapterOperatorEvidenceComplete": 0,
@@ -867,7 +867,7 @@
   "mutationReadinessAudit": {
     "schemaVersion": 1,
     "project": "ariadne",
-    "generatedAt": "2026-05-17T08:15:22.425Z",
+    "generatedAt": "2026-05-17T09:47:19.012Z",
     "status": "blocked",
     "mutationAllowed": false,
     "summary": {
@@ -912,7 +912,7 @@
   "liveAdapterReadiness": {
     "schemaVersion": 1,
     "project": "ariadne",
-    "generatedAt": "2026-05-17T08:15:22.424Z",
+    "generatedAt": "2026-05-17T09:47:19.014Z",
     "status": "blocked",
     "summary": {
       "targets": 6,
@@ -1054,7 +1054,7 @@
   "liveAdapterNextActions": {
     "schemaVersion": 1,
     "project": "ariadne",
-    "generatedAt": "2026-05-17T08:15:22.407Z",
+    "generatedAt": "2026-05-17T09:47:19.016Z",
     "status": "actions_required",
     "summary": {
       "targets": 6,
@@ -1080,11 +1080,11 @@
             "id": "github-operator-evidence",
             "status": "pending",
             "title": "Fill and import operator evidence",
-            "rationale": "The target has no imported operator evidence record. Fill the generated template with real observations before packet review or cutover.",
-            "command": "npm run ariadne -- live-adapter-operator-evidence --project <project> --target github --from vault/projects/<project>/control/live-adapter-evidence-templates/live-adapter-evidence-template-github.md --by <operator>",
+            "rationale": "The target has no imported operator evidence record. Fill the generated workspace file with real observations before packet review or cutover.",
+            "command": "npm run ariadne -- live-adapter-operator-evidence --project <project> --target github --from vault/projects/<project>/control/operator-evidence/github/operator-evidence.md --by <operator>",
             "evidenceRefs": [
-              "control/live-adapter-evidence-templates.json",
-              "control/live-adapter-evidence-templates/live-adapter-evidence-template-github.md"
+              "control/live-adapter-operator-evidence-workspace.json",
+              "control/operator-evidence/github/operator-evidence.md"
             ]
           },
           {
@@ -1145,11 +1145,11 @@
             "id": "deployment-operator-evidence",
             "status": "pending",
             "title": "Fill and import operator evidence",
-            "rationale": "The target has no imported operator evidence record. Fill the generated template with real observations before packet review or cutover.",
-            "command": "npm run ariadne -- live-adapter-operator-evidence --project <project> --target deployment --from vault/projects/<project>/control/live-adapter-evidence-templates/live-adapter-evidence-template-deployment.md --by <operator>",
+            "rationale": "The target has no imported operator evidence record. Fill the generated workspace file with real observations before packet review or cutover.",
+            "command": "npm run ariadne -- live-adapter-operator-evidence --project <project> --target deployment --from vault/projects/<project>/control/operator-evidence/deployment/operator-evidence.md --by <operator>",
             "evidenceRefs": [
-              "control/live-adapter-evidence-templates.json",
-              "control/live-adapter-evidence-templates/live-adapter-evidence-template-deployment.md"
+              "control/live-adapter-operator-evidence-workspace.json",
+              "control/operator-evidence/deployment/operator-evidence.md"
             ]
           },
           {
@@ -1230,11 +1230,11 @@
             "id": "hermes-cron-operator-evidence",
             "status": "pending",
             "title": "Fill and import operator evidence",
-            "rationale": "The target has no imported operator evidence record. Fill the generated template with real observations before packet review or cutover.",
-            "command": "npm run ariadne -- live-adapter-operator-evidence --project <project> --target hermes-cron --from vault/projects/<project>/control/live-adapter-evidence-templates/live-adapter-evidence-template-hermes-cron.md --by <operator>",
+            "rationale": "The target has no imported operator evidence record. Fill the generated workspace file with real observations before packet review or cutover.",
+            "command": "npm run ariadne -- live-adapter-operator-evidence --project <project> --target hermes-cron --from vault/projects/<project>/control/operator-evidence/hermes-cron/operator-evidence.md --by <operator>",
             "evidenceRefs": [
-              "control/live-adapter-evidence-templates.json",
-              "control/live-adapter-evidence-templates/live-adapter-evidence-template-hermes-cron.md"
+              "control/live-adapter-operator-evidence-workspace.json",
+              "control/operator-evidence/hermes-cron/operator-evidence.md"
             ]
           },
           {
@@ -1315,11 +1315,11 @@
             "id": "openscorpion-operator-evidence",
             "status": "pending",
             "title": "Fill and import operator evidence",
-            "rationale": "The target has no imported operator evidence record. Fill the generated template with real observations before packet review or cutover.",
-            "command": "npm run ariadne -- live-adapter-operator-evidence --project <project> --target openscorpion --from vault/projects/<project>/control/live-adapter-evidence-templates/live-adapter-evidence-template-openscorpion.md --by <operator>",
+            "rationale": "The target has no imported operator evidence record. Fill the generated workspace file with real observations before packet review or cutover.",
+            "command": "npm run ariadne -- live-adapter-operator-evidence --project <project> --target openscorpion --from vault/projects/<project>/control/operator-evidence/openscorpion/operator-evidence.md --by <operator>",
             "evidenceRefs": [
-              "control/live-adapter-evidence-templates.json",
-              "control/live-adapter-evidence-templates/live-adapter-evidence-template-openscorpion.md"
+              "control/live-adapter-operator-evidence-workspace.json",
+              "control/operator-evidence/openscorpion/operator-evidence.md"
             ]
           },
           {
@@ -1400,11 +1400,11 @@
             "id": "gsd2-operator-evidence",
             "status": "pending",
             "title": "Fill and import operator evidence",
-            "rationale": "The target has no imported operator evidence record. Fill the generated template with real observations before packet review or cutover.",
-            "command": "npm run ariadne -- live-adapter-operator-evidence --project <project> --target gsd2 --from vault/projects/<project>/control/live-adapter-evidence-templates/live-adapter-evidence-template-gsd2.md --by <operator>",
+            "rationale": "The target has no imported operator evidence record. Fill the generated workspace file with real observations before packet review or cutover.",
+            "command": "npm run ariadne -- live-adapter-operator-evidence --project <project> --target gsd2 --from vault/projects/<project>/control/operator-evidence/gsd2/operator-evidence.md --by <operator>",
             "evidenceRefs": [
-              "control/live-adapter-evidence-templates.json",
-              "control/live-adapter-evidence-templates/live-adapter-evidence-template-gsd2.md"
+              "control/live-adapter-operator-evidence-workspace.json",
+              "control/operator-evidence/gsd2/operator-evidence.md"
             ]
           },
           {
@@ -1485,11 +1485,11 @@
             "id": "notebooklm-operator-evidence",
             "status": "pending",
             "title": "Fill and import operator evidence",
-            "rationale": "The target has no imported operator evidence record. Fill the generated template with real observations before packet review or cutover.",
-            "command": "npm run ariadne -- live-adapter-operator-evidence --project <project> --target notebooklm --from vault/projects/<project>/control/live-adapter-evidence-templates/live-adapter-evidence-template-notebooklm.md --by <operator>",
+            "rationale": "The target has no imported operator evidence record. Fill the generated workspace file with real observations before packet review or cutover.",
+            "command": "npm run ariadne -- live-adapter-operator-evidence --project <project> --target notebooklm --from vault/projects/<project>/control/operator-evidence/notebooklm/operator-evidence.md --by <operator>",
             "evidenceRefs": [
-              "control/live-adapter-evidence-templates.json",
-              "control/live-adapter-evidence-templates/live-adapter-evidence-template-notebooklm.md"
+              "control/live-adapter-operator-evidence-workspace.json",
+              "control/operator-evidence/notebooklm/operator-evidence.md"
             ]
           },
           {
@@ -1559,7 +1559,7 @@
   "liveAdapterApprovalPack": {
     "schemaVersion": 1,
     "project": "ariadne",
-    "generatedAt": "2026-05-17T08:15:22.409Z",
+    "generatedAt": "2026-05-17T09:47:18.471Z",
     "status": "ready_for_operator_review",
     "summary": {
       "targets": 6,
@@ -1603,8 +1603,8 @@
           "blocked: Capture target-guarded execution evidence"
         ],
         "evidenceRefs": [
-          "control/live-adapter-evidence-templates.json",
-          "control/live-adapter-evidence-templates/live-adapter-evidence-template-github.md",
+          "control/live-adapter-operator-evidence-workspace.json",
+          "control/operator-evidence/github/operator-evidence.md",
           "control/mutation-readiness-audit.json"
         ]
       },
@@ -1645,8 +1645,8 @@
           "blocked: Capture target-guarded execution evidence"
         ],
         "evidenceRefs": [
-          "control/live-adapter-evidence-templates.json",
-          "control/live-adapter-evidence-templates/live-adapter-evidence-template-deployment.md",
+          "control/live-adapter-operator-evidence-workspace.json",
+          "control/operator-evidence/deployment/operator-evidence.md",
           "control/mutation-readiness-audit.json"
         ]
       },
@@ -1687,8 +1687,8 @@
           "blocked: Capture target-guarded execution evidence"
         ],
         "evidenceRefs": [
-          "control/live-adapter-evidence-templates.json",
-          "control/live-adapter-evidence-templates/live-adapter-evidence-template-hermes-cron.md",
+          "control/live-adapter-operator-evidence-workspace.json",
+          "control/operator-evidence/hermes-cron/operator-evidence.md",
           "control/mutation-readiness-audit.json"
         ]
       },
@@ -1729,8 +1729,8 @@
           "blocked: Capture target-guarded execution evidence"
         ],
         "evidenceRefs": [
-          "control/live-adapter-evidence-templates.json",
-          "control/live-adapter-evidence-templates/live-adapter-evidence-template-openscorpion.md",
+          "control/live-adapter-operator-evidence-workspace.json",
+          "control/operator-evidence/openscorpion/operator-evidence.md",
           "control/mutation-readiness-audit.json"
         ]
       },
@@ -1771,8 +1771,8 @@
           "blocked: Capture target-guarded execution evidence"
         ],
         "evidenceRefs": [
-          "control/live-adapter-evidence-templates.json",
-          "control/live-adapter-evidence-templates/live-adapter-evidence-template-gsd2.md",
+          "control/live-adapter-operator-evidence-workspace.json",
+          "control/operator-evidence/gsd2/operator-evidence.md",
           "control/mutation-readiness-audit.json"
         ]
       },
@@ -1813,8 +1813,8 @@
           "blocked: Capture target-guarded execution evidence"
         ],
         "evidenceRefs": [
-          "control/live-adapter-evidence-templates.json",
-          "control/live-adapter-evidence-templates/live-adapter-evidence-template-notebooklm.md",
+          "control/live-adapter-operator-evidence-workspace.json",
+          "control/operator-evidence/notebooklm/operator-evidence.md",
           "control/mutation-readiness-audit.json"
         ]
       }
@@ -1824,7 +1824,7 @@
   "liveAdapterApprovalReviewAudit": {
     "schemaVersion": 1,
     "project": "ariadne",
-    "generatedAt": "2026-05-17T08:15:22.424Z",
+    "generatedAt": "2026-05-17T09:47:18.487Z",
     "status": "blocked",
     "approvalPackRef": "control/live-adapter-approval-pack.json",
     "summary": {
@@ -1916,7 +1916,7 @@
     {
       "schemaVersion": 1,
       "project": "ariadne",
-      "generatedAt": "2026-05-17T08:15:22.414Z",
+      "generatedAt": "2026-05-17T09:47:18.476Z",
       "target": "deployment",
       "status": "ready_for_operator_review",
       "readinessRef": "projects/ariadne/control/live-adapter-readiness.json",
@@ -1960,11 +1960,11 @@
           "id": "deployment-operator-evidence",
           "status": "pending",
           "title": "Fill and import operator evidence",
-          "rationale": "The target has no imported operator evidence record. Fill the generated template with real observations before packet review or cutover.",
-          "command": "npm run ariadne -- live-adapter-operator-evidence --project <project> --target deployment --from vault/projects/<project>/control/live-adapter-evidence-templates/live-adapter-evidence-template-deployment.md --by <operator>",
+          "rationale": "The target has no imported operator evidence record. Fill the generated workspace file with real observations before packet review or cutover.",
+          "command": "npm run ariadne -- live-adapter-operator-evidence --project <project> --target deployment --from vault/projects/<project>/control/operator-evidence/deployment/operator-evidence.md --by <operator>",
           "evidenceRefs": [
-            "control/live-adapter-evidence-templates.json",
-            "control/live-adapter-evidence-templates/live-adapter-evidence-template-deployment.md"
+            "control/live-adapter-operator-evidence-workspace.json",
+            "control/operator-evidence/deployment/operator-evidence.md"
           ]
         },
         {
@@ -2065,8 +2065,8 @@
           "blocked: Capture target-guarded execution evidence"
         ],
         "evidenceRefs": [
-          "control/live-adapter-evidence-templates.json",
-          "control/live-adapter-evidence-templates/live-adapter-evidence-template-deployment.md",
+          "control/live-adapter-operator-evidence-workspace.json",
+          "control/operator-evidence/deployment/operator-evidence.md",
           "control/mutation-readiness-audit.json"
         ]
       },
@@ -2106,14 +2106,14 @@
         "projects/ariadne/control/live-adapter-approval-pack.json",
         "projects/ariadne/control/live-adapter-approval-review-audit.json",
         "projects/ariadne/control/mutation-readiness-audit.json",
-        "projects/ariadne/control/live-adapter-evidence-templates.json",
-        "projects/ariadne/control/live-adapter-evidence-templates/live-adapter-evidence-template-deployment.md"
+        "projects/ariadne/control/live-adapter-operator-evidence-workspace.json",
+        "projects/ariadne/control/operator-evidence/deployment/operator-evidence.md"
       ]
     },
     {
       "schemaVersion": 1,
       "project": "ariadne",
-      "generatedAt": "2026-05-17T08:15:22.413Z",
+      "generatedAt": "2026-05-17T09:47:18.476Z",
       "target": "github",
       "status": "ready_for_operator_review",
       "readinessRef": "projects/ariadne/control/live-adapter-readiness.json",
@@ -2156,11 +2156,11 @@
           "id": "github-operator-evidence",
           "status": "pending",
           "title": "Fill and import operator evidence",
-          "rationale": "The target has no imported operator evidence record. Fill the generated template with real observations before packet review or cutover.",
-          "command": "npm run ariadne -- live-adapter-operator-evidence --project <project> --target github --from vault/projects/<project>/control/live-adapter-evidence-templates/live-adapter-evidence-template-github.md --by <operator>",
+          "rationale": "The target has no imported operator evidence record. Fill the generated workspace file with real observations before packet review or cutover.",
+          "command": "npm run ariadne -- live-adapter-operator-evidence --project <project> --target github --from vault/projects/<project>/control/operator-evidence/github/operator-evidence.md --by <operator>",
           "evidenceRefs": [
-            "control/live-adapter-evidence-templates.json",
-            "control/live-adapter-evidence-templates/live-adapter-evidence-template-github.md"
+            "control/live-adapter-operator-evidence-workspace.json",
+            "control/operator-evidence/github/operator-evidence.md"
           ]
         },
         {
@@ -2238,8 +2238,8 @@
           "blocked: Capture target-guarded execution evidence"
         ],
         "evidenceRefs": [
-          "control/live-adapter-evidence-templates.json",
-          "control/live-adapter-evidence-templates/live-adapter-evidence-template-github.md",
+          "control/live-adapter-operator-evidence-workspace.json",
+          "control/operator-evidence/github/operator-evidence.md",
           "control/mutation-readiness-audit.json"
         ]
       },
@@ -2306,14 +2306,14 @@
         "projects/ariadne/control/live-adapter-approval-pack.json",
         "projects/ariadne/control/live-adapter-approval-review-audit.json",
         "projects/ariadne/control/mutation-readiness-audit.json",
-        "projects/ariadne/control/live-adapter-evidence-templates.json",
-        "projects/ariadne/control/live-adapter-evidence-templates/live-adapter-evidence-template-github.md"
+        "projects/ariadne/control/live-adapter-operator-evidence-workspace.json",
+        "projects/ariadne/control/operator-evidence/github/operator-evidence.md"
       ]
     },
     {
       "schemaVersion": 1,
       "project": "ariadne",
-      "generatedAt": "2026-05-17T08:15:22.412Z",
+      "generatedAt": "2026-05-17T09:47:18.475Z",
       "target": "gsd2",
       "status": "ready_for_operator_review",
       "readinessRef": "projects/ariadne/control/live-adapter-readiness.json",
@@ -2357,11 +2357,11 @@
           "id": "gsd2-operator-evidence",
           "status": "pending",
           "title": "Fill and import operator evidence",
-          "rationale": "The target has no imported operator evidence record. Fill the generated template with real observations before packet review or cutover.",
-          "command": "npm run ariadne -- live-adapter-operator-evidence --project <project> --target gsd2 --from vault/projects/<project>/control/live-adapter-evidence-templates/live-adapter-evidence-template-gsd2.md --by <operator>",
+          "rationale": "The target has no imported operator evidence record. Fill the generated workspace file with real observations before packet review or cutover.",
+          "command": "npm run ariadne -- live-adapter-operator-evidence --project <project> --target gsd2 --from vault/projects/<project>/control/operator-evidence/gsd2/operator-evidence.md --by <operator>",
           "evidenceRefs": [
-            "control/live-adapter-evidence-templates.json",
-            "control/live-adapter-evidence-templates/live-adapter-evidence-template-gsd2.md"
+            "control/live-adapter-operator-evidence-workspace.json",
+            "control/operator-evidence/gsd2/operator-evidence.md"
           ]
         },
         {
@@ -2462,8 +2462,8 @@
           "blocked: Capture target-guarded execution evidence"
         ],
         "evidenceRefs": [
-          "control/live-adapter-evidence-templates.json",
-          "control/live-adapter-evidence-templates/live-adapter-evidence-template-gsd2.md",
+          "control/live-adapter-operator-evidence-workspace.json",
+          "control/operator-evidence/gsd2/operator-evidence.md",
           "control/mutation-readiness-audit.json"
         ]
       },
@@ -2503,14 +2503,14 @@
         "projects/ariadne/control/live-adapter-approval-pack.json",
         "projects/ariadne/control/live-adapter-approval-review-audit.json",
         "projects/ariadne/control/mutation-readiness-audit.json",
-        "projects/ariadne/control/live-adapter-evidence-templates.json",
-        "projects/ariadne/control/live-adapter-evidence-templates/live-adapter-evidence-template-gsd2.md"
+        "projects/ariadne/control/live-adapter-operator-evidence-workspace.json",
+        "projects/ariadne/control/operator-evidence/gsd2/operator-evidence.md"
       ]
     },
     {
       "schemaVersion": 1,
       "project": "ariadne",
-      "generatedAt": "2026-05-17T08:15:22.413Z",
+      "generatedAt": "2026-05-17T09:47:18.474Z",
       "target": "hermes-cron",
       "status": "ready_for_operator_review",
       "readinessRef": "projects/ariadne/control/live-adapter-readiness.json",
@@ -2554,11 +2554,11 @@
           "id": "hermes-cron-operator-evidence",
           "status": "pending",
           "title": "Fill and import operator evidence",
-          "rationale": "The target has no imported operator evidence record. Fill the generated template with real observations before packet review or cutover.",
-          "command": "npm run ariadne -- live-adapter-operator-evidence --project <project> --target hermes-cron --from vault/projects/<project>/control/live-adapter-evidence-templates/live-adapter-evidence-template-hermes-cron.md --by <operator>",
+          "rationale": "The target has no imported operator evidence record. Fill the generated workspace file with real observations before packet review or cutover.",
+          "command": "npm run ariadne -- live-adapter-operator-evidence --project <project> --target hermes-cron --from vault/projects/<project>/control/operator-evidence/hermes-cron/operator-evidence.md --by <operator>",
           "evidenceRefs": [
-            "control/live-adapter-evidence-templates.json",
-            "control/live-adapter-evidence-templates/live-adapter-evidence-template-hermes-cron.md"
+            "control/live-adapter-operator-evidence-workspace.json",
+            "control/operator-evidence/hermes-cron/operator-evidence.md"
           ]
         },
         {
@@ -2659,8 +2659,8 @@
           "blocked: Capture target-guarded execution evidence"
         ],
         "evidenceRefs": [
-          "control/live-adapter-evidence-templates.json",
-          "control/live-adapter-evidence-templates/live-adapter-evidence-template-hermes-cron.md",
+          "control/live-adapter-operator-evidence-workspace.json",
+          "control/operator-evidence/hermes-cron/operator-evidence.md",
           "control/mutation-readiness-audit.json"
         ]
       },
@@ -2700,14 +2700,14 @@
         "projects/ariadne/control/live-adapter-approval-pack.json",
         "projects/ariadne/control/live-adapter-approval-review-audit.json",
         "projects/ariadne/control/mutation-readiness-audit.json",
-        "projects/ariadne/control/live-adapter-evidence-templates.json",
-        "projects/ariadne/control/live-adapter-evidence-templates/live-adapter-evidence-template-hermes-cron.md"
+        "projects/ariadne/control/live-adapter-operator-evidence-workspace.json",
+        "projects/ariadne/control/operator-evidence/hermes-cron/operator-evidence.md"
       ]
     },
     {
       "schemaVersion": 1,
       "project": "ariadne",
-      "generatedAt": "2026-05-17T08:15:22.413Z",
+      "generatedAt": "2026-05-17T09:47:18.476Z",
       "target": "notebooklm",
       "status": "ready_for_operator_review",
       "readinessRef": "projects/ariadne/control/live-adapter-readiness.json",
@@ -2751,11 +2751,11 @@
           "id": "notebooklm-operator-evidence",
           "status": "pending",
           "title": "Fill and import operator evidence",
-          "rationale": "The target has no imported operator evidence record. Fill the generated template with real observations before packet review or cutover.",
-          "command": "npm run ariadne -- live-adapter-operator-evidence --project <project> --target notebooklm --from vault/projects/<project>/control/live-adapter-evidence-templates/live-adapter-evidence-template-notebooklm.md --by <operator>",
+          "rationale": "The target has no imported operator evidence record. Fill the generated workspace file with real observations before packet review or cutover.",
+          "command": "npm run ariadne -- live-adapter-operator-evidence --project <project> --target notebooklm --from vault/projects/<project>/control/operator-evidence/notebooklm/operator-evidence.md --by <operator>",
           "evidenceRefs": [
-            "control/live-adapter-evidence-templates.json",
-            "control/live-adapter-evidence-templates/live-adapter-evidence-template-notebooklm.md"
+            "control/live-adapter-operator-evidence-workspace.json",
+            "control/operator-evidence/notebooklm/operator-evidence.md"
           ]
         },
         {
@@ -2856,8 +2856,8 @@
           "blocked: Capture target-guarded execution evidence"
         ],
         "evidenceRefs": [
-          "control/live-adapter-evidence-templates.json",
-          "control/live-adapter-evidence-templates/live-adapter-evidence-template-notebooklm.md",
+          "control/live-adapter-operator-evidence-workspace.json",
+          "control/operator-evidence/notebooklm/operator-evidence.md",
           "control/mutation-readiness-audit.json"
         ]
       },
@@ -2897,14 +2897,14 @@
         "projects/ariadne/control/live-adapter-approval-pack.json",
         "projects/ariadne/control/live-adapter-approval-review-audit.json",
         "projects/ariadne/control/mutation-readiness-audit.json",
-        "projects/ariadne/control/live-adapter-evidence-templates.json",
-        "projects/ariadne/control/live-adapter-evidence-templates/live-adapter-evidence-template-notebooklm.md"
+        "projects/ariadne/control/live-adapter-operator-evidence-workspace.json",
+        "projects/ariadne/control/operator-evidence/notebooklm/operator-evidence.md"
       ]
     },
     {
       "schemaVersion": 1,
       "project": "ariadne",
-      "generatedAt": "2026-05-17T08:15:22.413Z",
+      "generatedAt": "2026-05-17T09:47:18.475Z",
       "target": "openscorpion",
       "status": "ready_for_operator_review",
       "readinessRef": "projects/ariadne/control/live-adapter-readiness.json",
@@ -2948,11 +2948,11 @@
           "id": "openscorpion-operator-evidence",
           "status": "pending",
           "title": "Fill and import operator evidence",
-          "rationale": "The target has no imported operator evidence record. Fill the generated template with real observations before packet review or cutover.",
-          "command": "npm run ariadne -- live-adapter-operator-evidence --project <project> --target openscorpion --from vault/projects/<project>/control/live-adapter-evidence-templates/live-adapter-evidence-template-openscorpion.md --by <operator>",
+          "rationale": "The target has no imported operator evidence record. Fill the generated workspace file with real observations before packet review or cutover.",
+          "command": "npm run ariadne -- live-adapter-operator-evidence --project <project> --target openscorpion --from vault/projects/<project>/control/operator-evidence/openscorpion/operator-evidence.md --by <operator>",
           "evidenceRefs": [
-            "control/live-adapter-evidence-templates.json",
-            "control/live-adapter-evidence-templates/live-adapter-evidence-template-openscorpion.md"
+            "control/live-adapter-operator-evidence-workspace.json",
+            "control/operator-evidence/openscorpion/operator-evidence.md"
           ]
         },
         {
@@ -3053,8 +3053,8 @@
           "blocked: Capture target-guarded execution evidence"
         ],
         "evidenceRefs": [
-          "control/live-adapter-evidence-templates.json",
-          "control/live-adapter-evidence-templates/live-adapter-evidence-template-openscorpion.md",
+          "control/live-adapter-operator-evidence-workspace.json",
+          "control/operator-evidence/openscorpion/operator-evidence.md",
           "control/mutation-readiness-audit.json"
         ]
       },
@@ -3094,15 +3094,15 @@
         "projects/ariadne/control/live-adapter-approval-pack.json",
         "projects/ariadne/control/live-adapter-approval-review-audit.json",
         "projects/ariadne/control/mutation-readiness-audit.json",
-        "projects/ariadne/control/live-adapter-evidence-templates.json",
-        "projects/ariadne/control/live-adapter-evidence-templates/live-adapter-evidence-template-openscorpion.md"
+        "projects/ariadne/control/live-adapter-operator-evidence-workspace.json",
+        "projects/ariadne/control/operator-evidence/openscorpion/operator-evidence.md"
       ]
     }
   ],
   "liveAdapterCutoverAudit": {
     "schemaVersion": 1,
     "project": "ariadne",
-    "generatedAt": "2026-05-17T08:15:22.426Z",
+    "generatedAt": "2026-05-17T09:47:18.490Z",
     "status": "blocked",
     "mutationAllowed": false,
     "readinessRef": "control/live-adapter-readiness.json",
@@ -3736,7 +3736,7 @@
   "liveAdapterReviewSession": {
     "schemaVersion": 1,
     "project": "ariadne",
-    "generatedAt": "2026-05-17T08:15:22.421Z",
+    "generatedAt": "2026-05-17T09:47:18.483Z",
     "status": "operator_review_required",
     "mutationApproved": false,
     "operatorDecisionRequired": true,
@@ -3807,8 +3807,8 @@
           "projects/ariadne/control/live-adapter-approval-pack.json",
           "projects/ariadne/control/live-adapter-approval-review-audit.json",
           "projects/ariadne/control/mutation-readiness-audit.json",
-          "projects/ariadne/control/live-adapter-evidence-templates.json",
-          "projects/ariadne/control/live-adapter-evidence-templates/live-adapter-evidence-template-github.md"
+          "projects/ariadne/control/live-adapter-operator-evidence-workspace.json",
+          "projects/ariadne/control/operator-evidence/github/operator-evidence.md"
         ]
       },
       {
@@ -3863,8 +3863,8 @@
           "projects/ariadne/control/live-adapter-approval-pack.json",
           "projects/ariadne/control/live-adapter-approval-review-audit.json",
           "projects/ariadne/control/mutation-readiness-audit.json",
-          "projects/ariadne/control/live-adapter-evidence-templates.json",
-          "projects/ariadne/control/live-adapter-evidence-templates/live-adapter-evidence-template-deployment.md"
+          "projects/ariadne/control/live-adapter-operator-evidence-workspace.json",
+          "projects/ariadne/control/operator-evidence/deployment/operator-evidence.md"
         ]
       },
       {
@@ -3919,8 +3919,8 @@
           "projects/ariadne/control/live-adapter-approval-pack.json",
           "projects/ariadne/control/live-adapter-approval-review-audit.json",
           "projects/ariadne/control/mutation-readiness-audit.json",
-          "projects/ariadne/control/live-adapter-evidence-templates.json",
-          "projects/ariadne/control/live-adapter-evidence-templates/live-adapter-evidence-template-hermes-cron.md"
+          "projects/ariadne/control/live-adapter-operator-evidence-workspace.json",
+          "projects/ariadne/control/operator-evidence/hermes-cron/operator-evidence.md"
         ]
       },
       {
@@ -3975,8 +3975,8 @@
           "projects/ariadne/control/live-adapter-approval-pack.json",
           "projects/ariadne/control/live-adapter-approval-review-audit.json",
           "projects/ariadne/control/mutation-readiness-audit.json",
-          "projects/ariadne/control/live-adapter-evidence-templates.json",
-          "projects/ariadne/control/live-adapter-evidence-templates/live-adapter-evidence-template-openscorpion.md"
+          "projects/ariadne/control/live-adapter-operator-evidence-workspace.json",
+          "projects/ariadne/control/operator-evidence/openscorpion/operator-evidence.md"
         ]
       },
       {
@@ -4031,8 +4031,8 @@
           "projects/ariadne/control/live-adapter-approval-pack.json",
           "projects/ariadne/control/live-adapter-approval-review-audit.json",
           "projects/ariadne/control/mutation-readiness-audit.json",
-          "projects/ariadne/control/live-adapter-evidence-templates.json",
-          "projects/ariadne/control/live-adapter-evidence-templates/live-adapter-evidence-template-gsd2.md"
+          "projects/ariadne/control/live-adapter-operator-evidence-workspace.json",
+          "projects/ariadne/control/operator-evidence/gsd2/operator-evidence.md"
         ]
       },
       {
@@ -4087,8 +4087,8 @@
           "projects/ariadne/control/live-adapter-approval-pack.json",
           "projects/ariadne/control/live-adapter-approval-review-audit.json",
           "projects/ariadne/control/mutation-readiness-audit.json",
-          "projects/ariadne/control/live-adapter-evidence-templates.json",
-          "projects/ariadne/control/live-adapter-evidence-templates/live-adapter-evidence-template-notebooklm.md"
+          "projects/ariadne/control/live-adapter-operator-evidence-workspace.json",
+          "projects/ariadne/control/operator-evidence/notebooklm/operator-evidence.md"
         ]
       }
     ]
@@ -4096,7 +4096,7 @@
   "liveAdapterEvidenceTemplatePack": {
     "schemaVersion": 1,
     "project": "ariadne",
-    "generatedAt": "2026-05-17T08:15:22.421Z",
+    "generatedAt": "2026-05-17T09:47:18.483Z",
     "status": "awaiting_operator_evidence",
     "mutationApproved": false,
     "reviewSessionRef": "projects/ariadne/control/live-adapter-review-session.json",
@@ -4376,7 +4376,7 @@
   "liveAdapterOperatorEvidenceWorkplan": {
     "schemaVersion": 1,
     "project": "ariadne",
-    "generatedAt": "2026-05-17T08:15:22.427Z",
+    "generatedAt": "2026-05-17T09:47:18.490Z",
     "status": "evidence_required",
     "mutationApproved": false,
     "operatorEvidenceAuditRef": "projects/ariadne/control/live-adapter-operator-evidence-audit.json",
@@ -4398,8 +4398,8 @@
         "status": "needs_evidence",
         "templateRef": "projects/ariadne/control/live-adapter-evidence-templates/live-adapter-evidence-template-github.md",
         "firstAction": "Fill and import operator evidence",
-        "checkCommand": "npm run ariadne -- live-adapter-operator-evidence-check --project ariadne --target github --from vault/projects/ariadne/control/live-adapter-evidence-templates/live-adapter-evidence-template-github.md",
-        "importCommand": "npm run ariadne -- live-adapter-operator-evidence --project ariadne --target github --from vault/projects/ariadne/control/live-adapter-evidence-templates/live-adapter-evidence-template-github.md --by <operator>",
+        "checkCommand": "npm run ariadne -- live-adapter-operator-evidence-check --project ariadne --target github --from vault/projects/ariadne/control/operator-evidence/github/operator-evidence.md",
+        "importCommand": "npm run ariadne -- live-adapter-operator-evidence --project ariadne --target github --from vault/projects/ariadne/control/operator-evidence/github/operator-evidence.md --by <operator>",
         "reviewCommand": "npm run ariadne -- live-adapter-approval-review --project ariadne --target github --by <operator> --status accepted --packet control/live-adapter-approval-pack.json --evidence <operator-review-evidence>",
         "missingSections": [],
         "requiredEvidence": [
@@ -4442,7 +4442,8 @@
           "projects/ariadne/control/live-adapter-approval-pack.json",
           "projects/ariadne/control/live-adapter-approval-review-audit.json",
           "projects/ariadne/control/mutation-readiness-audit.json",
-          "projects/ariadne/control/live-adapter-evidence-templates.json",
+          "projects/ariadne/control/live-adapter-operator-evidence-workspace.json",
+          "projects/ariadne/control/operator-evidence/github/operator-evidence.md",
           "projects/ariadne/control/live-adapter-operator-evidence-audit.json"
         ]
       },
@@ -4451,8 +4452,8 @@
         "status": "needs_evidence",
         "templateRef": "projects/ariadne/control/live-adapter-evidence-templates/live-adapter-evidence-template-deployment.md",
         "firstAction": "Fill and import operator evidence",
-        "checkCommand": "npm run ariadne -- live-adapter-operator-evidence-check --project ariadne --target deployment --from vault/projects/ariadne/control/live-adapter-evidence-templates/live-adapter-evidence-template-deployment.md",
-        "importCommand": "npm run ariadne -- live-adapter-operator-evidence --project ariadne --target deployment --from vault/projects/ariadne/control/live-adapter-evidence-templates/live-adapter-evidence-template-deployment.md --by <operator>",
+        "checkCommand": "npm run ariadne -- live-adapter-operator-evidence-check --project ariadne --target deployment --from vault/projects/ariadne/control/operator-evidence/deployment/operator-evidence.md",
+        "importCommand": "npm run ariadne -- live-adapter-operator-evidence --project ariadne --target deployment --from vault/projects/ariadne/control/operator-evidence/deployment/operator-evidence.md --by <operator>",
         "reviewCommand": "npm run ariadne -- live-adapter-approval-review --project ariadne --target deployment --by <operator> --status accepted --packet control/live-adapter-approval-pack.json --evidence <operator-review-evidence>",
         "missingSections": [],
         "requiredEvidence": [
@@ -4495,7 +4496,8 @@
           "projects/ariadne/control/live-adapter-approval-pack.json",
           "projects/ariadne/control/live-adapter-approval-review-audit.json",
           "projects/ariadne/control/mutation-readiness-audit.json",
-          "projects/ariadne/control/live-adapter-evidence-templates.json",
+          "projects/ariadne/control/live-adapter-operator-evidence-workspace.json",
+          "projects/ariadne/control/operator-evidence/deployment/operator-evidence.md",
           "projects/ariadne/control/live-adapter-operator-evidence-audit.json"
         ]
       },
@@ -4504,8 +4506,8 @@
         "status": "needs_evidence",
         "templateRef": "projects/ariadne/control/live-adapter-evidence-templates/live-adapter-evidence-template-hermes-cron.md",
         "firstAction": "Fill and import operator evidence",
-        "checkCommand": "npm run ariadne -- live-adapter-operator-evidence-check --project ariadne --target hermes-cron --from vault/projects/ariadne/control/live-adapter-evidence-templates/live-adapter-evidence-template-hermes-cron.md",
-        "importCommand": "npm run ariadne -- live-adapter-operator-evidence --project ariadne --target hermes-cron --from vault/projects/ariadne/control/live-adapter-evidence-templates/live-adapter-evidence-template-hermes-cron.md --by <operator>",
+        "checkCommand": "npm run ariadne -- live-adapter-operator-evidence-check --project ariadne --target hermes-cron --from vault/projects/ariadne/control/operator-evidence/hermes-cron/operator-evidence.md",
+        "importCommand": "npm run ariadne -- live-adapter-operator-evidence --project ariadne --target hermes-cron --from vault/projects/ariadne/control/operator-evidence/hermes-cron/operator-evidence.md --by <operator>",
         "reviewCommand": "npm run ariadne -- live-adapter-approval-review --project ariadne --target hermes-cron --by <operator> --status accepted --packet control/live-adapter-approval-pack.json --evidence <operator-review-evidence>",
         "missingSections": [],
         "requiredEvidence": [
@@ -4548,7 +4550,8 @@
           "projects/ariadne/control/live-adapter-approval-pack.json",
           "projects/ariadne/control/live-adapter-approval-review-audit.json",
           "projects/ariadne/control/mutation-readiness-audit.json",
-          "projects/ariadne/control/live-adapter-evidence-templates.json",
+          "projects/ariadne/control/live-adapter-operator-evidence-workspace.json",
+          "projects/ariadne/control/operator-evidence/hermes-cron/operator-evidence.md",
           "projects/ariadne/control/live-adapter-operator-evidence-audit.json"
         ]
       },
@@ -4557,8 +4560,8 @@
         "status": "needs_evidence",
         "templateRef": "projects/ariadne/control/live-adapter-evidence-templates/live-adapter-evidence-template-openscorpion.md",
         "firstAction": "Fill and import operator evidence",
-        "checkCommand": "npm run ariadne -- live-adapter-operator-evidence-check --project ariadne --target openscorpion --from vault/projects/ariadne/control/live-adapter-evidence-templates/live-adapter-evidence-template-openscorpion.md",
-        "importCommand": "npm run ariadne -- live-adapter-operator-evidence --project ariadne --target openscorpion --from vault/projects/ariadne/control/live-adapter-evidence-templates/live-adapter-evidence-template-openscorpion.md --by <operator>",
+        "checkCommand": "npm run ariadne -- live-adapter-operator-evidence-check --project ariadne --target openscorpion --from vault/projects/ariadne/control/operator-evidence/openscorpion/operator-evidence.md",
+        "importCommand": "npm run ariadne -- live-adapter-operator-evidence --project ariadne --target openscorpion --from vault/projects/ariadne/control/operator-evidence/openscorpion/operator-evidence.md --by <operator>",
         "reviewCommand": "npm run ariadne -- live-adapter-approval-review --project ariadne --target openscorpion --by <operator> --status accepted --packet control/live-adapter-approval-pack.json --evidence <operator-review-evidence>",
         "missingSections": [],
         "requiredEvidence": [
@@ -4601,7 +4604,8 @@
           "projects/ariadne/control/live-adapter-approval-pack.json",
           "projects/ariadne/control/live-adapter-approval-review-audit.json",
           "projects/ariadne/control/mutation-readiness-audit.json",
-          "projects/ariadne/control/live-adapter-evidence-templates.json",
+          "projects/ariadne/control/live-adapter-operator-evidence-workspace.json",
+          "projects/ariadne/control/operator-evidence/openscorpion/operator-evidence.md",
           "projects/ariadne/control/live-adapter-operator-evidence-audit.json"
         ]
       },
@@ -4610,8 +4614,8 @@
         "status": "needs_evidence",
         "templateRef": "projects/ariadne/control/live-adapter-evidence-templates/live-adapter-evidence-template-gsd2.md",
         "firstAction": "Fill and import operator evidence",
-        "checkCommand": "npm run ariadne -- live-adapter-operator-evidence-check --project ariadne --target gsd2 --from vault/projects/ariadne/control/live-adapter-evidence-templates/live-adapter-evidence-template-gsd2.md",
-        "importCommand": "npm run ariadne -- live-adapter-operator-evidence --project ariadne --target gsd2 --from vault/projects/ariadne/control/live-adapter-evidence-templates/live-adapter-evidence-template-gsd2.md --by <operator>",
+        "checkCommand": "npm run ariadne -- live-adapter-operator-evidence-check --project ariadne --target gsd2 --from vault/projects/ariadne/control/operator-evidence/gsd2/operator-evidence.md",
+        "importCommand": "npm run ariadne -- live-adapter-operator-evidence --project ariadne --target gsd2 --from vault/projects/ariadne/control/operator-evidence/gsd2/operator-evidence.md --by <operator>",
         "reviewCommand": "npm run ariadne -- live-adapter-approval-review --project ariadne --target gsd2 --by <operator> --status accepted --packet control/live-adapter-approval-pack.json --evidence <operator-review-evidence>",
         "missingSections": [],
         "requiredEvidence": [
@@ -4654,7 +4658,8 @@
           "projects/ariadne/control/live-adapter-approval-pack.json",
           "projects/ariadne/control/live-adapter-approval-review-audit.json",
           "projects/ariadne/control/mutation-readiness-audit.json",
-          "projects/ariadne/control/live-adapter-evidence-templates.json",
+          "projects/ariadne/control/live-adapter-operator-evidence-workspace.json",
+          "projects/ariadne/control/operator-evidence/gsd2/operator-evidence.md",
           "projects/ariadne/control/live-adapter-operator-evidence-audit.json"
         ]
       },
@@ -4663,8 +4668,8 @@
         "status": "needs_evidence",
         "templateRef": "projects/ariadne/control/live-adapter-evidence-templates/live-adapter-evidence-template-notebooklm.md",
         "firstAction": "Fill and import operator evidence",
-        "checkCommand": "npm run ariadne -- live-adapter-operator-evidence-check --project ariadne --target notebooklm --from vault/projects/ariadne/control/live-adapter-evidence-templates/live-adapter-evidence-template-notebooklm.md",
-        "importCommand": "npm run ariadne -- live-adapter-operator-evidence --project ariadne --target notebooklm --from vault/projects/ariadne/control/live-adapter-evidence-templates/live-adapter-evidence-template-notebooklm.md --by <operator>",
+        "checkCommand": "npm run ariadne -- live-adapter-operator-evidence-check --project ariadne --target notebooklm --from vault/projects/ariadne/control/operator-evidence/notebooklm/operator-evidence.md",
+        "importCommand": "npm run ariadne -- live-adapter-operator-evidence --project ariadne --target notebooklm --from vault/projects/ariadne/control/operator-evidence/notebooklm/operator-evidence.md --by <operator>",
         "reviewCommand": "npm run ariadne -- live-adapter-approval-review --project ariadne --target notebooklm --by <operator> --status accepted --packet control/live-adapter-approval-pack.json --evidence <operator-review-evidence>",
         "missingSections": [],
         "requiredEvidence": [
@@ -4707,7 +4712,8 @@
           "projects/ariadne/control/live-adapter-approval-pack.json",
           "projects/ariadne/control/live-adapter-approval-review-audit.json",
           "projects/ariadne/control/mutation-readiness-audit.json",
-          "projects/ariadne/control/live-adapter-evidence-templates.json",
+          "projects/ariadne/control/live-adapter-operator-evidence-workspace.json",
+          "projects/ariadne/control/operator-evidence/notebooklm/operator-evidence.md",
           "projects/ariadne/control/live-adapter-operator-evidence-audit.json"
         ]
       }
@@ -4716,7 +4722,7 @@
   "liveAdapterOperatorEvidenceQueue": {
     "schemaVersion": 1,
     "project": "ariadne",
-    "generatedAt": "2026-05-17T08:15:22.460Z",
+    "generatedAt": "2026-05-17T09:47:18.499Z",
     "status": "evidence_required",
     "mutationApproved": false,
     "operatorEvidenceAuditRef": "projects/ariadne/control/live-adapter-operator-evidence-audit.json",
@@ -4735,8 +4741,8 @@
         "target": "github",
         "status": "needs_evidence",
         "operatorEvidenceStatus": "missing_evidence",
-        "latestCheckId": "operator-evidence-check-github-2026-05-17T07-32-10-440Z",
-        "latestCheckRef": "projects/ariadne/control/live-adapter-operator-evidence-checks/operator-evidence-check-github-2026-05-17T07-32-10-440Z.json",
+        "latestCheckId": "operator-evidence-check-github-2026-05-17T09-47-18-388Z",
+        "latestCheckRef": "projects/ariadne/control/live-adapter-operator-evidence-checks/operator-evidence-check-github-2026-05-17T09-47-18-388Z.json",
         "latestCheckStatus": "incomplete",
         "latestCheckMissingSections": 9,
         "missingSections": [
@@ -4750,9 +4756,9 @@
           "Target-guarded execution wrapper",
           "Exact confirm-plan proof"
         ],
-        "nextAction": "Fill the missing sections in the operator evidence template and rerun the preflight check.",
-        "checkCommand": "npm run ariadne -- live-adapter-operator-evidence-check --project ariadne --target github --from vault/projects/ariadne/control/live-adapter-evidence-templates/live-adapter-evidence-template-github.md",
-        "importCommand": "npm run ariadne -- live-adapter-operator-evidence --project ariadne --target github --from vault/projects/ariadne/control/live-adapter-evidence-templates/live-adapter-evidence-template-github.md --by <operator>",
+        "nextAction": "Fill the missing sections in the operator evidence workspace file and rerun the preflight check.",
+        "checkCommand": "npm run ariadne -- live-adapter-operator-evidence-check --project ariadne --target github --from vault/projects/ariadne/control/operator-evidence/github/operator-evidence.md",
+        "importCommand": "npm run ariadne -- live-adapter-operator-evidence --project ariadne --target github --from vault/projects/ariadne/control/operator-evidence/github/operator-evidence.md --by <operator>",
         "templateRef": "projects/ariadne/control/live-adapter-evidence-templates/live-adapter-evidence-template-github.md",
         "evidenceRefs": [
           "projects/ariadne/control/live-adapter-evidence-templates/live-adapter-evidence-template-github.md",
@@ -4762,17 +4768,18 @@
           "projects/ariadne/control/live-adapter-approval-pack.json",
           "projects/ariadne/control/live-adapter-approval-review-audit.json",
           "projects/ariadne/control/mutation-readiness-audit.json",
-          "projects/ariadne/control/live-adapter-evidence-templates.json",
+          "projects/ariadne/control/live-adapter-operator-evidence-workspace.json",
+          "projects/ariadne/control/operator-evidence/github/operator-evidence.md",
           "projects/ariadne/control/live-adapter-operator-evidence-audit.json",
-          "projects/ariadne/control/live-adapter-operator-evidence-checks/operator-evidence-check-github-2026-05-17T07-32-10-440Z.json"
+          "projects/ariadne/control/live-adapter-operator-evidence-checks/operator-evidence-check-github-2026-05-17T09-47-18-388Z.json"
         ]
       },
       {
         "target": "deployment",
         "status": "needs_evidence",
         "operatorEvidenceStatus": "missing_evidence",
-        "latestCheckId": "operator-evidence-check-deployment-2026-05-17T07-32-10-447Z",
-        "latestCheckRef": "projects/ariadne/control/live-adapter-operator-evidence-checks/operator-evidence-check-deployment-2026-05-17T07-32-10-447Z.json",
+        "latestCheckId": "operator-evidence-check-deployment-2026-05-17T09-47-18-390Z",
+        "latestCheckRef": "projects/ariadne/control/live-adapter-operator-evidence-checks/operator-evidence-check-deployment-2026-05-17T09-47-18-390Z.json",
         "latestCheckStatus": "incomplete",
         "latestCheckMissingSections": 9,
         "missingSections": [
@@ -4786,9 +4793,9 @@
           "Target-guarded execution wrapper",
           "Exact confirm-plan proof"
         ],
-        "nextAction": "Fill the missing sections in the operator evidence template and rerun the preflight check.",
-        "checkCommand": "npm run ariadne -- live-adapter-operator-evidence-check --project ariadne --target deployment --from vault/projects/ariadne/control/live-adapter-evidence-templates/live-adapter-evidence-template-deployment.md",
-        "importCommand": "npm run ariadne -- live-adapter-operator-evidence --project ariadne --target deployment --from vault/projects/ariadne/control/live-adapter-evidence-templates/live-adapter-evidence-template-deployment.md --by <operator>",
+        "nextAction": "Fill the missing sections in the operator evidence workspace file and rerun the preflight check.",
+        "checkCommand": "npm run ariadne -- live-adapter-operator-evidence-check --project ariadne --target deployment --from vault/projects/ariadne/control/operator-evidence/deployment/operator-evidence.md",
+        "importCommand": "npm run ariadne -- live-adapter-operator-evidence --project ariadne --target deployment --from vault/projects/ariadne/control/operator-evidence/deployment/operator-evidence.md --by <operator>",
         "templateRef": "projects/ariadne/control/live-adapter-evidence-templates/live-adapter-evidence-template-deployment.md",
         "evidenceRefs": [
           "projects/ariadne/control/live-adapter-evidence-templates/live-adapter-evidence-template-deployment.md",
@@ -4798,17 +4805,18 @@
           "projects/ariadne/control/live-adapter-approval-pack.json",
           "projects/ariadne/control/live-adapter-approval-review-audit.json",
           "projects/ariadne/control/mutation-readiness-audit.json",
-          "projects/ariadne/control/live-adapter-evidence-templates.json",
+          "projects/ariadne/control/live-adapter-operator-evidence-workspace.json",
+          "projects/ariadne/control/operator-evidence/deployment/operator-evidence.md",
           "projects/ariadne/control/live-adapter-operator-evidence-audit.json",
-          "projects/ariadne/control/live-adapter-operator-evidence-checks/operator-evidence-check-deployment-2026-05-17T07-32-10-447Z.json"
+          "projects/ariadne/control/live-adapter-operator-evidence-checks/operator-evidence-check-deployment-2026-05-17T09-47-18-390Z.json"
         ]
       },
       {
         "target": "hermes-cron",
         "status": "needs_evidence",
         "operatorEvidenceStatus": "missing_evidence",
-        "latestCheckId": "operator-evidence-check-hermes-cron-2026-05-17T07-32-10-448Z",
-        "latestCheckRef": "projects/ariadne/control/live-adapter-operator-evidence-checks/operator-evidence-check-hermes-cron-2026-05-17T07-32-10-448Z.json",
+        "latestCheckId": "operator-evidence-check-hermes-cron-2026-05-17T09-47-18-391Z",
+        "latestCheckRef": "projects/ariadne/control/live-adapter-operator-evidence-checks/operator-evidence-check-hermes-cron-2026-05-17T09-47-18-391Z.json",
         "latestCheckStatus": "incomplete",
         "latestCheckMissingSections": 9,
         "missingSections": [
@@ -4822,9 +4830,9 @@
           "Target-guarded execution wrapper",
           "Exact confirm-plan proof"
         ],
-        "nextAction": "Fill the missing sections in the operator evidence template and rerun the preflight check.",
-        "checkCommand": "npm run ariadne -- live-adapter-operator-evidence-check --project ariadne --target hermes-cron --from vault/projects/ariadne/control/live-adapter-evidence-templates/live-adapter-evidence-template-hermes-cron.md",
-        "importCommand": "npm run ariadne -- live-adapter-operator-evidence --project ariadne --target hermes-cron --from vault/projects/ariadne/control/live-adapter-evidence-templates/live-adapter-evidence-template-hermes-cron.md --by <operator>",
+        "nextAction": "Fill the missing sections in the operator evidence workspace file and rerun the preflight check.",
+        "checkCommand": "npm run ariadne -- live-adapter-operator-evidence-check --project ariadne --target hermes-cron --from vault/projects/ariadne/control/operator-evidence/hermes-cron/operator-evidence.md",
+        "importCommand": "npm run ariadne -- live-adapter-operator-evidence --project ariadne --target hermes-cron --from vault/projects/ariadne/control/operator-evidence/hermes-cron/operator-evidence.md --by <operator>",
         "templateRef": "projects/ariadne/control/live-adapter-evidence-templates/live-adapter-evidence-template-hermes-cron.md",
         "evidenceRefs": [
           "projects/ariadne/control/live-adapter-evidence-templates/live-adapter-evidence-template-hermes-cron.md",
@@ -4834,17 +4842,18 @@
           "projects/ariadne/control/live-adapter-approval-pack.json",
           "projects/ariadne/control/live-adapter-approval-review-audit.json",
           "projects/ariadne/control/mutation-readiness-audit.json",
-          "projects/ariadne/control/live-adapter-evidence-templates.json",
+          "projects/ariadne/control/live-adapter-operator-evidence-workspace.json",
+          "projects/ariadne/control/operator-evidence/hermes-cron/operator-evidence.md",
           "projects/ariadne/control/live-adapter-operator-evidence-audit.json",
-          "projects/ariadne/control/live-adapter-operator-evidence-checks/operator-evidence-check-hermes-cron-2026-05-17T07-32-10-448Z.json"
+          "projects/ariadne/control/live-adapter-operator-evidence-checks/operator-evidence-check-hermes-cron-2026-05-17T09-47-18-391Z.json"
         ]
       },
       {
         "target": "openscorpion",
         "status": "needs_evidence",
         "operatorEvidenceStatus": "missing_evidence",
-        "latestCheckId": "operator-evidence-check-openscorpion-2026-05-17T07-32-10-449Z",
-        "latestCheckRef": "projects/ariadne/control/live-adapter-operator-evidence-checks/operator-evidence-check-openscorpion-2026-05-17T07-32-10-449Z.json",
+        "latestCheckId": "operator-evidence-check-openscorpion-2026-05-17T09-47-18-393Z",
+        "latestCheckRef": "projects/ariadne/control/live-adapter-operator-evidence-checks/operator-evidence-check-openscorpion-2026-05-17T09-47-18-393Z.json",
         "latestCheckStatus": "incomplete",
         "latestCheckMissingSections": 9,
         "missingSections": [
@@ -4858,9 +4867,9 @@
           "Target-guarded execution wrapper",
           "Exact confirm-plan proof"
         ],
-        "nextAction": "Fill the missing sections in the operator evidence template and rerun the preflight check.",
-        "checkCommand": "npm run ariadne -- live-adapter-operator-evidence-check --project ariadne --target openscorpion --from vault/projects/ariadne/control/live-adapter-evidence-templates/live-adapter-evidence-template-openscorpion.md",
-        "importCommand": "npm run ariadne -- live-adapter-operator-evidence --project ariadne --target openscorpion --from vault/projects/ariadne/control/live-adapter-evidence-templates/live-adapter-evidence-template-openscorpion.md --by <operator>",
+        "nextAction": "Fill the missing sections in the operator evidence workspace file and rerun the preflight check.",
+        "checkCommand": "npm run ariadne -- live-adapter-operator-evidence-check --project ariadne --target openscorpion --from vault/projects/ariadne/control/operator-evidence/openscorpion/operator-evidence.md",
+        "importCommand": "npm run ariadne -- live-adapter-operator-evidence --project ariadne --target openscorpion --from vault/projects/ariadne/control/operator-evidence/openscorpion/operator-evidence.md --by <operator>",
         "templateRef": "projects/ariadne/control/live-adapter-evidence-templates/live-adapter-evidence-template-openscorpion.md",
         "evidenceRefs": [
           "projects/ariadne/control/live-adapter-evidence-templates/live-adapter-evidence-template-openscorpion.md",
@@ -4870,17 +4879,18 @@
           "projects/ariadne/control/live-adapter-approval-pack.json",
           "projects/ariadne/control/live-adapter-approval-review-audit.json",
           "projects/ariadne/control/mutation-readiness-audit.json",
-          "projects/ariadne/control/live-adapter-evidence-templates.json",
+          "projects/ariadne/control/live-adapter-operator-evidence-workspace.json",
+          "projects/ariadne/control/operator-evidence/openscorpion/operator-evidence.md",
           "projects/ariadne/control/live-adapter-operator-evidence-audit.json",
-          "projects/ariadne/control/live-adapter-operator-evidence-checks/operator-evidence-check-openscorpion-2026-05-17T07-32-10-449Z.json"
+          "projects/ariadne/control/live-adapter-operator-evidence-checks/operator-evidence-check-openscorpion-2026-05-17T09-47-18-393Z.json"
         ]
       },
       {
         "target": "gsd2",
         "status": "needs_evidence",
         "operatorEvidenceStatus": "missing_evidence",
-        "latestCheckId": "operator-evidence-check-gsd2-2026-05-17T07-32-10-450Z",
-        "latestCheckRef": "projects/ariadne/control/live-adapter-operator-evidence-checks/operator-evidence-check-gsd2-2026-05-17T07-32-10-450Z.json",
+        "latestCheckId": "operator-evidence-check-gsd2-2026-05-17T09-47-18-394Z",
+        "latestCheckRef": "projects/ariadne/control/live-adapter-operator-evidence-checks/operator-evidence-check-gsd2-2026-05-17T09-47-18-394Z.json",
         "latestCheckStatus": "incomplete",
         "latestCheckMissingSections": 9,
         "missingSections": [
@@ -4894,9 +4904,9 @@
           "Target-guarded execution wrapper",
           "Exact confirm-plan proof"
         ],
-        "nextAction": "Fill the missing sections in the operator evidence template and rerun the preflight check.",
-        "checkCommand": "npm run ariadne -- live-adapter-operator-evidence-check --project ariadne --target gsd2 --from vault/projects/ariadne/control/live-adapter-evidence-templates/live-adapter-evidence-template-gsd2.md",
-        "importCommand": "npm run ariadne -- live-adapter-operator-evidence --project ariadne --target gsd2 --from vault/projects/ariadne/control/live-adapter-evidence-templates/live-adapter-evidence-template-gsd2.md --by <operator>",
+        "nextAction": "Fill the missing sections in the operator evidence workspace file and rerun the preflight check.",
+        "checkCommand": "npm run ariadne -- live-adapter-operator-evidence-check --project ariadne --target gsd2 --from vault/projects/ariadne/control/operator-evidence/gsd2/operator-evidence.md",
+        "importCommand": "npm run ariadne -- live-adapter-operator-evidence --project ariadne --target gsd2 --from vault/projects/ariadne/control/operator-evidence/gsd2/operator-evidence.md --by <operator>",
         "templateRef": "projects/ariadne/control/live-adapter-evidence-templates/live-adapter-evidence-template-gsd2.md",
         "evidenceRefs": [
           "projects/ariadne/control/live-adapter-evidence-templates/live-adapter-evidence-template-gsd2.md",
@@ -4906,17 +4916,18 @@
           "projects/ariadne/control/live-adapter-approval-pack.json",
           "projects/ariadne/control/live-adapter-approval-review-audit.json",
           "projects/ariadne/control/mutation-readiness-audit.json",
-          "projects/ariadne/control/live-adapter-evidence-templates.json",
+          "projects/ariadne/control/live-adapter-operator-evidence-workspace.json",
+          "projects/ariadne/control/operator-evidence/gsd2/operator-evidence.md",
           "projects/ariadne/control/live-adapter-operator-evidence-audit.json",
-          "projects/ariadne/control/live-adapter-operator-evidence-checks/operator-evidence-check-gsd2-2026-05-17T07-32-10-450Z.json"
+          "projects/ariadne/control/live-adapter-operator-evidence-checks/operator-evidence-check-gsd2-2026-05-17T09-47-18-394Z.json"
         ]
       },
       {
         "target": "notebooklm",
         "status": "needs_evidence",
         "operatorEvidenceStatus": "missing_evidence",
-        "latestCheckId": "operator-evidence-check-notebooklm-2026-05-17T07-32-10-451Z",
-        "latestCheckRef": "projects/ariadne/control/live-adapter-operator-evidence-checks/operator-evidence-check-notebooklm-2026-05-17T07-32-10-451Z.json",
+        "latestCheckId": "operator-evidence-check-notebooklm-2026-05-17T09-47-18-395Z",
+        "latestCheckRef": "projects/ariadne/control/live-adapter-operator-evidence-checks/operator-evidence-check-notebooklm-2026-05-17T09-47-18-395Z.json",
         "latestCheckStatus": "incomplete",
         "latestCheckMissingSections": 9,
         "missingSections": [
@@ -4930,9 +4941,9 @@
           "Target-guarded execution wrapper",
           "Exact confirm-plan proof"
         ],
-        "nextAction": "Fill the missing sections in the operator evidence template and rerun the preflight check.",
-        "checkCommand": "npm run ariadne -- live-adapter-operator-evidence-check --project ariadne --target notebooklm --from vault/projects/ariadne/control/live-adapter-evidence-templates/live-adapter-evidence-template-notebooklm.md",
-        "importCommand": "npm run ariadne -- live-adapter-operator-evidence --project ariadne --target notebooklm --from vault/projects/ariadne/control/live-adapter-evidence-templates/live-adapter-evidence-template-notebooklm.md --by <operator>",
+        "nextAction": "Fill the missing sections in the operator evidence workspace file and rerun the preflight check.",
+        "checkCommand": "npm run ariadne -- live-adapter-operator-evidence-check --project ariadne --target notebooklm --from vault/projects/ariadne/control/operator-evidence/notebooklm/operator-evidence.md",
+        "importCommand": "npm run ariadne -- live-adapter-operator-evidence --project ariadne --target notebooklm --from vault/projects/ariadne/control/operator-evidence/notebooklm/operator-evidence.md --by <operator>",
         "templateRef": "projects/ariadne/control/live-adapter-evidence-templates/live-adapter-evidence-template-notebooklm.md",
         "evidenceRefs": [
           "projects/ariadne/control/live-adapter-evidence-templates/live-adapter-evidence-template-notebooklm.md",
@@ -4942,9 +4953,10 @@
           "projects/ariadne/control/live-adapter-approval-pack.json",
           "projects/ariadne/control/live-adapter-approval-review-audit.json",
           "projects/ariadne/control/mutation-readiness-audit.json",
-          "projects/ariadne/control/live-adapter-evidence-templates.json",
+          "projects/ariadne/control/live-adapter-operator-evidence-workspace.json",
+          "projects/ariadne/control/operator-evidence/notebooklm/operator-evidence.md",
           "projects/ariadne/control/live-adapter-operator-evidence-audit.json",
-          "projects/ariadne/control/live-adapter-operator-evidence-checks/operator-evidence-check-notebooklm-2026-05-17T07-32-10-451Z.json"
+          "projects/ariadne/control/live-adapter-operator-evidence-checks/operator-evidence-check-notebooklm-2026-05-17T09-47-18-395Z.json"
         ]
       }
     ]
@@ -5031,6 +5043,87 @@
         "detail": "No GBrain advisory notes were recorded. This is advisory context only, not an approval gate."
       },
       "notes": "Batch preflight for all live-adapter operator evidence templates"
+    },
+    {
+      "schemaVersion": 1,
+      "id": "operator-evidence-check-deployment-2026-05-17T09-47-18-390Z",
+      "project": "ariadne",
+      "checkedAt": "2026-05-17T09:47:18.390Z",
+      "target": "deployment",
+      "sourceRef": "projects/ariadne/control/operator-evidence/deployment/operator-evidence.md",
+      "sourceSha256": "352c81d363561e50b668c17685ca165ecc730557ca6c2f8a6cc71a64a45c28d5",
+      "sourceBytes": 3779,
+      "status": "incomplete",
+      "recorded": false,
+      "operatorEvidenceRecordCreated": false,
+      "mutationApproved": false,
+      "approvalGranted": false,
+      "summary": {
+        "requiredSections": 9,
+        "completeSections": 0,
+        "missingSections": 9,
+        "advisoryWarnings": 1
+      },
+      "sections": [
+        {
+          "id": "operator-identity",
+          "label": "Operator identity and timestamp",
+          "status": "missing",
+          "detail": "Fill the Operator and Review timestamp fields with real values."
+        },
+        {
+          "id": "packet-review",
+          "label": "Approval packet review",
+          "status": "missing",
+          "detail": "Record the reviewed approval packet and the operator decision for packet completeness."
+        },
+        {
+          "id": "auth-boundary",
+          "label": "Authentication or authorization boundary",
+          "status": "missing",
+          "detail": "Check the authentication or authorization boundary evidence item after observing it."
+        },
+        {
+          "id": "bounded-action",
+          "label": "Bounded action statement",
+          "status": "missing",
+          "detail": "Check the bounded action and explicit non-goals evidence item."
+        },
+        {
+          "id": "rollback",
+          "label": "Rollback or disable path",
+          "status": "missing",
+          "detail": "Check the rollback or disable path evidence item."
+        },
+        {
+          "id": "post-verification",
+          "label": "Post-action verification command",
+          "status": "missing",
+          "detail": "Check the post-action verification command evidence item."
+        },
+        {
+          "id": "dry-run",
+          "label": "Dry-run command and safe output",
+          "status": "missing",
+          "detail": "Check the dry-run command and expected safe output evidence item."
+        },
+        {
+          "id": "target-wrapper",
+          "label": "Target-guarded execution wrapper",
+          "status": "missing",
+          "detail": "Check the target-guarded execution command evidence item."
+        },
+        {
+          "id": "confirm-plan",
+          "label": "Exact confirm-plan proof",
+          "status": "missing",
+          "detail": "Check the proof that execution uses mutation-execute or a target wrapper with an exact --confirm-plan match."
+        }
+      ],
+      "gbrain": {
+        "status": "missing",
+        "detail": "No GBrain advisory notes were recorded. This is advisory context only, not an approval gate."
+      }
     },
     {
       "schemaVersion": 1,
@@ -5198,6 +5291,87 @@
     },
     {
       "schemaVersion": 1,
+      "id": "operator-evidence-check-github-2026-05-17T09-47-18-388Z",
+      "project": "ariadne",
+      "checkedAt": "2026-05-17T09:47:18.388Z",
+      "target": "github",
+      "sourceRef": "projects/ariadne/control/operator-evidence/github/operator-evidence.md",
+      "sourceSha256": "dd5aa44a4fdd5055a40d1e10bf11dc70717494b3c3d151855a9ad8709cf21428",
+      "sourceBytes": 3708,
+      "status": "incomplete",
+      "recorded": false,
+      "operatorEvidenceRecordCreated": false,
+      "mutationApproved": false,
+      "approvalGranted": false,
+      "summary": {
+        "requiredSections": 9,
+        "completeSections": 0,
+        "missingSections": 9,
+        "advisoryWarnings": 1
+      },
+      "sections": [
+        {
+          "id": "operator-identity",
+          "label": "Operator identity and timestamp",
+          "status": "missing",
+          "detail": "Fill the Operator and Review timestamp fields with real values."
+        },
+        {
+          "id": "packet-review",
+          "label": "Approval packet review",
+          "status": "missing",
+          "detail": "Record the reviewed approval packet and the operator decision for packet completeness."
+        },
+        {
+          "id": "auth-boundary",
+          "label": "Authentication or authorization boundary",
+          "status": "missing",
+          "detail": "Check the authentication or authorization boundary evidence item after observing it."
+        },
+        {
+          "id": "bounded-action",
+          "label": "Bounded action statement",
+          "status": "missing",
+          "detail": "Check the bounded action and explicit non-goals evidence item."
+        },
+        {
+          "id": "rollback",
+          "label": "Rollback or disable path",
+          "status": "missing",
+          "detail": "Check the rollback or disable path evidence item."
+        },
+        {
+          "id": "post-verification",
+          "label": "Post-action verification command",
+          "status": "missing",
+          "detail": "Check the post-action verification command evidence item."
+        },
+        {
+          "id": "dry-run",
+          "label": "Dry-run command and safe output",
+          "status": "missing",
+          "detail": "Check the dry-run command and expected safe output evidence item."
+        },
+        {
+          "id": "target-wrapper",
+          "label": "Target-guarded execution wrapper",
+          "status": "missing",
+          "detail": "Check the target-guarded execution command evidence item."
+        },
+        {
+          "id": "confirm-plan",
+          "label": "Exact confirm-plan proof",
+          "status": "missing",
+          "detail": "Check the proof that execution uses mutation-execute or a target wrapper with an exact --confirm-plan match."
+        }
+      ],
+      "gbrain": {
+        "status": "missing",
+        "detail": "No GBrain advisory notes were recorded. This is advisory context only, not an approval gate."
+      }
+    },
+    {
+      "schemaVersion": 1,
       "id": "operator-evidence-check-gsd2-2026-05-17T07-32-10-450Z",
       "project": "ariadne",
       "checkedAt": "2026-05-17T07:32:10.450Z",
@@ -5277,6 +5451,87 @@
         "detail": "No GBrain advisory notes were recorded. This is advisory context only, not an approval gate."
       },
       "notes": "Batch preflight for all live-adapter operator evidence templates"
+    },
+    {
+      "schemaVersion": 1,
+      "id": "operator-evidence-check-gsd2-2026-05-17T09-47-18-394Z",
+      "project": "ariadne",
+      "checkedAt": "2026-05-17T09:47:18.394Z",
+      "target": "gsd2",
+      "sourceRef": "projects/ariadne/control/operator-evidence/gsd2/operator-evidence.md",
+      "sourceSha256": "5d026175ad78e0f88c6c9c7a576ff743cd7f8b2c20fbc7af7e2bcdfaa19a060c",
+      "sourceBytes": 3693,
+      "status": "incomplete",
+      "recorded": false,
+      "operatorEvidenceRecordCreated": false,
+      "mutationApproved": false,
+      "approvalGranted": false,
+      "summary": {
+        "requiredSections": 9,
+        "completeSections": 0,
+        "missingSections": 9,
+        "advisoryWarnings": 1
+      },
+      "sections": [
+        {
+          "id": "operator-identity",
+          "label": "Operator identity and timestamp",
+          "status": "missing",
+          "detail": "Fill the Operator and Review timestamp fields with real values."
+        },
+        {
+          "id": "packet-review",
+          "label": "Approval packet review",
+          "status": "missing",
+          "detail": "Record the reviewed approval packet and the operator decision for packet completeness."
+        },
+        {
+          "id": "auth-boundary",
+          "label": "Authentication or authorization boundary",
+          "status": "missing",
+          "detail": "Check the authentication or authorization boundary evidence item after observing it."
+        },
+        {
+          "id": "bounded-action",
+          "label": "Bounded action statement",
+          "status": "missing",
+          "detail": "Check the bounded action and explicit non-goals evidence item."
+        },
+        {
+          "id": "rollback",
+          "label": "Rollback or disable path",
+          "status": "missing",
+          "detail": "Check the rollback or disable path evidence item."
+        },
+        {
+          "id": "post-verification",
+          "label": "Post-action verification command",
+          "status": "missing",
+          "detail": "Check the post-action verification command evidence item."
+        },
+        {
+          "id": "dry-run",
+          "label": "Dry-run command and safe output",
+          "status": "missing",
+          "detail": "Check the dry-run command and expected safe output evidence item."
+        },
+        {
+          "id": "target-wrapper",
+          "label": "Target-guarded execution wrapper",
+          "status": "missing",
+          "detail": "Check the target-guarded execution command evidence item."
+        },
+        {
+          "id": "confirm-plan",
+          "label": "Exact confirm-plan proof",
+          "status": "missing",
+          "detail": "Check the proof that execution uses mutation-execute or a target wrapper with an exact --confirm-plan match."
+        }
+      ],
+      "gbrain": {
+        "status": "missing",
+        "detail": "No GBrain advisory notes were recorded. This is advisory context only, not an approval gate."
+      }
     },
     {
       "schemaVersion": 1,
@@ -5362,6 +5617,87 @@
     },
     {
       "schemaVersion": 1,
+      "id": "operator-evidence-check-hermes-cron-2026-05-17T09-47-18-391Z",
+      "project": "ariadne",
+      "checkedAt": "2026-05-17T09:47:18.391Z",
+      "target": "hermes-cron",
+      "sourceRef": "projects/ariadne/control/operator-evidence/hermes-cron/operator-evidence.md",
+      "sourceSha256": "c00742802720c1c6589a9c9079ffbe211953a22ee514de24fbb3f510b2ed11ab",
+      "sourceBytes": 3796,
+      "status": "incomplete",
+      "recorded": false,
+      "operatorEvidenceRecordCreated": false,
+      "mutationApproved": false,
+      "approvalGranted": false,
+      "summary": {
+        "requiredSections": 9,
+        "completeSections": 0,
+        "missingSections": 9,
+        "advisoryWarnings": 1
+      },
+      "sections": [
+        {
+          "id": "operator-identity",
+          "label": "Operator identity and timestamp",
+          "status": "missing",
+          "detail": "Fill the Operator and Review timestamp fields with real values."
+        },
+        {
+          "id": "packet-review",
+          "label": "Approval packet review",
+          "status": "missing",
+          "detail": "Record the reviewed approval packet and the operator decision for packet completeness."
+        },
+        {
+          "id": "auth-boundary",
+          "label": "Authentication or authorization boundary",
+          "status": "missing",
+          "detail": "Check the authentication or authorization boundary evidence item after observing it."
+        },
+        {
+          "id": "bounded-action",
+          "label": "Bounded action statement",
+          "status": "missing",
+          "detail": "Check the bounded action and explicit non-goals evidence item."
+        },
+        {
+          "id": "rollback",
+          "label": "Rollback or disable path",
+          "status": "missing",
+          "detail": "Check the rollback or disable path evidence item."
+        },
+        {
+          "id": "post-verification",
+          "label": "Post-action verification command",
+          "status": "missing",
+          "detail": "Check the post-action verification command evidence item."
+        },
+        {
+          "id": "dry-run",
+          "label": "Dry-run command and safe output",
+          "status": "missing",
+          "detail": "Check the dry-run command and expected safe output evidence item."
+        },
+        {
+          "id": "target-wrapper",
+          "label": "Target-guarded execution wrapper",
+          "status": "missing",
+          "detail": "Check the target-guarded execution command evidence item."
+        },
+        {
+          "id": "confirm-plan",
+          "label": "Exact confirm-plan proof",
+          "status": "missing",
+          "detail": "Check the proof that execution uses mutation-execute or a target wrapper with an exact --confirm-plan match."
+        }
+      ],
+      "gbrain": {
+        "status": "missing",
+        "detail": "No GBrain advisory notes were recorded. This is advisory context only, not an approval gate."
+      }
+    },
+    {
+      "schemaVersion": 1,
       "id": "operator-evidence-check-notebooklm-2026-05-17T07-32-10-451Z",
       "project": "ariadne",
       "checkedAt": "2026-05-17T07:32:10.451Z",
@@ -5444,6 +5780,87 @@
     },
     {
       "schemaVersion": 1,
+      "id": "operator-evidence-check-notebooklm-2026-05-17T09-47-18-395Z",
+      "project": "ariadne",
+      "checkedAt": "2026-05-17T09:47:18.395Z",
+      "target": "notebooklm",
+      "sourceRef": "projects/ariadne/control/operator-evidence/notebooklm/operator-evidence.md",
+      "sourceSha256": "cfa94bbd87f42c7b28d0475e63ff1cf205a6c911237836a33efb75739a6271d9",
+      "sourceBytes": 3787,
+      "status": "incomplete",
+      "recorded": false,
+      "operatorEvidenceRecordCreated": false,
+      "mutationApproved": false,
+      "approvalGranted": false,
+      "summary": {
+        "requiredSections": 9,
+        "completeSections": 0,
+        "missingSections": 9,
+        "advisoryWarnings": 1
+      },
+      "sections": [
+        {
+          "id": "operator-identity",
+          "label": "Operator identity and timestamp",
+          "status": "missing",
+          "detail": "Fill the Operator and Review timestamp fields with real values."
+        },
+        {
+          "id": "packet-review",
+          "label": "Approval packet review",
+          "status": "missing",
+          "detail": "Record the reviewed approval packet and the operator decision for packet completeness."
+        },
+        {
+          "id": "auth-boundary",
+          "label": "Authentication or authorization boundary",
+          "status": "missing",
+          "detail": "Check the authentication or authorization boundary evidence item after observing it."
+        },
+        {
+          "id": "bounded-action",
+          "label": "Bounded action statement",
+          "status": "missing",
+          "detail": "Check the bounded action and explicit non-goals evidence item."
+        },
+        {
+          "id": "rollback",
+          "label": "Rollback or disable path",
+          "status": "missing",
+          "detail": "Check the rollback or disable path evidence item."
+        },
+        {
+          "id": "post-verification",
+          "label": "Post-action verification command",
+          "status": "missing",
+          "detail": "Check the post-action verification command evidence item."
+        },
+        {
+          "id": "dry-run",
+          "label": "Dry-run command and safe output",
+          "status": "missing",
+          "detail": "Check the dry-run command and expected safe output evidence item."
+        },
+        {
+          "id": "target-wrapper",
+          "label": "Target-guarded execution wrapper",
+          "status": "missing",
+          "detail": "Check the target-guarded execution command evidence item."
+        },
+        {
+          "id": "confirm-plan",
+          "label": "Exact confirm-plan proof",
+          "status": "missing",
+          "detail": "Check the proof that execution uses mutation-execute or a target wrapper with an exact --confirm-plan match."
+        }
+      ],
+      "gbrain": {
+        "status": "missing",
+        "detail": "No GBrain advisory notes were recorded. This is advisory context only, not an approval gate."
+      }
+    },
+    {
+      "schemaVersion": 1,
       "id": "operator-evidence-check-openscorpion-2026-05-17T07-32-10-449Z",
       "project": "ariadne",
       "checkedAt": "2026-05-17T07:32:10.449Z",
@@ -5523,13 +5940,94 @@
         "detail": "No GBrain advisory notes were recorded. This is advisory context only, not an approval gate."
       },
       "notes": "Batch preflight for all live-adapter operator evidence templates"
+    },
+    {
+      "schemaVersion": 1,
+      "id": "operator-evidence-check-openscorpion-2026-05-17T09-47-18-393Z",
+      "project": "ariadne",
+      "checkedAt": "2026-05-17T09:47:18.393Z",
+      "target": "openscorpion",
+      "sourceRef": "projects/ariadne/control/operator-evidence/openscorpion/operator-evidence.md",
+      "sourceSha256": "8a94cf94ed429e079811213f37fb0700073deb952040bd350bdd1474710b7b38",
+      "sourceBytes": 3801,
+      "status": "incomplete",
+      "recorded": false,
+      "operatorEvidenceRecordCreated": false,
+      "mutationApproved": false,
+      "approvalGranted": false,
+      "summary": {
+        "requiredSections": 9,
+        "completeSections": 0,
+        "missingSections": 9,
+        "advisoryWarnings": 1
+      },
+      "sections": [
+        {
+          "id": "operator-identity",
+          "label": "Operator identity and timestamp",
+          "status": "missing",
+          "detail": "Fill the Operator and Review timestamp fields with real values."
+        },
+        {
+          "id": "packet-review",
+          "label": "Approval packet review",
+          "status": "missing",
+          "detail": "Record the reviewed approval packet and the operator decision for packet completeness."
+        },
+        {
+          "id": "auth-boundary",
+          "label": "Authentication or authorization boundary",
+          "status": "missing",
+          "detail": "Check the authentication or authorization boundary evidence item after observing it."
+        },
+        {
+          "id": "bounded-action",
+          "label": "Bounded action statement",
+          "status": "missing",
+          "detail": "Check the bounded action and explicit non-goals evidence item."
+        },
+        {
+          "id": "rollback",
+          "label": "Rollback or disable path",
+          "status": "missing",
+          "detail": "Check the rollback or disable path evidence item."
+        },
+        {
+          "id": "post-verification",
+          "label": "Post-action verification command",
+          "status": "missing",
+          "detail": "Check the post-action verification command evidence item."
+        },
+        {
+          "id": "dry-run",
+          "label": "Dry-run command and safe output",
+          "status": "missing",
+          "detail": "Check the dry-run command and expected safe output evidence item."
+        },
+        {
+          "id": "target-wrapper",
+          "label": "Target-guarded execution wrapper",
+          "status": "missing",
+          "detail": "Check the target-guarded execution command evidence item."
+        },
+        {
+          "id": "confirm-plan",
+          "label": "Exact confirm-plan proof",
+          "status": "missing",
+          "detail": "Check the proof that execution uses mutation-execute or a target wrapper with an exact --confirm-plan match."
+        }
+      ],
+      "gbrain": {
+        "status": "missing",
+        "detail": "No GBrain advisory notes were recorded. This is advisory context only, not an approval gate."
+      }
     }
   ],
   "liveAdapterOperatorEvidence": [],
   "liveAdapterOperatorEvidenceAudit": {
     "schemaVersion": 1,
     "project": "ariadne",
-    "generatedAt": "2026-05-17T08:15:22.425Z",
+    "generatedAt": "2026-05-17T09:47:19.015Z",
     "status": "blocked",
     "mutationApproved": false,
     "summary": {
@@ -5613,7 +6111,7 @@
   "roadmapCompletionAudit": {
     "schemaVersion": 1,
     "project": "ariadne",
-    "generatedAt": "2026-05-17T08:15:38.571Z",
+    "generatedAt": "2026-05-17T09:51:59.218Z",
     "status": "blocked",
     "summary": {
       "requirements": 9,
@@ -5692,18 +6190,21 @@
         "id": "operator-evidence",
         "title": "All live-adapter targets have complete operator evidence",
         "status": "blocked",
-        "detail": "0/6 targets complete; 6 missing evidence. Workplan status is evidence_required with 6 check command(s) and 6 import command(s). Queue status is evidence_required with 0 target(s) ready for import and 0 unchecked target(s).",
+        "detail": "0/6 targets complete; 6 missing evidence. Workplan status is evidence_required with 6 check command(s) and 6 import command(s). Queue status is evidence_required with 0 target(s) ready for import and 0 unchecked target(s). Workspace status is awaiting_operator_input with 6 fillable file(s).",
         "evidenceRefs": [
           "projects/ariadne/control/live-adapter-operator-evidence-audit.json",
           "projects/ariadne/control/live-adapter-operator-evidence-workplan.json",
-          "projects/ariadne/control/live-adapter-operator-evidence-queue.json"
+          "projects/ariadne/control/live-adapter-operator-evidence-queue.json",
+          "projects/ariadne/control/live-adapter-operator-evidence-workspace.json"
         ],
         "nextCommands": [
           "npm run ariadne -- live-adapter-operator-evidence-workplan --project ariadne",
           "npm run ariadne -- live-adapter-operator-evidence-queue --project ariadne",
           "npm run ariadne -- live-adapter-evidence-templates --project ariadne",
-          "npm run ariadne -- live-adapter-operator-evidence-check --project ariadne --target <target> --from vault/projects/ariadne/control/live-adapter-evidence-templates/live-adapter-evidence-template-<target>.md",
-          "npm run ariadne -- live-adapter-operator-evidence --project ariadne --target <target> --from vault/projects/ariadne/control/live-adapter-evidence-templates/live-adapter-evidence-template-<target>.md --by <operator>",
+          "npm run ariadne -- live-adapter-operator-evidence-workspace --project ariadne",
+          "npm run ariadne -- live-adapter-operator-evidence-check-all --project ariadne --source workspace",
+          "npm run ariadne -- live-adapter-operator-evidence-check --project ariadne --target <target> --from vault/projects/ariadne/control/operator-evidence/<target>/operator-evidence.md",
+          "npm run ariadne -- live-adapter-operator-evidence --project ariadne --target <target> --from vault/projects/ariadne/control/operator-evidence/<target>/operator-evidence.md --by <operator>",
           "npm run ariadne -- live-adapter-operator-evidence-audit --project ariadne"
         ]
       },
@@ -5926,7 +6427,7 @@
   "consoleVisualChecks": {
     "schemaVersion": 1,
     "project": "ariadne",
-    "generatedAt": "2026-05-17T08:15:58.725Z",
+    "generatedAt": "2026-05-17T09:51:59.724Z",
     "htmlPath": "projects/ariadne/console/index.html",
     "status": "passed",
     "summary": {
@@ -6119,9 +6620,9 @@
   "consoleBrowserChecks": {
     "schemaVersion": 1,
     "project": "ariadne",
-    "generatedAt": "2026-05-17T08:16:04.175Z",
+    "generatedAt": "2026-05-17T09:52:00.241Z",
     "htmlPath": "projects/ariadne/console/index.html",
-    "screenshotPath": "projects/ariadne/console/screenshots/console-2026-05-17T08-16-04-175Z.png",
+    "screenshotPath": "projects/ariadne/console/screenshots/console-2026-05-17T09-52-00-241Z.png",
     "status": "passed",
     "viewport": {
       "width": 1440,
@@ -6190,7 +6691,7 @@
         "id": "screenshot",
         "label": "Screenshot captured",
         "status": "passed",
-        "detail": "2494928 bytes captured."
+        "detail": "2459967 bytes captured."
       }
     ]
   },

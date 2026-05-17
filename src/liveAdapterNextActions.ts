@@ -82,13 +82,13 @@ function targetNextActions(
       title: "Fill and import operator evidence",
       rationale:
         operatorEvidence?.status === "incomplete"
-          ? `The latest operator evidence record is incomplete: ${inlineList(operatorEvidence.missingSections)}. Complete the template and import it again before packet review or cutover.`
-          : "The target has no imported operator evidence record. Fill the generated template with real observations before packet review or cutover.",
-      command: `npm run ariadne -- live-adapter-operator-evidence --project <project> --target ${target.target} --from vault/projects/<project>/control/live-adapter-evidence-templates/live-adapter-evidence-template-${target.target}.md --by <operator>`,
+          ? `The latest operator evidence record is incomplete: ${inlineList(operatorEvidence.missingSections)}. Complete the workspace file and import it again before packet review or cutover.`
+          : "The target has no imported operator evidence record. Fill the generated workspace file with real observations before packet review or cutover.",
+      command: `npm run ariadne -- live-adapter-operator-evidence --project <project> --target ${target.target} --from vault/projects/<project>/control/operator-evidence/${target.target}/operator-evidence.md --by <operator>`,
       evidenceRefs: [
         ...(operatorEvidence?.evidenceRefs ?? []),
-        "control/live-adapter-evidence-templates.json",
-        `control/live-adapter-evidence-templates/live-adapter-evidence-template-${target.target}.md`
+        "control/live-adapter-operator-evidence-workspace.json",
+        `control/operator-evidence/${target.target}/operator-evidence.md`
       ]
     });
   }

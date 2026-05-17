@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "project": "ariadne",
-  "generatedAt": "2026-05-17T08:15:38.571Z",
+  "generatedAt": "2026-05-17T09:51:59.218Z",
   "status": "blocked",
   "summary": {
     "requirements": 9,
@@ -80,18 +80,21 @@
       "id": "operator-evidence",
       "title": "All live-adapter targets have complete operator evidence",
       "status": "blocked",
-      "detail": "0/6 targets complete; 6 missing evidence. Workplan status is evidence_required with 6 check command(s) and 6 import command(s). Queue status is evidence_required with 0 target(s) ready for import and 0 unchecked target(s).",
+      "detail": "0/6 targets complete; 6 missing evidence. Workplan status is evidence_required with 6 check command(s) and 6 import command(s). Queue status is evidence_required with 0 target(s) ready for import and 0 unchecked target(s). Workspace status is awaiting_operator_input with 6 fillable file(s).",
       "evidenceRefs": [
         "projects/ariadne/control/live-adapter-operator-evidence-audit.json",
         "projects/ariadne/control/live-adapter-operator-evidence-workplan.json",
-        "projects/ariadne/control/live-adapter-operator-evidence-queue.json"
+        "projects/ariadne/control/live-adapter-operator-evidence-queue.json",
+        "projects/ariadne/control/live-adapter-operator-evidence-workspace.json"
       ],
       "nextCommands": [
         "npm run ariadne -- live-adapter-operator-evidence-workplan --project ariadne",
         "npm run ariadne -- live-adapter-operator-evidence-queue --project ariadne",
         "npm run ariadne -- live-adapter-evidence-templates --project ariadne",
-        "npm run ariadne -- live-adapter-operator-evidence-check --project ariadne --target <target> --from vault/projects/ariadne/control/live-adapter-evidence-templates/live-adapter-evidence-template-<target>.md",
-        "npm run ariadne -- live-adapter-operator-evidence --project ariadne --target <target> --from vault/projects/ariadne/control/live-adapter-evidence-templates/live-adapter-evidence-template-<target>.md --by <operator>",
+        "npm run ariadne -- live-adapter-operator-evidence-workspace --project ariadne",
+        "npm run ariadne -- live-adapter-operator-evidence-check-all --project ariadne --source workspace",
+        "npm run ariadne -- live-adapter-operator-evidence-check --project ariadne --target <target> --from vault/projects/ariadne/control/operator-evidence/<target>/operator-evidence.md",
+        "npm run ariadne -- live-adapter-operator-evidence --project ariadne --target <target> --from vault/projects/ariadne/control/operator-evidence/<target>/operator-evidence.md --by <operator>",
         "npm run ariadne -- live-adapter-operator-evidence-audit --project ariadne"
       ]
     },

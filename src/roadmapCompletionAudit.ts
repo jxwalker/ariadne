@@ -12,6 +12,7 @@ import type {
   LiveAdapterCutoverAudit,
   LiveAdapterOperatorEvidenceAudit,
   LiveAdapterOperatorEvidenceQueue,
+  LiveAdapterOperatorEvidenceWorkspace,
   LiveAdapterOperatorEvidenceWorkplan,
   LiveAdapterReviewSession,
   LiveAdapterTargetDossier,
@@ -40,6 +41,9 @@ export async function generateRoadmapCompletionAudit(input: {
   );
   const operatorEvidenceQueue = await readJson<LiveAdapterOperatorEvidenceQueue>(
     path.join(dir, "control", "live-adapter-operator-evidence-queue.json")
+  );
+  const operatorEvidenceWorkspace = await readJson<LiveAdapterOperatorEvidenceWorkspace>(
+    path.join(dir, "control", "live-adapter-operator-evidence-workspace.json")
   );
   const cutoverAudit = await readJson<LiveAdapterCutoverAudit>(path.join(dir, "control", "live-adapter-cutover-audit.json"));
   const reviewSession = await readJson<LiveAdapterReviewSession>(path.join(dir, "control", "live-adapter-review-session.json"));
@@ -134,8 +138,10 @@ export async function generateRoadmapCompletionAudit(input: {
         `npm run ariadne -- live-adapter-operator-evidence-workplan --project ${project}`,
         `npm run ariadne -- live-adapter-operator-evidence-queue --project ${project}`,
         `npm run ariadne -- live-adapter-evidence-templates --project ${project}`,
-        `npm run ariadne -- live-adapter-operator-evidence-check --project ${project} --target <target> --from vault/projects/${project}/control/live-adapter-evidence-templates/live-adapter-evidence-template-<target>.md`,
-        `npm run ariadne -- live-adapter-operator-evidence --project ${project} --target <target> --from vault/projects/${project}/control/live-adapter-evidence-templates/live-adapter-evidence-template-<target>.md --by <operator>`,
+        `npm run ariadne -- live-adapter-operator-evidence-workspace --project ${project}`,
+        `npm run ariadne -- live-adapter-operator-evidence-check-all --project ${project} --source workspace`,
+        `npm run ariadne -- live-adapter-operator-evidence-check --project ${project} --target <target> --from vault/projects/${project}/control/operator-evidence/<target>/operator-evidence.md`,
+        `npm run ariadne -- live-adapter-operator-evidence --project ${project} --target <target> --from vault/projects/${project}/control/operator-evidence/<target>/operator-evidence.md --by <operator>`,
         `npm run ariadne -- live-adapter-operator-evidence-audit --project ${project}`
       ]
     },
@@ -175,6 +181,10 @@ export async function generateRoadmapCompletionAudit(input: {
   if (operatorEvidenceRequirement && operatorEvidenceQueue) {
     operatorEvidenceRequirement.detail += ` Queue status is ${operatorEvidenceQueue.status} with ${operatorEvidenceQueue.summary.readyForImport} target(s) ready for import and ${operatorEvidenceQueue.summary.uncheckedTargets} unchecked target(s).`;
     operatorEvidenceRequirement.evidenceRefs.push("projects/" + project + "/control/live-adapter-operator-evidence-queue.json");
+  }
+  if (operatorEvidenceRequirement && operatorEvidenceWorkspace) {
+    operatorEvidenceRequirement.detail += ` Workspace status is ${operatorEvidenceWorkspace.status} with ${operatorEvidenceWorkspace.summary.workspaceFiles} fillable file(s).`;
+    operatorEvidenceRequirement.evidenceRefs.push("projects/" + project + "/control/live-adapter-operator-evidence-workspace.json");
   }
   const audit: RoadmapCompletionAudit = {
     schemaVersion: 1,

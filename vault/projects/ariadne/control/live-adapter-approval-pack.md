@@ -2,7 +2,7 @@
 
 Project: ariadne
 Status: ready_for_operator_review
-Generated: 2026-05-17T08:33:54.728Z
+Generated: 2026-05-17T09:47:18.471Z
 Next actions: projects/ariadne/control/live-adapter-next-actions.json
 
 ## Summary

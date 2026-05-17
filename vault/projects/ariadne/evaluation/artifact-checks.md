@@ -2,7 +2,7 @@
 
 Project: ariadne
 Status: passed
-Generated: 2026-05-17T08:15:31.374Z
+Generated: 2026-05-17T09:51:58.717Z
 
 ## Summary
 
@@ -55,7 +55,7 @@ Generated: 2026-05-17T08:15:31.374Z
 | live-adapter-cutover-audit | no | present | - | projects/ariadne/control/live-adapter-cutover-audit.json |
 | live-adapter-review-session | no | present | - | projects/ariadne/control/live-adapter-review-session.json |
 | live-adapter-evidence-templates | no | present | - | projects/ariadne/control/live-adapter-evidence-templates.json |
-| live-adapter-operator-evidence-checks | no | present | 7 | projects/ariadne/control/live-adapter-operator-evidence-checks/operator-evidence-check-*.json |
+| live-adapter-operator-evidence-checks | no | present | 13 | projects/ariadne/control/live-adapter-operator-evidence-checks/operator-evidence-check-*.json |
 | live-adapter-operator-evidence-check-all | no | present | - | projects/ariadne/control/live-adapter-operator-evidence-check-all.json |
 | live-adapter-operator-evidence | no | missing | 0 | projects/ariadne/control/live-adapter-operator-evidence/operator-evidence-*.json |
 | live-adapter-operator-evidence-audit | no | present | - | projects/ariadne/control/live-adapter-operator-evidence-audit.json |

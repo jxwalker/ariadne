@@ -101,7 +101,7 @@ The audit is a non-mutating evaluator. It checks approval state, evidence refs, 
 
 `live-adapter-operator-evidence-check` evaluates a filled operator file without creating an evidence record. It is a preflight path for catching missing sections while writing `recorded=false`, `operatorEvidenceRecordCreated=false`, `mutationApproved=false`, and `approvalGranted=false`.
 
-`live-adapter-operator-evidence-check-all` evaluates every current target template with the same preflight logic, writes one aggregate batch report, and refreshes the queue. It improves evaluation coverage by making unchecked targets explicit before an operator starts filling or importing evidence.
+`live-adapter-operator-evidence-check-all` evaluates every current target workspace file with the same preflight logic, writes one aggregate batch report, and refreshes the queue. It defaults to the workspace when it exists; `--source templates` keeps the older blank-template preflight available. It improves evaluation coverage by making unchecked targets explicit before an operator imports evidence.
 
 `live-adapter-operator-evidence-queue` evaluates the operator work queue after preflight checks. It does not prove evidence by itself; it tells the operator which targets are unchecked, which need more evidence, and which checked files are ready to import.
 

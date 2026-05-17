@@ -158,9 +158,9 @@ function nextAction(status: QueueTarget["status"]): string {
     case "needs_rework":
       return "Update the latest imported operator evidence record and rerun the check/import flow.";
     case "needs_evidence":
-      return "Fill the missing sections in the operator evidence template and rerun the preflight check.";
+      return "Fill the missing sections in the operator evidence workspace file and rerun the preflight check.";
     case "unchecked":
-      return "Run the preflight check command against the target template before importing evidence.";
+      return "Run the preflight check command against the target workspace file before importing evidence.";
   }
 }
 
