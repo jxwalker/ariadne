@@ -2,6 +2,7 @@ import fs from "node:fs/promises";
 import path from "node:path";
 import { writeJsonArtifact, writeTextArtifact } from "./artifacts.js";
 import { generateLiveAdapterOperatorEvidenceQueue } from "./liveAdapterOperatorEvidenceQueue.js";
+import type { LiveAdapterTarget } from "./liveAdapterTargets.js";
 import { slugifyProject } from "./paths.js";
 import type {
   LiveAdapterOperatorEvidenceQueue,
@@ -34,6 +35,7 @@ const USER_FACING_TARGET_LABELS = new Map<string, string>([
 export async function generateLiveAdapterOperatorEvidenceWorkspace(input: {
   project: string;
   vaultRoot: string;
+  target?: LiveAdapterTarget;
 }): Promise<{ jsonPath: string; markdownPath: string; workspace: LiveAdapterOperatorEvidenceWorkspace }> {
   const project = slugifyProject(input.project);
   const queueResult = await generateLiveAdapterOperatorEvidenceQueue({ project, vaultRoot: input.vaultRoot });
@@ -42,7 +44,14 @@ export async function generateLiveAdapterOperatorEvidenceWorkspace(input: {
   const generatedAt = new Date().toISOString();
   const targets: WorkspaceTarget[] = [];
 
-  for (const queueTarget of queueResult.queue.targets) {
+  const queueTargets = input.target
+    ? queueResult.queue.targets.filter((target) => target.target === input.target)
+    : queueResult.queue.targets;
+  if (input.target && queueTargets.length === 0) {
+    throw new Error(`Missing operator evidence queue target for ${input.target}.`);
+  }
+
+  for (const queueTarget of queueTargets) {
     const workplanTarget = workplanByTarget.get(queueTarget.target);
     if (!workplanTarget) throw new Error(`Missing operator evidence workplan target for ${queueTarget.target}.`);
     const target = await writeTargetWorkspace(input.vaultRoot, project, generatedAt, queueTarget, workplanTarget);
@@ -64,6 +73,7 @@ export async function generateLiveAdapterOperatorEvidenceWorkspace(input: {
     schemaVersion: 1,
     project,
     generatedAt,
+    target: input.target,
     status: summary.targetsReadyForImport === summary.targets ? "ready_for_import" : "awaiting_operator_input",
     mutationApproved: false,
     approvalGranted: false,
@@ -72,12 +82,15 @@ export async function generateLiveAdapterOperatorEvidenceWorkspace(input: {
     summary,
     targets
   };
-  const jsonPath = await writeJsonArtifact(input.vaultRoot, project, "control", "live-adapter-operator-evidence-workspace.json", workspace);
+  const fileStem = input.target
+    ? `live-adapter-operator-evidence-workspace-${input.target}`
+    : "live-adapter-operator-evidence-workspace";
+  const jsonPath = await writeJsonArtifact(input.vaultRoot, project, "control", `${fileStem}.json`, workspace);
   const markdownPath = await writeTextArtifact(
     input.vaultRoot,
     project,
     "control",
-    "live-adapter-operator-evidence-workspace.md",
+    `${fileStem}.md`,
     renderWorkspace(workspace)
   );
   return { jsonPath, markdownPath, workspace };
@@ -146,6 +159,7 @@ function renderWorkspace(workspace: LiveAdapterOperatorEvidenceWorkspace): strin
     "# Live Adapter Operator Evidence Workspace",
     "",
     `Project: ${workspace.project}`,
+    `Target: ${workspace.target ?? "all"}`,
     `Status: ${workspace.status}`,
     `Generated: ${workspace.generatedAt}`,
     `Mutation approved: ${workspace.mutationApproved}`,

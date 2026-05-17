@@ -953,6 +953,7 @@ export interface LiveAdapterOperatorEvidenceWorkspace {
   schemaVersion: 1;
   project: string;
   generatedAt: string;
+  target?: Exclude<MutationReadinessPlan["target"], "generic">;
   status: "awaiting_operator_input" | "ready_for_import";
   mutationApproved: false;
   approvalGranted: false;
@@ -985,6 +986,7 @@ export interface LiveAdapterOperatorEvidenceAssist {
   schemaVersion: 1;
   project: string;
   generatedAt: string;
+  target?: Exclude<MutationReadinessPlan["target"], "generic">;
   status: "awaiting_operator_review" | "no_targets";
   mutationApproved: false;
   approvalGranted: false;

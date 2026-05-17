@@ -203,13 +203,13 @@ function usage(): string {
     "  ariadne live-adapter-evidence-templates --project <project>",
     "  ariadne live-adapter-operator-evidence-check --project <project> --target <github|deployment|hermes-cron|openscorpion|gsd2|notebooklm> --from <operator-evidence.md> [--notes <text>]",
     "  ariadne live-adapter-operator-evidence-check-all --project <project> [--source auto|workspace|templates] [--notes <text>]",
-    "  ariadne live-adapter-operator-evidence-assist --project <project>",
+    "  ariadne live-adapter-operator-evidence-assist --project <project> [--target <github|deployment|hermes-cron|openscorpion|gsd2|notebooklm>]",
     "  ariadne live-adapter-operator-evidence-import-ready --project <project> --by <operator> [--notes <text>]",
     "  ariadne live-adapter-operator-evidence --project <project> --target <github|deployment|hermes-cron|openscorpion|gsd2|notebooklm> --from <operator-evidence.md> --by <operator> [--notes <text>]",
     "  ariadne live-adapter-operator-evidence-audit --project <project>",
     "  ariadne live-adapter-operator-evidence-workplan --project <project>",
     "  ariadne live-adapter-operator-evidence-queue --project <project>",
-    "  ariadne live-adapter-operator-evidence-workspace --project <project>",
+    "  ariadne live-adapter-operator-evidence-workspace --project <project> [--target <github|deployment|hermes-cron|openscorpion|gsd2|notebooklm>]",
     "  ariadne roadmap-completion-audit --project <project>",
     "  ariadne mutation-dry-run --project <project> --plan <id|json> [--timeout-ms <ms>]",
     "  ariadne mutation-execute --project <project> --plan <id|json> --confirm-plan <id> [--timeout-ms <ms>]",
@@ -1324,8 +1324,13 @@ async function main(): Promise<void> {
   }
 
   if (parsed.command === "live-adapter-operator-evidence-assist") {
-    const result = await generateLiveAdapterOperatorEvidenceAssist({ project, vaultRoot });
+    const result = await generateLiveAdapterOperatorEvidenceAssist({
+      project,
+      vaultRoot,
+      target: optionalLiveAdapterOperatorEvidenceTarget(parsed.options)
+    });
     console.log(`Live adapter operator evidence assist: ${result.markdownPath}`);
+    console.log(`Target: ${result.assist.target ?? "all"}`);
     console.log(`Status: ${result.assist.status}`);
     console.log(`Targets: ${result.assist.summary.targets}`);
     console.log(`Assist files: ${result.assist.summary.assistFiles}`);
@@ -1383,8 +1388,13 @@ async function main(): Promise<void> {
   }
 
   if (parsed.command === "live-adapter-operator-evidence-workspace") {
-    const result = await generateLiveAdapterOperatorEvidenceWorkspace({ project, vaultRoot });
+    const result = await generateLiveAdapterOperatorEvidenceWorkspace({
+      project,
+      vaultRoot,
+      target: optionalLiveAdapterOperatorEvidenceTarget(parsed.options)
+    });
     console.log(`Live adapter operator evidence workspace: ${result.markdownPath}`);
+    console.log(`Target: ${result.workspace.target ?? "all"}`);
     console.log(`Status: ${result.workspace.status}`);
     console.log(`Targets: ${result.workspace.summary.targets}`);
     console.log(`Workspace files: ${result.workspace.summary.workspaceFiles}`);
@@ -1722,6 +1732,13 @@ function usageSourceOption(
     return value;
   }
   throw new Error("--source must be hermes, coderabbit, openai, ci, local-llm, or manual.");
+}
+
+function optionalLiveAdapterOperatorEvidenceTarget(options: Map<string, string | true>) {
+  const value = options.get("target");
+  if (value === undefined) return undefined;
+  if (value === true) throw new Error("--target requires a value.");
+  return liveAdapterOperatorEvidenceTargetOption(value);
 }
 
 function optionalRuntimeCanaryEndpointIds(options: Map<string, string | true>): RuntimeModelEndpointId[] | undefined {

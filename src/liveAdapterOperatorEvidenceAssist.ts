@@ -1,6 +1,7 @@
 import fs from "node:fs/promises";
 import path from "node:path";
 import { writeJsonArtifact, writeTextArtifact } from "./artifacts.js";
+import type { LiveAdapterTarget } from "./liveAdapterTargets.js";
 import { generateLiveAdapterOperatorEvidenceWorkspace } from "./liveAdapterOperatorEvidenceWorkspace.js";
 import { projectDir, slugifyProject } from "./paths.js";
 import type {
@@ -16,12 +17,13 @@ type WorkspaceTarget = LiveAdapterOperatorEvidenceWorkspace["targets"][number];
 export async function generateLiveAdapterOperatorEvidenceAssist(input: {
   project: string;
   vaultRoot: string;
+  target?: LiveAdapterTarget;
 }): Promise<{ jsonPath: string; markdownPath: string; assist: LiveAdapterOperatorEvidenceAssist }> {
   const project = slugifyProject(input.project);
   const generatedAt = new Date().toISOString();
   const workspaceResult =
-    (await readExistingWorkspace(input.vaultRoot, project)) ??
-    (await generateLiveAdapterOperatorEvidenceWorkspace({ project, vaultRoot: input.vaultRoot }));
+    (await readExistingWorkspace(input.vaultRoot, project, input.target)) ??
+    (await generateLiveAdapterOperatorEvidenceWorkspace({ project, vaultRoot: input.vaultRoot, target: input.target }));
   const workspace = workspaceResult.workspace;
   const workplan = await readWorkplan(input.vaultRoot, workspace.workplanRef);
   const workplanByTarget = new Map(workplan.targets.map((target) => [target.target, target]));
@@ -72,6 +74,7 @@ export async function generateLiveAdapterOperatorEvidenceAssist(input: {
     schemaVersion: 1,
     project,
     generatedAt,
+    target: input.target,
     status: targets.length > 0 ? "awaiting_operator_review" : "no_targets",
     mutationApproved: false,
     approvalGranted: false,
@@ -82,19 +85,29 @@ export async function generateLiveAdapterOperatorEvidenceAssist(input: {
     summary,
     targets
   };
-  const jsonPath = await writeJsonArtifact(input.vaultRoot, project, "control", "live-adapter-operator-evidence-assist.json", assist);
+  const fileStem = input.target
+    ? `live-adapter-operator-evidence-assist-${input.target}`
+    : "live-adapter-operator-evidence-assist";
+  const jsonPath = await writeJsonArtifact(input.vaultRoot, project, "control", `${fileStem}.json`, assist);
   const markdownPath = await writeTextArtifact(
     input.vaultRoot,
     project,
     "control",
-    "live-adapter-operator-evidence-assist.md",
+    `${fileStem}.md`,
     renderAssist(assist)
   );
   return { jsonPath, markdownPath, assist };
 }
 
-async function readExistingWorkspace(vaultRoot: string, project: string): Promise<WorkspaceResult | undefined> {
-  const jsonPath = path.join(projectDir(vaultRoot, project), "control", "live-adapter-operator-evidence-workspace.json");
+async function readExistingWorkspace(
+  vaultRoot: string,
+  project: string,
+  target?: LiveAdapterTarget
+): Promise<WorkspaceResult | undefined> {
+  const fileName = target
+    ? `live-adapter-operator-evidence-workspace-${target}.json`
+    : "live-adapter-operator-evidence-workspace.json";
+  const jsonPath = path.join(projectDir(vaultRoot, project), "control", fileName);
   try {
     const parsed = JSON.parse(await fs.readFile(jsonPath, "utf8")) as unknown;
     if (isWorkspace(parsed)) return { jsonPath, workspace: parsed };
@@ -162,6 +175,7 @@ function renderAssist(assist: LiveAdapterOperatorEvidenceAssist): string {
     "# Live Adapter Operator Evidence Assist",
     "",
     `Project: ${assist.project}`,
+    `Target: ${assist.target ?? "all"}`,
     `Status: ${assist.status}`,
     `Generated: ${assist.generatedAt}`,
     `Mutation approved: ${assist.mutationApproved}`,
