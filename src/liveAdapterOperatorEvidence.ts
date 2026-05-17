@@ -78,6 +78,29 @@ const REQUIRED_SECTIONS: Array<{
 
 export const REQUIRED_OPERATOR_EVIDENCE_SECTION_LABELS = REQUIRED_SECTIONS.map((section) => section.label);
 
+export function operatorEvidenceTargetMissingSections(target: LiveAdapterOperatorEvidenceAudit["targets"][number]): string[] {
+  const missingSections = target.missingSections ?? [];
+  if (missingSections.length > 0) return missingSections;
+  return target.status === "missing_evidence" ? [...REQUIRED_OPERATOR_EVIDENCE_SECTION_LABELS] : missingSections;
+}
+
+export function operatorEvidenceAuditMissingSections(audit: LiveAdapterOperatorEvidenceAudit | undefined): number | undefined {
+  if (!audit) return undefined;
+  const summaryMissingSections = audit.summary?.missingSections ?? 0;
+  if (summaryMissingSections > 0) return summaryMissingSections;
+
+  const targetSections = (audit.targets ?? []).reduce(
+    (count, target) => count + operatorEvidenceTargetMissingSections(target).length,
+    0
+  );
+  if (targetSections > 0) return targetSections;
+
+  const missingTargets = audit.summary?.missingTargets ?? 0;
+  if (missingTargets > 0) return missingTargets * REQUIRED_OPERATOR_EVIDENCE_SECTION_LABELS.length;
+
+  return summaryMissingSections;
+}
+
 export async function recordLiveAdapterOperatorEvidence(input: {
   project: string;
   vaultRoot: string;

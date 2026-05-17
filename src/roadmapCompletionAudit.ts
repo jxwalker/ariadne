@@ -1,6 +1,7 @@
 import fs from "node:fs/promises";
 import path from "node:path";
 import { writeJsonArtifact, writeTextArtifact } from "./artifacts.js";
+import { operatorEvidenceAuditMissingSections } from "./liveAdapterOperatorEvidence.js";
 import { projectDir, slugifyProject } from "./paths.js";
 import type {
   ArtifactCheckReport,
@@ -50,6 +51,8 @@ export async function generateRoadmapCompletionAudit(input: {
   const dossiers = await readDossiers(path.join(dir, "control", "live-adapter-dossiers"));
   const gbrainExportExists = await exists(path.join(dir, "integrations", "gbrain", "gbrain-export.json"));
   const gbrainReports = await countMatching(path.join(dir, "integrations", "gbrain"), /^gbrain-report-.+\.json$/);
+  const operatorEvidenceSummary = operatorEvidenceAudit?.summary;
+  const operatorEvidenceMissingSections = operatorEvidenceAuditMissingSections(operatorEvidenceAudit);
 
   const requirements: Requirement[] = [
     {
@@ -131,7 +134,7 @@ export async function generateRoadmapCompletionAudit(input: {
       title: "All live-adapter targets have complete operator evidence",
       status: operatorEvidenceAudit?.status === "complete" ? "passed" : "blocked",
       detail: operatorEvidenceAudit
-        ? `${operatorEvidenceAudit.summary.completeTargets ?? 0}/${operatorEvidenceAudit.summary.targets ?? 0} targets complete; ${operatorEvidenceAudit.summary.missingTargets ?? 0} missing evidence; ${operatorEvidenceAudit.summary.missingSections ?? 0} missing section(s).`
+        ? `${operatorEvidenceSummary?.completeTargets ?? 0}/${operatorEvidenceSummary?.targets ?? 0} targets complete; ${operatorEvidenceSummary?.missingTargets ?? 0} missing evidence; ${operatorEvidenceMissingSections ?? 0} missing section(s).`
         : "Operator evidence audit is missing.",
       evidenceRefs: ["projects/" + project + "/control/live-adapter-operator-evidence-audit.json"],
       nextCommands: [
