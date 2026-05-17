@@ -49,6 +49,7 @@ import { generateLiveAdapterNextActions } from "../src/liveAdapterNextActions.js
 import { generateLiveAdapterReadiness } from "../src/liveAdapterReadiness.js";
 import { generateLiveAdapterReviewSession } from "../src/liveAdapterReviewSession.js";
 import { generateLiveAdapterTargetDossier } from "../src/liveAdapterTargetDossier.js";
+import { collectLocalRuntimeProbe } from "../src/localRuntimeProbe.js";
 import { planMutationReadiness } from "../src/mutationReadiness.js";
 import { generateMutationReadinessAudit } from "../src/mutationReadinessAudit.js";
 import { runMutationDryRun } from "../src/mutationDryRun.js";
@@ -1487,6 +1488,63 @@ describe("roadmap adapters", () => {
     expect(liveSnapshot.snapshot.summary.collector).toBe("local-node-os");
     expect(JSON.stringify(liveSnapshot.snapshot.raw)).not.toContain(os.hostname());
     expect(JSON.stringify(liveSnapshot.snapshot.raw)).toContain("networkAddresses");
+
+    const runtimeProbe = await collectLocalRuntimeProbe(
+      {
+        project: "ariadne",
+        vaultRoot,
+        canary: true,
+        hermesDashboardUrl: "http://runtime.test/hermes",
+        ollamaUrl: "http://runtime.test/ollama",
+        ds4Url: "http://runtime.test/ds4/v1",
+        lmStudioUrl: "http://runtime.test/lmstudio/v1",
+        timeoutMs: 100
+      },
+      {
+        runCommand: async () => ({ exitCode: 0, stdout: "ok", stderr: "" }),
+        fetchJson: async (url, init) => {
+          if (url === "http://runtime.test/hermes") return { ok: true, status: 200, text: "<html></html>" };
+          if (url.endsWith("/api/tags")) {
+            return { ok: true, status: 200, text: "{}", json: { models: [{ name: "qwen-local" }] } };
+          }
+          if (url.endsWith("/api/generate") && init?.method === "POST") {
+            return {
+              ok: true,
+              status: 200,
+              text: "{}",
+              json: { response: "READY", prompt_eval_count: 5, eval_count: 1, total_duration: 2_000_000 }
+            };
+          }
+          if (url.endsWith("/ds4/v1/models")) {
+            return { ok: true, status: 200, text: "{}", json: { data: [{ id: "deepseek-v4-flash" }] } };
+          }
+          if (url.endsWith("/ds4/v1/chat/completions") && init?.method === "POST") {
+            return {
+              ok: true,
+              status: 200,
+              text: "{}",
+              json: {
+                choices: [{ message: { content: "NOT READY" } }],
+                usage: { prompt_tokens: 7, completion_tokens: 1, total_tokens: 8 }
+              }
+            };
+          }
+          return { ok: false, status: 0, text: "", error: "connection refused" };
+        }
+      }
+    );
+    expect(runtimeProbe.probe.summary.models).toBe(2);
+    expect(runtimeProbe.probe.summary.usageRecords).toBe(2);
+    expect(runtimeProbe.probe.modelEndpoints.find((endpoint) => endpoint.id === "ds4-openai")?.canary?.status).toBe(
+      "degraded"
+    );
+    expect(runtimeProbe.probe.modelEndpoints.find((endpoint) => endpoint.id === "lmstudio")?.status).toBe("unreachable");
+    const runtimeArtifactChecks = await generateArtifactCheckReport({ project: "ariadne", vaultRoot });
+    expect(runtimeArtifactChecks.report.checks.find((check) => check.id === "local-runtime-probes")?.status).toBe(
+      "present"
+    );
+    const usageReport = await generateUsageMetricsReport({ project: "ariadne", vaultRoot });
+    expect(usageReport.report.bySource.find((source) => source.name === "local-llm")?.totalTokens).toBe(14);
 
     const parsedSsh = parseSshInventory(
       [

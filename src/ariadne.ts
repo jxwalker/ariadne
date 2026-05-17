@@ -64,6 +64,7 @@ import { generateLiveAdapterOperatorEvidenceWorkspace } from "./liveAdapterOpera
 import { generateLiveAdapterReadiness } from "./liveAdapterReadiness.js";
 import { generateLiveAdapterReviewSession } from "./liveAdapterReviewSession.js";
 import { generateLiveAdapterTargetDossier, liveAdapterDossierTargetOption } from "./liveAdapterTargetDossier.js";
+import { collectLocalRuntimeProbe } from "./localRuntimeProbe.js";
 import { importNotebookLmExport } from "./notebooklm.js";
 import { notebookLmMutationActionOption, planNotebookLmMutation } from "./notebookLmMutation.js";
 import { mutationTargetOption, planMutationReadiness } from "./mutationReadiness.js";
@@ -173,6 +174,7 @@ function usage(): string {
     "  ariadne infra --project <project>",
     "  ariadne infra-snapshot --project <project> --from <manifest.json>",
     "  ariadne infra-live-local --project <project> [--notes <text>]",
+    "  ariadne local-runtime-probe --project <project> [--canary] [--hermes-dashboard-url <url>] [--ollama-url <url>] [--ds4-url <url>] [--lmstudio-url <url>] [--timeout-ms <ms>]",
     "  ariadne infra-live-ssh --project <project> --host <id> --target <ssh-target> [--ssh-binary <path>] [--notes <text>]",
     "  ariadne openscorpion-draft --project <project> --title <title> --type <type> --evidence <paths>",
     "  ariadne openscorpion-mutation-plan --project <project> --activity <id> --type <type> --action <submit-activity|update-activity|withdraw-activity> --route <governed|staging> --scope <text> --auth-evidence <paths> --dry-run <cmd> --live-command <cmd> --post-verify <cmd> --rollback <text> [--approval <id|json>] [--risk <low|medium|high>] [--evidence <paths>] [--notes <text>]",
@@ -916,6 +918,26 @@ async function main(): Promise<void> {
     return;
   }
 
+  if (parsed.command === "local-runtime-probe") {
+    const result = await collectLocalRuntimeProbe({
+      project,
+      vaultRoot,
+      canary: parsed.options.has("canary"),
+      hermesDashboardUrl: optionString(parsed.options, "hermes-dashboard-url", "") || undefined,
+      ollamaUrl: optionString(parsed.options, "ollama-url", "") || undefined,
+      ds4Url: optionString(parsed.options, "ds4-url", "") || undefined,
+      lmStudioUrl: optionString(parsed.options, "lmstudio-url", "") || undefined,
+      timeoutMs: optionalNumber(parsed.options, "timeout-ms")
+    });
+    console.log(`Local runtime probe: ${result.markdownPath}`);
+    console.log(`Reachable: ${result.probe.summary.reachable}`);
+    console.log(`Degraded: ${result.probe.summary.degraded}`);
+    console.log(`Unreachable: ${result.probe.summary.unreachable}`);
+    console.log(`Models: ${result.probe.summary.models}`);
+    console.log(`Usage records: ${result.probe.summary.usageRecords}`);
+    return;
+  }
+
   if (parsed.command === "infra-live-ssh") {
     const result = await collectSshInfraSnapshot({
       project,
@@ -1574,13 +1596,20 @@ function sensitivityOption(
 
 function usageSourceOption(
   options: Map<string, string | true>
-): "hermes" | "coderabbit" | "openai" | "ci" | "manual" | undefined {
+): "hermes" | "coderabbit" | "openai" | "ci" | "local-llm" | "manual" | undefined {
   const value = options.get("source");
   if (value === undefined) return undefined;
-  if (value === "hermes" || value === "coderabbit" || value === "openai" || value === "ci" || value === "manual") {
+  if (
+    value === "hermes" ||
+    value === "coderabbit" ||
+    value === "openai" ||
+    value === "ci" ||
+    value === "local-llm" ||
+    value === "manual"
+  ) {
     return value;
   }
-  throw new Error("--source must be hermes, coderabbit, openai, ci, or manual.");
+  throw new Error("--source must be hermes, coderabbit, openai, ci, local-llm, or manual.");
 }
 
 function agentLeaseStatusOption(options: Map<string, string | true>): "acquired" | "released" | "expired" {

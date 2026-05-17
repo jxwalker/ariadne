@@ -48,6 +48,8 @@ vault/projects/<project>/evaluation/usage-report.json
 vault/projects/<project>/evaluation/usage-report.md
 ```
 
+`local-runtime-probe --canary` can append `local-llm` usage records from short Ollama or OpenAI-compatible local model canaries. Those records flow into the same usage report.
+
 `artifact-checks` writes the deterministic artifact contract report:
 
 ```text
