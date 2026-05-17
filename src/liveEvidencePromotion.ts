@@ -64,7 +64,7 @@ export async function promoteLiveEvidence(input: {
 }
 
 async function promoteSource(vaultRoot: string, project: string, sourcePath: string): Promise<PromotionSource> {
-  const resolved = resolveSourcePath(vaultRoot, project, sourcePath);
+  const resolved = await resolveSourcePath(vaultRoot, project, sourcePath);
   const stat = await readSourceStat(resolved, sourcePath);
   if (stat.size > MAX_PROMOTION_SOURCE_BYTES) {
     throw new Error(`Source file is too large to promote safely: ${sourcePath} (${stat.size} bytes).`);
@@ -89,7 +89,7 @@ async function readSourceStat(resolved: string, sourcePath: string): Promise<{ s
   try {
     return await fs.stat(resolved);
   } catch (error) {
-    throw new Error(`Source file not found or unreadable: ${sourcePath} (${(error as Error).message})`);
+    throw new Error(`Source file not found or unreadable: ${sourcePath}`);
   }
 }
 
@@ -97,7 +97,7 @@ async function readSourceText(resolved: string, sourcePath: string): Promise<str
   try {
     return await fs.readFile(resolved, "utf8");
   } catch (error) {
-    throw new Error(`Source file not found or unreadable: ${sourcePath} (${(error as Error).message})`);
+    throw new Error(`Source file not found or unreadable: ${sourcePath}`);
   }
 }
 
@@ -214,6 +214,14 @@ function sanitizeString(value: string): { value: string; redactions: number } {
       redactions += 1;
       return "<redacted-ip>";
     })
+    .replace(/\b(?:127\.0\.0\.1|169\.254\.\d{1,3}\.\d{1,3})\b/g, () => {
+      redactions += 1;
+      return "<redacted-ip>";
+    })
+    .replace(/\b(?:localhost|::1|fe80:[0-9a-f:]+)\b/gi, () => {
+      redactions += 1;
+      return "<redacted-host>";
+    })
     .replace(/\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}\b/g, () => {
       redactions += 1;
       return "<redacted-email>";
@@ -223,7 +231,24 @@ function sanitizeString(value: string): { value: string; redactions: number } {
 
 function shouldRedactKey(key: string): boolean {
   const normalized = key.toLowerCase();
-  return ["url", "baseurl", "endpointurl", "sourcepath", "sshtarget", "targethash", "hostnamehash"].includes(normalized);
+  if (normalized.includes("url")) return true;
+  return [
+    "auth",
+    "authorization",
+    "baseurl",
+    "endpoint",
+    "host",
+    "hostname",
+    "hostnamehash",
+    "key",
+    "password",
+    "passphrase",
+    "secret",
+    "sourcepath",
+    "sshtarget",
+    "targethash",
+    "token"
+  ].includes(normalized);
 }
 
 function renderPromotion(promotion: LiveEvidencePromotion): string {
@@ -272,8 +297,8 @@ function renderPromotion(promotion: LiveEvidencePromotion): string {
   ].join("\n");
 }
 
-function resolveSourcePath(vaultRoot: string, project: string, sourcePath: string): string {
-  const projectRoot = projectDir(vaultRoot, project);
+async function resolveSourcePath(vaultRoot: string, project: string, sourcePath: string): Promise<string> {
+  const projectRoot = await fs.realpath(projectDir(vaultRoot, project));
   const resolved = path.isAbsolute(sourcePath)
     ? path.resolve(sourcePath)
     : sourcePath.startsWith("projects/")
@@ -281,11 +306,17 @@ function resolveSourcePath(vaultRoot: string, project: string, sourcePath: strin
       : sourcePath.startsWith(`vault${path.sep}`) || sourcePath.startsWith("vault/")
         ? path.resolve(process.cwd(), sourcePath)
         : path.resolve(projectRoot, sourcePath);
-  const relativeToProject = path.relative(path.resolve(projectRoot), resolved);
+  let realResolved: string;
+  try {
+    realResolved = await fs.realpath(resolved);
+  } catch {
+    throw new Error(`Source file not found or unreadable: ${sourcePath}`);
+  }
+  const relativeToProject = path.relative(projectRoot, realResolved);
   if (relativeToProject === "" || relativeToProject.startsWith("..") || path.isAbsolute(relativeToProject)) {
     throw new Error(`Source path must resolve inside the project vault: ${sourcePath}`);
   }
-  return resolved;
+  return realResolved;
 }
 
 function sourceRef(vaultRoot: string, resolved: string): string {
