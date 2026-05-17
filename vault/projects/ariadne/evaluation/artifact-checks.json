@@ -1,12 +1,12 @@
 {
   "schemaVersion": 1,
   "project": "ariadne",
-  "generatedAt": "2026-05-17T06:56:33.814Z",
+  "generatedAt": "2026-05-17T07:32:19.485Z",
   "status": "passed",
   "summary": {
     "required": 13,
-    "optional": 41,
-    "present": 45,
+    "optional": 42,
+    "present": 46,
     "missingRequired": 0
   },
   "checks": [
@@ -355,10 +355,23 @@
       "required": false,
       "path": "projects/ariadne/control/live-adapter-operator-evidence-checks/operator-evidence-check-*.json",
       "status": "present",
-      "count": 1,
+      "count": 7,
       "matches": [
-        "projects/ariadne/control/live-adapter-operator-evidence-checks/operator-evidence-check-github-2026-05-17T06-36-28-110Z.json"
+        "projects/ariadne/control/live-adapter-operator-evidence-checks/operator-evidence-check-deployment-2026-05-17T07-32-10-447Z.json",
+        "projects/ariadne/control/live-adapter-operator-evidence-checks/operator-evidence-check-github-2026-05-17T06-36-28-110Z.json",
+        "projects/ariadne/control/live-adapter-operator-evidence-checks/operator-evidence-check-github-2026-05-17T07-32-10-440Z.json",
+        "projects/ariadne/control/live-adapter-operator-evidence-checks/operator-evidence-check-gsd2-2026-05-17T07-32-10-450Z.json",
+        "projects/ariadne/control/live-adapter-operator-evidence-checks/operator-evidence-check-hermes-cron-2026-05-17T07-32-10-448Z.json",
+        "projects/ariadne/control/live-adapter-operator-evidence-checks/operator-evidence-check-notebooklm-2026-05-17T07-32-10-451Z.json",
+        "projects/ariadne/control/live-adapter-operator-evidence-checks/operator-evidence-check-openscorpion-2026-05-17T07-32-10-449Z.json"
       ]
+    },
+    {
+      "id": "live-adapter-operator-evidence-check-all",
+      "label": "Live adapter operator evidence batch check",
+      "required": false,
+      "path": "projects/ariadne/control/live-adapter-operator-evidence-check-all.json",
+      "status": "present"
     },
     {
       "id": "live-adapter-operator-evidence",

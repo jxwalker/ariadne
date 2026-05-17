@@ -2,9 +2,9 @@
 
 Project: ariadne
 Status: passed
-Generated: 2026-05-17T07:05:57.633Z
+Generated: 2026-05-17T07:32:39.591Z
 HTML: projects/ariadne/console/index.html
-Screenshot: projects/ariadne/console/screenshots/console-2026-05-17T07-05-57-633Z.png
+Screenshot: projects/ariadne/console/screenshots/console-2026-05-17T07-32-39-591Z.png
 Viewport: 1440x1100
 
 ## Summary
@@ -25,4 +25,4 @@ Viewport: 1440x1100
 | evidence-checks | passed | Evidence Checks metric is visible. |
 | operator-evidence-check-command | passed | Operator evidence check command is visible. |
 | embedded-data | passed | Embedded console data is parseable. |
-| screenshot | passed | 2470124 bytes captured. |
+| screenshot | passed | 2494135 bytes captured. |

@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
   "project": "ariadne",
-  "generatedAt": "2026-05-17T07:05:57.633Z",
+  "generatedAt": "2026-05-17T07:32:39.591Z",
   "htmlPath": "projects/ariadne/console/index.html",
-  "screenshotPath": "projects/ariadne/console/screenshots/console-2026-05-17T07-05-57-633Z.png",
+  "screenshotPath": "projects/ariadne/console/screenshots/console-2026-05-17T07-32-39-591Z.png",
   "status": "passed",
   "viewport": {
     "width": 1440,
@@ -72,7 +72,7 @@
       "id": "screenshot",
       "label": "Screenshot captured",
       "status": "passed",
-      "detail": "2470124 bytes captured."
+      "detail": "2494135 bytes captured."
     }
   ]
 }
