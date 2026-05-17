@@ -29,6 +29,8 @@ export async function generateConsoleVisualCheckReport(input: {
     checkContains(html, "approval-review-audit-metric", "Approval review audit metric", "Review Audit"),
     checkContains(html, "adapter-dossier-metric", "Adapter dossier metric", "Dossiers"),
     checkContains(html, "adapter-cutover-metric", "Adapter cutover metric", "Cutover"),
+    checkContains(html, "adapter-review-session-metric", "Adapter review-session metric", "Review Session"),
+    reviewSessionDataCheck(html, embeddedData),
     cutoverQueueCheck(html, embeddedData),
     trendChartCheck(html, embeddedData),
     checkContains(html, "visual-check-panel", "Visual check panel", "Visual Checks"),
@@ -156,6 +158,17 @@ function cutoverQueueCheck(html: string, data: ConsoleData | undefined): Console
       missing.length === 0
         ? `${blockedTargets.length} cutover-blocked target(s) are visible in the approval queue.`
         : `Missing cutover queue rows for ${missing.map((target) => target.target).join(", ")}.`
+  };
+}
+
+function reviewSessionDataCheck(html: string, data: ConsoleData | undefined): ConsoleVisualCheckReport["checks"][number] {
+  const expected = data?.liveAdapterReviewSession ? "mutationApproved=false" : "No live adapter review session required.";
+  const present = expected === "No live adapter review session required." || html.includes(expected);
+  return {
+    id: "live-adapter-review-session",
+    label: "Live adapter review session data",
+    status: present ? "passed" : "failed",
+    detail: detailSentence(present ? "Found" : "Missing", expected)
   };
 }
 

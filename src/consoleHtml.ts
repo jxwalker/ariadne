@@ -120,6 +120,15 @@ function renderConsole(data: ConsoleData): string {
             detail: `${data.liveAdapterCutoverAudit.summary.ready} ready / ${data.liveAdapterCutoverAudit.summary.blocked} blocked`
           }
         ]
+      : []),
+    ...(data.liveAdapterReviewSession
+      ? [
+          {
+            time: data.liveAdapterReviewSession.generatedAt,
+            label: `Live adapter review session: ${data.liveAdapterReviewSession.status}`,
+            detail: `${data.liveAdapterReviewSession.summary.operatorReviewRequired} review-required / ${data.liveAdapterReviewSession.summary.readyForAdapterWork} adapter-ready`
+          }
+        ]
       : [])
   ].sort((left, right) => right.time.localeCompare(left.time));
 
@@ -174,6 +183,7 @@ function renderConsole(data: ConsoleData): string {
     metric("Review Audit", data.summary.liveAdapterApprovalReviewAuditStatus ?? "none", `${data.summary.currentLiveAdapterApprovalReviews ?? 0} current`),
     metric("Dossiers", data.summary.liveAdapterTargetDossiers ?? "none", "adapter"),
     metric("Cutover", data.summary.liveAdapterCutoverAuditStatus ?? "none", `${data.summary.liveAdapterCutoverReady ?? 0} ready`),
+    metric("Review Session", data.summary.liveAdapterReviewSessionStatus ?? "none", `${data.summary.liveAdapterReviewSessionRequired ?? 0} required`),
     metric("Hermes", data.summary.hermesCronSnapshots, `${data.summary.hermesCronProposals} proposals`),
     metric("Recovery", data.summary.recoveryIssues, "issues"),
     metric("Browser", data.summary.consoleBrowserChecks ?? "none", "console"),
@@ -193,6 +203,7 @@ function renderConsole(data: ConsoleData): string {
     section("Approval Queue", approvalQueue(data)),
     section("Mutation Audit", mutationReadinessAudit(data)),
     section("Live Adapters", liveAdapters(data)),
+    section("Review Session", reviewSession(data)),
     section("Timeline", timelineList(timeline.slice(0, 12))),
     "</div>",
     '<aside class="side-column">',
@@ -504,6 +515,21 @@ function liveAdapters(data: ConsoleData): string {
   ].join("");
 }
 
+function reviewSession(data: ConsoleData): string {
+  const session = data.liveAdapterReviewSession;
+  if (!session) return empty("No live-adapter review session is available.");
+  return [
+    `<div class="visual-status"><strong class="${statusClass(session.status)}">${escapeHtml(session.status)}</strong><span>${escapeHtml(`${session.summary.operatorReviewRequired} review-required / ${session.summary.readyForAdapterWork} adapter-ready / ${session.summary.gbrainReports} GBrain reports`)}</span></div>`,
+    '<p class="metadata">Review session only: mutationApproved=false and GBrain is advisory memory.</p>',
+    '<div class="table-wrap"><table><thead><tr><th>Target</th><th>Status</th><th>Cutover</th><th>Review</th><th>First Action</th><th>GBrain Queries</th></tr></thead><tbody>',
+    ...session.targets.map(
+      (target) =>
+        `<tr><td>${escapeHtml(target.target)}</td><td class="${statusClass(target.status)}">${escapeHtml(target.status)}</td><td class="${statusClass(target.cutoverStatus)}">${escapeHtml(target.cutoverStatus)}</td><td>${escapeHtml(target.reviewAuditStatus)}</td><td>${escapeHtml(target.firstAction ?? "none")}</td><td>${escapeHtml(String(target.gbrainContext.suggestedQueries.length))}</td></tr>`
+    ),
+    "</tbody></table></div>"
+  ].join("");
+}
+
 function recovery(data: ConsoleData): string {
   const report = data.recovery;
   if (!report) return empty("No recovery report is available.");
@@ -618,6 +644,7 @@ function statusClass(value: string | undefined): string {
   if (value === "failed" || value === "blocked" || value === "changes_requested" || value === "blocking") return "bad";
   if (
     value === "review_required" ||
+    value === "operator_review_required" ||
     value === "pending" ||
     value === "skipped" ||
     value === "warning" ||

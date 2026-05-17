@@ -18,6 +18,7 @@ The first visualisation should be an operations surface over evidence, not a cha
 - Approval review audit: current accepted packet-review counts, stale records, missing evidence refs, and invalid review artifacts.
 - Live adapter target dossiers: per-target operator packets combining readiness, action queues, mutation audit, approval packets, review audit, and GBrain memory context.
 - Live adapter cutover audit: final per-target gate state before placeholder commands can be replaced with real adapters.
+- Live adapter review session: consolidated target dossiers, first actions, review commands, cutover blockers, and advisory GBrain queries without approving mutation.
 - Verification: typecheck, tests, build, Playwright evidence, CI, CodeRabbit, GitHub PR/check snapshots.
 - Decisions: accepted decisions and source references.
 - Infrastructure: hosts, runner pools, model endpoints, snapshots.
@@ -62,7 +63,7 @@ Nodes are Macs, DGX Spark, Proxmox, TrueNAS, runners, Hermes instances, and mode
 
 ### Approval Queue
 
-Pending review records, missing readiness gates, requested approvals, mutation-readiness blockers, audit blockers, mutation blockers, approval-pack packets, packet-review records, approval-review audit blockers, target dossier packets, and cutover blockers are grouped into one queue so the operator sees what requires human action.
+Pending review records, missing readiness gates, requested approvals, mutation-readiness blockers, audit blockers, mutation blockers, approval-pack packets, packet-review records, approval-review audit blockers, target dossier packets, cutover blockers, and review-session targets are grouped into one queue so the operator sees what requires human action.
 
 ### Memory And Mail
 

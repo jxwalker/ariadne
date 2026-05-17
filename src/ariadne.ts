@@ -48,6 +48,7 @@ import { generateLiveAdapterApprovalReviewAudit } from "./liveAdapterApprovalRev
 import { generateLiveAdapterCutoverAudit } from "./liveAdapterCutoverAudit.js";
 import { generateLiveAdapterNextActions } from "./liveAdapterNextActions.js";
 import { generateLiveAdapterReadiness } from "./liveAdapterReadiness.js";
+import { generateLiveAdapterReviewSession } from "./liveAdapterReviewSession.js";
 import { generateLiveAdapterTargetDossier, liveAdapterDossierTargetOption } from "./liveAdapterTargetDossier.js";
 import { importNotebookLmExport } from "./notebooklm.js";
 import { notebookLmMutationActionOption, planNotebookLmMutation } from "./notebookLmMutation.js";
@@ -175,6 +176,7 @@ function usage(): string {
     "  ariadne live-adapter-approval-review-audit --project <project> [--packet <path>]",
     "  ariadne live-adapter-dossier --project <project> --target <github|deployment|hermes-cron|openscorpion|gsd2|notebooklm>",
     "  ariadne live-adapter-cutover-audit --project <project>",
+    "  ariadne live-adapter-review-session --project <project>",
     "  ariadne mutation-dry-run --project <project> --plan <id|json> [--timeout-ms <ms>]",
     "  ariadne mutation-execute --project <project> --plan <id|json> --confirm-plan <id> [--timeout-ms <ms>]",
     "  ariadne target-mutation-execute --project <project> --target <target> --plan <id|json> --confirm-plan <id> [--timeout-ms <ms>]",
@@ -1154,6 +1156,15 @@ async function main(): Promise<void> {
     console.log(`Status: ${result.audit.status}`);
     console.log(`Ready: ${result.audit.summary.ready}`);
     console.log(`Blocked: ${result.audit.summary.blocked}`);
+    return;
+  }
+
+  if (parsed.command === "live-adapter-review-session") {
+    const result = await generateLiveAdapterReviewSession({ project, vaultRoot });
+    console.log(`Live adapter review session: ${result.markdownPath}`);
+    console.log(`Status: ${result.session.status}`);
+    console.log(`Operator review required: ${result.session.summary.operatorReviewRequired}`);
+    console.log(`Mutation approved: ${result.session.mutationApproved}`);
     return;
   }
 

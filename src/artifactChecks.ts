@@ -293,6 +293,13 @@ const ARTIFACT_SPECS: ArtifactSpec[] = [
     relativePath: "control/live-adapter-cutover-audit.json"
   },
   {
+    id: "live-adapter-review-session",
+    label: "Live adapter review session",
+    required: false,
+    kind: "file",
+    relativePath: "control/live-adapter-review-session.json"
+  },
+  {
     id: "mutation-dry-runs",
     label: "Mutation dry-run records",
     required: false,

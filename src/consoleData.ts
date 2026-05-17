@@ -38,6 +38,7 @@ import type {
   LiveAdapterCutoverAudit,
   LiveAdapterNextActionsReport,
   LiveAdapterReadinessReport,
+  LiveAdapterReviewSession,
   LiveAdapterTargetDossier,
   MemoryProposalRecord,
   MutationDryRunRecord,
@@ -128,6 +129,12 @@ export async function collectConsoleData(vaultRoot: string, projectInput: string
     project,
     "control",
     "live-adapter-cutover-audit.json"
+  );
+  const liveAdapterReviewSession = await readProjectJson<LiveAdapterReviewSession>(
+    vaultRoot,
+    project,
+    "control",
+    "live-adapter-review-session.json"
   );
   const recovery = await readProjectJson<RecoveryReport>(vaultRoot, project, "control", "recovery-report.json");
   const gbrainExport = await readProjectJson<GbrainExportBundle>(vaultRoot, project, "integrations/gbrain", "gbrain-export.json");
@@ -248,6 +255,9 @@ export async function collectConsoleData(vaultRoot: string, projectInput: string
       liveAdapterCutoverAuditStatus: liveAdapterCutoverAudit?.status,
       liveAdapterCutoverReady: liveAdapterCutoverAudit?.summary.ready,
       liveAdapterCutoverBlocked: liveAdapterCutoverAudit?.summary.blocked,
+      liveAdapterReviewSessionStatus: liveAdapterReviewSession?.status,
+      liveAdapterReviewSessionTargets: liveAdapterReviewSession?.summary.targets,
+      liveAdapterReviewSessionRequired: liveAdapterReviewSession?.summary.operatorReviewRequired,
       recoveryIssues: recovery?.issues.length ?? 0,
       consoleBrowserChecks: consoleBrowserChecks?.status,
       readinessStatus: readiness?.status,
@@ -273,6 +283,7 @@ export async function collectConsoleData(vaultRoot: string, projectInput: string
     liveAdapterApprovalReviewAudit,
     liveAdapterTargetDossiers,
     liveAdapterCutoverAudit,
+    liveAdapterReviewSession,
     decisions,
     playwrightEvidence,
     healerProposals,
@@ -335,6 +346,7 @@ export async function collectConsoleData(vaultRoot: string, projectInput: string
       liveAdapterApprovalReviewAudit: await existingPath(vaultRoot, path.join(dir, "control", "live-adapter-approval-review-audit.json")),
       liveAdapterTargetDossiers: await existingPath(vaultRoot, path.join(dir, "control", "live-adapter-dossiers")),
       liveAdapterCutoverAudit: await existingPath(vaultRoot, path.join(dir, "control", "live-adapter-cutover-audit.json")),
+      liveAdapterReviewSession: await existingPath(vaultRoot, path.join(dir, "control", "live-adapter-review-session.json")),
       recoveryReport: await existingPath(vaultRoot, path.join(dir, "control", "recovery-report.json")),
       extractionResults: await existingPath(vaultRoot, path.join(dir, "extractions")),
       healerProposals: await existingPath(vaultRoot, path.join(dir, "verification", "healer-proposals")),

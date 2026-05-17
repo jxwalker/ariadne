@@ -1,12 +1,12 @@
 {
   "schemaVersion": 1,
   "project": "ariadne",
-  "generatedAt": "2026-05-17T01:54:44.447Z",
+  "generatedAt": "2026-05-17T02:14:53.244Z",
   "status": "passed",
   "summary": {
     "required": 13,
-    "optional": 33,
-    "present": 38,
+    "optional": 34,
+    "present": 39,
     "missingRequired": 0
   },
   "checks": [
@@ -333,6 +333,13 @@
       "label": "Live adapter cutover audit",
       "required": false,
       "path": "projects/ariadne/control/live-adapter-cutover-audit.json",
+      "status": "present"
+    },
+    {
+      "id": "live-adapter-review-session",
+      "label": "Live adapter review session",
+      "required": false,
+      "path": "projects/ariadne/control/live-adapter-review-session.json",
       "status": "present"
     },
     {
