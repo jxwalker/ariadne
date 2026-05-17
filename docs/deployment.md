@@ -30,6 +30,7 @@ Deployment should follow the same rule as the rest of the project: observe first
 
 - Import JSON snapshots from Proxmox, TrueNAS, Macs, and DGX Spark.
 - Record host roles, model endpoints, runner pools, and trust boundaries.
+- Keep Atlas registered under a neutral `atlas.local` alias; use `--atlas-url` for the actual LAN or Tailscale address during live probes.
 - Keep snapshots manual or read-only.
 - Use `infra-live-local` for the current Mac or Linux host.
 - Use `infra-live-ssh` only for approved remote hosts where a read-only SSH probe is acceptable.

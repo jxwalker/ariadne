@@ -47,6 +47,12 @@ export async function generateInfrastructureRegistry(options: GenerateInfraOptio
         label: "Proxmox dev server",
         role: "runners, services, model endpoints, infrastructure substrate",
         notes: "Read-only inventory first; Proxmox live state is authoritative at execution time."
+      },
+      {
+        id: "atlas-node",
+        label: "Atlas model host",
+        role: "fast OpenAI-compatible local model endpoint",
+        notes: "Use local-runtime-probe --atlas-url for the actual LAN or Tailscale address; registry keeps a neutral endpoint alias."
       }
     ],
     modelEndpoints: [
@@ -62,6 +68,13 @@ export async function generateInfrastructureRegistry(options: GenerateInfraOptio
         hostId: "dgx-spark",
         kind: "local inference",
         status: "planned"
+      },
+      {
+        id: "atlas-local-models",
+        hostId: "atlas-node",
+        kind: "openai-compatible",
+        url: "http://atlas.local:8888/v1",
+        status: "observed"
       }
     ],
     runnerPools: [

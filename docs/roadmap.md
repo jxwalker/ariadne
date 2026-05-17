@@ -153,6 +153,7 @@ Implemented:
 - read-only infrastructure registry contract
 - runner pool planning contract
 - local model endpoint registry contract
+- Atlas model endpoint registered with a neutral alias and explicit live-probe override path
 - explicit no-mutation rules
 - read-only infrastructure snapshot imports
 - sanitized live read-only local host inventory collector
