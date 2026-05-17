@@ -55,6 +55,7 @@ import { generateLiveAdapterTargetDossier } from "../src/liveAdapterTargetDossie
 import { collectLocalRuntimeProbe } from "../src/localRuntimeProbe.js";
 import { planMutationReadiness } from "../src/mutationReadiness.js";
 import { generateMutationReadinessAudit } from "../src/mutationReadinessAudit.js";
+import { generateMutationReadinessRepairPlan } from "../src/mutationReadinessRepairPlan.js";
 import { runMutationDryRun } from "../src/mutationDryRun.js";
 import { runMutationExecution } from "../src/mutationExecute.js";
 import { planOpenScorpionMutation } from "../src/openScorpionMutation.js";
@@ -820,6 +821,28 @@ describe("roadmap adapters", () => {
     expect(deploymentActions?.actions.some((action) => action.id === "deployment-approval-pack-review")).toBe(true);
     expect(deploymentActions?.actions.some((action) => action.id === "deployment-audit-fix")).toBe(true);
     expect(deploymentActions?.actions.some((action) => action.id === "deployment-dry-run" && action.status === "pending")).toBe(true);
+    const repairPlan = await generateMutationReadinessRepairPlan({ project: "ariadne", vaultRoot });
+    const githubRepair = repairPlan.report.targets.find((target) => target.target === "github");
+    const deploymentRepair = repairPlan.report.targets.find((target) => target.target === "deployment");
+    const hermesRepair = repairPlan.report.targets.find((target) => target.target === "hermes-cron");
+    expect(repairPlan.report.status).toBe("actions_required");
+    expect(repairPlan.report.mutationAllowed).toBe(false);
+    expect(repairPlan.report.mutationReadinessAuditRef).toContain("mutation-readiness-audit.json");
+    expect(repairPlan.report.liveAdapterNextActionsRef).toContain("live-adapter-next-actions.json");
+    expect(repairPlan.report.summary.auditPassed).toBe(1);
+    expect(repairPlan.report.summary.missingPlans).toBeGreaterThan(0);
+    expect(repairPlan.report.summary.repairablePlans).toBe(0);
+    expect(repairPlan.report.summary.operatorActionRequired).toBe(1);
+    expect(githubRepair?.status).toBe("audit_passed");
+    expect(deploymentRepair?.status).toBe("operator_action_required");
+    expect(deploymentRepair?.repairableBlockers.some((blocker) => blocker.startsWith("unsafe dry-run command"))).toBe(
+      true
+    );
+    expect(deploymentRepair?.operatorBlockers).toContain("approval state is approval_required");
+    expect(deploymentRepair?.regenerationCommand).toContain("deployment-mutation-plan");
+    expect(deploymentRepair?.approvalCommand).toContain("--target deployment");
+    expect(hermesRepair?.status).toBe("missing_plan");
+    expect(hermesRepair?.regenerationCommand).toContain("hermes-cron-mutation-plan");
     const approvalPack = await generateLiveAdapterApprovalPack({ project: "ariadne", vaultRoot });
     expect(approvalPack.report.status).toBe("ready_for_operator_review");
     expect(approvalPack.report.summary.packets).toBe(5);
@@ -1402,6 +1425,7 @@ describe("roadmap adapters", () => {
     const hermesProposalCheck = artifactChecks.report.checks.find((check) => check.id === "hermes-cron-proposals");
     const readinessCheck = artifactChecks.report.checks.find((check) => check.id === "mutation-readiness-plans");
     const readinessAuditCheck = artifactChecks.report.checks.find((check) => check.id === "mutation-readiness-audit");
+    const repairPlanCheck = artifactChecks.report.checks.find((check) => check.id === "mutation-readiness-repair-plan");
     const nextActionsCheck = artifactChecks.report.checks.find((check) => check.id === "live-adapter-next-actions");
     const approvalPackCheck = artifactChecks.report.checks.find((check) => check.id === "live-adapter-approval-pack");
     const approvalReviewCheck = artifactChecks.report.checks.find((check) => check.id === "live-adapter-approval-reviews");
@@ -1447,6 +1471,7 @@ describe("roadmap adapters", () => {
     expect(hermesProposalCheck?.count).toBe(2);
     expect(readinessCheck?.count).toBe(2);
     expect(readinessAuditCheck?.status).toBe("present");
+    expect(repairPlanCheck?.status).toBe("present");
     expect(nextActionsCheck?.status).toBe("present");
     expect(approvalPackCheck?.status).toBe("present");
     expect(approvalReviewCheck?.status).toBe("present");

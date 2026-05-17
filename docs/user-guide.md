@@ -441,9 +441,12 @@ Each wrapper still requires a passing readiness audit, a passed dry-run record, 
 
 ```bash
 npm run ariadne -- control --project ariadne
+npm run ariadne -- mutation-readiness-repair-plan --project ariadne
 ```
 
 The control report is the answer to: what is proven, what is missing, and what gate still blocks the work?
+
+`mutation-readiness-repair-plan` is the non-mutating follow-up when live-adapter readiness is blocked. It refreshes the mutation-readiness audit and live-adapter next-actions report, then classifies each target as audit-passed, missing a plan, repairable by regenerating a target-specific plan, or waiting on operator evidence/approval. The report writes `control/mutation-readiness-repair-plan.json` and `.md` with approval-request and regeneration command scaffolds, but always records `mutationAllowed=false`.
 
 ## Recover Interrupted Work
 
