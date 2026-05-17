@@ -148,6 +148,15 @@ function renderConsole(data: ConsoleData): string {
           }
         ]
       : []),
+    ...(data.liveAdapterOperatorEvidenceAssist
+      ? [
+          {
+            time: data.liveAdapterOperatorEvidenceAssist.generatedAt,
+            label: `Operator evidence assist: ${data.liveAdapterOperatorEvidenceAssist.status}`,
+            detail: `${data.liveAdapterOperatorEvidenceAssist.summary.assistFiles} assist files / ${data.liveAdapterOperatorEvidenceAssist.summary.existingEvidenceRefs} existing refs`
+          }
+        ]
+      : []),
     ...(data.liveAdapterOperatorEvidenceAudit
       ? [
           {
@@ -223,6 +232,7 @@ function renderConsole(data: ConsoleData): string {
     metric("Evidence Templates", data.summary.liveAdapterEvidenceTemplates ?? "none", data.summary.liveAdapterEvidenceTemplateStatus ?? "operator"),
     metric("Evidence Workplan", data.summary.liveAdapterOperatorEvidenceWorkplanStatus ?? "none", `${data.summary.liveAdapterOperatorEvidenceWorkplanTargets ?? 0} targets`),
     metric("Evidence Queue", data.summary.liveAdapterOperatorEvidenceQueueStatus ?? "none", `${data.summary.liveAdapterOperatorEvidenceQueueReady ?? 0} ready`),
+    metric("Evidence Assist", data.summary.liveAdapterOperatorEvidenceAssistStatus ?? "none", `${data.summary.liveAdapterOperatorEvidenceAssistRefs ?? 0} refs`),
     metric("Evidence Checks", data.summary.liveAdapterOperatorEvidenceChecks ?? "none", "preflight"),
     metric("Operator Evidence", data.summary.liveAdapterOperatorEvidenceStatus ?? "none", `${data.summary.liveAdapterOperatorEvidenceComplete ?? 0} complete`),
     metric("Roadmap Audit", data.summary.roadmapCompletionStatus ?? "none", `${data.summary.roadmapCompletionBlocked ?? 0} blocked`),
@@ -250,6 +260,7 @@ function renderConsole(data: ConsoleData): string {
     section("Evidence Templates", evidenceTemplates(data)),
     section("Evidence Workplan", operatorEvidenceWorkplan(data)),
     section("Evidence Queue", operatorEvidenceQueue(data)),
+    section("Evidence Assist", operatorEvidenceAssist(data)),
     section("Operator Evidence", operatorEvidence(data)),
     section("Roadmap Audit", roadmapCompletion(data)),
     section("Timeline", timelineList(timeline.slice(0, 12))),
@@ -631,6 +642,21 @@ function operatorEvidenceQueue(data: ConsoleData): string {
   ].join("");
 }
 
+function operatorEvidenceAssist(data: ConsoleData): string {
+  const assist = data.liveAdapterOperatorEvidenceAssist;
+  if (!assist) return empty("No live-adapter operator evidence assist is available.");
+  return [
+    `<div class="visual-status"><strong class="${statusClass(assist.status)}">${escapeHtml(assist.status)}</strong><span>${escapeHtml(`${assist.summary.assistFiles} assist files / ${assist.summary.existingEvidenceRefs} existing refs / ${assist.summary.gbrainQueries} GBrain queries`)}</span></div>`,
+    '<p class="metadata">Assist packets are read-only collection aids; they are not operator evidence, approval, or mutation authority.</p>',
+    '<div class="table-wrap"><table><thead><tr><th>Target</th><th>Status</th><th>Assist File</th><th>Existing Refs</th><th>Missing Sections</th><th>Next Step</th></tr></thead><tbody>',
+    ...assist.targets.map(
+      (target) =>
+        `<tr><td>${escapeHtml(target.target)}</td><td class="${statusClass(target.status)}">${escapeHtml(target.status)}</td><td>${escapeHtml(target.assistFileRef)}</td><td>${escapeHtml(String(target.existingEvidenceRefs.length))}</td><td>${escapeHtml(String(target.missingSections.length))}</td><td>${escapeHtml(target.nextSteps[0] ?? "none")}</td></tr>`
+    ),
+    "</tbody></table></div>"
+  ].join("");
+}
+
 function operatorEvidence(data: ConsoleData): string {
   const audit = data.liveAdapterOperatorEvidenceAudit;
   if (!audit) return empty("No live-adapter operator evidence audit is available.");
@@ -800,6 +826,7 @@ function statusClass(value: string | undefined): string {
     value === "warning" ||
     value === "attention_required" ||
     value === "awaiting_operator_evidence" ||
+    value === "awaiting_operator_review" ||
     value === "actions_required" ||
     value === "evidence_required" ||
     value === "needs_evidence" ||
