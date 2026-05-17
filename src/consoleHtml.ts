@@ -235,6 +235,7 @@ function renderConsole(data: ConsoleData): string {
       data.summary.evaluationTrendStatus ?? "latest"
     ),
     metric("Benchmarks", data.summary.benchmarkRuns, "runs"),
+    metric("Runtime", data.summary.localRuntimeProbes, `${data.summary.localRuntimeModels ?? 0} models`),
     "</section>",
     '<section class="layout">',
     '<div class="main-column">',
@@ -699,13 +700,25 @@ function memoryAndMail(data: ConsoleData): string {
 
 function infrastructure(data: ConsoleData): string {
   const registry = data.infrastructure.registry;
+  const latestProbe = data.infrastructure.runtimeProbes.at(-1);
   if (!registry) return empty("No infrastructure registry is available.");
   return [
+    ...(latestProbe
+      ? [
+          `<div class="metadata">Latest runtime probe: ${escapeHtml(`${latestProbe.summary.reachable} reachable / ${latestProbe.summary.degraded} degraded / ${latestProbe.summary.unreachable} unreachable / ${latestProbe.summary.models} models`)}</div>`
+        ]
+      : []),
     '<div class="infra">',
     ...registry.hosts.map(
       (host) =>
         `<div><strong>${escapeHtml(host.label)}</strong><span>${escapeHtml(host.role)}</span><small>${escapeHtml(host.notes)}</small></div>`
     ),
+    ...(latestProbe
+      ? latestProbe.modelEndpoints.map(
+          (endpoint) =>
+            `<div><strong>${escapeHtml(endpoint.id)}</strong><span>${escapeHtml(`${endpoint.status} / ${endpoint.kind}`)}</span><small>${escapeHtml(`${endpoint.models.length} models / canary ${endpoint.canary?.status ?? "not-run"}`)}</small></div>`
+        )
+      : []),
     "</div>"
   ].join("");
 }

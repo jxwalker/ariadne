@@ -64,6 +64,7 @@ npm run ariadne -- deployment-live-ssh --project ariadne --system dgx-spark --ho
 - Use DGX Spark for heavy model evaluation and inferential sensors.
 - Keep fast computational sensors on Mac/Linux.
 - Store evaluation outputs back into the vault as artifacts.
+- Use `local-runtime-probe --canary` to record Hermes, Ollama, DS4/OpenAI-compatible, and LM Studio endpoint health before routing evaluation workloads. The console reads these runtime probe artifacts as infrastructure evidence; a degraded canary is evidence to tune the endpoint or model choice, not approval to mutate services.
 
 ## Network And Security Notes
 

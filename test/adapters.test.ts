@@ -1569,6 +1569,16 @@ describe("roadmap adapters", () => {
     expect(runtimeArtifactChecks.report.checks.find((check) => check.id === "local-runtime-probes")?.status).toBe(
       "present"
     );
+    await fs.writeFile(
+      path.join(vaultRoot, "projects", "ariadne", "infrastructure", "runtime", "malformed-runtime-probe.json"),
+      JSON.stringify({
+        schemaVersion: 1,
+        mode: "read_only",
+        generatedAt: "2099-01-01T00:00:00.000Z",
+        summary: { reachable: 1, degraded: 0, unreachable: 0, models: 1 },
+        modelEndpoints: [{ id: "broken", status: "reachable" }]
+      })
+    );
     const usageReport = await generateUsageMetricsReport({ project: "ariadne", vaultRoot });
     expect(usageReport.report.bySource.find((source) => source.name === "local-llm")?.totalTokens).toBe(8);
 
@@ -1694,6 +1704,10 @@ describe("roadmap adapters", () => {
     expect(console.data.sources[0]?.hygieneStatus).toBe("clean");
     expect(console.data.infrastructure.registry?.hosts.length).toBeGreaterThan(0);
     expect(console.data.infrastructure.snapshots.some((item) => item.snapshotKind === "live_read_only")).toBe(true);
+    expect(console.data.infrastructure.runtimeProbes).toHaveLength(1);
+    expect(console.data.summary.localRuntimeProbes).toBe(1);
+    expect(console.data.summary.localRuntimeModels).toBe(2);
+    expect(console.data.summary.localRuntimeReachable).toBeGreaterThan(0);
     expect(console.data.summary.githubSnapshots).toBe(1);
     expect(console.data.github.snapshots[0]?.summary.pendingChecks).toBe(1);
     expect(console.data.summary.recoveryIssues).toBe(recovery.report.issues.length);
@@ -1714,6 +1728,8 @@ describe("roadmap adapters", () => {
     expect(html).toContain("Visual Checks");
     expect(html).toContain("Recovery");
     expect(html).toContain("GitHub");
+    expect(html).toContain("Runtime");
+    expect(html).toContain("ds4-openai");
     expect(html).toContain("console-data");
     expect(html).not.toContain(temp);
     expect(visual.report.status).toBe("passed");
