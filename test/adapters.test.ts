@@ -1314,7 +1314,7 @@ describe("roadmap adapters", () => {
     const roadmapCompletionAuditCheck = artifactChecks.report.checks.find((check) => check.id === "roadmap-completion-audit");
     const mutationDryRunCheck = artifactChecks.report.checks.find((check) => check.id === "mutation-dry-runs");
     const mutationExecutionCheck = artifactChecks.report.checks.find((check) => check.id === "mutation-executions");
-    expect(coordinationCheck?.matches?.some((match) => match.includes("coordination/hermes"))).toBe(false);
+    expect(coordinationCheck?.matches?.some((match) => match.includes("coordination/hermes"))).toBe(true);
     expect(hermesCheck?.count).toBe(1);
     expect(hermesProposalCheck?.count).toBe(2);
     expect(readinessCheck?.count).toBe(2);
@@ -1433,6 +1433,9 @@ describe("roadmap adapters", () => {
     const negatedCoderabbit = path.join(temp, "coderabbit-negated.md");
     await fs.writeFile(negatedCoderabbit, "I have not approved these changes.\n");
     await importCodeRabbitReview({ project: "ariadne", vaultRoot, sourcePath: negatedCoderabbit });
+    const pendingCoderabbit = path.join(temp, "coderabbit-pending.md");
+    await fs.writeFile(pendingCoderabbit, "Review pending\n\nThis cannot be treated as approved.\n");
+    await importCodeRabbitReview({ project: "ariadne", vaultRoot, sourcePath: pendingCoderabbit });
     const reviews = await readJsonl(path.join(vaultRoot, "projects", "ariadne", "control", "reviews.jsonl"));
     expect(reviews.at(-1)?.status).toBe("pending");
 

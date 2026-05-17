@@ -1,0 +1,68 @@
+{
+  "schemaVersion": 1,
+  "project": "e2e-local-smoke",
+  "generatedAt": "2026-05-17T10:45:17.834Z",
+  "hosts": [
+    {
+      "id": "m1-hermes",
+      "label": "M1 Mac mini",
+      "role": "always-on Hermes supervisor",
+      "notes": "Control-plane host for long-running supervision; verify live details before automation."
+    },
+    {
+      "id": "m1-max",
+      "label": "M1 Max",
+      "role": "local development and testing",
+      "notes": "Apple Silicon development machine; use for local validation where available."
+    },
+    {
+      "id": "m5-max",
+      "label": "M5 Max",
+      "role": "high-memory local agent workstation",
+      "notes": "Primary Mac-class local execution surface mentioned by user."
+    },
+    {
+      "id": "dgx-spark",
+      "label": "DGX Spark",
+      "role": "local inference and memory-heavy workloads",
+      "notes": "Treat as planned/observed only until live endpoint inventory exists."
+    },
+    {
+      "id": "beast",
+      "label": "Proxmox dev server",
+      "role": "runners, services, model endpoints, infrastructure substrate",
+      "notes": "Read-only inventory first; Proxmox live state is authoritative at execution time."
+    }
+  ],
+  "modelEndpoints": [
+    {
+      "id": "openscorpion-router",
+      "hostId": "beast",
+      "kind": "governed model route",
+      "url": "http://localhost:8080",
+      "status": "planned"
+    },
+    {
+      "id": "dgx-local-models",
+      "hostId": "dgx-spark",
+      "kind": "local inference",
+      "status": "planned"
+    }
+  ],
+  "runnerPools": [
+    {
+      "id": "trusted-private-runners",
+      "hostId": "beast",
+      "scope": "private jxwalker project repositories",
+      "trustBoundary": "persistent self-hosted runners only for trusted private repositories",
+      "status": "planned"
+    },
+    {
+      "id": "public-repo-safe-path",
+      "hostId": "beast",
+      "scope": "public repositories",
+      "trustBoundary": "manual or ephemeral approval path; no untrusted public PRs on persistent runners",
+      "status": "planned"
+    }
+  ]
+}

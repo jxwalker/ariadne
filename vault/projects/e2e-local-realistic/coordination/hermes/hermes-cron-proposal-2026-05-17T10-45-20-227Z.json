@@ -1,0 +1,30 @@
+{
+  "schemaVersion": 1,
+  "id": "hermes-cron-proposal-2026-05-17T10-45-20-227Z",
+  "project": "e2e-local-realistic",
+  "generatedAt": "2026-05-17T10:45:20.227Z",
+  "mode": "proposal_only",
+  "snapshotRefs": [
+    "projects/e2e-local-realistic/coordination/hermes/hermes-cron-2026-05-17T10-45-19-784Z.json"
+  ],
+  "summary": {
+    "snapshots": 1,
+    "jobs": 0,
+    "enabled": 0,
+    "disabled": 0,
+    "proposedActions": 1,
+    "warnings": [
+      "No Hermes cron jobs were found in the imported snapshot."
+    ]
+  },
+  "proposedActions": [
+    {
+      "id": "create-candidate-sleep-review",
+      "kind": "create-candidate",
+      "title": "Draft local-e2e Ariadne sleep review job",
+      "rationale": "No imported Hermes scheduler evidence exists yet; create only a proposal until a real Hermes export is imported.",
+      "schedule": "0 2 * * *",
+      "evidenceRefs": []
+    }
+  ]
+}

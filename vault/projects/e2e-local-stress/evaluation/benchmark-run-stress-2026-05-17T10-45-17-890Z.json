@@ -1,0 +1,355 @@
+{
+  "schemaVersion": 1,
+  "id": "benchmark-run-stress-2026-05-17T10-45-17-890Z",
+  "project": "e2e-local-stress",
+  "set": "stress",
+  "generatedAt": "2026-05-17T10:45:17.890Z",
+  "mode": "local_deterministic",
+  "status": "passed",
+  "packPath": "<PACK_ROOT>/benchmark-pack.json",
+  "packRoot": "<PACK_ROOT>",
+  "targetProjects": [
+    "e2e-local-stress-alpha",
+    "e2e-local-stress-beta"
+  ],
+  "summary": {
+    "steps": 29,
+    "passed": 29,
+    "failed": 0,
+    "targetProjects": 2,
+    "missingRequiredArtifacts": 0
+  },
+  "steps": [
+    {
+      "id": "ingest",
+      "project": "e2e-local-stress-alpha",
+      "status": "passed",
+      "detail": "completed",
+      "evidenceRefs": [
+        "<PACK_ROOT>/project-alpha/source.md"
+      ]
+    },
+    {
+      "id": "assemble",
+      "project": "e2e-local-stress-alpha",
+      "status": "passed",
+      "detail": "completed",
+      "evidenceRefs": []
+    },
+    {
+      "id": "prd",
+      "project": "e2e-local-stress-alpha",
+      "status": "passed",
+      "detail": "completed",
+      "evidenceRefs": [
+        "<VAULT_ROOT>/projects/e2e-local-stress-alpha/requirements/prd.json",
+        "<VAULT_ROOT>/projects/e2e-local-stress-alpha/requirements/PRD.md"
+      ]
+    },
+    {
+      "id": "gsd",
+      "project": "e2e-local-stress-alpha",
+      "status": "passed",
+      "detail": "completed",
+      "evidenceRefs": [
+        "<VAULT_ROOT>/projects/e2e-local-stress-alpha/gsd/roadmap.json",
+        "<VAULT_ROOT>/projects/e2e-local-stress-alpha/gsd/TASKS.md",
+        "<VAULT_ROOT>/projects/e2e-local-stress-alpha/verification/commands.json"
+      ]
+    },
+    {
+      "id": "gsd2-export",
+      "project": "e2e-local-stress-alpha",
+      "status": "passed",
+      "detail": "completed",
+      "evidenceRefs": [
+        "<VAULT_ROOT>/projects/e2e-local-stress-alpha/gsd/gsd2-bundle.json",
+        "<VAULT_ROOT>/projects/e2e-local-stress-alpha/gsd/gsd2-bundle.md"
+      ]
+    },
+    {
+      "id": "execution",
+      "project": "e2e-local-stress-alpha",
+      "status": "passed",
+      "detail": "completed",
+      "evidenceRefs": [
+        "<VAULT_ROOT>/projects/e2e-local-stress-alpha/execution/run-2026-05-17T10-45-17-872Z.json",
+        "<VAULT_ROOT>/projects/e2e-local-stress-alpha/execution/run-2026-05-17T10-45-17-872Z.md"
+      ]
+    },
+    {
+      "id": "playwright",
+      "project": "e2e-local-stress-alpha",
+      "status": "passed",
+      "detail": "completed",
+      "evidenceRefs": [
+        "<VAULT_ROOT>/projects/e2e-local-stress-alpha/verification/playwright-plan.json",
+        "<VAULT_ROOT>/projects/e2e-local-stress-alpha/verification/playwright-plan.md",
+        "<VAULT_ROOT>/projects/e2e-local-stress-alpha/verification/generated.playwright.spec.ts"
+      ]
+    },
+    {
+      "id": "evaluation",
+      "project": "e2e-local-stress-alpha",
+      "status": "passed",
+      "detail": "completed",
+      "evidenceRefs": [
+        "<VAULT_ROOT>/projects/e2e-local-stress-alpha/evaluation/evaluation-plan.json",
+        "<VAULT_ROOT>/projects/e2e-local-stress-alpha/evaluation/evaluation-plan.md"
+      ]
+    },
+    {
+      "id": "infra",
+      "project": "e2e-local-stress-alpha",
+      "status": "passed",
+      "detail": "completed",
+      "evidenceRefs": [
+        "<VAULT_ROOT>/projects/e2e-local-stress-alpha/infrastructure/registry.json",
+        "<VAULT_ROOT>/projects/e2e-local-stress-alpha/infrastructure/runner-and-model-plan.md"
+      ]
+    },
+    {
+      "id": "control",
+      "project": "e2e-local-stress-alpha",
+      "status": "passed",
+      "detail": "completed",
+      "evidenceRefs": [
+        "<VAULT_ROOT>/projects/e2e-local-stress-alpha/control/merge-readiness.json",
+        "<VAULT_ROOT>/projects/e2e-local-stress-alpha/control/merge-readiness.md"
+      ]
+    },
+    {
+      "id": "behavior-checks",
+      "project": "e2e-local-stress-alpha",
+      "status": "passed",
+      "detail": "completed",
+      "evidenceRefs": [
+        "<VAULT_ROOT>/projects/e2e-local-stress-alpha/evaluation/behavior-checks.json",
+        "<VAULT_ROOT>/projects/e2e-local-stress-alpha/evaluation/behavior-checks.md"
+      ]
+    },
+    {
+      "id": "gbrain-export",
+      "project": "e2e-local-stress-alpha",
+      "status": "passed",
+      "detail": "completed",
+      "evidenceRefs": [
+        "<VAULT_ROOT>/projects/e2e-local-stress-alpha/integrations/gbrain/gbrain-export.json",
+        "<VAULT_ROOT>/projects/e2e-local-stress-alpha/integrations/gbrain/gbrain-export.md"
+      ]
+    },
+    {
+      "id": "artifact-checks",
+      "project": "e2e-local-stress-alpha",
+      "status": "passed",
+      "detail": "completed",
+      "evidenceRefs": [
+        "<VAULT_ROOT>/projects/e2e-local-stress-alpha/evaluation/artifact-checks.json",
+        "<VAULT_ROOT>/projects/e2e-local-stress-alpha/evaluation/artifact-checks.md"
+      ]
+    },
+    {
+      "id": "ingest",
+      "project": "e2e-local-stress-beta",
+      "status": "passed",
+      "detail": "completed",
+      "evidenceRefs": [
+        "<PACK_ROOT>/project-beta/source.md"
+      ]
+    },
+    {
+      "id": "assemble",
+      "project": "e2e-local-stress-beta",
+      "status": "passed",
+      "detail": "completed",
+      "evidenceRefs": []
+    },
+    {
+      "id": "prd",
+      "project": "e2e-local-stress-beta",
+      "status": "passed",
+      "detail": "completed",
+      "evidenceRefs": [
+        "<VAULT_ROOT>/projects/e2e-local-stress-beta/requirements/prd.json",
+        "<VAULT_ROOT>/projects/e2e-local-stress-beta/requirements/PRD.md"
+      ]
+    },
+    {
+      "id": "gsd",
+      "project": "e2e-local-stress-beta",
+      "status": "passed",
+      "detail": "completed",
+      "evidenceRefs": [
+        "<VAULT_ROOT>/projects/e2e-local-stress-beta/gsd/roadmap.json",
+        "<VAULT_ROOT>/projects/e2e-local-stress-beta/gsd/TASKS.md",
+        "<VAULT_ROOT>/projects/e2e-local-stress-beta/verification/commands.json"
+      ]
+    },
+    {
+      "id": "gsd2-export",
+      "project": "e2e-local-stress-beta",
+      "status": "passed",
+      "detail": "completed",
+      "evidenceRefs": [
+        "<VAULT_ROOT>/projects/e2e-local-stress-beta/gsd/gsd2-bundle.json",
+        "<VAULT_ROOT>/projects/e2e-local-stress-beta/gsd/gsd2-bundle.md"
+      ]
+    },
+    {
+      "id": "execution",
+      "project": "e2e-local-stress-beta",
+      "status": "passed",
+      "detail": "completed",
+      "evidenceRefs": [
+        "<VAULT_ROOT>/projects/e2e-local-stress-beta/execution/run-2026-05-17T10-45-17-882Z.json",
+        "<VAULT_ROOT>/projects/e2e-local-stress-beta/execution/run-2026-05-17T10-45-17-882Z.md"
+      ]
+    },
+    {
+      "id": "playwright",
+      "project": "e2e-local-stress-beta",
+      "status": "passed",
+      "detail": "completed",
+      "evidenceRefs": [
+        "<VAULT_ROOT>/projects/e2e-local-stress-beta/verification/playwright-plan.json",
+        "<VAULT_ROOT>/projects/e2e-local-stress-beta/verification/playwright-plan.md",
+        "<VAULT_ROOT>/projects/e2e-local-stress-beta/verification/generated.playwright.spec.ts"
+      ]
+    },
+    {
+      "id": "evaluation",
+      "project": "e2e-local-stress-beta",
+      "status": "passed",
+      "detail": "completed",
+      "evidenceRefs": [
+        "<VAULT_ROOT>/projects/e2e-local-stress-beta/evaluation/evaluation-plan.json",
+        "<VAULT_ROOT>/projects/e2e-local-stress-beta/evaluation/evaluation-plan.md"
+      ]
+    },
+    {
+      "id": "infra",
+      "project": "e2e-local-stress-beta",
+      "status": "passed",
+      "detail": "completed",
+      "evidenceRefs": [
+        "<VAULT_ROOT>/projects/e2e-local-stress-beta/infrastructure/registry.json",
+        "<VAULT_ROOT>/projects/e2e-local-stress-beta/infrastructure/runner-and-model-plan.md"
+      ]
+    },
+    {
+      "id": "import-ci",
+      "project": "e2e-local-stress-beta",
+      "status": "passed",
+      "detail": "completed",
+      "evidenceRefs": [
+        "<PACK_ROOT>/imports/failed-ci.json"
+      ]
+    },
+    {
+      "id": "import-coderabbit",
+      "project": "e2e-local-stress-beta",
+      "status": "passed",
+      "detail": "completed",
+      "evidenceRefs": [
+        "<PACK_ROOT>/imports/pending-coderabbit-review.md"
+      ]
+    },
+    {
+      "id": "infra-snapshot",
+      "project": "e2e-local-stress-beta",
+      "status": "passed",
+      "detail": "completed",
+      "evidenceRefs": [
+        "<PACK_ROOT>/imports/odd-infra-snapshot.json",
+        "<VAULT_ROOT>/projects/e2e-local-stress-beta/infrastructure/infra-snapshot-2026-05-17T10-45-17-885Z.json",
+        "<VAULT_ROOT>/projects/e2e-local-stress-beta/infrastructure/infra-snapshot-2026-05-17T10-45-17-885Z.md"
+      ]
+    },
+    {
+      "id": "control",
+      "project": "e2e-local-stress-beta",
+      "status": "passed",
+      "detail": "completed",
+      "evidenceRefs": [
+        "<VAULT_ROOT>/projects/e2e-local-stress-beta/control/merge-readiness.json",
+        "<VAULT_ROOT>/projects/e2e-local-stress-beta/control/merge-readiness.md"
+      ]
+    },
+    {
+      "id": "behavior-checks",
+      "project": "e2e-local-stress-beta",
+      "status": "passed",
+      "detail": "completed",
+      "evidenceRefs": [
+        "<VAULT_ROOT>/projects/e2e-local-stress-beta/evaluation/behavior-checks.json",
+        "<VAULT_ROOT>/projects/e2e-local-stress-beta/evaluation/behavior-checks.md"
+      ]
+    },
+    {
+      "id": "gbrain-export",
+      "project": "e2e-local-stress-beta",
+      "status": "passed",
+      "detail": "completed",
+      "evidenceRefs": [
+        "<VAULT_ROOT>/projects/e2e-local-stress-beta/integrations/gbrain/gbrain-export.json",
+        "<VAULT_ROOT>/projects/e2e-local-stress-beta/integrations/gbrain/gbrain-export.md"
+      ]
+    },
+    {
+      "id": "artifact-checks",
+      "project": "e2e-local-stress-beta",
+      "status": "passed",
+      "detail": "completed",
+      "evidenceRefs": [
+        "<VAULT_ROOT>/projects/e2e-local-stress-beta/evaluation/artifact-checks.json",
+        "<VAULT_ROOT>/projects/e2e-local-stress-beta/evaluation/artifact-checks.md"
+      ]
+    }
+  ],
+  "acceptance": [
+    {
+      "id": "stress-multi-project",
+      "type": "pipeline_output",
+      "criterion": "The benchmark can create more than one project in a vault.",
+      "status": "passed",
+      "evidenceRefs": [
+        "<VAULT_ROOT>/projects/e2e-local-stress-alpha/evaluation/artifact-checks.md",
+        "<VAULT_ROOT>/projects/e2e-local-stress-beta/evaluation/artifact-checks.md"
+      ]
+    },
+    {
+      "id": "stress-regression-signal",
+      "type": "pipeline_output",
+      "criterion": "Failed checks and pending review evidence remain explicit.",
+      "status": "passed",
+      "evidenceRefs": [
+        "<VAULT_ROOT>/projects/e2e-local-stress-alpha/evaluation/artifact-checks.md",
+        "<VAULT_ROOT>/projects/e2e-local-stress-beta/evaluation/artifact-checks.md"
+      ]
+    },
+    {
+      "id": "stress-fixture-safety",
+      "type": "fixture_safety",
+      "criterion": "No fixture contains a real credential or requires a live host.",
+      "status": "passed",
+      "evidenceRefs": [
+        "<VAULT_ROOT>/projects/e2e-local-stress-alpha/evaluation/artifact-checks.md",
+        "<VAULT_ROOT>/projects/e2e-local-stress-beta/evaluation/artifact-checks.md"
+      ]
+    }
+  ],
+  "artifactChecks": [
+    {
+      "project": "e2e-local-stress-alpha",
+      "status": "passed",
+      "missingRequired": 0,
+      "reportPath": "<VAULT_ROOT>/projects/e2e-local-stress-alpha/evaluation/artifact-checks.md"
+    },
+    {
+      "project": "e2e-local-stress-beta",
+      "status": "passed",
+      "missingRequired": 0,
+      "reportPath": "<VAULT_ROOT>/projects/e2e-local-stress-beta/evaluation/artifact-checks.md"
+    }
+  ]
+}

@@ -1,0 +1,188 @@
+{
+  "schemaVersion": 1,
+  "id": "benchmark-run-smoke-2026-05-17T10-45-17-841Z",
+  "project": "e2e-local-smoke",
+  "set": "smoke",
+  "generatedAt": "2026-05-17T10:45:17.841Z",
+  "mode": "local_deterministic",
+  "status": "passed",
+  "packPath": "<PACK_ROOT>/benchmark-pack.json",
+  "packRoot": "<PACK_ROOT>",
+  "targetProjects": [
+    "e2e-local-smoke"
+  ],
+  "summary": {
+    "steps": 13,
+    "passed": 13,
+    "failed": 0,
+    "targetProjects": 1,
+    "missingRequiredArtifacts": 0
+  },
+  "steps": [
+    {
+      "id": "ingest",
+      "project": "e2e-local-smoke",
+      "status": "passed",
+      "detail": "completed",
+      "evidenceRefs": [
+        "<PACK_ROOT>/sources/source.md"
+      ]
+    },
+    {
+      "id": "assemble",
+      "project": "e2e-local-smoke",
+      "status": "passed",
+      "detail": "completed",
+      "evidenceRefs": []
+    },
+    {
+      "id": "prd",
+      "project": "e2e-local-smoke",
+      "status": "passed",
+      "detail": "completed",
+      "evidenceRefs": [
+        "<VAULT_ROOT>/projects/e2e-local-smoke/requirements/prd.json",
+        "<VAULT_ROOT>/projects/e2e-local-smoke/requirements/PRD.md"
+      ]
+    },
+    {
+      "id": "gsd",
+      "project": "e2e-local-smoke",
+      "status": "passed",
+      "detail": "completed",
+      "evidenceRefs": [
+        "<VAULT_ROOT>/projects/e2e-local-smoke/gsd/roadmap.json",
+        "<VAULT_ROOT>/projects/e2e-local-smoke/gsd/TASKS.md",
+        "<VAULT_ROOT>/projects/e2e-local-smoke/verification/commands.json"
+      ]
+    },
+    {
+      "id": "gsd2-export",
+      "project": "e2e-local-smoke",
+      "status": "passed",
+      "detail": "completed",
+      "evidenceRefs": [
+        "<VAULT_ROOT>/projects/e2e-local-smoke/gsd/gsd2-bundle.json",
+        "<VAULT_ROOT>/projects/e2e-local-smoke/gsd/gsd2-bundle.md"
+      ]
+    },
+    {
+      "id": "execution",
+      "project": "e2e-local-smoke",
+      "status": "passed",
+      "detail": "completed",
+      "evidenceRefs": [
+        "<VAULT_ROOT>/projects/e2e-local-smoke/execution/run-2026-05-17T10-45-17-832Z.json",
+        "<VAULT_ROOT>/projects/e2e-local-smoke/execution/run-2026-05-17T10-45-17-832Z.md"
+      ]
+    },
+    {
+      "id": "playwright",
+      "project": "e2e-local-smoke",
+      "status": "passed",
+      "detail": "completed",
+      "evidenceRefs": [
+        "<VAULT_ROOT>/projects/e2e-local-smoke/verification/playwright-plan.json",
+        "<VAULT_ROOT>/projects/e2e-local-smoke/verification/playwright-plan.md",
+        "<VAULT_ROOT>/projects/e2e-local-smoke/verification/generated.playwright.spec.ts"
+      ]
+    },
+    {
+      "id": "evaluation",
+      "project": "e2e-local-smoke",
+      "status": "passed",
+      "detail": "completed",
+      "evidenceRefs": [
+        "<VAULT_ROOT>/projects/e2e-local-smoke/evaluation/evaluation-plan.json",
+        "<VAULT_ROOT>/projects/e2e-local-smoke/evaluation/evaluation-plan.md"
+      ]
+    },
+    {
+      "id": "infra",
+      "project": "e2e-local-smoke",
+      "status": "passed",
+      "detail": "completed",
+      "evidenceRefs": [
+        "<VAULT_ROOT>/projects/e2e-local-smoke/infrastructure/registry.json",
+        "<VAULT_ROOT>/projects/e2e-local-smoke/infrastructure/runner-and-model-plan.md"
+      ]
+    },
+    {
+      "id": "control",
+      "project": "e2e-local-smoke",
+      "status": "passed",
+      "detail": "completed",
+      "evidenceRefs": [
+        "<VAULT_ROOT>/projects/e2e-local-smoke/control/merge-readiness.json",
+        "<VAULT_ROOT>/projects/e2e-local-smoke/control/merge-readiness.md"
+      ]
+    },
+    {
+      "id": "behavior-checks",
+      "project": "e2e-local-smoke",
+      "status": "passed",
+      "detail": "completed",
+      "evidenceRefs": [
+        "<VAULT_ROOT>/projects/e2e-local-smoke/evaluation/behavior-checks.json",
+        "<VAULT_ROOT>/projects/e2e-local-smoke/evaluation/behavior-checks.md"
+      ]
+    },
+    {
+      "id": "gbrain-export",
+      "project": "e2e-local-smoke",
+      "status": "passed",
+      "detail": "completed",
+      "evidenceRefs": [
+        "<VAULT_ROOT>/projects/e2e-local-smoke/integrations/gbrain/gbrain-export.json",
+        "<VAULT_ROOT>/projects/e2e-local-smoke/integrations/gbrain/gbrain-export.md"
+      ]
+    },
+    {
+      "id": "artifact-checks",
+      "project": "e2e-local-smoke",
+      "status": "passed",
+      "detail": "completed",
+      "evidenceRefs": [
+        "<VAULT_ROOT>/projects/e2e-local-smoke/evaluation/artifact-checks.json",
+        "<VAULT_ROOT>/projects/e2e-local-smoke/evaluation/artifact-checks.md"
+      ]
+    }
+  ],
+  "acceptance": [
+    {
+      "id": "smoke-artifact-contract",
+      "type": "artifact_contract",
+      "criterion": "Artifact checks pass with no missing required artifacts.",
+      "status": "passed",
+      "evidenceRefs": [
+        "<VAULT_ROOT>/projects/e2e-local-smoke/evaluation/artifact-checks.md"
+      ]
+    },
+    {
+      "id": "smoke-pipeline-output",
+      "type": "pipeline_output",
+      "criterion": "The generated PRD contains the core evidence, planning, verification, and control requirements.",
+      "status": "passed",
+      "evidenceRefs": [
+        "<VAULT_ROOT>/projects/e2e-local-smoke/evaluation/artifact-checks.md"
+      ]
+    },
+    {
+      "id": "smoke-fixture-safety",
+      "type": "fixture_safety",
+      "criterion": "No command requires a live external service.",
+      "status": "passed",
+      "evidenceRefs": [
+        "<VAULT_ROOT>/projects/e2e-local-smoke/evaluation/artifact-checks.md"
+      ]
+    }
+  ],
+  "artifactChecks": [
+    {
+      "project": "e2e-local-smoke",
+      "status": "passed",
+      "missingRequired": 0,
+      "reportPath": "<VAULT_ROOT>/projects/e2e-local-smoke/evaluation/artifact-checks.md"
+    }
+  ]
+}

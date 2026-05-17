@@ -1,0 +1,38 @@
+{
+  "schemaVersion": 1,
+  "project": "e2e-local-realistic",
+  "importedAt": "2026-05-17T10:45:17.858Z",
+  "sourcePath": "<WORKSPACE_ROOT>/benchmarks/source-packs/realistic/imports/infra-snapshot.json",
+  "snapshotKind": "manifest",
+  "summary": {
+    "keys": [
+      "guests",
+      "host"
+    ],
+    "host": "beast",
+    "vmCount": 1,
+    "lxcCount": 1
+  },
+  "raw": {
+    "host": {
+      "short_name": "beast",
+      "role": "proxmox-dev"
+    },
+    "guests": {
+      "vms": [
+        {
+          "id": 109,
+          "name": "runner",
+          "status": "observed"
+        }
+      ],
+      "lxc": [
+        {
+          "id": 201,
+          "name": "paperless",
+          "status": "observed"
+        }
+      ]
+    }
+  }
+}

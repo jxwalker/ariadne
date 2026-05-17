@@ -1,0 +1,180 @@
+{
+  "schemaVersion": 1,
+  "project": "e2e-local-realistic",
+  "importedAt": "2026-05-17T10:45:20.668Z",
+  "sourcePath": "<LIVE_READ_ONLY>/local-host",
+  "snapshotKind": "live_read_only",
+  "summary": {
+    "collector": "local-node-os",
+    "mode": "read_only",
+    "host": "local-host",
+    "platform": "darwin",
+    "arch": "arm64",
+    "cpuCount": 18,
+    "totalMemoryGiB": 128,
+    "networkInterfaces": 16,
+    "notes": "Local Ariadne e2e runtime probe with Hermes dashboard/gateway, DS4, and Ollama."
+  },
+  "raw": {
+    "collector": "local-node-os",
+    "mode": "read_only",
+    "sanitization": {
+      "hostname": "sha256-12",
+      "networkAddresses": "omitted",
+      "macAddresses": "omitted"
+    },
+    "host": {
+      "hostnameHash": "1cc0a7e81ed7",
+      "platform": "darwin",
+      "arch": "arm64",
+      "release": "25.5.0",
+      "type": "Darwin",
+      "uptimeSeconds": 475204
+    },
+    "runtime": {
+      "nodeVersion": "v25.9.0"
+    },
+    "hardware": {
+      "cpuCount": 18,
+      "cpuModel": "Apple M5 Max",
+      "totalMemoryBytes": 137438953472,
+      "freeMemoryBytes": 24367661056
+    },
+    "network": {
+      "interfaceCount": 16,
+      "interfaces": [
+        {
+          "name": "lo0",
+          "addressCount": 3,
+          "families": [
+            "IPv4",
+            "IPv6"
+          ],
+          "internal": true
+        },
+        {
+          "name": "en0",
+          "addressCount": 3,
+          "families": [
+            "IPv4",
+            "IPv6"
+          ],
+          "internal": false
+        },
+        {
+          "name": "awdl0",
+          "addressCount": 1,
+          "families": [
+            "IPv6"
+          ],
+          "internal": false
+        },
+        {
+          "name": "llw0",
+          "addressCount": 1,
+          "families": [
+            "IPv6"
+          ],
+          "internal": false
+        },
+        {
+          "name": "utun0",
+          "addressCount": 1,
+          "families": [
+            "IPv6"
+          ],
+          "internal": false
+        },
+        {
+          "name": "utun1",
+          "addressCount": 1,
+          "families": [
+            "IPv6"
+          ],
+          "internal": false
+        },
+        {
+          "name": "utun2",
+          "addressCount": 1,
+          "families": [
+            "IPv6"
+          ],
+          "internal": false
+        },
+        {
+          "name": "utun3",
+          "addressCount": 1,
+          "families": [
+            "IPv6"
+          ],
+          "internal": false
+        },
+        {
+          "name": "utun4",
+          "addressCount": 3,
+          "families": [
+            "IPv4",
+            "IPv6"
+          ],
+          "internal": false
+        },
+        {
+          "name": "utun5",
+          "addressCount": 1,
+          "families": [
+            "IPv6"
+          ],
+          "internal": false
+        },
+        {
+          "name": "utun6",
+          "addressCount": 1,
+          "families": [
+            "IPv6"
+          ],
+          "internal": false
+        },
+        {
+          "name": "utun7",
+          "addressCount": 1,
+          "families": [
+            "IPv6"
+          ],
+          "internal": false
+        },
+        {
+          "name": "utun8",
+          "addressCount": 1,
+          "families": [
+            "IPv6"
+          ],
+          "internal": false
+        },
+        {
+          "name": "utun9",
+          "addressCount": 1,
+          "families": [
+            "IPv6"
+          ],
+          "internal": false
+        },
+        {
+          "name": "utun10",
+          "addressCount": 1,
+          "families": [
+            "IPv6"
+          ],
+          "internal": false
+        },
+        {
+          "name": "utun11",
+          "addressCount": 1,
+          "families": [
+            "IPv4"
+          ],
+          "internal": false
+        }
+      ]
+    }
+  }
+}
