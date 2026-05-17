@@ -1,9 +1,11 @@
 import fs from "node:fs/promises";
 import path from "node:path";
 import { writeJsonArtifact, writeTextArtifact } from "./artifacts.js";
+import { isLiveAdapterTarget, LIVE_ADAPTER_TARGETS, type LiveAdapterTarget } from "./liveAdapterTargets.js";
 import { generateMutationReadinessAudit } from "./mutationReadinessAudit.js";
 import { projectDir, slugifyProject } from "./paths.js";
 import type {
+  LiveAdapterApprovalReview,
   LiveAdapterReadinessReport,
   MutationDryRunRecord,
   MutationExecutionRecord,
@@ -11,16 +13,19 @@ import type {
   MutationReadinessPlan
 } from "./types.js";
 
-type LiveAdapterTarget = LiveAdapterReadinessReport["targets"][number]["target"];
+const EXECUTE_COMMANDS: Record<LiveAdapterTarget, string> = {
+  github: "github-mutation-execute",
+  deployment: "deployment-mutation-execute",
+  "hermes-cron": "hermes-cron-mutation-execute",
+  openscorpion: "openscorpion-mutation-execute",
+  gsd2: "gsd2-mutation-execute",
+  notebooklm: "notebooklm-mutation-execute"
+};
 
-const TARGETS: Array<{ target: LiveAdapterTarget; executeCommand: string }> = [
-  { target: "github", executeCommand: "github-mutation-execute" },
-  { target: "deployment", executeCommand: "deployment-mutation-execute" },
-  { target: "hermes-cron", executeCommand: "hermes-cron-mutation-execute" },
-  { target: "openscorpion", executeCommand: "openscorpion-mutation-execute" },
-  { target: "gsd2", executeCommand: "gsd2-mutation-execute" },
-  { target: "notebooklm", executeCommand: "notebooklm-mutation-execute" }
-];
+const TARGETS: Array<{ target: LiveAdapterTarget; executeCommand: string }> = LIVE_ADAPTER_TARGETS.map((target) => ({
+  target,
+  executeCommand: EXECUTE_COMMANDS[target]
+}));
 
 export async function generateLiveAdapterReadiness(input: {
   project: string;
@@ -40,9 +45,15 @@ export async function generateLiveAdapterReadiness(input: {
     path.join("control", "mutation-executions"),
     isMutationExecutionRecord
   );
+  const approvalReviews = await readRecords<LiveAdapterApprovalReview>(
+    input.vaultRoot,
+    project,
+    path.join("control", "live-adapter-approval-reviews"),
+    isLiveAdapterApprovalReview
+  );
 
   const targets = TARGETS.map(({ target, executeCommand }) =>
-    targetReadiness(target, executeCommand, audit.audit, dryRuns, executions)
+    targetReadiness(target, executeCommand, audit.audit, dryRuns, executions, approvalReviews)
   );
   const summary = {
     targets: targets.length,
@@ -50,7 +61,8 @@ export async function generateLiveAdapterReadiness(input: {
     blocked: targets.filter((item) => item.status === "blocked").length,
     passedPlans: targets.reduce((sum, item) => sum + item.passedPlanCount, 0),
     passedDryRuns: targets.reduce((sum, item) => sum + item.passedDryRunCount, 0),
-    passedExecutions: targets.reduce((sum, item) => sum + item.passedExecutionCount, 0)
+    passedExecutions: targets.reduce((sum, item) => sum + item.passedExecutionCount, 0),
+    acceptedApprovalReviews: targets.reduce((sum, item) => sum + item.acceptedApprovalReviewCount, 0)
   };
   const report: LiveAdapterReadinessReport = {
     schemaVersion: 1,
@@ -76,7 +88,8 @@ function targetReadiness(
   executeCommand: string,
   audit: MutationReadinessAudit,
   dryRuns: MutationDryRunRecord[],
-  executions: MutationExecutionRecord[]
+  executions: MutationExecutionRecord[],
+  approvalReviews: LiveAdapterApprovalReview[]
 ): LiveAdapterReadinessReport["targets"][number] {
   const checks = audit.checks.filter((check) => check.target === target);
   const passedChecks = checks.filter((check) => check.status === "passed");
@@ -86,8 +99,14 @@ function targetReadiness(
   const passedExecutions = executions.filter(
     (record) => record.target === target && record.status === "passed" && passedDryRunPlanIds.has(record.planId)
   );
+  const targetApprovalReviews = approvalReviews.filter((record) => record.target === target);
+  const acceptedApprovalReviews = targetApprovalReviews.filter((record) => record.status === "accepted");
   const latestReadyPlanId = Array.from(passedPlanIds).sort().at(-1);
+  const latestAcceptedApprovalReviewId = acceptedApprovalReviews.map((record) => record.id).sort().at(-1);
   const blockers: string[] = [];
+  if (acceptedApprovalReviews.length === 0) {
+    blockers.push("no accepted operator review exists for live-adapter approval packet");
+  }
   if (checks.length === 0) {
     blockers.push("no target-specific readiness plan exists");
   }
@@ -108,14 +127,18 @@ function targetReadiness(
     passedPlanCount: passedChecks.length,
     passedDryRunCount: passedDryRuns.length,
     passedExecutionCount: passedExecutions.length,
+    approvalReviewCount: targetApprovalReviews.length,
+    acceptedApprovalReviewCount: acceptedApprovalReviews.length,
     latestReadyPlanId,
+    latestAcceptedApprovalReviewId,
     executeCommand,
     blockers,
     evidenceRefs: [
       "control/mutation-readiness-audit.json",
       ...passedChecks.map((check) => `control/mutation-readiness/${check.planId}.json`),
       ...passedDryRuns.map((record) => `control/mutation-dry-runs/${record.id}.json`),
-      ...passedExecutions.map((record) => `control/mutation-executions/${record.id}.json`)
+      ...passedExecutions.map((record) => `control/mutation-executions/${record.id}.json`),
+      ...acceptedApprovalReviews.map((record) => `control/live-adapter-approval-reviews/${record.id}.json`)
     ]
   };
 }
@@ -150,6 +173,23 @@ function isMutationExecutionRecord(value: unknown): value is MutationExecutionRe
   return isRecord(value) && value.schemaVersion === 1 && value.execute === true && typeof value.planId === "string";
 }
 
+function isLiveAdapterApprovalReview(value: unknown): value is LiveAdapterApprovalReview {
+  return (
+    isRecord(value) &&
+    value.schemaVersion === 1 &&
+    typeof value.id === "string" &&
+    value.id.startsWith("approval-review-") &&
+    isLiveAdapterTarget(value.target) &&
+    (value.status === "accepted" || value.status === "needs_changes" || value.status === "rejected") &&
+    typeof value.reviewedBy === "string" &&
+    value.reviewedBy.trim().length > 0 &&
+    typeof value.packetRef === "string" &&
+    Array.isArray(value.evidenceRefs) &&
+    value.evidenceRefs.every((item) => typeof item === "string") &&
+    value.mutationApproved === false
+  );
+}
+
 function isRecord(value: unknown): value is Record<string, unknown> {
   return Boolean(value && typeof value === "object" && !Array.isArray(value));
 }
@@ -170,14 +210,15 @@ function renderReport(report: LiveAdapterReadinessReport): string {
     `- Passed plans: ${report.summary.passedPlans}`,
     `- Passed dry-runs: ${report.summary.passedDryRuns}`,
     `- Passed executions: ${report.summary.passedExecutions}`,
+    `- Accepted approval reviews: ${report.summary.acceptedApprovalReviews}`,
     "",
     "## Targets",
     "",
-    "| Target | Status | Plans | Dry-runs | Executions | Execute command | Blockers |",
-    "| --- | --- | ---: | ---: | ---: | --- | --- |",
+    "| Target | Status | Reviews | Plans | Dry-runs | Executions | Execute command | Blockers |",
+    "| --- | --- | ---: | ---: | ---: | ---: | --- | --- |",
     ...report.targets.map(
       (target) =>
-        `| ${target.target} | ${target.status} | ${target.passedPlanCount}/${target.planCount} | ${target.passedDryRunCount} | ${target.passedExecutionCount} | ${target.executeCommand} | ${inlineList(target.blockers)} |`
+        `| ${target.target} | ${target.status} | ${target.acceptedApprovalReviewCount}/${target.approvalReviewCount} | ${target.passedPlanCount}/${target.planCount} | ${target.passedDryRunCount} | ${target.passedExecutionCount} | ${target.executeCommand} | ${inlineList(target.blockers)} |`
     ),
     ""
   ].join("\n");

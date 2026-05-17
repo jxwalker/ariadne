@@ -37,6 +37,7 @@ The system starts with source-grounded intake: drawings, white papers, dictated 
 - Report per-target live adapter readiness from approved plans, passed dry-runs, and target-guarded execution evidence.
 - Generate live-adapter next-action packets from the current blockers.
 - Generate live-adapter approval packs that draft target-specific operator checklists without approving or executing anything.
+- Record operator reviews of live-adapter approval packets without granting mutation authority.
 - Record file-backed sleep routines, memory proposals, agent mail, interagent leases, read-only Hermes cron snapshots/proposals, and read-only deployment snapshots.
 - Render evaluation trend charts in the static console and generate deterministic plus browser-backed console checks.
 - Guard worktree creation without mutating by default.
@@ -79,6 +80,7 @@ npm run ariadne -- mutation-dry-run --project ariadne --plan mutation-readiness-
 npm run ariadne -- live-adapter-readiness --project ariadne
 npm run ariadne -- live-adapter-next-actions --project ariadne
 npm run ariadne -- live-adapter-approval-pack --project ariadne
+npm run ariadne -- live-adapter-approval-review --project ariadne --target github --by james --status accepted --evidence control/live-adapter-approval-pack.json --notes "Packet reviewed; this does not approve mutation."
 npm run ariadne -- github-mutation-execute --project ariadne --plan mutation-readiness-github-... --confirm-plan mutation-readiness-github-...
 npm run ariadne -- target-mutation-execute --project ariadne --target github --plan mutation-readiness-github-... --confirm-plan mutation-readiness-github-...
 npm run ariadne -- mutation-execute --project ariadne --plan mutation-readiness-github-... --confirm-plan mutation-readiness-github-...
@@ -134,6 +136,7 @@ vault/projects/<project>/
 12. Use `console-data` to publish a normalised read-only view for console work.
 13. Use `console-html` to generate a static local console at `console/index.html`.
 14. Use `live-adapter-approval-pack` to prepare operator review packets before any live adapter approval decision.
+15. Use `live-adapter-approval-review` only when an operator has reviewed a packet; it does not approve live mutation.
 
 ## Adapter Commands
 
@@ -181,6 +184,7 @@ npm run ariadne -- approval-request --project ariadne --by planner --target gith
 npm run ariadne -- mutation-readiness --project ariadne --target github --scope "Single PR merge adapter" --auth-evidence control/approvals/approval-...json --dry-run "gh pr view 1 --json statusCheckRollup" --live-command "gh pr merge 1 --squash" --post-verify "gh pr view 1 --json mergeStateStatus,statusCheckRollup" --rollback "Revert merge commit and disable adapter" --approval approval-...
 npm run ariadne -- mutation-readiness-audit --project ariadne
 npm run ariadne -- live-adapter-approval-pack --project ariadne --target all
+npm run ariadne -- live-adapter-approval-review --project ariadne --target github --by james --status accepted --packet control/live-adapter-approval-pack.json --evidence control/live-adapter-approval-pack.json
 npm run ariadne -- recovery-report --project ariadne
 npm run ariadne -- console-data --project ariadne
 npm run ariadne -- console-html --project ariadne --refresh-data

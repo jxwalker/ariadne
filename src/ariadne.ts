@@ -39,6 +39,11 @@ import { generateInfrastructureRegistry } from "./infrastructure.js";
 import { draftOpenScorpionActivity, importInfraSnapshot } from "./infraSnapshot.js";
 import { collectLocalInfraSnapshot, collectSshInfraSnapshot } from "./liveInventory.js";
 import { generateLiveAdapterApprovalPack, liveAdapterApprovalTargetOption } from "./liveAdapterApprovalPack.js";
+import {
+  liveAdapterApprovalReviewStatusOption,
+  liveAdapterApprovalReviewTargetOption,
+  recordLiveAdapterApprovalReview
+} from "./liveAdapterApprovalReview.js";
 import { generateLiveAdapterNextActions } from "./liveAdapterNextActions.js";
 import { generateLiveAdapterReadiness } from "./liveAdapterReadiness.js";
 import { importNotebookLmExport } from "./notebooklm.js";
@@ -163,6 +168,7 @@ function usage(): string {
     "  ariadne live-adapter-readiness --project <project>",
     "  ariadne live-adapter-next-actions --project <project>",
     "  ariadne live-adapter-approval-pack --project <project> [--target <all|github|deployment|hermes-cron|openscorpion|gsd2|notebooklm>]",
+    "  ariadne live-adapter-approval-review --project <project> --target <target> --by <operator> --status <accepted|needs_changes|rejected> --evidence <paths> [--packet <path>] [--notes <text>]",
     "  ariadne mutation-dry-run --project <project> --plan <id|json> [--timeout-ms <ms>]",
     "  ariadne mutation-execute --project <project> --plan <id|json> --confirm-plan <id> [--timeout-ms <ms>]",
     "  ariadne target-mutation-execute --project <project> --target <target> --plan <id|json> --confirm-plan <id> [--timeout-ms <ms>]",
@@ -1089,6 +1095,24 @@ async function main(): Promise<void> {
     console.log(`Live adapter approval pack: ${result.markdownPath}`);
     console.log(`Status: ${result.report.status}`);
     console.log(`Packets: ${result.report.summary.packets}`);
+    return;
+  }
+
+  if (parsed.command === "live-adapter-approval-review") {
+    const result = await recordLiveAdapterApprovalReview({
+      project,
+      vaultRoot,
+      target: liveAdapterApprovalReviewTargetOption(requiredOption(parsed.options, "target")),
+      reviewedBy: requiredOption(parsed.options, "by"),
+      status: liveAdapterApprovalReviewStatusOption(requiredOption(parsed.options, "status")),
+      packetRef: optionString(parsed.options, "packet", "") || undefined,
+      evidenceRefs: splitList(optionString(parsed.options, "evidence", "")),
+      notes: optionString(parsed.options, "notes", "") || undefined
+    });
+    console.log(`Live adapter approval review: ${result.markdownPath}`);
+    console.log(`Target: ${result.record.target}`);
+    console.log(`Status: ${result.record.status}`);
+    console.log(`Mutation approved: ${result.record.mutationApproved}`);
     return;
   }
 

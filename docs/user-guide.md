@@ -385,9 +385,10 @@ Check whether each target is ready for a real live adapter:
 npm run ariadne -- live-adapter-readiness --project ariadne
 npm run ariadne -- live-adapter-next-actions --project ariadne
 npm run ariadne -- live-adapter-approval-pack --project ariadne --target all
+npm run ariadne -- live-adapter-approval-review --project ariadne --target github --by james --status accepted --packet control/live-adapter-approval-pack.json --evidence control/live-adapter-approval-pack.json
 ```
 
-These reports do not execute anything. Readiness compares audit-passed plans with passed dry-run and target-guarded execution evidence. Next actions translate the blockers into the approval request, target-specific plan, dry-run, execution, or adapter replacement step still needed for GitHub, deployment, Hermes cron, OpenScorpion, GSD2, and NotebookLM. Approval packs turn those blockers into operator-facing checklists with recommended risk, evidence requirements, approval request drafts, rollback requirements, and post-verification requirements. They still do not create approval decisions or run commands.
+These reports do not execute anything. Readiness compares accepted approval-packet reviews, audit-passed plans, passed dry-run evidence, and target-guarded execution evidence. Next actions translate the blockers into the approval-packet review, approval request, target-specific plan, dry-run, execution, or adapter replacement step still needed for GitHub, deployment, Hermes cron, OpenScorpion, GSD2, and NotebookLM. Approval packs turn those blockers into operator-facing checklists with recommended risk, evidence requirements, approval request drafts, rollback requirements, and post-verification requirements. Approval reviews record whether an operator accepts that packet as complete; they still do not create approval decisions or run commands.
 
 For live adapters, prefer the target-specific wrappers so the expected target is fixed by the command name:
 

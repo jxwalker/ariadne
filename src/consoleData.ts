@@ -1,6 +1,7 @@
 import fs from "node:fs/promises";
 import path from "node:path";
 import { writeJsonArtifact } from "./artifacts.js";
+import { isLiveAdapterTarget } from "./liveAdapterTargets.js";
 import { projectDir, slugifyProject } from "./paths.js";
 import { loadRecords } from "./vault.js";
 import type {
@@ -32,6 +33,7 @@ import type {
   InfraRegistry,
   InfraSnapshot,
   LiveAdapterApprovalPack,
+  LiveAdapterApprovalReview,
   LiveAdapterNextActionsReport,
   LiveAdapterReadinessReport,
   MemoryProposalRecord,
@@ -103,6 +105,10 @@ export async function collectConsoleData(vaultRoot: string, projectInput: string
     project,
     "control",
     "live-adapter-approval-pack.json"
+  );
+  const liveAdapterApprovalReviews = await readJsonFiles<LiveAdapterApprovalReview>(
+    path.join(dir, "control", "live-adapter-approval-reviews"),
+    isLiveAdapterApprovalReview
   );
   const recovery = await readProjectJson<RecoveryReport>(vaultRoot, project, "control", "recovery-report.json");
   const gbrainExport = await readProjectJson<GbrainExportBundle>(vaultRoot, project, "integrations/gbrain", "gbrain-export.json");
@@ -215,6 +221,8 @@ export async function collectConsoleData(vaultRoot: string, projectInput: string
       liveAdapterBlocked: liveAdapterReadiness?.summary.blocked,
       liveAdapterActionItems: liveAdapterNextActions?.summary.actionItems,
       liveAdapterApprovalPackets: liveAdapterApprovalPack?.summary.packets,
+      liveAdapterApprovalReviews: liveAdapterApprovalReviews.length,
+      acceptedLiveAdapterApprovalReviews: liveAdapterApprovalReviews.filter((review) => review.status === "accepted").length,
       recoveryIssues: recovery?.issues.length ?? 0,
       consoleBrowserChecks: consoleBrowserChecks?.status,
       readinessStatus: readiness?.status,
@@ -236,6 +244,7 @@ export async function collectConsoleData(vaultRoot: string, projectInput: string
     liveAdapterReadiness,
     liveAdapterNextActions,
     liveAdapterApprovalPack,
+    liveAdapterApprovalReviews,
     decisions,
     playwrightEvidence,
     healerProposals,
@@ -294,6 +303,7 @@ export async function collectConsoleData(vaultRoot: string, projectInput: string
       liveAdapterReadiness: await existingPath(vaultRoot, path.join(dir, "control", "live-adapter-readiness.json")),
       liveAdapterNextActions: await existingPath(vaultRoot, path.join(dir, "control", "live-adapter-next-actions.json")),
       liveAdapterApprovalPack: await existingPath(vaultRoot, path.join(dir, "control", "live-adapter-approval-pack.json")),
+      liveAdapterApprovalReviews: await existingPath(vaultRoot, path.join(dir, "control", "live-adapter-approval-reviews")),
       recoveryReport: await existingPath(vaultRoot, path.join(dir, "control", "recovery-report.json")),
       extractionResults: await existingPath(vaultRoot, path.join(dir, "extractions")),
       healerProposals: await existingPath(vaultRoot, path.join(dir, "verification", "healer-proposals")),
@@ -483,6 +493,18 @@ function isApprovalRecord(value: unknown): value is ApprovalRecord {
   return hasSchema(value) && value.schemaVersion === 1 && typeof value.id === "string" && value.id.startsWith("approval-");
 }
 
+function isLiveAdapterApprovalReview(value: unknown): value is LiveAdapterApprovalReview {
+  return (
+    hasSchema(value) &&
+    value.schemaVersion === 1 &&
+    typeof value.id === "string" &&
+    value.id.startsWith("approval-review-") &&
+    isNonGenericMutationTarget(value.target) &&
+    (value.status === "accepted" || value.status === "needs_changes" || value.status === "rejected") &&
+    value.mutationApproved === false
+  );
+}
+
 function isMutationReadinessPlan(value: unknown): value is MutationReadinessPlan {
   return (
     hasSchema(value) &&
@@ -583,6 +605,10 @@ function isMutationTarget(value: unknown): value is MutationReadinessPlan["targe
     value === "notebooklm" ||
     value === "generic"
   );
+}
+
+function isNonGenericMutationTarget(value: unknown): value is Exclude<MutationReadinessPlan["target"], "generic"> {
+  return isLiveAdapterTarget(value);
 }
 
 function isSleepRoutine(value: unknown): value is SleepRoutineRecord {

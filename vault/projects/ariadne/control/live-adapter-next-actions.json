@@ -1,13 +1,13 @@
 {
   "schemaVersion": 1,
   "project": "ariadne",
-  "generatedAt": "2026-05-16T23:08:21.383Z",
+  "generatedAt": "2026-05-16T23:26:47.752Z",
   "status": "actions_required",
   "summary": {
     "targets": 6,
     "ready": 0,
     "blocked": 6,
-    "actionItems": 28
+    "actionItems": 34
   },
   "readinessRef": "projects/ariadne/control/live-adapter-readiness.json",
   "targets": [
@@ -16,11 +16,22 @@
       "readinessStatus": "blocked",
       "executeCommand": "github-mutation-execute",
       "blockers": [
+        "no accepted operator review exists for live-adapter approval packet",
         "no readiness plan passes audit",
         "no passed dry-run evidence exists for an audit-passed plan",
         "no passed target-guarded execution evidence exists"
       ],
       "actions": [
+        {
+          "id": "github-approval-pack-review",
+          "status": "pending",
+          "title": "Record operator review of the approval packet",
+          "rationale": "Before a live adapter can replace placeholder shell commands, an operator must review the target packet and record whether the packet is accepted, rejected, or needs changes. This does not approve live mutation.",
+          "command": "npm run ariadne -- live-adapter-approval-review --project <project> --target github --by <operator> --status accepted --packet control/live-adapter-approval-pack.json --evidence <operator-review-evidence>",
+          "evidenceRefs": [
+            "control/mutation-readiness-audit.json"
+          ]
+        },
         {
           "id": "github-audit-fix",
           "status": "pending",
@@ -58,12 +69,23 @@
       "readinessStatus": "blocked",
       "executeCommand": "deployment-mutation-execute",
       "blockers": [
+        "no accepted operator review exists for live-adapter approval packet",
         "no target-specific readiness plan exists",
         "no readiness plan passes audit",
         "no passed dry-run evidence exists for an audit-passed plan",
         "no passed target-guarded execution evidence exists"
       ],
       "actions": [
+        {
+          "id": "deployment-approval-pack-review",
+          "status": "pending",
+          "title": "Record operator review of the approval packet",
+          "rationale": "Before a live adapter can replace placeholder shell commands, an operator must review the target packet and record whether the packet is accepted, rejected, or needs changes. This does not approve live mutation.",
+          "command": "npm run ariadne -- live-adapter-approval-review --project <project> --target deployment --by <operator> --status accepted --packet control/live-adapter-approval-pack.json --evidence <operator-review-evidence>",
+          "evidenceRefs": [
+            "control/mutation-readiness-audit.json"
+          ]
+        },
         {
           "id": "deployment-approval-request",
           "status": "pending",
@@ -121,12 +143,23 @@
       "readinessStatus": "blocked",
       "executeCommand": "hermes-cron-mutation-execute",
       "blockers": [
+        "no accepted operator review exists for live-adapter approval packet",
         "no target-specific readiness plan exists",
         "no readiness plan passes audit",
         "no passed dry-run evidence exists for an audit-passed plan",
         "no passed target-guarded execution evidence exists"
       ],
       "actions": [
+        {
+          "id": "hermes-cron-approval-pack-review",
+          "status": "pending",
+          "title": "Record operator review of the approval packet",
+          "rationale": "Before a live adapter can replace placeholder shell commands, an operator must review the target packet and record whether the packet is accepted, rejected, or needs changes. This does not approve live mutation.",
+          "command": "npm run ariadne -- live-adapter-approval-review --project <project> --target hermes-cron --by <operator> --status accepted --packet control/live-adapter-approval-pack.json --evidence <operator-review-evidence>",
+          "evidenceRefs": [
+            "control/mutation-readiness-audit.json"
+          ]
+        },
         {
           "id": "hermes-cron-approval-request",
           "status": "pending",
@@ -184,12 +217,23 @@
       "readinessStatus": "blocked",
       "executeCommand": "openscorpion-mutation-execute",
       "blockers": [
+        "no accepted operator review exists for live-adapter approval packet",
         "no target-specific readiness plan exists",
         "no readiness plan passes audit",
         "no passed dry-run evidence exists for an audit-passed plan",
         "no passed target-guarded execution evidence exists"
       ],
       "actions": [
+        {
+          "id": "openscorpion-approval-pack-review",
+          "status": "pending",
+          "title": "Record operator review of the approval packet",
+          "rationale": "Before a live adapter can replace placeholder shell commands, an operator must review the target packet and record whether the packet is accepted, rejected, or needs changes. This does not approve live mutation.",
+          "command": "npm run ariadne -- live-adapter-approval-review --project <project> --target openscorpion --by <operator> --status accepted --packet control/live-adapter-approval-pack.json --evidence <operator-review-evidence>",
+          "evidenceRefs": [
+            "control/mutation-readiness-audit.json"
+          ]
+        },
         {
           "id": "openscorpion-approval-request",
           "status": "pending",
@@ -247,12 +291,23 @@
       "readinessStatus": "blocked",
       "executeCommand": "gsd2-mutation-execute",
       "blockers": [
+        "no accepted operator review exists for live-adapter approval packet",
         "no target-specific readiness plan exists",
         "no readiness plan passes audit",
         "no passed dry-run evidence exists for an audit-passed plan",
         "no passed target-guarded execution evidence exists"
       ],
       "actions": [
+        {
+          "id": "gsd2-approval-pack-review",
+          "status": "pending",
+          "title": "Record operator review of the approval packet",
+          "rationale": "Before a live adapter can replace placeholder shell commands, an operator must review the target packet and record whether the packet is accepted, rejected, or needs changes. This does not approve live mutation.",
+          "command": "npm run ariadne -- live-adapter-approval-review --project <project> --target gsd2 --by <operator> --status accepted --packet control/live-adapter-approval-pack.json --evidence <operator-review-evidence>",
+          "evidenceRefs": [
+            "control/mutation-readiness-audit.json"
+          ]
+        },
         {
           "id": "gsd2-approval-request",
           "status": "pending",
@@ -310,12 +365,23 @@
       "readinessStatus": "blocked",
       "executeCommand": "notebooklm-mutation-execute",
       "blockers": [
+        "no accepted operator review exists for live-adapter approval packet",
         "no target-specific readiness plan exists",
         "no readiness plan passes audit",
         "no passed dry-run evidence exists for an audit-passed plan",
         "no passed target-guarded execution evidence exists"
       ],
       "actions": [
+        {
+          "id": "notebooklm-approval-pack-review",
+          "status": "pending",
+          "title": "Record operator review of the approval packet",
+          "rationale": "Before a live adapter can replace placeholder shell commands, an operator must review the target packet and record whether the packet is accepted, rejected, or needs changes. This does not approve live mutation.",
+          "command": "npm run ariadne -- live-adapter-approval-review --project <project> --target notebooklm --by <operator> --status accepted --packet control/live-adapter-approval-pack.json --evidence <operator-review-evidence>",
+          "evidenceRefs": [
+            "control/mutation-readiness-audit.json"
+          ]
+        },
         {
           "id": "notebooklm-approval-request",
           "status": "pending",

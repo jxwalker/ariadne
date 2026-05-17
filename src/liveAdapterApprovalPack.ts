@@ -1,6 +1,7 @@
 import path from "node:path";
 import { writeJsonArtifact, writeTextArtifact } from "./artifacts.js";
 import { generateLiveAdapterNextActions } from "./liveAdapterNextActions.js";
+import { isLiveAdapterTarget, LIVE_ADAPTER_TARGETS } from "./liveAdapterTargets.js";
 import { slugifyProject } from "./paths.js";
 import type { LiveAdapterApprovalPack, LiveAdapterNextActionsReport } from "./types.js";
 
@@ -52,18 +53,10 @@ export async function generateLiveAdapterApprovalPack(input: {
 }
 
 export function liveAdapterApprovalTargetOption(value: string): ApprovalTarget | "all" {
-  if (
-    value === "all" ||
-    value === "github" ||
-    value === "deployment" ||
-    value === "hermes-cron" ||
-    value === "openscorpion" ||
-    value === "gsd2" ||
-    value === "notebooklm"
-  ) {
+  if (value === "all" || isLiveAdapterTarget(value)) {
     return value;
   }
-  throw new Error("--target must be all, github, deployment, hermes-cron, openscorpion, gsd2, or notebooklm.");
+  throw new Error(`--target must be all, ${LIVE_ADAPTER_TARGETS.join(", ")}.`);
 }
 
 function targetApprovalPacket(project: string, target: NextActionTarget): LiveAdapterApprovalPack["packets"][number] {

@@ -59,6 +59,17 @@ function targetNextActions(target: ReadinessTarget, auditChecks: AuditCheck[]): 
     .map((check) => check.planId)
     .sort()
     .at(-1);
+  if (target.blockers.includes("no accepted operator review exists for live-adapter approval packet")) {
+    actions.push({
+      id: `${target.target}-approval-pack-review`,
+      status: "pending",
+      title: "Record operator review of the approval packet",
+      rationale:
+        "Before a live adapter can replace placeholder shell commands, an operator must review the target packet and record whether the packet is accepted, rejected, or needs changes. This does not approve live mutation.",
+      command: `npm run ariadne -- live-adapter-approval-review --project <project> --target ${target.target} --by <operator> --status accepted --packet control/live-adapter-approval-pack.json --evidence <operator-review-evidence>`,
+      evidenceRefs: target.evidenceRefs
+    });
+  }
   if (target.blockers.includes("no target-specific readiness plan exists")) {
     actions.push({
       id: `${target.target}-approval-request`,

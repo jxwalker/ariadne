@@ -214,6 +214,8 @@ Target-specific execute wrappers hard-code that guard for the live adapters: `gi
 
 `live-adapter-approval-pack` turns those next actions into operator review packets. Each packet gives the recommended risk, approval-request command draft, target-specific evidence checklist, mutation-plan command, dry-run step, execution step, rollback requirement, and post-verification requirement. Ariadne does not approve its own adapters; this command writes `control/live-adapter-approval-pack.json` and `.md` for all targets, or `control/live-adapter-approval-pack-<target>.json` and `.md` when `--target` narrows the report.
 
+`live-adapter-approval-review` records that an operator has reviewed a packet and classified it as `accepted`, `needs_changes`, or `rejected`. It writes `mutationApproved=false`; live mutation still requires the later approval, readiness, dry-run, and execution gates.
+
 ```bash
 npm run ariadne -- approval-request --project ariadne --by planner --target github --action "Enable PR mutation adapter" --risk medium --reason "Manual gate before live mutation" --rollback "Disable adapter and return to manual PR flow"
 npm run ariadne -- approval-decision --project ariadne --approval approval-... --status approved --by james --notes "Approved for a bounded test only."
@@ -228,6 +230,7 @@ npm run ariadne -- mutation-dry-run --project ariadne --plan mutation-readiness-
 npm run ariadne -- live-adapter-readiness --project ariadne
 npm run ariadne -- live-adapter-next-actions --project ariadne
 npm run ariadne -- live-adapter-approval-pack --project ariadne --target all
+npm run ariadne -- live-adapter-approval-review --project ariadne --target github --by james --status accepted --packet control/live-adapter-approval-pack.json --evidence control/live-adapter-approval-pack.json
 npm run ariadne -- github-mutation-execute --project ariadne --plan mutation-readiness-github-... --confirm-plan mutation-readiness-github-...
 npm run ariadne -- target-mutation-execute --project ariadne --target github --plan mutation-readiness-github-... --confirm-plan mutation-readiness-github-...
 npm run ariadne -- mutation-execute --project ariadne --plan mutation-readiness-github-... --confirm-plan mutation-readiness-github-...
@@ -248,6 +251,8 @@ Artifacts:
 - `control/live-adapter-readiness.json`
 - `control/live-adapter-next-actions.json`
 - `control/live-adapter-approval-pack.json`
+- `control/live-adapter-approval-reviews/approval-review-<target>-<timestamp>.json`
+- `control/live-adapter-approval-reviews/approval-review-<target>-<timestamp>.md`
 
 ## Evaluation
 
