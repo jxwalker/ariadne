@@ -42,6 +42,7 @@ The system starts with source-grounded intake: drawings, white papers, dictated 
 - Record operator reviews of live-adapter approval packets without granting mutation authority.
 - Audit live-adapter cutover readiness, including complete imported operator evidence, before any placeholder command is replaced with a real external adapter.
 - Generate live-adapter review sessions that consolidate operator actions, target dossiers, cutover blockers, and advisory GBrain queries into one non-mutating review packet.
+- Link existing operator-evidence queue and read-only assist refs into review sessions so preflight state and assist next steps are visible during operator review.
 - Generate blank live-adapter evidence templates so operators have a safe place to collect packet-review, auth-boundary, rollback, dry-run, and GBrain notes without creating approval evidence automatically.
 - Generate a live-adapter operator-evidence workplan that turns the missing evidence audit into per-target import commands, template refs, cutover blockers, and GBrain advisory queries.
 - Import filled live-adapter operator evidence and audit missing sections without turning that evidence into mutation approval.
