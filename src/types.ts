@@ -80,6 +80,20 @@ export interface ProjectStatus {
   records: number;
   extracted: number;
   latestIngestedAt?: string;
+  readinessStatus?: ControlReport["status"];
+  roadmapCompletionStatus?: RoadmapCompletionAudit["status"];
+  roadmapCompletionBlocked?: number;
+  mutationReadinessRepairStatus?: MutationReadinessRepairPlan["status"];
+  mutationReadinessRepairMissingPlans?: number;
+  mutationReadinessRepairOperatorActionRequired?: number;
+  latestE2eSmoke?: {
+    status: "passed" | "blocked" | "degraded" | "failed";
+    passed: number;
+    blocked: number;
+    degraded: number;
+    failed: number;
+    reportRef: string;
+  };
 }
 
 export interface Requirement {

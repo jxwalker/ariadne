@@ -4,7 +4,16 @@ import { extractText, normaliseExtractedText, sourceKind } from "./extract.js";
 import { sha256File } from "./hash.js";
 import { projectDir, safeFileName, slugifyProject } from "./paths.js";
 import { scanTextForSecrets, shouldBlockHygiene } from "./sourceHygiene.js";
-import type { DossierOptions, IngestOptions, IngestRecord, ProjectStatus, SourceKind } from "./types.js";
+import type {
+  ControlReport,
+  DossierOptions,
+  IngestOptions,
+  IngestRecord,
+  MutationReadinessRepairPlan,
+  ProjectStatus,
+  RoadmapCompletionAudit,
+  SourceKind
+} from "./types.js";
 
 function timestampId(date = new Date()): string {
   return date.toISOString().replace(/[:.]/g, "-");
@@ -305,15 +314,70 @@ function renderHandoff(input: {
 }
 
 export async function projectStatus(vaultRoot: string, project: string): Promise<ProjectStatus> {
-  const records = await loadRecords(vaultRoot, project);
+  const projectSlug = slugifyProject(project);
   const dir = projectDir(vaultRoot, project);
+  const [records, readiness, roadmapCompletion, repairPlan, e2eSmoke] = await Promise.all([
+    loadRecords(vaultRoot, project),
+    readJson<ControlReport>(path.join(dir, "control", "merge-readiness.json")),
+    readJson<RoadmapCompletionAudit>(path.join(dir, "control", "roadmap-completion-audit.json")),
+    readJson<MutationReadinessRepairPlan>(path.join(dir, "control", "mutation-readiness-repair-plan.json")),
+    readLatestE2eSmoke(vaultRoot, path.join(dir, "evaluation"))
+  ]);
   const latest = records.at(-1);
 
   return {
-    project: slugifyProject(project),
+    project: projectSlug,
     projectDir: dir,
     records: records.length,
     extracted: records.filter((record) => record.extractedTextPath).length,
-    latestIngestedAt: latest?.ingestedAt
+    latestIngestedAt: latest?.ingestedAt,
+    readinessStatus: readiness?.status,
+    roadmapCompletionStatus: roadmapCompletion?.status,
+    roadmapCompletionBlocked: roadmapCompletion?.summary.blocked,
+    mutationReadinessRepairStatus: repairPlan?.status,
+    mutationReadinessRepairMissingPlans: repairPlan?.summary.missingPlans,
+    mutationReadinessRepairOperatorActionRequired: repairPlan?.summary.operatorActionRequired,
+    latestE2eSmoke: e2eSmoke
+  };
+}
+
+async function readJson<T>(filePath: string): Promise<T | undefined> {
+  try {
+    return JSON.parse(await fs.readFile(filePath, "utf8")) as T;
+  } catch (error) {
+    if ((error as NodeJS.ErrnoException).code === "ENOENT") return undefined;
+    throw error;
+  }
+}
+
+async function readLatestE2eSmoke(
+  vaultRoot: string,
+  evaluationDir: string
+): Promise<ProjectStatus["latestE2eSmoke"] | undefined> {
+  let names: string[];
+  try {
+    names = await fs.readdir(evaluationDir);
+  } catch (error) {
+    if ((error as NodeJS.ErrnoException).code === "ENOENT") return undefined;
+    throw error;
+  }
+  const latestName = names
+    .filter((name) => /^e2e-smoke-.+\.json$/.test(name))
+    .sort()
+    .at(-1);
+  if (!latestName) return undefined;
+  const reportPath = path.join(evaluationDir, latestName);
+  const report = await readJson<{
+    status: "passed" | "blocked" | "degraded" | "failed";
+    summary: { passed: number; blocked: number; degraded: number; failed: number };
+  }>(reportPath);
+  if (!report) return undefined;
+  return {
+    status: report.status,
+    passed: report.summary.passed,
+    blocked: report.summary.blocked,
+    degraded: report.summary.degraded,
+    failed: report.summary.failed,
+    reportRef: path.relative(vaultRoot, reportPath).replace(/\\/g, "/")
   };
 }
