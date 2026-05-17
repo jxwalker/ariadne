@@ -290,8 +290,10 @@ This checks the Hermes dashboard, Hermes CLI status/doctor/gateway commands, Oll
 Atlas can be probed directly when the fast LAN model endpoint is available:
 
 ```bash
-npm run ariadne -- local-runtime-probe --project ariadne --canary --canary-endpoints atlas --atlas-url http://atlas.local:8888/v1 --atlas-canary-model qwen3.6-35b-a3b-nvfp4-atlas --timeout-ms 60000
+npm run ariadne -- local-runtime-probe --project ariadne --canary --canary-endpoints atlas --atlas-url http://your-atlas-host.tailnet:8888/v1 --atlas-canary-model qwen3.6-35b-a3b-nvfp4-atlas --timeout-ms 60000
 ```
+
+The static infrastructure registry records Atlas with a neutral `atlas.local` alias as a placeholder. Pass the real local URL, such as a LAN or tailnet address, with `--atlas-url` when collecting runtime evidence.
 
 Run the local end-to-end smoke harness:
 

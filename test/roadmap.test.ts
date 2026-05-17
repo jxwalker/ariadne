@@ -50,6 +50,8 @@ describe("roadmap generation", () => {
 
     const infra = await generateInfrastructureRegistry({ project: "ariadne", vaultRoot });
     expect(infra.registry.hosts.map((host) => host.id)).toContain("beast");
+    expect(infra.registry.hosts.map((host) => host.id)).toContain("atlas-node");
+    expect(infra.registry.modelEndpoints.map((endpoint) => endpoint.id)).toContain("atlas-local-models");
 
     const control = await generateControlReport({ project: "ariadne", vaultRoot });
     expect(control.report.status).toBe("review_required");
