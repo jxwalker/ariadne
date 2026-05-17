@@ -35,6 +35,7 @@ Deployment should follow the same rule as the rest of the project: observe first
 - Use `infra-live-local` for the current Mac or Linux host.
 - Use `infra-live-ssh` only for approved remote hosts where a read-only SSH probe is acceptable.
 - Use `deployment-live-ssh` when Ariadne should turn an approved SSH probe into a Proxmox, TrueNAS, DGX Spark, or Mac deployment profile.
+- Treat live local, live SSH, runtime probe, and E2E smoke artifacts as local evidence by default. They are ignored by Git because they can include private host aliases, endpoint URLs, screenshots, or timestamp churn; commit a sanitized derived artifact only when it is intended to become project evidence.
 - Use `deployment-snapshot` for estate-specific views:
 
 ```bash
