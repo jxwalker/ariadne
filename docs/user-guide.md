@@ -285,15 +285,15 @@ Probe the local runtime surface:
 npm run ariadne -- local-runtime-probe --project ariadne --canary --canary-endpoints ds4-openai --ds4-canary-model deepseek-v4-flash
 ```
 
-This checks the Hermes dashboard, Hermes CLI status/doctor/gateway commands, Ollama, DS4/OpenAI-compatible, LM Studio, and Atlas endpoints. `--canary` sends short local model prompts and appends any observed token counts as `local-llm` usage metrics. Use `--canary-endpoints` to target a subset such as `ds4-openai` or `atlas`, and use `--ollama-canary-model`, `--ds4-canary-model`, `--lmstudio-canary-model`, or `--atlas-canary-model` to avoid cold or resource-intensive default models. Canary prompts run sequentially so local runtimes are not overloaded, and model probes use a 128-token completion budget plus a minimum 30-second generation timeout for reasoning-style local models to reach the `READY` health token. The command writes `infrastructure/runtime/local-runtime-probe-...json` and a matching `.md` human-readable report. It does not start services, load models, edit scheduler state, or mutate infrastructure.
+This checks the Hermes dashboard, Hermes CLI status/doctor/gateway commands, Ollama, DS4/OpenAI-compatible, LM Studio, and Atlas endpoints. `--canary` sends short local model prompts and appends any observed token counts as `local-llm` usage metrics. Use `--canary-endpoints` to target a subset such as `ds4-openai` or `atlas`, and use `--ollama-canary-model`, `--ds4-canary-model`, `--lmstudio-canary-model`, or `--atlas-canary-model` to avoid cold or resource-intensive default models. The same values can be supplied unattended with `ARIADNE_OLLAMA_URL`, `ARIADNE_DS4_URL`, `ARIADNE_LMSTUDIO_URL`, `ARIADNE_ATLAS_URL`, and matching `*_CANARY_MODEL` environment variables. Canary prompts run sequentially so local runtimes are not overloaded, and model probes use a strict no-think `READY` prompt, a 128-token completion budget, and a minimum 30-second generation timeout for reasoning-style local models. The command writes `infrastructure/runtime/local-runtime-probe-...json` and a matching `.md` human-readable report. It does not start services, load models, edit scheduler state, or mutate infrastructure.
 
 Atlas can be probed directly when the fast LAN model endpoint is available:
 
 ```bash
-npm run ariadne -- local-runtime-probe --project ariadne --canary --canary-endpoints atlas --atlas-url http://your-atlas-host.tailnet:8888/v1 --atlas-canary-model qwen3.6-35b-a3b-nvfp4-atlas --timeout-ms 60000
+ARIADNE_ATLAS_URL=http://your-atlas-host.tailnet:8888/v1 ARIADNE_ATLAS_CANARY_MODEL=qwen3.6-35b-a3b-nvfp4-atlas npm run ariadne -- local-runtime-probe --project ariadne --canary --canary-endpoints atlas --timeout-ms 60000
 ```
 
-The static infrastructure registry records Atlas with a neutral `atlas.local` alias as a placeholder. Pass the real local URL, such as a LAN or tailnet address, with `--atlas-url` when collecting runtime evidence.
+The static infrastructure registry records Atlas with a neutral `atlas.local` alias as a placeholder. Pass the real local URL, such as a LAN or tailnet address, with `ARIADNE_ATLAS_URL` or `--atlas-url` when collecting runtime evidence.
 
 Run the local end-to-end smoke harness:
 
