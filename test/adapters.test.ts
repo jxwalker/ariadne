@@ -1017,10 +1017,18 @@ describe("roadmap adapters", () => {
     const deploymentSession = reviewSession.session.targets.find((target) => target.target === "deployment");
     const githubSession = reviewSession.session.targets.find((target) => target.target === "github");
     expect(deploymentSession?.reviewCommand).toContain("live-adapter-approval-review");
+    expect(deploymentSession?.operatorEvidenceStatus).toBe("needs_evidence");
+    expect(deploymentSession?.operatorEvidenceCheckCommand).toContain("live-adapter-operator-evidence-check");
+    expect(deploymentSession?.operatorEvidenceImportCommand).toContain("live-adapter-operator-evidence");
+    expect(deploymentSession?.operatorEvidenceFileRef).toContain("control/operator-evidence/deployment/operator-evidence.md");
+    expect(deploymentSession?.missingOperatorEvidenceSections).toContain("Post-action verification command");
     expect(deploymentSession?.approvalRequestCommand).toContain("--target deployment");
     expect(deploymentSession?.gbrainContext.suggestedQueries.some((query) => query.includes("deployment"))).toBe(true);
     expect(githubSession?.status).toBe("ready_for_adapter_work");
     expect(githubSession?.cutoverStatus).toBe("ready_for_cutover");
+    const reviewSessionMarkdown = await fs.readFile(reviewSession.markdownPath, "utf8");
+    expect(reviewSessionMarkdown).toContain("Operator Evidence Action");
+    expect(reviewSessionMarkdown).toContain("Missing operator evidence sections");
     const evidenceTemplates = await generateLiveAdapterEvidenceTemplates({ project: "ariadne", vaultRoot });
     expect(evidenceTemplates.pack.status).toBe("awaiting_operator_evidence");
     expect(evidenceTemplates.pack.mutationApproved).toBe(false);

@@ -4,10 +4,23 @@ import { generateLiveAdapterApprovalPack } from "./liveAdapterApprovalPack.js";
 import { generateLiveAdapterApprovalReviewAudit } from "./liveAdapterApprovalReviewAudit.js";
 import { generateLiveAdapterCutoverAudit } from "./liveAdapterCutoverAudit.js";
 import { generateLiveAdapterNextActions } from "./liveAdapterNextActions.js";
+import { generateLiveAdapterOperatorEvidenceAudit } from "./liveAdapterOperatorEvidence.js";
 import { LIVE_ADAPTER_TARGETS } from "./liveAdapterTargets.js";
 import { generateLiveAdapterTargetDossier } from "./liveAdapterTargetDossier.js";
 import { projectDir, slugifyProject } from "./paths.js";
 import type { LiveAdapterReviewSession, LiveAdapterTargetDossier } from "./types.js";
+
+const REQUIRED_OPERATOR_EVIDENCE_SECTIONS = [
+  "Operator identity and timestamp",
+  "Approval packet review",
+  "Authentication or authorization boundary",
+  "Bounded action statement",
+  "Rollback or disable path",
+  "Post-action verification command",
+  "Dry-run command and safe output",
+  "Target-guarded execution wrapper",
+  "Exact confirm-plan proof"
+] as const;
 
 export async function generateLiveAdapterReviewSession(input: {
   project: string;
@@ -17,6 +30,7 @@ export async function generateLiveAdapterReviewSession(input: {
   const nextActions = await generateLiveAdapterNextActions({ project, vaultRoot: input.vaultRoot });
   const approvalPack = await generateLiveAdapterApprovalPack({ project, vaultRoot: input.vaultRoot });
   const approvalReviewAudit = await generateLiveAdapterApprovalReviewAudit({ project, vaultRoot: input.vaultRoot });
+  const operatorEvidenceAudit = await generateLiveAdapterOperatorEvidenceAudit({ project, vaultRoot: input.vaultRoot });
   const dossiers = await Promise.all(
     LIVE_ADAPTER_TARGETS.map((target) => generateLiveAdapterTargetDossier({ project, vaultRoot: input.vaultRoot, target }))
   );
@@ -25,6 +39,7 @@ export async function generateLiveAdapterReviewSession(input: {
   const approvalPacketByTarget = new Map(approvalPack.report.packets.map((packet) => [packet.target, packet]));
   const reviewAuditByTarget = new Map(approvalReviewAudit.audit.targets.map((target) => [target.target, target]));
   const cutoverByTarget = new Map(cutoverAudit.audit.targets.map((target) => [target.target, target]));
+  const operatorEvidenceByTarget = new Map(operatorEvidenceAudit.audit.targets.map((target) => [target.target, target]));
 
   const targets = nextActions.report.targets.map((target) => {
     const dossierResult = dossierByTarget.get(target.target);
@@ -33,8 +48,10 @@ export async function generateLiveAdapterReviewSession(input: {
     const packet = approvalPacketByTarget.get(target.target);
     const reviewAuditTarget = reviewAuditByTarget.get(target.target);
     const cutoverTarget = cutoverByTarget.get(target.target);
+    const operatorEvidenceTarget = operatorEvidenceByTarget.get(target.target);
     if (!reviewAuditTarget) throw new Error(`Missing live-adapter approval-review audit target for ${target.target}.`);
     if (!cutoverTarget) throw new Error(`Missing live-adapter cutover target for ${target.target}.`);
+    if (!operatorEvidenceTarget) throw new Error(`Missing live-adapter operator evidence audit target for ${target.target}.`);
     const reviewCommand =
       target.actions.find((action) => action.id.endsWith("-approval-pack-review"))?.command ??
       `npm run ariadne -- live-adapter-approval-review --project ${project} --target ${target.target} --by <operator> --status accepted --packet control/live-adapter-approval-pack.json --evidence <operator-review-evidence>`;
@@ -49,6 +66,11 @@ export async function generateLiveAdapterReviewSession(input: {
       reviewCommand,
       approvalRequestCommand: packet?.approvalRequestCommand,
       mutationPlanCommand: packet?.mutationPlanCommand,
+      operatorEvidenceStatus: operatorEvidenceStatus(operatorEvidenceTarget.status),
+      operatorEvidenceFileRef: `projects/${project}/control/operator-evidence/${operatorEvidenceTarget.target}/operator-evidence.md`,
+      operatorEvidenceCheckCommand: `npm run ariadne -- live-adapter-operator-evidence-check --project ${project} --target ${operatorEvidenceTarget.target} --from vault/projects/${project}/control/operator-evidence/${operatorEvidenceTarget.target}/operator-evidence.md`,
+      operatorEvidenceImportCommand: `npm run ariadne -- live-adapter-operator-evidence --project ${project} --target ${operatorEvidenceTarget.target} --from vault/projects/${project}/control/operator-evidence/${operatorEvidenceTarget.target}/operator-evidence.md --by <operator>`,
+      missingOperatorEvidenceSections: missingOperatorEvidenceSections(operatorEvidenceTarget.status, operatorEvidenceTarget.missingSections),
       requiredEvidence: packet?.requiredEvidence ?? [],
       blockers: target.blockers,
       cutoverBlockers: cutoverTarget.blockers,
@@ -79,6 +101,7 @@ export async function generateLiveAdapterReviewSession(input: {
     approvalPackRef: path.relative(input.vaultRoot, approvalPack.jsonPath),
     approvalReviewAuditRef: path.relative(input.vaultRoot, approvalReviewAudit.jsonPath),
     cutoverAuditRef: path.relative(input.vaultRoot, cutoverAudit.jsonPath),
+    operatorEvidenceAuditRef: path.relative(input.vaultRoot, operatorEvidenceAudit.jsonPath),
     dossierDirRef: vaultRelative(input.vaultRoot, path.join(projectDir(input.vaultRoot, project), "control", "live-adapter-dossiers")),
     summary,
     targets
@@ -103,6 +126,16 @@ function reviewSessionTargetStatus(
   if (cutoverStatus === "ready_for_cutover") return "ready_for_adapter_work";
   if (packetPresent && actionCount > 0 && reviewAuditStatus !== "current_accepted") return "operator_review_required";
   return "blocked";
+}
+
+function operatorEvidenceStatus(status: "complete" | "incomplete" | "missing_evidence"): LiveAdapterReviewSession["targets"][number]["operatorEvidenceStatus"] {
+  if (status === "complete") return "complete";
+  return status === "incomplete" ? "needs_rework" : "needs_evidence";
+}
+
+function missingOperatorEvidenceSections(status: "complete" | "incomplete" | "missing_evidence", sections: string[]): string[] {
+  if (sections.length > 0 || status === "complete") return sections;
+  return [...REQUIRED_OPERATOR_EVIDENCE_SECTIONS];
 }
 
 function reviewSessionEvidenceRefs(
@@ -164,6 +197,7 @@ function renderSession(session: LiveAdapterReviewSession): string {
     `- Approval pack: ${session.approvalPackRef}`,
     `- Approval-review audit: ${session.approvalReviewAuditRef}`,
     `- Cutover audit: ${session.cutoverAuditRef}`,
+    `- Operator evidence audit: ${session.operatorEvidenceAuditRef}`,
     `- Dossiers: ${session.dossierDirRef}`,
     "",
     "## Targets",
@@ -175,8 +209,21 @@ function renderSession(session: LiveAdapterReviewSession): string {
       `Readiness: ${target.readinessStatus}`,
       `Cutover: ${target.cutoverStatus}`,
       `Review audit: ${target.reviewAuditStatus}`,
+      `Operator evidence: ${target.operatorEvidenceStatus}`,
       `First action: ${target.firstAction ?? "none"}`,
       `Dossier: ${target.dossierRef}`,
+      "",
+      "#### Operator Evidence Action",
+      "",
+      `Evidence file: ${target.operatorEvidenceFileRef}`,
+      "",
+      "```bash",
+      target.operatorEvidenceCheckCommand,
+      target.operatorEvidenceImportCommand,
+      "```",
+      "",
+      "Missing operator evidence sections:",
+      ...list(target.missingOperatorEvidenceSections),
       "",
       "#### Review Command",
       "",
