@@ -15,6 +15,13 @@ import type {
 const execFileAsync = promisify(execFile);
 export type RuntimeModelEndpointId = "ollama" | "ds4-openai" | "lmstudio";
 
+// Keep ordinary reachability checks quick when runtimes are offline.
+const DEFAULT_RUNTIME_PROBE_TIMEOUT_MS = 8_000;
+// Give reasoning-style local models room to reach the strict READY health token.
+const CANARY_RESPONSE_TOKEN_BUDGET = 128;
+// Canary generation floors caller timeouts so slow local models are not false negatives.
+const CANARY_GENERATION_TIMEOUT_MS = 30_000;
+
 interface CommandResult {
   exitCode: number;
   stdout: string;
@@ -51,7 +58,7 @@ export async function collectLocalRuntimeProbe(
 ): Promise<{ jsonPath: string; markdownPath: string; probe: LocalRuntimeProbe }> {
   const project = slugifyProject(input.project);
   const generatedAt = new Date();
-  const timeoutMs = input.timeoutMs ?? 8_000;
+  const timeoutMs = input.timeoutMs ?? DEFAULT_RUNTIME_PROBE_TIMEOUT_MS;
   const fetchJson = deps.fetchJson ?? defaultFetchJson;
   const runCommand = deps.runCommand ?? defaultRunCommand;
 
@@ -257,6 +264,7 @@ async function runOllamaCanary(
   fetchJson: NonNullable<RuntimeProbeDeps["fetchJson"]>,
   timeoutMs: number
 ): Promise<NonNullable<RuntimeModelEndpointProbe["canary"]>> {
+  const canaryTimeoutMs = Math.max(timeoutMs, CANARY_GENERATION_TIMEOUT_MS);
   const result = await fetchJson(
     `${url.replace(/\/$/, "")}/api/generate`,
     {
@@ -266,10 +274,10 @@ async function runOllamaCanary(
         model,
         prompt: "Ariadne local runtime probe. Reply READY only.",
         stream: false,
-        options: { temperature: 0, num_predict: 8 }
+        options: { temperature: 0, num_predict: CANARY_RESPONSE_TOKEN_BUDGET }
       })
     },
-    timeoutMs
+    canaryTimeoutMs
   );
   if (!result.ok) return { status: "failed", model, responsePreview: result.error ?? result.text };
   const body = objectValue(result.json);
@@ -295,6 +303,7 @@ async function runOpenAiCanary(
   fetchJson: NonNullable<RuntimeProbeDeps["fetchJson"]>,
   timeoutMs: number
 ): Promise<NonNullable<RuntimeModelEndpointProbe["canary"]>> {
+  const canaryTimeoutMs = Math.max(timeoutMs, CANARY_GENERATION_TIMEOUT_MS);
   const result = await fetchJson(
     `${url.replace(/\/$/, "")}/chat/completions`,
     {
@@ -304,10 +313,10 @@ async function runOpenAiCanary(
         model,
         messages: [{ role: "user", content: "Ariadne local runtime probe. Reply READY only." }],
         temperature: 0,
-        max_tokens: 8
+        max_tokens: CANARY_RESPONSE_TOKEN_BUDGET
       })
     },
-    timeoutMs
+    canaryTimeoutMs
   );
   if (!result.ok) return { status: "failed", model, responsePreview: result.error ?? result.text };
   const body = objectValue(result.json);

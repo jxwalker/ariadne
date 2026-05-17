@@ -1619,13 +1619,13 @@ describe("roadmap adapters", () => {
     expect(JSON.stringify(liveSnapshot.snapshot.raw)).not.toContain(os.hostname());
     expect(JSON.stringify(liveSnapshot.snapshot.raw)).toContain("networkAddresses");
 
-    const canaryRequests: Array<{ url: string; model: string }> = [];
+    const canaryRequests: Array<{ url: string; model: string; tokenBudget: number }> = [];
     const runtimeProbe = await collectLocalRuntimeProbe(
       {
         project: "ariadne",
         vaultRoot,
         canary: true,
-        canaryEndpointIds: ["ds4-openai"],
+        canaryEndpointIds: ["ollama", "ds4-openai"],
         canaryModels: { "ds4-openai": "deepseek-v4-flash" },
         hermesDashboardUrl: "http://runtime.test/hermes",
         ollamaUrl: "http://runtime.test/ollama",
@@ -1641,6 +1641,8 @@ describe("roadmap adapters", () => {
             return { ok: true, status: 200, text: "{}", json: { models: [{ name: "qwen-local" }] } };
           }
           if (url.endsWith("/api/generate") && init?.method === "POST") {
+            const body = JSON.parse(String(init.body)) as { model: string; options: { num_predict: number } };
+            canaryRequests.push({ url, model: body.model, tokenBudget: body.options.num_predict });
             return {
               ok: true,
               status: 200,
@@ -1652,7 +1654,8 @@ describe("roadmap adapters", () => {
             return { ok: true, status: 200, text: "{}", json: { data: [{ id: "deepseek-v4-flash" }] } };
           }
           if (url.endsWith("/ds4/v1/chat/completions") && init?.method === "POST") {
-            canaryRequests.push({ url, model: JSON.parse(String(init.body)).model as string });
+            const body = JSON.parse(String(init.body)) as { model: string; max_tokens: number };
+            canaryRequests.push({ url, model: body.model, tokenBudget: body.max_tokens });
             return {
               ok: true,
               status: 200,
@@ -1668,15 +1671,20 @@ describe("roadmap adapters", () => {
       }
     );
     expect(runtimeProbe.probe.summary.models).toBe(2);
-    expect(runtimeProbe.probe.summary.usageRecords).toBe(1);
-    expect(runtimeProbe.probe.modelEndpoints.find((endpoint) => endpoint.id === "ollama")?.canary).toBeUndefined();
+    expect(runtimeProbe.probe.summary.usageRecords).toBe(2);
+    expect(runtimeProbe.probe.modelEndpoints.find((endpoint) => endpoint.id === "ollama")?.canary?.status).toBe(
+      "passed"
+    );
     expect(runtimeProbe.probe.modelEndpoints.find((endpoint) => endpoint.id === "ds4-openai")?.canary?.status).toBe(
       "degraded"
     );
     expect(runtimeProbe.probe.modelEndpoints.find((endpoint) => endpoint.id === "ds4-openai")?.canary?.model).toBe(
       "deepseek-v4-flash"
     );
-    expect(canaryRequests).toEqual([{ url: "http://runtime.test/ds4/v1/chat/completions", model: "deepseek-v4-flash" }]);
+    expect(canaryRequests).toEqual([
+      { url: "http://runtime.test/ollama/api/generate", model: "qwen-local", tokenBudget: 128 },
+      { url: "http://runtime.test/ds4/v1/chat/completions", model: "deepseek-v4-flash", tokenBudget: 128 }
+    ]);
     expect(runtimeProbe.probe.modelEndpoints.find((endpoint) => endpoint.id === "lmstudio")?.status).toBe("unreachable");
     const runtimeArtifactChecks = await generateArtifactCheckReport({ project: "ariadne", vaultRoot });
     expect(runtimeArtifactChecks.report.checks.find((check) => check.id === "local-runtime-probes")?.status).toBe(
@@ -1693,7 +1701,7 @@ describe("roadmap adapters", () => {
       })
     );
     const usageReport = await generateUsageMetricsReport({ project: "ariadne", vaultRoot });
-    expect(usageReport.report.bySource.find((source) => source.name === "local-llm")?.totalTokens).toBe(8);
+    expect(usageReport.report.bySource.find((source) => source.name === "local-llm")?.totalTokens).toBe(14);
 
     const parsedSsh = parseSshInventory(
       [
