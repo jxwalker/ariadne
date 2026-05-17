@@ -239,12 +239,9 @@ function renderQueue(queue: LiveAdapterOperatorEvidenceQueue): string {
     "",
     "## Targets",
     "",
-    "| Target | Status | Latest check | Missing | Next action |",
-    "| --- | --- | --- | --- | --- |",
-    ...queue.targets.map(
-      (target) =>
-        `| ${target.target} | ${target.status} | ${target.latestCheckId ?? "none"} | ${target.latestCheckMissingSections ?? target.missingSections.length} | ${tableCell(target.nextAction)} |`
-    ),
+    "| Target | Status | Latest check | Missing | Missing section labels | Next action |",
+    "| --- | --- | --- | ---: | --- | --- |",
+    ...queue.targets.map(renderQueueTargetRow),
     "",
     "## Commands",
     "",
@@ -268,6 +265,18 @@ function renderQueue(queue: LiveAdapterOperatorEvidenceQueue): string {
       ""
     ])
   ].join("\n");
+}
+
+function renderQueueTargetRow(target: QueueTarget): string {
+  const cells = [
+    tableCell(target.target),
+    tableCell(target.status),
+    tableCell(target.latestCheckId ?? "none"),
+    tableCell(String(target.latestCheckMissingSections ?? target.missingSections.length)),
+    tableCell(target.missingSections.join(", ") || "none"),
+    tableCell(target.nextAction)
+  ];
+  return `| ${cells.join(" | ")} |`;
 }
 
 function tableCell(value: string): string {
