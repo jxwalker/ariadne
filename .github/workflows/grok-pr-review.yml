@@ -6,6 +6,7 @@ on:
 
 permissions:
   contents: read
+  # Pull request timeline comments are created through the Issues API.
   issues: write
   pull-requests: write
 
@@ -52,10 +53,22 @@ jobs:
         env:
           XAI_API_KEY: ${{ secrets.XAI_API_KEY }}
         run: |
+          max_diff_bytes=750000
+          diff_bytes=$(wc -c < pr.diff | tr -d ' ')
+          if [ "$diff_bytes" -gt "$max_diff_bytes" ]; then
+            {
+              echo "<!-- grok-pr-review -->"
+              echo "### Grok Code Review"
+              echo
+              echo "Skipped Grok review because this PR diff is ${diff_bytes} bytes, which exceeds the ${max_diff_bytes}-byte workflow limit."
+            } > review.md
+            exit 0
+          fi
+
           jq -n \
             --rawfile diff pr.diff \
             '{
-              model: "grok-4-1-fast-reasoning",
+              model: "grok-4.3-latest",
               stream: false,
               messages: [
                 {
@@ -89,6 +102,10 @@ jobs:
           fi
 
           review="$(jq -er '.choices[0].message.content // empty' grok-response.json)"
+          if [ -z "$(printf '%s' "$review" | tr -d '[:space:]')" ]; then
+            echo "Grok returned no review content." >&2
+            exit 1
+          fi
 
           {
             echo "<!-- grok-pr-review -->"
@@ -116,9 +133,7 @@ jobs:
               per_page: 100,
             });
 
-            const previous = comments.find((comment) =>
-              comment.user?.type === "Bot" && comment.body?.includes(marker)
-            );
+            const previous = comments.find((comment) => comment.body?.includes(marker));
 
             if (previous) {
               await github.rest.issues.updateComment({
