@@ -1190,6 +1190,11 @@ describe("roadmap adapters", () => {
     expect(operatorEvidenceAudit.audit.summary.completeTargets).toBe(2);
     expect(operatorEvidenceAudit.audit.summary.incompleteTargets).toBe(1);
     expect(operatorEvidenceAudit.audit.summary.missingTargets).toBe(3);
+    expect(operatorEvidenceAudit.audit.summary.missingSections).toBeGreaterThan(
+      incompleteOperatorEvidence.record.summary.missingSections
+    );
+    const missingTargetEvidence = operatorEvidenceAudit.audit.targets.find((target) => target.status === "missing_evidence");
+    expect(missingTargetEvidence?.missingSections).toContain("Operator identity and timestamp");
     const operatorEvidenceWorkplan = await generateLiveAdapterOperatorEvidenceWorkplan({ project: "ariadne", vaultRoot });
     expect(operatorEvidenceWorkplan.workplan.status).toBe("evidence_required");
     expect(operatorEvidenceWorkplan.workplan.mutationApproved).toBe(false);
@@ -1445,6 +1450,7 @@ describe("roadmap adapters", () => {
     expect(status.liveAdapterOperatorEvidenceStatus).toBe("blocked");
     expect(status.liveAdapterOperatorEvidenceCompleteTargets).toBeGreaterThan(0);
     expect(status.liveAdapterOperatorEvidenceMissingTargets).toBeGreaterThan(0);
+    expect(status.liveAdapterOperatorEvidenceMissingSections).toBeGreaterThan(0);
     expect(status.liveAdapterOperatorEvidenceQueueStatus).toBe("evidence_required");
     expect(status.liveAdapterOperatorEvidenceQueueNeedsEvidence).toBeGreaterThan(0);
     expect(status.liveAdapterCutoverStatus).toBe("blocked");

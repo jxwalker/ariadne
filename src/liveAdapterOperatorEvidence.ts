@@ -186,7 +186,9 @@ export async function generateLiveAdapterOperatorEvidenceAudit(input: {
   const targets = LIVE_ADAPTER_TARGETS.map((target) => {
     const targetRecords = recordsByTarget.get(target) ?? [];
     const latest = targetRecords.at(-1);
-    const missingSections = latest?.sections.filter((section) => section.status === "missing").map((section) => section.label) ?? [];
+    const missingSections = latest
+      ? latest.sections.filter((section) => section.status === "missing").map((section) => section.label)
+      : [...REQUIRED_OPERATOR_EVIDENCE_SECTION_LABELS];
     const advisoryWarnings = latest?.gbrain.status === "missing" ? [latest.gbrain.detail] : [];
     const status: LiveAdapterOperatorEvidenceAudit["targets"][number]["status"] = latest
       ? latest.status === "complete"
@@ -195,7 +197,10 @@ export async function generateLiveAdapterOperatorEvidenceAudit(input: {
       : "missing_evidence";
     const blockers =
       status === "missing_evidence"
-        ? [`No operator evidence record exists for ${target}.`]
+        ? [
+            `No operator evidence record exists for ${target}.`,
+            ...missingSections.map((section) => `Missing operator evidence section: ${section}`)
+          ]
         : missingSections.map((section) => `Missing operator evidence section: ${section}`);
     return {
       target,
