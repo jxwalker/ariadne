@@ -6,7 +6,7 @@ import { generateLiveAdapterApprovalReviewAudit } from "./liveAdapterApprovalRev
 import { generateLiveAdapterCutoverAudit } from "./liveAdapterCutoverAudit.js";
 import { generateLiveAdapterNextActions } from "./liveAdapterNextActions.js";
 import { generateLiveAdapterOperatorEvidenceAudit } from "./liveAdapterOperatorEvidence.js";
-import { isLiveAdapterTarget, LIVE_ADAPTER_TARGETS } from "./liveAdapterTargets.js";
+import { isLiveAdapterTarget, LIVE_ADAPTER_TARGETS, type LiveAdapterTarget } from "./liveAdapterTargets.js";
 import { generateLiveAdapterTargetDossier } from "./liveAdapterTargetDossier.js";
 import { generateMutationReadinessRepairPlan } from "./mutationReadinessRepairPlan.js";
 import { projectDir, slugifyProject } from "./paths.js";
@@ -20,6 +20,7 @@ import type {
 export async function generateLiveAdapterReviewSession(input: {
   project: string;
   vaultRoot: string;
+  target?: LiveAdapterTarget;
 }): Promise<{ jsonPath: string; markdownPath: string; session: LiveAdapterReviewSession }> {
   const project = slugifyProject(input.project);
   const nextActions = await generateLiveAdapterNextActions({ project, vaultRoot: input.vaultRoot });
@@ -29,12 +30,14 @@ export async function generateLiveAdapterReviewSession(input: {
   const mutationRepairPlan = await generateMutationReadinessRepairPlan({ project, vaultRoot: input.vaultRoot });
   const [operatorEvidenceQueue, operatorEvidenceAssist, dossiers] = await Promise.all([
     readExistingOperatorEvidenceQueue(input.vaultRoot, project),
-    readExistingOperatorEvidenceAssist(input.vaultRoot, project),
+    readExistingOperatorEvidenceAssist(input.vaultRoot, project, input.target),
     Promise.all(
-      LIVE_ADAPTER_TARGETS.map((target) => generateLiveAdapterTargetDossier({ project, vaultRoot: input.vaultRoot, target }))
+      selectedTargets(input.target).map((target) =>
+        generateLiveAdapterTargetDossier({ project, vaultRoot: input.vaultRoot, target })
+      )
     )
   ]);
-  const cutoverAudit = await generateLiveAdapterCutoverAudit({ project, vaultRoot: input.vaultRoot });
+  const cutoverAudit = await generateLiveAdapterCutoverAudit({ project, vaultRoot: input.vaultRoot, target: input.target });
   const dossierByTarget = new Map(dossiers.map((dossier) => [dossier.dossier.target, dossier]));
   const approvalPacketByTarget = new Map(approvalPack.report.packets.map((packet) => [packet.target, packet]));
   const reviewAuditByTarget = new Map(approvalReviewAudit.audit.targets.map((target) => [target.target, target]));
@@ -44,7 +47,10 @@ export async function generateLiveAdapterReviewSession(input: {
   const queueByTarget = new Map(operatorEvidenceQueue?.targets.map((target) => [target.target, target]) ?? []);
   const assistByTarget = new Map(operatorEvidenceAssist?.targets.map((target) => [target.target, target]) ?? []);
 
-  const targets = nextActions.report.targets.map((target) => {
+  const actionTargets = input.target
+    ? nextActions.report.targets.filter((target) => target.target === input.target)
+    : nextActions.report.targets;
+  const targets = actionTargets.map((target) => {
     const dossierResult = dossierByTarget.get(target.target);
     if (!dossierResult) throw new Error(`Missing live-adapter dossier for ${target.target}.`);
     const dossier = dossierResult.dossier;
@@ -110,15 +116,16 @@ export async function generateLiveAdapterReviewSession(input: {
     operatorReviewRequired: targets.filter((target) => target.status === "operator_review_required").length,
     readyForAdapterWork: targets.filter((target) => target.status === "ready_for_adapter_work").length,
     blocked: targets.filter((target) => target.status === "blocked").length,
-    actionItems: nextActions.report.summary.actionItems,
-    currentAcceptedReviews: approvalReviewAudit.audit.summary.currentAcceptedReviews,
-    cutoverReady: cutoverAudit.audit.summary.ready,
+    actionItems: actionTargets.reduce((sum, target) => sum + target.actions.length, 0),
+    currentAcceptedReviews: targets.filter((target) => target.reviewAuditStatus === "current_accepted").length,
+    cutoverReady: targets.filter((target) => target.cutoverStatus === "ready_for_cutover").length,
     gbrainReports: Array.from(new Set(targets.flatMap((target) => target.gbrainContext.reportRefs))).length
   };
   const session: LiveAdapterReviewSession = {
     schemaVersion: 1,
     project,
     generatedAt: new Date().toISOString(),
+    target: input.target,
     status: summary.operatorReviewRequired > 0 || summary.blocked > 0 ? "operator_review_required" : "ready_for_adapter_work",
     mutationApproved: false,
     operatorDecisionRequired: true,
@@ -129,17 +136,20 @@ export async function generateLiveAdapterReviewSession(input: {
     mutationRepairPlanRef: path.relative(input.vaultRoot, mutationRepairPlan.jsonPath),
     operatorEvidenceAuditRef: path.relative(input.vaultRoot, operatorEvidenceAudit.jsonPath),
     operatorEvidenceQueueRef: operatorEvidenceQueue ? `projects/${project}/control/live-adapter-operator-evidence-queue.json` : undefined,
-    operatorEvidenceAssistRef: operatorEvidenceAssist ? `projects/${project}/control/live-adapter-operator-evidence-assist.json` : undefined,
+    operatorEvidenceAssistRef: operatorEvidenceAssist
+      ? `projects/${project}/control/${operatorEvidenceAssist.target ? `live-adapter-operator-evidence-assist-${operatorEvidenceAssist.target}` : "live-adapter-operator-evidence-assist"}.json`
+      : undefined,
     dossierDirRef: vaultRelative(input.vaultRoot, path.join(projectDir(input.vaultRoot, project), "control", "live-adapter-dossiers")),
     summary,
     targets
   };
-  const jsonPath = await writeJsonArtifact(input.vaultRoot, project, "control", "live-adapter-review-session.json", session);
+  const artifactName = input.target ? `live-adapter-review-session-${input.target}` : "live-adapter-review-session";
+  const jsonPath = await writeJsonArtifact(input.vaultRoot, project, "control", `${artifactName}.json`, session);
   const markdownPath = await writeTextArtifact(
     input.vaultRoot,
     project,
     "control",
-    "live-adapter-review-session.md",
+    `${artifactName}.md`,
     renderSession(session)
   );
   return { jsonPath, markdownPath, session };
@@ -159,6 +169,10 @@ function reviewSessionTargetStatus(
 function operatorEvidenceStatus(status: "complete" | "incomplete" | "missing_evidence"): LiveAdapterReviewSession["targets"][number]["operatorEvidenceStatus"] {
   if (status === "complete") return "complete";
   return status === "incomplete" ? "needs_rework" : "needs_evidence";
+}
+
+function selectedTargets(target: LiveAdapterTarget | undefined): readonly LiveAdapterTarget[] {
+  return target ? [target] : LIVE_ADAPTER_TARGETS;
 }
 
 function reviewSessionEvidenceRefs(
@@ -196,8 +210,16 @@ async function readExistingOperatorEvidenceQueue(
 
 async function readExistingOperatorEvidenceAssist(
   vaultRoot: string,
-  project: string
+  project: string,
+  target?: LiveAdapterTarget
 ): Promise<LiveAdapterOperatorEvidenceAssist | undefined> {
+  if (target) {
+    const scoped = await readExistingJson<LiveAdapterOperatorEvidenceAssist>(
+      path.join(projectDir(vaultRoot, project), "control", `live-adapter-operator-evidence-assist-${target}.json`),
+      isOperatorEvidenceAssist
+    );
+    if (scoped) return scoped;
+  }
   return readExistingJson<LiveAdapterOperatorEvidenceAssist>(
     path.join(projectDir(vaultRoot, project), "control", "live-adapter-operator-evidence-assist.json"),
     isOperatorEvidenceAssist
@@ -267,6 +289,7 @@ function renderSession(session: LiveAdapterReviewSession): string {
     "# Live Adapter Review Session",
     "",
     `Project: ${session.project}`,
+    `Target: ${session.target ?? "all"}`,
     `Status: ${session.status}`,
     `Generated: ${session.generatedAt}`,
     `Mutation approved: ${session.mutationApproved}`,

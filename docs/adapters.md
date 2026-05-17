@@ -222,9 +222,9 @@ Target-specific execute wrappers hard-code that guard for the live adapters: `gi
 
 `live-adapter-dossier` creates a target-specific operator packet by combining readiness blockers, next actions, approval-pack details, approval-review audit state, mutation-readiness audit checks, and GBrain memory context. GBrain is used as a derived memory search surface only: the dossier records available export/report refs and suggested queries, but Ariadne remains the source of truth.
 
-`live-adapter-cutover-audit` is the final non-mutating audit before implementation work replaces placeholder shell commands with a real target adapter. It requires complete imported operator evidence, current accepted packet-review evidence, an audit-passed mutation-readiness plan, auth evidence accepted by that audit, rollback and post-verification acceptance, passed dry-run evidence, passed target-guarded execution evidence, a known target wrapper, and a target dossier. GBrain context is carried as advisory memory, never as approval authority.
+`live-adapter-cutover-audit` is the final non-mutating audit before implementation work replaces placeholder shell commands with a real target adapter. It requires complete imported operator evidence, current accepted packet-review evidence, an audit-passed mutation-readiness plan, auth evidence accepted by that audit, rollback and post-verification acceptance, passed dry-run evidence, passed target-guarded execution evidence, a known target wrapper, and a target dossier. GBrain context is carried as advisory memory, never as approval authority. Add `--target <target>` to write a scoped audit such as `control/live-adapter-cutover-audit-hermes-cron.json` while leaving the all-target audit available for estate-level review.
 
-`live-adapter-review-session` consolidates the current operator review work into one non-mutating packet. It regenerates the target dossiers, approval pack, approval-review audit, mutation-readiness repair plan, operator-evidence audit, and cutover audit, then writes `control/live-adapter-review-session.json` and `.md` with one section per target: first action, operator-evidence status, evidence file, check/import commands, missing operator-evidence sections, packet-review command, approval request draft, mutation-plan draft, mutation-repair status and commands, required evidence, cutover blockers, dossier refs, and GBrain advisory queries. It always writes `mutationApproved=false`; it helps an operator review the packet but does not approve live mutation.
+`live-adapter-review-session` consolidates the current operator review work into one non-mutating packet. It regenerates the target dossiers, approval pack, approval-review audit, mutation-readiness repair plan, operator-evidence audit, and cutover audit, then writes `control/live-adapter-review-session.json` and `.md` with one section per target: first action, operator-evidence status, evidence file, check/import commands, missing operator-evidence sections, packet-review command, approval request draft, mutation-plan draft, mutation-repair status and commands, required evidence, cutover blockers, dossier refs, and GBrain advisory queries. Add `--target <target>` to write a one-adapter packet such as `control/live-adapter-review-session-hermes-cron.json`; scoped sessions prefer matching scoped operator-evidence assist files when they exist. The scoped review packet points at its scoped cutover audit and target dossier, while approval-review, mutation-repair, and operator-evidence audit refs remain the global source artifacts because those evaluators still summarize all targets before the session filters the selected target. It always writes `mutationApproved=false`; it helps an operator review the packet but does not approve live mutation.
 
 `live-adapter-evidence-templates` creates blank operator evidence templates for each target. The aggregate report is written to `control/live-adapter-evidence-templates.json` and `.md`, while per-target Markdown templates are written under `control/live-adapter-evidence-templates/`. These templates list packet-review, auth-boundary, rollback, post-verification, dry-run, target-guarded execution, and GBrain advisory items, but they are not evidence until an operator fills them with real observations.
 
@@ -264,7 +264,9 @@ npm run ariadne -- live-adapter-approval-review --project ariadne --target githu
 npm run ariadne -- live-adapter-approval-review-audit --project ariadne
 npm run ariadne -- live-adapter-dossier --project ariadne --target github
 npm run ariadne -- live-adapter-cutover-audit --project ariadne
+npm run ariadne -- live-adapter-cutover-audit --project ariadne --target hermes-cron
 npm run ariadne -- live-adapter-review-session --project ariadne
+npm run ariadne -- live-adapter-review-session --project ariadne --target hermes-cron
 npm run ariadne -- live-adapter-evidence-templates --project ariadne
 npm run ariadne -- live-adapter-operator-evidence-workplan --project ariadne
 npm run ariadne -- live-adapter-operator-evidence-queue --project ariadne
@@ -302,8 +304,10 @@ Artifacts:
 - `control/live-adapter-dossiers/live-adapter-dossier-<target>.json`
 - `control/live-adapter-dossiers/live-adapter-dossier-<target>.md`
 - `control/live-adapter-cutover-audit.json`
+- `control/live-adapter-cutover-audit-<target>.json`
 - `control/live-adapter-cutover-audit.md`
 - `control/live-adapter-review-session.json`
+- `control/live-adapter-review-session-<target>.json`
 - `control/live-adapter-review-session.md`
 - `control/live-adapter-evidence-templates.json`
 - `control/live-adapter-evidence-templates.md`

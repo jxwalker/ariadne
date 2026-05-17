@@ -198,8 +198,8 @@ function usage(): string {
     "  ariadne live-adapter-approval-review --project <project> --target <target> --by <operator> --status <accepted|needs_changes|rejected> --evidence <paths> [--packet <path>] [--notes <text>]",
     "  ariadne live-adapter-approval-review-audit --project <project> [--packet <path>]",
     "  ariadne live-adapter-dossier --project <project> --target <github|deployment|hermes-cron|openscorpion|gsd2|notebooklm>",
-    "  ariadne live-adapter-cutover-audit --project <project>",
-    "  ariadne live-adapter-review-session --project <project>",
+    "  ariadne live-adapter-cutover-audit --project <project> [--target <github|deployment|hermes-cron|openscorpion|gsd2|notebooklm>]",
+    "  ariadne live-adapter-review-session --project <project> [--target <github|deployment|hermes-cron|openscorpion|gsd2|notebooklm>]",
     "  ariadne live-adapter-evidence-templates --project <project>",
     "  ariadne live-adapter-operator-evidence-check --project <project> --target <github|deployment|hermes-cron|openscorpion|gsd2|notebooklm> --from <operator-evidence.md> [--notes <text>]",
     "  ariadne live-adapter-operator-evidence-check-all --project <project> [--target <github|deployment|hermes-cron|openscorpion|gsd2|notebooklm>] [--source auto|workspace|templates] [--notes <text>]",
@@ -1244,8 +1244,13 @@ async function main(): Promise<void> {
   }
 
   if (parsed.command === "live-adapter-cutover-audit") {
-    const result = await generateLiveAdapterCutoverAudit({ project, vaultRoot });
+    const result = await generateLiveAdapterCutoverAudit({
+      project,
+      vaultRoot,
+      target: optionalLiveAdapterTarget(parsed.options)
+    });
     console.log(`Live adapter cutover audit: ${result.markdownPath}`);
+    console.log(`Target: ${result.audit.target ?? "all"}`);
     console.log(`Status: ${result.audit.status}`);
     console.log(`Ready: ${result.audit.summary.ready}`);
     console.log(`Blocked: ${result.audit.summary.blocked}`);
@@ -1253,8 +1258,13 @@ async function main(): Promise<void> {
   }
 
   if (parsed.command === "live-adapter-review-session") {
-    const result = await generateLiveAdapterReviewSession({ project, vaultRoot });
+    const result = await generateLiveAdapterReviewSession({
+      project,
+      vaultRoot,
+      target: optionalLiveAdapterTarget(parsed.options)
+    });
     console.log(`Live adapter review session: ${result.markdownPath}`);
+    console.log(`Target: ${result.session.target ?? "all"}`);
     console.log(`Status: ${result.session.status}`);
     console.log(`Operator review required: ${result.session.summary.operatorReviewRequired}`);
     console.log(`Mutation approved: ${result.session.mutationApproved}`);
@@ -1743,6 +1753,13 @@ function optionalLiveAdapterOperatorEvidenceTarget(options: Map<string, string |
   if (value === undefined) return undefined;
   if (value === true) throw new Error("--target requires a value.");
   return liveAdapterOperatorEvidenceTargetOption(value);
+}
+
+function optionalLiveAdapterTarget(options: Map<string, string | true>) {
+  const value = options.get("target");
+  if (value === undefined) return undefined;
+  if (value === true) throw new Error("--target requires a value.");
+  return liveAdapterDossierTargetOption(value);
 }
 
 function optionalRuntimeCanaryEndpointIds(options: Map<string, string | true>): RuntimeModelEndpointId[] | undefined {

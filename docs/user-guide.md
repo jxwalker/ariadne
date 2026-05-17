@@ -415,7 +415,9 @@ npm run ariadne -- live-adapter-approval-review --project ariadne --target githu
 npm run ariadne -- live-adapter-approval-review-audit --project ariadne
 npm run ariadne -- live-adapter-dossier --project ariadne --target github
 npm run ariadne -- live-adapter-cutover-audit --project ariadne
+npm run ariadne -- live-adapter-cutover-audit --project ariadne --target hermes-cron
 npm run ariadne -- live-adapter-review-session --project ariadne
+npm run ariadne -- live-adapter-review-session --project ariadne --target hermes-cron
 npm run ariadne -- live-adapter-evidence-templates --project ariadne
 npm run ariadne -- live-adapter-operator-evidence-workplan --project ariadne
 npm run ariadne -- live-adapter-operator-evidence-queue --project ariadne
