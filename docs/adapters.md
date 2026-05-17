@@ -321,7 +321,7 @@ Artifacts:
 - `control/live-adapter-operator-evidence-workspace.json`
 - `control/live-adapter-operator-evidence-workspace.md`
 - `control/operator-evidence/<target>/operator-evidence.md`
-- `control/operator-evidence/<target>/{packet-review,auth-boundary,rollback-post-verify,dry-run-review,gbrain-notes}.md`
+- `control/operator-evidence/<target>/{packet-review,auth-boundary,rollback-post-verify,dry-run-review,gbrain-notes,read-only-assist}.md`
 - `control/live-adapter-operator-evidence/operator-evidence-<target>-<timestamp>.json`
 - `control/live-adapter-operator-evidence/operator-evidence-<target>-<timestamp>.md`
 - `control/live-adapter-operator-evidence-audit.json`

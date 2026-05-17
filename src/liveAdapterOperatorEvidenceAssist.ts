@@ -98,11 +98,11 @@ async function readExistingWorkspace(vaultRoot: string, project: string): Promis
   try {
     const parsed = JSON.parse(await fs.readFile(jsonPath, "utf8")) as unknown;
     if (isWorkspace(parsed)) return { jsonPath, workspace: parsed };
+    throw new Error(`Malformed workspace JSON or schema mismatch at ${jsonPath}. Refusing to regenerate over an existing workspace.`);
   } catch (error) {
     if ((error as NodeJS.ErrnoException).code === "ENOENT") return undefined;
     throw error;
   }
-  return undefined;
 }
 
 async function readWorkplan(vaultRoot: string, relativeRef: string): Promise<LiveAdapterOperatorEvidenceWorkplan> {
