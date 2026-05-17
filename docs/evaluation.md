@@ -57,6 +57,15 @@ vault/projects/<project>/evaluation/artifact-checks.json
 vault/projects/<project>/evaluation/artifact-checks.md
 ```
 
+`e2e-smoke` writes a single local end-to-end smoke report:
+
+```text
+vault/projects/<project>/evaluation/e2e-smoke-<timestamp>.json
+vault/projects/<project>/evaluation/e2e-smoke-<timestamp>.md
+```
+
+The smoke command composes existing evaluators rather than inventing a parallel test path: behavior checks, optional Hermes/model runtime probes, console HTML generation, deterministic console visual checks, Playwright browser checks, artifact checks, and the roadmap completion audit. It does not create approvals, import operator evidence, start services, or mutate external systems. `blocked` is a valid result when roadmap gates are waiting for operator evidence.
+
 `console-visual-checks` writes the deterministic console visual contract report:
 
 ```text

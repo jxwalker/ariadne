@@ -287,6 +287,14 @@ npm run ariadne -- local-runtime-probe --project ariadne --canary --canary-endpo
 
 This checks the Hermes dashboard, Hermes CLI status/doctor/gateway commands, Ollama, DS4/OpenAI-compatible, and LM Studio endpoints. `--canary` sends short local model prompts and appends any observed token counts as `local-llm` usage metrics. Use `--canary-endpoints` to target a subset such as `ds4-openai`, and use `--ollama-canary-model`, `--ds4-canary-model`, or `--lmstudio-canary-model` to avoid cold or very large default models. Canary prompts run sequentially so local runtimes are not overloaded. The command writes `infrastructure/runtime/local-runtime-probe-...json` and a matching `.md` human-readable report. It does not start services, load models, edit scheduler state, or mutate infrastructure.
 
+Run the local end-to-end smoke harness:
+
+```bash
+npm run ariadne -- e2e-smoke --project ariadne --with-runtime-probe --runtime-canary --canary-endpoints lmstudio --lmstudio-canary-model google/gemma-3-4b --timeout-ms 60000
+```
+
+This runs behavior checks, optional Hermes/model runtime probing, console data and HTML generation, deterministic visual checks, Playwright browser checks, artifact checks, and the roadmap completion audit into one report under `evaluation/e2e-smoke-...json` and `.md`. A `blocked` smoke status is expected while operator evidence and cutover gates remain incomplete; it means the pipeline ran and correctly refused to claim live-adapter completion.
+
 For an approved remote host reachable over SSH, collect a sanitized read-only inventory:
 
 ```bash

@@ -208,6 +208,7 @@ Implemented:
 - live-adapter review-session status and per-target review table in the operations console
 - live-adapter evidence-template status and per-target template table in the operations console
 - live-adapter operator-evidence workplan status in the operations console
+- end-to-end smoke report that composes behavior checks, runtime probe evidence, console visual/browser checks, artifact checks, and roadmap audit
 
 ## Milestone 9: Sleep, Memory, And Agent Mail
 
