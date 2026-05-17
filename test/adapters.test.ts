@@ -1376,6 +1376,8 @@ describe("roadmap adapters", () => {
     const batchMarkdown = await fs.readFile(workspaceBatchPreflight.markdownPath, "utf8");
     expect(batchMarkdown).toContain("Missing section labels");
     expect(batchMarkdown).toContain("Operator identity and timestamp");
+    const queueJsonBeforeScopedPreflight = await fs.readFile(operatorEvidenceQueue.jsonPath, "utf8");
+    const workplanJsonBeforeScopedPreflight = await fs.readFile(operatorEvidenceWorkplan.jsonPath, "utf8");
     const scopedHermesPreflight = await checkAllLiveAdapterOperatorEvidence({
       project: "ariadne",
       vaultRoot,
@@ -1390,6 +1392,21 @@ describe("roadmap adapters", () => {
     );
     expect(scopedHermesPreflight.batch.summary.targets).toBe(1);
     expect(scopedHermesPreflight.batch.targets.map((target) => target.target)).toEqual(["hermes-cron"]);
+    await expect(fs.readFile(operatorEvidenceQueue.jsonPath, "utf8")).resolves.toBe(queueJsonBeforeScopedPreflight);
+    await expect(fs.readFile(operatorEvidenceWorkplan.jsonPath, "utf8")).resolves.toBe(workplanJsonBeforeScopedPreflight);
+    const staleQueueWithoutHermes = JSON.parse(queueJsonBeforeScopedPreflight) as typeof operatorEvidenceQueue.queue;
+    staleQueueWithoutHermes.targets = staleQueueWithoutHermes.targets.filter((target) => target.target !== "hermes-cron");
+    await fs.writeFile(operatorEvidenceQueue.jsonPath, `${JSON.stringify(staleQueueWithoutHermes, null, 2)}\n`);
+    const regeneratedHermesPreflight = await checkAllLiveAdapterOperatorEvidence({
+      project: "ariadne",
+      vaultRoot,
+      source: "workspace",
+      target: "hermes-cron",
+      notes: "Regenerate stale queue for scoped target"
+    });
+    expect(regeneratedHermesPreflight.batch.targets.map((target) => target.target)).toEqual(["hermes-cron"]);
+    const regeneratedQueue = JSON.parse(await fs.readFile(operatorEvidenceQueue.jsonPath, "utf8")) as typeof operatorEvidenceQueue.queue;
+    expect(regeneratedQueue.targets.some((target) => target.target === "hermes-cron")).toBe(true);
     const gsd2Workspace = operatorEvidenceWorkspace.workspace.targets.find((target) => target.target === "gsd2");
     expect(gsd2Workspace?.evidenceFileRef).toContain("control/operator-evidence/gsd2/operator-evidence.md");
     const gsd2WorkspaceFile = path.join(vaultRoot, gsd2Workspace?.evidenceFileRef ?? "");
@@ -1535,7 +1552,7 @@ describe("roadmap adapters", () => {
     expect(console.data.summary.liveAdapterOperatorEvidenceAssistRefs).toBeGreaterThan(0);
     expect(console.data.liveAdapterOperatorEvidenceAssist?.operatorEvidenceRecordCreated).toBe(false);
     expect(console.data.liveAdapterOperatorEvidenceAssist?.targets.some((target) => target.target === "hermes-cron")).toBe(true);
-    expect(console.data.summary.liveAdapterOperatorEvidenceChecks).toBe(15);
+    expect(console.data.summary.liveAdapterOperatorEvidenceChecks).toBe(16);
     expect(console.data.liveAdapterOperatorEvidenceAudit?.mutationApproved).toBe(false);
     expect(console.data.liveAdapterOperatorEvidenceChecks[0]?.recorded).toBe(false);
     expect(console.data.liveAdapterOperatorEvidence.some((record) => record.target === "deployment")).toBe(true);
@@ -1715,7 +1732,7 @@ describe("roadmap adapters", () => {
     expect(cutoverAuditCheck?.status).toBe("present");
     expect(reviewSessionCheck?.status).toBe("present");
     expect(evidenceTemplatesCheck?.status).toBe("present");
-    expect(operatorEvidencePreflightCheck?.count).toBe(15);
+    expect(operatorEvidencePreflightCheck?.count).toBe(16);
     expect(operatorEvidenceBatchCheck?.status).toBe("present");
     expect(operatorEvidenceImportReadyCheck?.status).toBe("present");
     expect(operatorEvidenceQueueCheck?.status).toBe("present");
