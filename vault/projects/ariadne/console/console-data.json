@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "project": "ariadne",
-  "generatedAt": "2026-05-17T00:55:29.349Z",
+  "generatedAt": "2026-05-17T01:46:00.176Z",
   "projectDir": "projects/ariadne",
   "summary": {
     "sources": 3,
@@ -41,6 +41,9 @@
     "liveAdapterApprovalReviewAuditStatus": "blocked",
     "currentLiveAdapterApprovalReviews": 0,
     "liveAdapterTargetDossiers": 6,
+    "liveAdapterCutoverAuditStatus": "blocked",
+    "liveAdapterCutoverReady": 0,
+    "liveAdapterCutoverBlocked": 6,
     "recoveryIssues": 5,
     "consoleBrowserChecks": "passed",
     "readinessStatus": "ready",
@@ -847,7 +850,7 @@
   "mutationReadinessAudit": {
     "schemaVersion": 1,
     "project": "ariadne",
-    "generatedAt": "2026-05-17T00:55:15.449Z",
+    "generatedAt": "2026-05-17T01:45:56.956Z",
     "status": "blocked",
     "mutationAllowed": false,
     "summary": {
@@ -892,7 +895,7 @@
   "liveAdapterReadiness": {
     "schemaVersion": 1,
     "project": "ariadne",
-    "generatedAt": "2026-05-17T00:55:15.446Z",
+    "generatedAt": "2026-05-17T01:45:56.951Z",
     "status": "blocked",
     "summary": {
       "targets": 6,
@@ -1719,7 +1722,7 @@
   "liveAdapterApprovalReviewAudit": {
     "schemaVersion": 1,
     "project": "ariadne",
-    "generatedAt": "2026-05-17T00:55:15.448Z",
+    "generatedAt": "2026-05-17T01:45:56.955Z",
     "status": "blocked",
     "approvalPackRef": "control/live-adapter-approval-pack.json",
     "summary": {
@@ -2898,6 +2901,585 @@
       ]
     }
   ],
+  "liveAdapterCutoverAudit": {
+    "schemaVersion": 1,
+    "project": "ariadne",
+    "generatedAt": "2026-05-17T01:45:56.958Z",
+    "status": "blocked",
+    "mutationAllowed": false,
+    "readinessRef": "control/live-adapter-readiness.json",
+    "approvalReviewAuditRef": "control/live-adapter-approval-review-audit.json",
+    "mutationReadinessAuditRef": "control/mutation-readiness-audit.json",
+    "dossierDirRef": "control/live-adapter-dossiers",
+    "summary": {
+      "targets": 6,
+      "ready": 0,
+      "blocked": 6,
+      "passedGates": 12,
+      "blockedGates": 36,
+      "advisoryGates": 6
+    },
+    "targets": [
+      {
+        "target": "github",
+        "status": "blocked",
+        "executeCommand": "github-mutation-execute",
+        "gates": [
+          {
+            "id": "operator-review-current",
+            "label": "Current accepted operator packet review",
+            "status": "blocked",
+            "detail": "no accepted operator review exists",
+            "evidenceRefs": []
+          },
+          {
+            "id": "mutation-readiness-passed",
+            "label": "Mutation-readiness audit passed",
+            "status": "blocked",
+            "detail": "No target-specific mutation-readiness plan passes audit.",
+            "evidenceRefs": []
+          },
+          {
+            "id": "auth-evidence-present",
+            "label": "Credential and auth-boundary evidence accepted",
+            "status": "blocked",
+            "detail": "No passing readiness audit is available to prove auth evidence.",
+            "evidenceRefs": []
+          },
+          {
+            "id": "rollback-post-verify",
+            "label": "Rollback and post-verification contract accepted",
+            "status": "blocked",
+            "detail": "A passing readiness audit is required to prove rollback and post-verification.",
+            "evidenceRefs": []
+          },
+          {
+            "id": "dry-run-passed",
+            "label": "Dry-run evidence passed",
+            "status": "blocked",
+            "detail": "No passed dry-run evidence exists for an audit-passed plan.",
+            "evidenceRefs": []
+          },
+          {
+            "id": "target-guarded-execution-passed",
+            "label": "Target-guarded execution evidence passed",
+            "status": "blocked",
+            "detail": "No passed target-guarded execution evidence exists.",
+            "evidenceRefs": []
+          },
+          {
+            "id": "target-wrapper-known",
+            "label": "Target execute wrapper is known",
+            "status": "passed",
+            "detail": "Use github-mutation-execute for target-guarded execution.",
+            "evidenceRefs": []
+          },
+          {
+            "id": "operator-dossier-present",
+            "label": "Operator dossier present",
+            "status": "passed",
+            "detail": "Dossier status is ready_for_operator_review.",
+            "evidenceRefs": [
+              "control/live-adapter-dossiers/live-adapter-dossier-github.json"
+            ]
+          },
+          {
+            "id": "gbrain-context-advisory",
+            "label": "GBrain memory context available",
+            "status": "advisory",
+            "detail": "GBrain context is available as advisory memory, not source-of-truth approval evidence.",
+            "evidenceRefs": [
+              "projects/ariadne/integrations/gbrain/gbrain-export.json"
+            ]
+          }
+        ],
+        "blockers": [
+          "Current accepted operator packet review: no accepted operator review exists",
+          "Mutation-readiness audit passed: No target-specific mutation-readiness plan passes audit.",
+          "Credential and auth-boundary evidence accepted: No passing readiness audit is available to prove auth evidence.",
+          "Rollback and post-verification contract accepted: A passing readiness audit is required to prove rollback and post-verification.",
+          "Dry-run evidence passed: No passed dry-run evidence exists for an audit-passed plan.",
+          "Target-guarded execution evidence passed: No passed target-guarded execution evidence exists."
+        ],
+        "gbrainQueries": [
+          "Find prior Ariadne decisions and evidence for the github live adapter.",
+          "List risks, rollback requirements, and stale assumptions for github approval.",
+          "Summarize operator-review evidence still missing before github mutation readiness."
+        ],
+        "evidenceRefs": [
+          "control/live-adapter-readiness.json",
+          "control/live-adapter-approval-review-audit.json",
+          "control/mutation-readiness-audit.json",
+          "control/live-adapter-dossiers/live-adapter-dossier-github.json"
+        ]
+      },
+      {
+        "target": "deployment",
+        "status": "blocked",
+        "executeCommand": "deployment-mutation-execute",
+        "gates": [
+          {
+            "id": "operator-review-current",
+            "label": "Current accepted operator packet review",
+            "status": "blocked",
+            "detail": "no accepted operator review exists",
+            "evidenceRefs": []
+          },
+          {
+            "id": "mutation-readiness-passed",
+            "label": "Mutation-readiness audit passed",
+            "status": "blocked",
+            "detail": "No target-specific mutation-readiness plan passes audit.",
+            "evidenceRefs": []
+          },
+          {
+            "id": "auth-evidence-present",
+            "label": "Credential and auth-boundary evidence accepted",
+            "status": "blocked",
+            "detail": "No passing readiness audit is available to prove auth evidence.",
+            "evidenceRefs": []
+          },
+          {
+            "id": "rollback-post-verify",
+            "label": "Rollback and post-verification contract accepted",
+            "status": "blocked",
+            "detail": "A passing readiness audit is required to prove rollback and post-verification.",
+            "evidenceRefs": []
+          },
+          {
+            "id": "dry-run-passed",
+            "label": "Dry-run evidence passed",
+            "status": "blocked",
+            "detail": "No passed dry-run evidence exists for an audit-passed plan.",
+            "evidenceRefs": []
+          },
+          {
+            "id": "target-guarded-execution-passed",
+            "label": "Target-guarded execution evidence passed",
+            "status": "blocked",
+            "detail": "No passed target-guarded execution evidence exists.",
+            "evidenceRefs": []
+          },
+          {
+            "id": "target-wrapper-known",
+            "label": "Target execute wrapper is known",
+            "status": "passed",
+            "detail": "Use deployment-mutation-execute for target-guarded execution.",
+            "evidenceRefs": []
+          },
+          {
+            "id": "operator-dossier-present",
+            "label": "Operator dossier present",
+            "status": "passed",
+            "detail": "Dossier status is ready_for_operator_review.",
+            "evidenceRefs": [
+              "control/live-adapter-dossiers/live-adapter-dossier-deployment.json"
+            ]
+          },
+          {
+            "id": "gbrain-context-advisory",
+            "label": "GBrain memory context available",
+            "status": "advisory",
+            "detail": "GBrain context is available as advisory memory, not source-of-truth approval evidence.",
+            "evidenceRefs": [
+              "projects/ariadne/integrations/gbrain/gbrain-export.json"
+            ]
+          }
+        ],
+        "blockers": [
+          "Current accepted operator packet review: no accepted operator review exists",
+          "Mutation-readiness audit passed: No target-specific mutation-readiness plan passes audit.",
+          "Credential and auth-boundary evidence accepted: No passing readiness audit is available to prove auth evidence.",
+          "Rollback and post-verification contract accepted: A passing readiness audit is required to prove rollback and post-verification.",
+          "Dry-run evidence passed: No passed dry-run evidence exists for an audit-passed plan.",
+          "Target-guarded execution evidence passed: No passed target-guarded execution evidence exists."
+        ],
+        "gbrainQueries": [
+          "Find prior Ariadne decisions and evidence for the deployment live adapter.",
+          "List risks, rollback requirements, and stale assumptions for deployment approval.",
+          "Summarize operator-review evidence still missing before deployment mutation readiness."
+        ],
+        "evidenceRefs": [
+          "control/live-adapter-readiness.json",
+          "control/live-adapter-approval-review-audit.json",
+          "control/mutation-readiness-audit.json",
+          "control/live-adapter-dossiers/live-adapter-dossier-deployment.json"
+        ]
+      },
+      {
+        "target": "hermes-cron",
+        "status": "blocked",
+        "executeCommand": "hermes-cron-mutation-execute",
+        "gates": [
+          {
+            "id": "operator-review-current",
+            "label": "Current accepted operator packet review",
+            "status": "blocked",
+            "detail": "no accepted operator review exists",
+            "evidenceRefs": []
+          },
+          {
+            "id": "mutation-readiness-passed",
+            "label": "Mutation-readiness audit passed",
+            "status": "blocked",
+            "detail": "No target-specific mutation-readiness plan passes audit.",
+            "evidenceRefs": []
+          },
+          {
+            "id": "auth-evidence-present",
+            "label": "Credential and auth-boundary evidence accepted",
+            "status": "blocked",
+            "detail": "No passing readiness audit is available to prove auth evidence.",
+            "evidenceRefs": []
+          },
+          {
+            "id": "rollback-post-verify",
+            "label": "Rollback and post-verification contract accepted",
+            "status": "blocked",
+            "detail": "A passing readiness audit is required to prove rollback and post-verification.",
+            "evidenceRefs": []
+          },
+          {
+            "id": "dry-run-passed",
+            "label": "Dry-run evidence passed",
+            "status": "blocked",
+            "detail": "No passed dry-run evidence exists for an audit-passed plan.",
+            "evidenceRefs": []
+          },
+          {
+            "id": "target-guarded-execution-passed",
+            "label": "Target-guarded execution evidence passed",
+            "status": "blocked",
+            "detail": "No passed target-guarded execution evidence exists.",
+            "evidenceRefs": []
+          },
+          {
+            "id": "target-wrapper-known",
+            "label": "Target execute wrapper is known",
+            "status": "passed",
+            "detail": "Use hermes-cron-mutation-execute for target-guarded execution.",
+            "evidenceRefs": []
+          },
+          {
+            "id": "operator-dossier-present",
+            "label": "Operator dossier present",
+            "status": "passed",
+            "detail": "Dossier status is ready_for_operator_review.",
+            "evidenceRefs": [
+              "control/live-adapter-dossiers/live-adapter-dossier-hermes-cron.json"
+            ]
+          },
+          {
+            "id": "gbrain-context-advisory",
+            "label": "GBrain memory context available",
+            "status": "advisory",
+            "detail": "GBrain context is available as advisory memory, not source-of-truth approval evidence.",
+            "evidenceRefs": [
+              "projects/ariadne/integrations/gbrain/gbrain-export.json"
+            ]
+          }
+        ],
+        "blockers": [
+          "Current accepted operator packet review: no accepted operator review exists",
+          "Mutation-readiness audit passed: No target-specific mutation-readiness plan passes audit.",
+          "Credential and auth-boundary evidence accepted: No passing readiness audit is available to prove auth evidence.",
+          "Rollback and post-verification contract accepted: A passing readiness audit is required to prove rollback and post-verification.",
+          "Dry-run evidence passed: No passed dry-run evidence exists for an audit-passed plan.",
+          "Target-guarded execution evidence passed: No passed target-guarded execution evidence exists."
+        ],
+        "gbrainQueries": [
+          "Find prior Ariadne decisions and evidence for the hermes-cron live adapter.",
+          "List risks, rollback requirements, and stale assumptions for hermes-cron approval.",
+          "Summarize operator-review evidence still missing before hermes-cron mutation readiness."
+        ],
+        "evidenceRefs": [
+          "control/live-adapter-readiness.json",
+          "control/live-adapter-approval-review-audit.json",
+          "control/mutation-readiness-audit.json",
+          "control/live-adapter-dossiers/live-adapter-dossier-hermes-cron.json"
+        ]
+      },
+      {
+        "target": "openscorpion",
+        "status": "blocked",
+        "executeCommand": "openscorpion-mutation-execute",
+        "gates": [
+          {
+            "id": "operator-review-current",
+            "label": "Current accepted operator packet review",
+            "status": "blocked",
+            "detail": "no accepted operator review exists",
+            "evidenceRefs": []
+          },
+          {
+            "id": "mutation-readiness-passed",
+            "label": "Mutation-readiness audit passed",
+            "status": "blocked",
+            "detail": "No target-specific mutation-readiness plan passes audit.",
+            "evidenceRefs": []
+          },
+          {
+            "id": "auth-evidence-present",
+            "label": "Credential and auth-boundary evidence accepted",
+            "status": "blocked",
+            "detail": "No passing readiness audit is available to prove auth evidence.",
+            "evidenceRefs": []
+          },
+          {
+            "id": "rollback-post-verify",
+            "label": "Rollback and post-verification contract accepted",
+            "status": "blocked",
+            "detail": "A passing readiness audit is required to prove rollback and post-verification.",
+            "evidenceRefs": []
+          },
+          {
+            "id": "dry-run-passed",
+            "label": "Dry-run evidence passed",
+            "status": "blocked",
+            "detail": "No passed dry-run evidence exists for an audit-passed plan.",
+            "evidenceRefs": []
+          },
+          {
+            "id": "target-guarded-execution-passed",
+            "label": "Target-guarded execution evidence passed",
+            "status": "blocked",
+            "detail": "No passed target-guarded execution evidence exists.",
+            "evidenceRefs": []
+          },
+          {
+            "id": "target-wrapper-known",
+            "label": "Target execute wrapper is known",
+            "status": "passed",
+            "detail": "Use openscorpion-mutation-execute for target-guarded execution.",
+            "evidenceRefs": []
+          },
+          {
+            "id": "operator-dossier-present",
+            "label": "Operator dossier present",
+            "status": "passed",
+            "detail": "Dossier status is ready_for_operator_review.",
+            "evidenceRefs": [
+              "control/live-adapter-dossiers/live-adapter-dossier-openscorpion.json"
+            ]
+          },
+          {
+            "id": "gbrain-context-advisory",
+            "label": "GBrain memory context available",
+            "status": "advisory",
+            "detail": "GBrain context is available as advisory memory, not source-of-truth approval evidence.",
+            "evidenceRefs": [
+              "projects/ariadne/integrations/gbrain/gbrain-export.json"
+            ]
+          }
+        ],
+        "blockers": [
+          "Current accepted operator packet review: no accepted operator review exists",
+          "Mutation-readiness audit passed: No target-specific mutation-readiness plan passes audit.",
+          "Credential and auth-boundary evidence accepted: No passing readiness audit is available to prove auth evidence.",
+          "Rollback and post-verification contract accepted: A passing readiness audit is required to prove rollback and post-verification.",
+          "Dry-run evidence passed: No passed dry-run evidence exists for an audit-passed plan.",
+          "Target-guarded execution evidence passed: No passed target-guarded execution evidence exists."
+        ],
+        "gbrainQueries": [
+          "Find prior Ariadne decisions and evidence for the openscorpion live adapter.",
+          "List risks, rollback requirements, and stale assumptions for openscorpion approval.",
+          "Summarize operator-review evidence still missing before openscorpion mutation readiness."
+        ],
+        "evidenceRefs": [
+          "control/live-adapter-readiness.json",
+          "control/live-adapter-approval-review-audit.json",
+          "control/mutation-readiness-audit.json",
+          "control/live-adapter-dossiers/live-adapter-dossier-openscorpion.json"
+        ]
+      },
+      {
+        "target": "gsd2",
+        "status": "blocked",
+        "executeCommand": "gsd2-mutation-execute",
+        "gates": [
+          {
+            "id": "operator-review-current",
+            "label": "Current accepted operator packet review",
+            "status": "blocked",
+            "detail": "no accepted operator review exists",
+            "evidenceRefs": []
+          },
+          {
+            "id": "mutation-readiness-passed",
+            "label": "Mutation-readiness audit passed",
+            "status": "blocked",
+            "detail": "No target-specific mutation-readiness plan passes audit.",
+            "evidenceRefs": []
+          },
+          {
+            "id": "auth-evidence-present",
+            "label": "Credential and auth-boundary evidence accepted",
+            "status": "blocked",
+            "detail": "No passing readiness audit is available to prove auth evidence.",
+            "evidenceRefs": []
+          },
+          {
+            "id": "rollback-post-verify",
+            "label": "Rollback and post-verification contract accepted",
+            "status": "blocked",
+            "detail": "A passing readiness audit is required to prove rollback and post-verification.",
+            "evidenceRefs": []
+          },
+          {
+            "id": "dry-run-passed",
+            "label": "Dry-run evidence passed",
+            "status": "blocked",
+            "detail": "No passed dry-run evidence exists for an audit-passed plan.",
+            "evidenceRefs": []
+          },
+          {
+            "id": "target-guarded-execution-passed",
+            "label": "Target-guarded execution evidence passed",
+            "status": "blocked",
+            "detail": "No passed target-guarded execution evidence exists.",
+            "evidenceRefs": []
+          },
+          {
+            "id": "target-wrapper-known",
+            "label": "Target execute wrapper is known",
+            "status": "passed",
+            "detail": "Use gsd2-mutation-execute for target-guarded execution.",
+            "evidenceRefs": []
+          },
+          {
+            "id": "operator-dossier-present",
+            "label": "Operator dossier present",
+            "status": "passed",
+            "detail": "Dossier status is ready_for_operator_review.",
+            "evidenceRefs": [
+              "control/live-adapter-dossiers/live-adapter-dossier-gsd2.json"
+            ]
+          },
+          {
+            "id": "gbrain-context-advisory",
+            "label": "GBrain memory context available",
+            "status": "advisory",
+            "detail": "GBrain context is available as advisory memory, not source-of-truth approval evidence.",
+            "evidenceRefs": [
+              "projects/ariadne/integrations/gbrain/gbrain-export.json"
+            ]
+          }
+        ],
+        "blockers": [
+          "Current accepted operator packet review: no accepted operator review exists",
+          "Mutation-readiness audit passed: No target-specific mutation-readiness plan passes audit.",
+          "Credential and auth-boundary evidence accepted: No passing readiness audit is available to prove auth evidence.",
+          "Rollback and post-verification contract accepted: A passing readiness audit is required to prove rollback and post-verification.",
+          "Dry-run evidence passed: No passed dry-run evidence exists for an audit-passed plan.",
+          "Target-guarded execution evidence passed: No passed target-guarded execution evidence exists."
+        ],
+        "gbrainQueries": [
+          "Find prior Ariadne decisions and evidence for the gsd2 live adapter.",
+          "List risks, rollback requirements, and stale assumptions for gsd2 approval.",
+          "Summarize operator-review evidence still missing before gsd2 mutation readiness."
+        ],
+        "evidenceRefs": [
+          "control/live-adapter-readiness.json",
+          "control/live-adapter-approval-review-audit.json",
+          "control/mutation-readiness-audit.json",
+          "control/live-adapter-dossiers/live-adapter-dossier-gsd2.json"
+        ]
+      },
+      {
+        "target": "notebooklm",
+        "status": "blocked",
+        "executeCommand": "notebooklm-mutation-execute",
+        "gates": [
+          {
+            "id": "operator-review-current",
+            "label": "Current accepted operator packet review",
+            "status": "blocked",
+            "detail": "no accepted operator review exists",
+            "evidenceRefs": []
+          },
+          {
+            "id": "mutation-readiness-passed",
+            "label": "Mutation-readiness audit passed",
+            "status": "blocked",
+            "detail": "No target-specific mutation-readiness plan passes audit.",
+            "evidenceRefs": []
+          },
+          {
+            "id": "auth-evidence-present",
+            "label": "Credential and auth-boundary evidence accepted",
+            "status": "blocked",
+            "detail": "No passing readiness audit is available to prove auth evidence.",
+            "evidenceRefs": []
+          },
+          {
+            "id": "rollback-post-verify",
+            "label": "Rollback and post-verification contract accepted",
+            "status": "blocked",
+            "detail": "A passing readiness audit is required to prove rollback and post-verification.",
+            "evidenceRefs": []
+          },
+          {
+            "id": "dry-run-passed",
+            "label": "Dry-run evidence passed",
+            "status": "blocked",
+            "detail": "No passed dry-run evidence exists for an audit-passed plan.",
+            "evidenceRefs": []
+          },
+          {
+            "id": "target-guarded-execution-passed",
+            "label": "Target-guarded execution evidence passed",
+            "status": "blocked",
+            "detail": "No passed target-guarded execution evidence exists.",
+            "evidenceRefs": []
+          },
+          {
+            "id": "target-wrapper-known",
+            "label": "Target execute wrapper is known",
+            "status": "passed",
+            "detail": "Use notebooklm-mutation-execute for target-guarded execution.",
+            "evidenceRefs": []
+          },
+          {
+            "id": "operator-dossier-present",
+            "label": "Operator dossier present",
+            "status": "passed",
+            "detail": "Dossier status is ready_for_operator_review.",
+            "evidenceRefs": [
+              "control/live-adapter-dossiers/live-adapter-dossier-notebooklm.json"
+            ]
+          },
+          {
+            "id": "gbrain-context-advisory",
+            "label": "GBrain memory context available",
+            "status": "advisory",
+            "detail": "GBrain context is available as advisory memory, not source-of-truth approval evidence.",
+            "evidenceRefs": [
+              "projects/ariadne/integrations/gbrain/gbrain-export.json"
+            ]
+          }
+        ],
+        "blockers": [
+          "Current accepted operator packet review: no accepted operator review exists",
+          "Mutation-readiness audit passed: No target-specific mutation-readiness plan passes audit.",
+          "Credential and auth-boundary evidence accepted: No passing readiness audit is available to prove auth evidence.",
+          "Rollback and post-verification contract accepted: A passing readiness audit is required to prove rollback and post-verification.",
+          "Dry-run evidence passed: No passed dry-run evidence exists for an audit-passed plan.",
+          "Target-guarded execution evidence passed: No passed target-guarded execution evidence exists."
+        ],
+        "gbrainQueries": [
+          "Find prior Ariadne decisions and evidence for the notebooklm live adapter.",
+          "List risks, rollback requirements, and stale assumptions for notebooklm approval.",
+          "Summarize operator-review evidence still missing before notebooklm mutation readiness."
+        ],
+        "evidenceRefs": [
+          "control/live-adapter-readiness.json",
+          "control/live-adapter-approval-review-audit.json",
+          "control/mutation-readiness-audit.json",
+          "control/live-adapter-dossiers/live-adapter-dossier-notebooklm.json"
+        ]
+      }
+    ]
+  },
   "decisions": [
     {
       "schemaVersion": 1,
@@ -3091,11 +3673,11 @@
   "consoleVisualChecks": {
     "schemaVersion": 1,
     "project": "ariadne",
-    "generatedAt": "2026-05-17T00:55:27.879Z",
+    "generatedAt": "2026-05-17T01:45:58.807Z",
     "htmlPath": "projects/ariadne/console/index.html",
     "status": "passed",
     "summary": {
-      "passed": 15,
+      "passed": 16,
       "failed": 0
     },
     "checks": [
@@ -3160,6 +3742,12 @@
         "detail": "Found Dossiers."
       },
       {
+        "id": "adapter-cutover-metric",
+        "label": "Adapter cutover metric",
+        "status": "passed",
+        "detail": "Found Cutover."
+      },
+      {
         "id": "trend-chart",
         "label": "Evaluation trend chart hook",
         "status": "passed",
@@ -3194,9 +3782,9 @@
   "consoleBrowserChecks": {
     "schemaVersion": 1,
     "project": "ariadne",
-    "generatedAt": "2026-05-17T00:55:28.351Z",
+    "generatedAt": "2026-05-17T01:45:59.294Z",
     "htmlPath": "projects/ariadne/console/index.html",
-    "screenshotPath": "projects/ariadne/console/screenshots/console-2026-05-17T00-55-28-351Z.png",
+    "screenshotPath": "projects/ariadne/console/screenshots/console-2026-05-17T01-45-59-294Z.png",
     "status": "passed",
     "viewport": {
       "width": 1440,
@@ -3247,7 +3835,7 @@
         "id": "screenshot",
         "label": "Screenshot captured",
         "status": "passed",
-        "detail": "1169388 bytes captured."
+        "detail": "1216578 bytes captured."
       }
     ]
   },
@@ -4331,6 +4919,7 @@
     "liveAdapterApprovalPack": "projects/ariadne/control/live-adapter-approval-pack.json",
     "liveAdapterApprovalReviewAudit": "projects/ariadne/control/live-adapter-approval-review-audit.json",
     "liveAdapterTargetDossiers": "projects/ariadne/control/live-adapter-dossiers",
+    "liveAdapterCutoverAudit": "projects/ariadne/control/live-adapter-cutover-audit.json",
     "recoveryReport": "projects/ariadne/control/recovery-report.json",
     "healerProposals": "projects/ariadne/verification/healer-proposals"
   }

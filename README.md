@@ -38,6 +38,7 @@ The system starts with source-grounded intake: drawings, white papers, dictated 
 - Generate live-adapter next-action packets from the current blockers.
 - Generate live-adapter approval packs that draft target-specific operator checklists without approving or executing anything.
 - Record operator reviews of live-adapter approval packets without granting mutation authority.
+- Audit live-adapter cutover readiness before any placeholder command is replaced with a real external adapter.
 - Record file-backed sleep routines, memory proposals, agent mail, interagent leases, read-only Hermes cron snapshots/proposals, and read-only deployment snapshots.
 - Render evaluation trend charts in the static console and generate deterministic plus browser-backed console checks.
 - Guard worktree creation without mutating by default.
@@ -83,6 +84,7 @@ npm run ariadne -- live-adapter-approval-pack --project ariadne
 npm run ariadne -- live-adapter-approval-review --project ariadne --target github --by james --status accepted --evidence control/live-adapter-approval-pack.json --notes "Packet reviewed; this does not approve mutation."
 npm run ariadne -- live-adapter-approval-review-audit --project ariadne
 npm run ariadne -- live-adapter-dossier --project ariadne --target github
+npm run ariadne -- live-adapter-cutover-audit --project ariadne
 npm run ariadne -- github-mutation-execute --project ariadne --plan mutation-readiness-github-... --confirm-plan mutation-readiness-github-...
 npm run ariadne -- target-mutation-execute --project ariadne --target github --plan mutation-readiness-github-... --confirm-plan mutation-readiness-github-...
 npm run ariadne -- mutation-execute --project ariadne --plan mutation-readiness-github-... --confirm-plan mutation-readiness-github-...
@@ -141,6 +143,7 @@ vault/projects/<project>/
 15. Use `live-adapter-approval-review` only when an operator has reviewed a packet; it does not approve live mutation.
 16. Use `live-adapter-approval-review-audit` to prove accepted packet reviews are current, evidence-backed, and non-mutating.
 17. Use `live-adapter-dossier` to assemble the target packet, blockers, actions, mutation audit, and GBrain memory queries for operator review.
+18. Use `live-adapter-cutover-audit` to prove whether a target is actually ready to replace placeholder commands with a live adapter implementation.
 
 ## Adapter Commands
 
@@ -191,6 +194,7 @@ npm run ariadne -- live-adapter-approval-pack --project ariadne --target all
 npm run ariadne -- live-adapter-approval-review --project ariadne --target github --by james --status accepted --packet control/live-adapter-approval-pack.json --evidence control/live-adapter-approval-pack.json
 npm run ariadne -- live-adapter-approval-review-audit --project ariadne
 npm run ariadne -- live-adapter-dossier --project ariadne --target github
+npm run ariadne -- live-adapter-cutover-audit --project ariadne
 npm run ariadne -- recovery-report --project ariadne
 npm run ariadne -- console-data --project ariadne
 npm run ariadne -- console-html --project ariadne --refresh-data

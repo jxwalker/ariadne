@@ -45,6 +45,7 @@ import {
   recordLiveAdapterApprovalReview
 } from "./liveAdapterApprovalReview.js";
 import { generateLiveAdapterApprovalReviewAudit } from "./liveAdapterApprovalReviewAudit.js";
+import { generateLiveAdapterCutoverAudit } from "./liveAdapterCutoverAudit.js";
 import { generateLiveAdapterNextActions } from "./liveAdapterNextActions.js";
 import { generateLiveAdapterReadiness } from "./liveAdapterReadiness.js";
 import { generateLiveAdapterTargetDossier, liveAdapterDossierTargetOption } from "./liveAdapterTargetDossier.js";
@@ -173,6 +174,7 @@ function usage(): string {
     "  ariadne live-adapter-approval-review --project <project> --target <target> --by <operator> --status <accepted|needs_changes|rejected> --evidence <paths> [--packet <path>] [--notes <text>]",
     "  ariadne live-adapter-approval-review-audit --project <project> [--packet <path>]",
     "  ariadne live-adapter-dossier --project <project> --target <github|deployment|hermes-cron|openscorpion|gsd2|notebooklm>",
+    "  ariadne live-adapter-cutover-audit --project <project>",
     "  ariadne mutation-dry-run --project <project> --plan <id|json> [--timeout-ms <ms>]",
     "  ariadne mutation-execute --project <project> --plan <id|json> --confirm-plan <id> [--timeout-ms <ms>]",
     "  ariadne target-mutation-execute --project <project> --target <target> --plan <id|json> --confirm-plan <id> [--timeout-ms <ms>]",
@@ -1143,6 +1145,15 @@ async function main(): Promise<void> {
     console.log(`Target: ${result.dossier.target}`);
     console.log(`Status: ${result.dossier.status}`);
     console.log(`Actions: ${result.dossier.summary.actions}`);
+    return;
+  }
+
+  if (parsed.command === "live-adapter-cutover-audit") {
+    const result = await generateLiveAdapterCutoverAudit({ project, vaultRoot });
+    console.log(`Live adapter cutover audit: ${result.markdownPath}`);
+    console.log(`Status: ${result.audit.status}`);
+    console.log(`Ready: ${result.audit.summary.ready}`);
+    console.log(`Blocked: ${result.audit.summary.blocked}`);
     return;
   }
 

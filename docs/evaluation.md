@@ -93,6 +93,8 @@ vault/projects/<project>/control/mutation-readiness-audit.md
 
 The audit is a non-mutating evaluator. It checks approval state, evidence refs, dry-run command safety, post-action verification, rollback text, and `execute=false`.
 
+`live-adapter-cutover-audit` is the final non-mutating evaluator before replacing placeholder commands with target adapters. It checks current packet-review evidence, audit-passed readiness plans, auth evidence, rollback and post-verification acceptance, passed dry-run evidence, passed target-guarded execution evidence, target wrapper availability, generated dossiers, and advisory GBrain context.
+
 `hermes-cron-import` writes read-only scheduler evidence:
 
 ```text

@@ -127,10 +127,11 @@ Implemented:
 - operator review records for live-adapter approval packets, with `mutationApproved=false`
 - approval-review audit reports that validate accepted packet reviews before readiness can rely on them
 - target-specific live adapter dossiers that combine readiness, approval packets, review audit, mutation audit, next actions, and GBrain memory context
+- live adapter cutover audits that verify current operator review, audit-passed plans, auth evidence, rollback, post-verification, dry-run, target-guarded execution, wrapper, dossier, and advisory GBrain context before placeholder replacement
 
 Next:
 
-- target-specific live adapters should replace placeholder shell commands only after external credentials, rollback, post-verification contracts, audit-current approval-packet review records, dry-run evidence, and execution evidence are proven per target
+- target-specific live adapter implementations should replace placeholder shell commands only after the cutover audit is ready for that target and the operator has approved the actual adapter implementation
 
 ## Milestone 6: Infrastructure Substrate
 
@@ -191,6 +192,7 @@ Implemented:
 - evaluation trend charts
 - approval-review audit status and current-review counts in the operations console
 - live-adapter dossier count in the operations console
+- live-adapter cutover status and target readiness in the operations console
 
 ## Milestone 9: Sleep, Memory, And Agent Mail
 

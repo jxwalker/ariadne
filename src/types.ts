@@ -591,6 +591,43 @@ export interface LiveAdapterTargetDossier {
   evidenceRefs: string[];
 }
 
+export interface LiveAdapterCutoverAudit {
+  schemaVersion: 1;
+  project: string;
+  generatedAt: string;
+  status: "ready_for_cutover" | "blocked";
+  mutationAllowed: false;
+  readinessRef: string;
+  approvalReviewAuditRef: string;
+  mutationReadinessAuditRef: string;
+  dossierDirRef: string;
+  summary: {
+    targets: number;
+    ready: number;
+    blocked: number;
+    passedGates: number;
+    blockedGates: number;
+    advisoryGates: number;
+  };
+  targets: Array<{
+    target: Exclude<MutationReadinessPlan["target"], "generic">;
+    status: "ready_for_cutover" | "blocked";
+    executeCommand: string;
+    latestReadyPlanId?: string;
+    latestAcceptedApprovalReviewId?: string;
+    gates: Array<{
+      id: string;
+      label: string;
+      status: "passed" | "blocked" | "advisory";
+      detail: string;
+      evidenceRefs: string[];
+    }>;
+    blockers: string[];
+    gbrainQueries: string[];
+    evidenceRefs: string[];
+  }>;
+}
+
 export interface InfraRegistry {
   schemaVersion: 1;
   project: string;
@@ -1182,6 +1219,9 @@ export interface ConsoleData {
     liveAdapterApprovalReviewAuditStatus?: LiveAdapterApprovalReviewAudit["status"];
     currentLiveAdapterApprovalReviews?: number;
     liveAdapterTargetDossiers?: number;
+    liveAdapterCutoverAuditStatus?: LiveAdapterCutoverAudit["status"];
+    liveAdapterCutoverReady?: number;
+    liveAdapterCutoverBlocked?: number;
     recoveryIssues: number;
     consoleBrowserChecks?: ConsoleBrowserCheckReport["status"];
     readinessStatus?: ControlReport["status"];
@@ -1248,6 +1288,7 @@ export interface ConsoleData {
   liveAdapterApprovalReviews?: LiveAdapterApprovalReview[];
   liveAdapterApprovalReviewAudit?: LiveAdapterApprovalReviewAudit;
   liveAdapterTargetDossiers: LiveAdapterTargetDossier[];
+  liveAdapterCutoverAudit?: LiveAdapterCutoverAudit;
   recovery?: RecoveryReport;
   readiness?: ControlReport;
   artifacts: {
@@ -1277,6 +1318,7 @@ export interface ConsoleData {
     liveAdapterApprovalReviews?: string;
     liveAdapterApprovalReviewAudit?: string;
     liveAdapterTargetDossiers?: string;
+    liveAdapterCutoverAudit?: string;
     recoveryReport?: string;
     extractionResults?: string;
     healerProposals?: string;

@@ -286,6 +286,13 @@ const ARTIFACT_SPECS: ArtifactSpec[] = [
     minimumCount: 1
   },
   {
+    id: "live-adapter-cutover-audit",
+    label: "Live adapter cutover audit",
+    required: false,
+    kind: "file",
+    relativePath: "control/live-adapter-cutover-audit.json"
+  },
+  {
     id: "mutation-dry-runs",
     label: "Mutation dry-run records",
     required: false,
