@@ -448,6 +448,8 @@ The control report is the answer to: what is proven, what is missing, and what g
 
 `mutation-readiness-repair-plan` is the non-mutating follow-up when live-adapter readiness is blocked. It refreshes the mutation-readiness audit and live-adapter next-actions report, then classifies each target as audit-passed, missing a plan, repairable by regenerating a target-specific plan, or waiting on operator evidence/approval. The report writes `control/mutation-readiness-repair-plan.json` and `.md` with approval-request and regeneration command scaffolds, but always records `mutationAllowed=false`.
 
+The static console also reads this artifact. Run `console-data` or `console-html --refresh-data` after the repair plan to see each target's repair status, blockers, and regeneration scaffold in the operations view.
+
 ## Recover Interrupted Work
 
 ```bash

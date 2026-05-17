@@ -1711,6 +1711,11 @@ export interface ConsoleData {
     mutationDryRuns: number;
     mutationExecutions: number;
     mutationReadinessAuditStatus?: MutationReadinessAudit["status"];
+    mutationReadinessRepairStatus?: MutationReadinessRepairPlan["status"];
+    mutationReadinessRepairMissingPlans?: number;
+    mutationReadinessRepairRepairablePlans?: number;
+    mutationReadinessRepairOperatorActionRequired?: number;
+    mutationReadinessRepairBlocked?: number;
     liveAdapterReadinessStatus?: LiveAdapterReadinessReport["status"];
     liveAdapterReady?: number;
     liveAdapterBlocked?: number;
@@ -1805,6 +1810,7 @@ export interface ConsoleData {
   mutationDryRuns: MutationDryRunRecord[];
   mutationExecutions: MutationExecutionRecord[];
   mutationReadinessAudit?: MutationReadinessAudit;
+  mutationReadinessRepairPlan?: MutationReadinessRepairPlan;
   liveAdapterReadiness?: LiveAdapterReadinessReport;
   liveAdapterNextActions?: LiveAdapterNextActionsReport;
   liveAdapterApprovalPack?: LiveAdapterApprovalPack;
@@ -1845,6 +1851,7 @@ export interface ConsoleData {
     mutationDryRuns?: string;
     mutationExecutions?: string;
     mutationReadinessAudit?: string;
+    mutationReadinessRepairPlan?: string;
     liveAdapterReadiness?: string;
     liveAdapterNextActions?: string;
     liveAdapterApprovalPack?: string;

@@ -85,6 +85,15 @@ function renderConsole(data: ConsoleData): string {
           }
         ]
       : []),
+    ...(data.mutationReadinessRepairPlan
+      ? [
+          {
+            time: data.mutationReadinessRepairPlan.generatedAt,
+            label: `Mutation repair: ${data.mutationReadinessRepairPlan.status}`,
+            detail: `${data.mutationReadinessRepairPlan.summary.missingPlans} missing / ${data.mutationReadinessRepairPlan.summary.operatorActionRequired} operator action`
+          }
+        ]
+      : []),
     ...(data.liveAdapterReadiness
       ? [
           {
@@ -221,6 +230,11 @@ function renderConsole(data: ConsoleData): string {
     metric("Dry Runs", data.summary.mutationDryRuns, "mutation"),
     metric("Exec", data.summary.mutationExecutions, "mutation"),
     metric("Audit", data.summary.mutationReadinessAuditStatus ?? "none", "mutation"),
+    metric(
+      "Repair Plan",
+      data.summary.mutationReadinessRepairStatus ?? "none",
+      `${data.summary.mutationReadinessRepairOperatorActionRequired ?? 0} operator`
+    ),
     metric("Live Adapters", data.summary.liveAdapterBlocked ?? "none", `${data.summary.liveAdapterReady ?? 0} ready`),
     metric("Adapter Actions", data.summary.liveAdapterActionItems ?? "none", "operator"),
     metric("Approval Packs", data.summary.liveAdapterApprovalPackets ?? "none", "operator"),
@@ -255,6 +269,7 @@ function renderConsole(data: ConsoleData): string {
     section("Task Flow", taskTable(data)),
     section("Approval Queue", approvalQueue(data)),
     section("Mutation Audit", mutationReadinessAudit(data)),
+    section("Mutation Repair", mutationReadinessRepairPlan(data)),
     section("Live Adapters", liveAdapters(data)),
     section("Review Session", reviewSession(data)),
     section("Evidence Templates", evidenceTemplates(data)),
@@ -494,6 +509,13 @@ function approvalQueue(data: ConsoleData): string {
         detail: `${check.planId}: ${blocker}`
       }))
     ) ?? [];
+  const repairPlanActions =
+    data.mutationReadinessRepairPlan?.targets
+      .filter((target) => target.status !== "audit_passed")
+      .map((target) => ({
+        kind: `mutation repair ${target.status}`,
+        detail: `${target.target}: ${target.remainingBlockers[0] ?? target.operatorBlockers[0] ?? target.repairableBlockers[0] ?? target.regenerationCommand}`
+      })) ?? [];
   const cutoverBlockers =
     data.liveAdapterCutoverAudit?.targets.flatMap((target) =>
       target.blockers.map((blocker) => ({
@@ -525,6 +547,7 @@ function approvalQueue(data: ConsoleData): string {
       detail: `${plan.target}: ${plan.scope}`
     })),
     ...auditBlockers,
+    ...repairPlanActions,
     ...cutoverBlockers,
     ...operatorEvidenceBlockers
   ];
@@ -545,6 +568,21 @@ function mutationReadinessAudit(data: ConsoleData): string {
     ...audit.checks.map(
       (check) =>
         `<tr><td>${escapeHtml(check.planId)}</td><td>${escapeHtml(check.target)}</td><td>${escapeHtml(check.status)}</td><td>${escapeHtml(check.blockers.length === 0 ? "none" : check.blockers.join("; "))}</td></tr>`
+    ),
+    "</tbody></table></div>"
+  ].join("");
+}
+
+function mutationReadinessRepairPlan(data: ConsoleData): string {
+  const repairPlan = data.mutationReadinessRepairPlan;
+  if (!repairPlan) return empty("No mutation-readiness repair plan is available.");
+  return [
+    `<div class="visual-status"><strong class="${statusClass(repairPlan.status)}">${escapeHtml(repairPlan.status)}</strong><span>${escapeHtml(`${repairPlan.summary.auditPassed} audit-passed / ${repairPlan.summary.missingPlans} missing / ${repairPlan.summary.repairablePlans} repairable / ${repairPlan.summary.operatorActionRequired} operator-action-required`)}</span></div>`,
+    '<p class="metadata">Mutation readiness repair is read-only guidance; mutationAllowed=false and every command remains a scaffold until operator evidence fills the placeholders.</p>',
+    '<div class="table-wrap"><table><thead><tr><th>Target</th><th>Status</th><th>Latest Plan</th><th>Repairable</th><th>Operator</th><th>Regeneration Command</th></tr></thead><tbody>',
+    ...repairPlan.targets.map(
+      (target) =>
+        `<tr><td>${escapeHtml(target.target)}</td><td class="${statusClass(target.status)}">${escapeHtml(target.status)}</td><td>${escapeHtml(target.latestPlanId ?? "none")}</td><td>${escapeHtml(target.repairableBlockers.length === 0 ? "none" : target.repairableBlockers.join("; "))}</td><td>${escapeHtml(target.operatorBlockers.length === 0 ? "none" : target.operatorBlockers.join("; "))}</td><td>${escapeHtml(target.regenerationCommand)}</td></tr>`
     ),
     "</tbody></table></div>"
   ].join("");
@@ -811,6 +849,7 @@ function statusClass(value: string | undefined): string {
     value === "ready_for_review" ||
     value === "ready_for_import" ||
     value === "ready_for_adapter" ||
+    value === "audit_passed" ||
     value === "info"
   ) {
     return "ok";
@@ -829,6 +868,9 @@ function statusClass(value: string | undefined): string {
     value === "awaiting_operator_review" ||
     value === "actions_required" ||
     value === "evidence_required" ||
+    value === "missing_plan" ||
+    value === "repairable_plan" ||
+    value === "operator_action_required" ||
     value === "needs_evidence" ||
     value === "needs_rework" ||
     value === "unchecked"

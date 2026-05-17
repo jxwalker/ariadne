@@ -1342,6 +1342,13 @@ describe("roadmap adapters", () => {
     expect(console.data.summary.mutationReadinessPlans).toBe(2);
     expect(console.data.summary.mutationReadinessAuditStatus).toBe("blocked");
     expect(console.data.mutationReadinessAudit?.summary.ready).toBe(1);
+    expect(console.data.summary.mutationReadinessRepairStatus).toBe("actions_required");
+    expect(console.data.summary.mutationReadinessRepairMissingPlans).toBeGreaterThan(0);
+    expect(console.data.summary.mutationReadinessRepairRepairablePlans).toBe(0);
+    expect(console.data.summary.mutationReadinessRepairOperatorActionRequired).toBe(1);
+    expect(console.data.mutationReadinessRepairPlan?.mutationAllowed).toBe(false);
+    expect(console.data.mutationReadinessRepairPlan?.targets.some((target) => target.target === "deployment")).toBe(true);
+    expect(console.data.artifacts.mutationReadinessRepairPlan).toContain("control/mutation-readiness-repair-plan.json");
     expect(console.data.summary.liveAdapterReadinessStatus).toBe("blocked");
     expect(console.data.summary.liveAdapterReady).toBe(1);
     expect(console.data.summary.liveAdapterBlocked).toBe(5);
@@ -1392,6 +1399,9 @@ describe("roadmap adapters", () => {
     expect(liveAdapterHtml).toContain("The queue orders operator work from preflight checks");
     expect(liveAdapterHtml).toContain("Assist packets are read-only collection aids");
     expect(liveAdapterHtml).toContain("Operator evidence records do not approve mutation");
+    expect(liveAdapterHtml).toContain("Mutation readiness repair is read-only guidance");
+    expect(liveAdapterHtml).toContain("operator_action_required");
+    expect(liveAdapterHtml).toContain("deployment-mutation-plan");
     expect(liveAdapterHtml).toContain("operator evidence hermes-cron");
     expect(liveAdapterHtml).toContain("Completion is only true");
     expect(console.data.liveAdapterApprovalReviewAudit?.summary.currentAcceptedReviews).toBe(1);

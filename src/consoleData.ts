@@ -53,6 +53,7 @@ import type {
   MutationExecutionRecord,
   MutationReadinessAudit,
   MutationReadinessPlan,
+  MutationReadinessRepairPlan,
   PlaywrightEvidenceRecord,
   PrdDocument,
   RecoveryReport,
@@ -100,6 +101,12 @@ export async function collectConsoleData(vaultRoot: string, projectInput: string
     project,
     "control",
     "mutation-readiness-audit.json"
+  );
+  const mutationReadinessRepairPlan = await readProjectJson<MutationReadinessRepairPlan>(
+    vaultRoot,
+    project,
+    "control",
+    "mutation-readiness-repair-plan.json"
   );
   const liveAdapterReadiness = await readProjectJson<LiveAdapterReadinessReport>(
     vaultRoot,
@@ -304,6 +311,11 @@ export async function collectConsoleData(vaultRoot: string, projectInput: string
       mutationDryRuns: mutationDryRuns.length,
       mutationExecutions: mutationExecutions.length,
       mutationReadinessAuditStatus: mutationReadinessAudit?.status,
+      mutationReadinessRepairStatus: mutationReadinessRepairPlan?.status,
+      mutationReadinessRepairMissingPlans: mutationReadinessRepairPlan?.summary.missingPlans,
+      mutationReadinessRepairRepairablePlans: mutationReadinessRepairPlan?.summary.repairablePlans,
+      mutationReadinessRepairOperatorActionRequired: mutationReadinessRepairPlan?.summary.operatorActionRequired,
+      mutationReadinessRepairBlocked: mutationReadinessRepairPlan?.summary.blocked,
       liveAdapterReadinessStatus: liveAdapterReadiness?.status,
       liveAdapterReady: liveAdapterReadiness?.summary.ready,
       liveAdapterBlocked: liveAdapterReadiness?.summary.blocked,
@@ -355,6 +367,7 @@ export async function collectConsoleData(vaultRoot: string, projectInput: string
     mutationDryRuns: mutationDryRunsForConsole,
     mutationExecutions: mutationExecutionsForConsole,
     mutationReadinessAudit,
+    mutationReadinessRepairPlan,
     liveAdapterReadiness,
     liveAdapterNextActions,
     liveAdapterApprovalPack,
@@ -428,6 +441,10 @@ export async function collectConsoleData(vaultRoot: string, projectInput: string
       mutationDryRuns: await existingPath(vaultRoot, path.join(dir, "control", "mutation-dry-runs")),
       mutationExecutions: await existingPath(vaultRoot, path.join(dir, "control", "mutation-executions")),
       mutationReadinessAudit: await existingPath(vaultRoot, path.join(dir, "control", "mutation-readiness-audit.json")),
+      mutationReadinessRepairPlan: await existingPath(
+        vaultRoot,
+        path.join(dir, "control", "mutation-readiness-repair-plan.json")
+      ),
       liveAdapterReadiness: await existingPath(vaultRoot, path.join(dir, "control", "live-adapter-readiness.json")),
       liveAdapterNextActions: await existingPath(vaultRoot, path.join(dir, "control", "live-adapter-next-actions.json")),
       liveAdapterApprovalPack: await existingPath(vaultRoot, path.join(dir, "control", "live-adapter-approval-pack.json")),
