@@ -247,7 +247,7 @@ function renderBatch(batch: LiveAdapterOperatorEvidenceCheckBatch): string {
     "| --- | --- | ---: | --- | --- | --- | --- |",
     ...batch.targets.map(
       (target) =>
-        `| ${target.target} | ${target.status} | ${target.missingSections} | ${tableCell(target.missingSectionLabels.join(", ") || "none")} | ${target.sourceFileRef ?? "missing"} | ${target.checkRef ?? "not run"} | ${tableCell(target.errorDetail ?? "")} |`
+        `| ${tableCell(target.target)} | ${tableCell(target.status)} | ${tableCell(String(target.missingSections))} | ${tableCell(target.missingSectionLabels.join(", ") || "none")} | ${tableCell(target.sourceFileRef ?? "missing")} | ${tableCell(target.checkRef ?? "not run")} | ${tableCell(target.errorDetail ?? "")} |`
     ),
     ""
   ].join("\n");
