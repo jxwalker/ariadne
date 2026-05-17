@@ -2,6 +2,7 @@ import fs from "node:fs/promises";
 import path from "node:path";
 import { writeJsonArtifact, writeTextArtifact } from "./artifacts.js";
 import { generateLiveAdapterApprovalReviewAudit } from "./liveAdapterApprovalReviewAudit.js";
+import { generateLiveAdapterOperatorEvidenceAudit } from "./liveAdapterOperatorEvidence.js";
 import { generateLiveAdapterReadiness } from "./liveAdapterReadiness.js";
 import { LIVE_ADAPTER_TARGETS, type LiveAdapterTarget } from "./liveAdapterTargets.js";
 import { generateMutationReadinessAudit } from "./mutationReadinessAudit.js";
@@ -9,6 +10,7 @@ import { projectDir, slugifyProject } from "./paths.js";
 import type {
   LiveAdapterApprovalReviewAudit,
   LiveAdapterCutoverAudit,
+  LiveAdapterOperatorEvidenceAudit,
   LiveAdapterReadinessReport,
   LiveAdapterTargetDossier,
   MutationReadinessAudit
@@ -22,9 +24,17 @@ export async function generateLiveAdapterCutoverAudit(input: {
   const readiness = await generateLiveAdapterReadiness({ project, vaultRoot: input.vaultRoot });
   const approvalReviewAudit = await generateLiveAdapterApprovalReviewAudit({ project, vaultRoot: input.vaultRoot });
   const mutationReadinessAudit = await generateMutationReadinessAudit({ project, vaultRoot: input.vaultRoot });
+  const operatorEvidenceAudit = await generateLiveAdapterOperatorEvidenceAudit({ project, vaultRoot: input.vaultRoot });
   const dossiers = await readDossiers(input.vaultRoot, project);
   const targets = LIVE_ADAPTER_TARGETS.map((target) =>
-    targetCutover(target, readiness.report, approvalReviewAudit.audit, mutationReadinessAudit.audit, dossiers.get(target))
+    targetCutover(
+      target,
+      readiness.report,
+      approvalReviewAudit.audit,
+      mutationReadinessAudit.audit,
+      operatorEvidenceAudit.audit,
+      dossiers.get(target)
+    )
   );
   const summary = {
     targets: targets.length,
@@ -43,6 +53,7 @@ export async function generateLiveAdapterCutoverAudit(input: {
     readinessRef: "control/live-adapter-readiness.json",
     approvalReviewAuditRef: "control/live-adapter-approval-review-audit.json",
     mutationReadinessAuditRef: "control/mutation-readiness-audit.json",
+    operatorEvidenceAuditRef: "control/live-adapter-operator-evidence-audit.json",
     dossierDirRef: "control/live-adapter-dossiers",
     summary,
     targets
@@ -63,13 +74,24 @@ function targetCutover(
   readiness: LiveAdapterReadinessReport,
   approvalReviewAudit: LiveAdapterApprovalReviewAudit,
   mutationReadinessAudit: MutationReadinessAudit,
+  operatorEvidenceAudit: LiveAdapterOperatorEvidenceAudit,
   dossier: LiveAdapterTargetDossier | undefined
 ): LiveAdapterCutoverAudit["targets"][number] {
   const readinessTarget = readiness.targets.find((item) => item.target === target);
   const approvalTarget = approvalReviewAudit.targets.find((item) => item.target === target);
+  const operatorEvidenceTarget = operatorEvidenceAudit.targets.find((item) => item.target === target);
   const passedChecks = mutationReadinessAudit.checks.filter((check) => check.target === target && check.status === "passed");
   const latestPassedCheck = passedChecks.at(-1);
   const gates: LiveAdapterCutoverAudit["targets"][number]["gates"] = [
+    gate(
+      "operator-evidence-complete",
+      "Operator evidence complete",
+      operatorEvidenceTarget?.status === "complete",
+      operatorEvidenceTarget?.status === "complete"
+        ? `Operator evidence ${operatorEvidenceTarget.latestRecordId ?? "unknown"} is complete.`
+        : operatorEvidenceTarget?.blockers.join("; ") || "No complete operator evidence record exists.",
+      operatorEvidenceTarget?.evidenceRefs ?? []
+    ),
     gate(
       "operator-review-current",
       "Current accepted operator packet review",
@@ -166,6 +188,8 @@ function targetCutover(
         "control/live-adapter-readiness.json",
         "control/live-adapter-approval-review-audit.json",
         "control/mutation-readiness-audit.json",
+        "control/live-adapter-operator-evidence-audit.json",
+        ...(operatorEvidenceTarget?.evidenceRefs ?? []),
         ...(readinessTarget?.evidenceRefs ?? []),
         ...(approvalTarget?.evidenceRefs ?? []),
         ...(latestPassedCheck?.evidenceRefs ?? []),
