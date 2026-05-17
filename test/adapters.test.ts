@@ -34,6 +34,7 @@ import { collectLocalInfraSnapshot, collectSshInfraSnapshot, parseSshInventory }
 import { generateLiveAdapterApprovalPack } from "../src/liveAdapterApprovalPack.js";
 import { recordLiveAdapterApprovalReview } from "../src/liveAdapterApprovalReview.js";
 import { generateLiveAdapterApprovalReviewAudit } from "../src/liveAdapterApprovalReviewAudit.js";
+import { generateLiveAdapterCutoverAudit } from "../src/liveAdapterCutoverAudit.js";
 import { generateLiveAdapterNextActions } from "../src/liveAdapterNextActions.js";
 import { generateLiveAdapterReadiness } from "../src/liveAdapterReadiness.js";
 import { generateLiveAdapterTargetDossier } from "../src/liveAdapterTargetDossier.js";
@@ -915,6 +916,25 @@ describe("roadmap adapters", () => {
     expect(deploymentDossier.dossier.summary.packetPresent).toBe(true);
     expect(deploymentDossier.dossier.summary.reviewAuditStatus).toBe("missing_review");
     expect(deploymentDossier.dossier.gbrainContext.suggestedQueries.some((query) => query.includes("deployment"))).toBe(true);
+    const malformedDossier = path.join(
+      vaultRoot,
+      "projects",
+      "ariadne",
+      "control",
+      "live-adapter-dossiers",
+      "live-adapter-dossier-bad.json"
+    );
+    await fs.writeFile(malformedDossier, "{bad json\n");
+    const cutoverAudit = await generateLiveAdapterCutoverAudit({ project: "ariadne", vaultRoot });
+    await fs.rm(malformedDossier);
+    const githubCutover = cutoverAudit.audit.targets.find((target) => target.target === "github");
+    const deploymentCutover = cutoverAudit.audit.targets.find((target) => target.target === "deployment");
+    expect(cutoverAudit.audit.status).toBe("blocked");
+    expect(cutoverAudit.audit.summary.ready).toBe(1);
+    expect(githubCutover?.status).toBe("ready_for_cutover");
+    expect(githubCutover?.gates.some((gate) => gate.id === "gbrain-context-advisory" && gate.status === "advisory")).toBe(true);
+    expect(deploymentCutover?.status).toBe("blocked");
+    expect(deploymentCutover?.blockers.some((blocker) => blocker.includes("Current accepted operator packet review"))).toBe(true);
     const console = await generateConsoleData({ project: "ariadne", vaultRoot });
     expect(console.data.summary.sleepRoutines).toBe(1);
     expect(console.data.summary.memoryProposals).toBe(1);
@@ -938,6 +958,9 @@ describe("roadmap adapters", () => {
     expect(console.data.summary.liveAdapterApprovalReviewAuditStatus).toBe("blocked");
     expect(console.data.summary.currentLiveAdapterApprovalReviews).toBe(1);
     expect(console.data.summary.liveAdapterTargetDossiers).toBe(2);
+    expect(console.data.summary.liveAdapterCutoverAuditStatus).toBe("blocked");
+    expect(console.data.summary.liveAdapterCutoverReady).toBe(1);
+    expect(console.data.liveAdapterCutoverAudit?.targets.some((target) => target.target === "github")).toBe(true);
     expect(console.data.liveAdapterApprovalReviewAudit?.summary.currentAcceptedReviews).toBe(1);
     expect(console.data.liveAdapterTargetDossiers.some((dossier) => dossier.target === "deployment")).toBe(true);
     expect(
@@ -965,6 +988,7 @@ describe("roadmap adapters", () => {
     const approvalReviewCheck = artifactChecks.report.checks.find((check) => check.id === "live-adapter-approval-reviews");
     const approvalReviewAuditCheck = artifactChecks.report.checks.find((check) => check.id === "live-adapter-approval-review-audit");
     const targetDossierCheck = artifactChecks.report.checks.find((check) => check.id === "live-adapter-dossiers");
+    const cutoverAuditCheck = artifactChecks.report.checks.find((check) => check.id === "live-adapter-cutover-audit");
     const mutationDryRunCheck = artifactChecks.report.checks.find((check) => check.id === "mutation-dry-runs");
     const mutationExecutionCheck = artifactChecks.report.checks.find((check) => check.id === "mutation-executions");
     expect(coordinationCheck?.matches?.some((match) => match.includes("coordination/hermes"))).toBe(false);
@@ -977,6 +1001,7 @@ describe("roadmap adapters", () => {
     expect(approvalReviewCheck?.status).toBe("present");
     expect(approvalReviewAuditCheck?.status).toBe("present");
     expect(targetDossierCheck?.status).toBe("present");
+    expect(cutoverAuditCheck?.status).toBe("present");
     expect(mutationDryRunCheck?.status).toBe("present");
     expect(mutationExecutionCheck?.status).toBe("present");
   });

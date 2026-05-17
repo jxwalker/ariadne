@@ -1,12 +1,12 @@
 {
   "schemaVersion": 1,
   "project": "ariadne",
-  "generatedAt": "2026-05-17T00:55:26.466Z",
+  "generatedAt": "2026-05-17T01:45:57.404Z",
   "status": "passed",
   "summary": {
     "required": 13,
-    "optional": 32,
-    "present": 37,
+    "optional": 33,
+    "present": 38,
     "missingRequired": 0
   },
   "checks": [
@@ -327,6 +327,13 @@
         "projects/ariadne/control/live-adapter-dossiers/live-adapter-dossier-notebooklm.json",
         "projects/ariadne/control/live-adapter-dossiers/live-adapter-dossier-openscorpion.json"
       ]
+    },
+    {
+      "id": "live-adapter-cutover-audit",
+      "label": "Live adapter cutover audit",
+      "required": false,
+      "path": "projects/ariadne/control/live-adapter-cutover-audit.json",
+      "status": "present"
     },
     {
       "id": "mutation-dry-runs",

@@ -111,6 +111,15 @@ function renderConsole(data: ConsoleData): string {
             detail: `${data.liveAdapterApprovalPack.summary.packets} operator packets`
           }
         ]
+      : []),
+    ...(data.liveAdapterCutoverAudit
+      ? [
+          {
+            time: data.liveAdapterCutoverAudit.generatedAt,
+            label: `Live adapter cutover: ${data.liveAdapterCutoverAudit.status}`,
+            detail: `${data.liveAdapterCutoverAudit.summary.ready} ready / ${data.liveAdapterCutoverAudit.summary.blocked} blocked`
+          }
+        ]
       : [])
   ].sort((left, right) => right.time.localeCompare(left.time));
 
@@ -164,6 +173,7 @@ function renderConsole(data: ConsoleData): string {
     metric("Packet Reviews", data.summary.acceptedLiveAdapterApprovalReviews ?? "none", `${data.summary.liveAdapterApprovalReviews ?? 0} total`),
     metric("Review Audit", data.summary.liveAdapterApprovalReviewAuditStatus ?? "none", `${data.summary.currentLiveAdapterApprovalReviews ?? 0} current`),
     metric("Dossiers", data.summary.liveAdapterTargetDossiers ?? "none", "adapter"),
+    metric("Cutover", data.summary.liveAdapterCutoverAuditStatus ?? "none", `${data.summary.liveAdapterCutoverReady ?? 0} ready`),
     metric("Hermes", data.summary.hermesCronSnapshots, `${data.summary.hermesCronProposals} proposals`),
     metric("Recovery", data.summary.recoveryIssues, "issues"),
     metric("Browser", data.summary.consoleBrowserChecks ?? "none", "console"),
@@ -458,26 +468,29 @@ function liveAdapters(data: ConsoleData): string {
   const readiness = data.liveAdapterReadiness;
   const nextActions = data.liveAdapterNextActions;
   const approvalPack = data.liveAdapterApprovalPack;
-  if (!readiness && !nextActions && !approvalPack) return empty("No live-adapter readiness evidence is available.");
+  const cutoverAudit = data.liveAdapterCutoverAudit;
+  if (!readiness && !nextActions && !approvalPack && !cutoverAudit) return empty("No live-adapter readiness evidence is available.");
   const actionsByTarget = new Map(nextActions?.targets.map((target) => [target.target, target.actions]) ?? []);
   const approvalTargets = new Set(approvalPack?.packets.map((packet) => packet.target) ?? []);
   const reviewAuditByTarget = new Map(data.liveAdapterApprovalReviewAudit?.targets.map((target) => [target.target, target]) ?? []);
+  const cutoverByTarget = new Map(cutoverAudit?.targets.map((target) => [target.target, target]) ?? []);
   const rows =
-    readiness?.targets.map((target) => ({
+    (readiness?.targets ?? cutoverAudit?.targets ?? []).map((target) => ({
       target: target.target,
       status: target.status,
       blockers: target.blockers,
       actionCount: actionsByTarget.get(target.target)?.length ?? 0,
       nextAction: actionsByTarget.get(target.target)?.[0]?.title ?? "none",
       approvalPacket: approvalTargets.has(target.target) ? "yes" : "no",
-      packetReview: reviewAuditByTarget.get(target.target)?.status ?? "missing"
-    })) ?? [];
+      packetReview: reviewAuditByTarget.get(target.target)?.status ?? "missing",
+      cutover: cutoverByTarget.get(target.target)?.status ?? "unknown"
+    }));
   return [
-    `<div class="visual-status"><strong class="${statusClass(readiness?.status)}">${escapeHtml(readiness?.status ?? "unknown")}</strong><span>${escapeHtml(`${readiness?.summary.ready ?? 0} ready / ${readiness?.summary.blocked ?? 0} blocked / ${nextActions?.summary.actionItems ?? 0} actions / ${approvalPack?.summary.packets ?? 0} approval packets / ${data.summary.currentLiveAdapterApprovalReviews ?? 0} current reviews`)}</span></div>`,
-    '<div class="table-wrap"><table><thead><tr><th>Target</th><th>Status</th><th>Actions</th><th>Approval Pack</th><th>Packet Review</th><th>Next</th><th>Blockers</th></tr></thead><tbody>',
+    `<div class="visual-status"><strong class="${statusClass(readiness?.status)}">${escapeHtml(readiness?.status ?? "unknown")}</strong><span>${escapeHtml(`${readiness?.summary.ready ?? 0} ready / ${readiness?.summary.blocked ?? 0} blocked / ${nextActions?.summary.actionItems ?? 0} actions / ${approvalPack?.summary.packets ?? 0} approval packets / ${data.summary.currentLiveAdapterApprovalReviews ?? 0} current reviews / ${cutoverAudit?.summary.ready ?? 0} cutover-ready`)}</span></div>`,
+    '<div class="table-wrap"><table><thead><tr><th>Target</th><th>Status</th><th>Cutover</th><th>Actions</th><th>Approval Pack</th><th>Packet Review</th><th>Next</th><th>Blockers</th></tr></thead><tbody>',
     ...rows.map(
       (row) =>
-        `<tr><td>${escapeHtml(row.target)}</td><td class="${statusClass(row.status)}">${escapeHtml(row.status)}</td><td>${escapeHtml(String(row.actionCount))}</td><td>${escapeHtml(row.approvalPacket)}</td><td>${escapeHtml(row.packetReview)}</td><td>${escapeHtml(row.nextAction)}</td><td>${escapeHtml(row.blockers.length === 0 ? "none" : row.blockers.join("; "))}</td></tr>`
+        `<tr><td>${escapeHtml(row.target)}</td><td class="${statusClass(row.status)}">${escapeHtml(row.status)}</td><td class="${statusClass(row.cutover)}">${escapeHtml(row.cutover)}</td><td>${escapeHtml(String(row.actionCount))}</td><td>${escapeHtml(row.approvalPacket)}</td><td>${escapeHtml(row.packetReview)}</td><td>${escapeHtml(row.nextAction)}</td><td>${escapeHtml(row.blockers.length === 0 ? "none" : row.blockers.join("; "))}</td></tr>`
     ),
     "</tbody></table></div>"
   ].join("");
@@ -586,6 +599,7 @@ function statusClass(value: string | undefined): string {
     value === "ready_for_bounded_review" ||
     value === "ready_for_operator_review" ||
     value === "ready_for_adapter_work" ||
+    value === "ready_for_cutover" ||
     value === "approved" ||
     value === "complete" ||
     value === "ready_for_adapter" ||
