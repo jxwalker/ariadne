@@ -580,13 +580,30 @@ function mutationReadinessRepairPlan(data: ConsoleData): string {
   return [
     `<div class="visual-status"><strong class="${statusClass(repairPlan.status)}">${escapeHtml(repairPlan.status)}</strong><span>${escapeHtml(`${repairPlan.summary.auditPassed} audit-passed / ${repairPlan.summary.missingPlans} missing / ${repairPlan.summary.repairablePlans} repairable / ${repairPlan.summary.operatorActionRequired} operator-action-required`)}</span></div>`,
     '<p class="metadata">Mutation readiness repair is read-only guidance; mutationAllowed=false and every command remains a scaffold until operator evidence fills the placeholders.</p>',
-    '<div class="table-wrap"><table><thead><tr><th>Target</th><th>Status</th><th>Latest Plan</th><th>Repairable</th><th>Operator</th><th>Remaining</th><th>Regeneration Command</th></tr></thead><tbody>',
-    ...repairPlan.targets.map(
-      (target) =>
-        `<tr><td>${escapeHtml(target.target)}</td><td class="${statusClass(target.status)}">${escapeHtml(target.status)}</td><td>${escapeHtml(target.latestPlanId ?? "none")}</td><td>${escapeHtml(target.repairableBlockers.length === 0 ? "none" : target.repairableBlockers.join("; "))}</td><td>${escapeHtml(target.operatorBlockers.length === 0 ? "none" : target.operatorBlockers.join("; "))}</td><td>${escapeHtml(target.remainingBlockers.length === 0 ? "none" : target.remainingBlockers.join("; "))}</td><td>${escapeHtml(target.regenerationCommand)}</td></tr>`
-    ),
+    '<div class="table-wrap"><table><thead><tr><th>Target</th><th>Status</th><th>Latest Plan</th><th>Repairable</th><th>Operator</th><th>Remaining</th><th>Approval Command</th><th>Regeneration Command</th><th>Next Commands</th></tr></thead><tbody>',
+    ...repairPlan.targets.map(mutationRepairTargetRow),
     "</tbody></table></div>"
   ].join("");
+}
+
+function mutationRepairTargetRow(target: NonNullable<ConsoleData["mutationReadinessRepairPlan"]>["targets"][number]): string {
+  return [
+    "<tr>",
+    `<td>${escapeHtml(target.target)}</td>`,
+    `<td class="${statusClass(target.status)}">${escapeHtml(target.status)}</td>`,
+    `<td>${escapeHtml(target.latestPlanId ?? "none")}</td>`,
+    `<td>${escapeHtml(inlineOrNone(target.repairableBlockers))}</td>`,
+    `<td>${escapeHtml(inlineOrNone(target.operatorBlockers))}</td>`,
+    `<td>${escapeHtml(inlineOrNone(target.remainingBlockers))}</td>`,
+    `<td><code>${escapeHtml(target.approvalCommand ?? "none")}</code></td>`,
+    `<td><code>${escapeHtml(target.regenerationCommand)}</code></td>`,
+    `<td>${escapeHtml(String(target.nextActionCommands.length))}</td>`,
+    "</tr>"
+  ].join("");
+}
+
+function inlineOrNone(items: string[]): string {
+  return items.length === 0 ? "none" : items.join("; ");
 }
 
 function liveAdapters(data: ConsoleData): string {
