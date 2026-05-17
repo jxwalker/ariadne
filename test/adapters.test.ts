@@ -1489,11 +1489,14 @@ describe("roadmap adapters", () => {
     expect(JSON.stringify(liveSnapshot.snapshot.raw)).not.toContain(os.hostname());
     expect(JSON.stringify(liveSnapshot.snapshot.raw)).toContain("networkAddresses");
 
+    const canaryRequests: Array<{ url: string; model: string }> = [];
     const runtimeProbe = await collectLocalRuntimeProbe(
       {
         project: "ariadne",
         vaultRoot,
         canary: true,
+        canaryEndpointIds: ["ds4-openai"],
+        canaryModels: { "ds4-openai": "deepseek-v4-flash" },
         hermesDashboardUrl: "http://runtime.test/hermes",
         ollamaUrl: "http://runtime.test/ollama",
         ds4Url: "http://runtime.test/ds4/v1",
@@ -1519,6 +1522,7 @@ describe("roadmap adapters", () => {
             return { ok: true, status: 200, text: "{}", json: { data: [{ id: "deepseek-v4-flash" }] } };
           }
           if (url.endsWith("/ds4/v1/chat/completions") && init?.method === "POST") {
+            canaryRequests.push({ url, model: JSON.parse(String(init.body)).model as string });
             return {
               ok: true,
               status: 200,
@@ -1534,17 +1538,22 @@ describe("roadmap adapters", () => {
       }
     );
     expect(runtimeProbe.probe.summary.models).toBe(2);
-    expect(runtimeProbe.probe.summary.usageRecords).toBe(2);
+    expect(runtimeProbe.probe.summary.usageRecords).toBe(1);
+    expect(runtimeProbe.probe.modelEndpoints.find((endpoint) => endpoint.id === "ollama")?.canary).toBeUndefined();
     expect(runtimeProbe.probe.modelEndpoints.find((endpoint) => endpoint.id === "ds4-openai")?.canary?.status).toBe(
       "degraded"
     );
+    expect(runtimeProbe.probe.modelEndpoints.find((endpoint) => endpoint.id === "ds4-openai")?.canary?.model).toBe(
+      "deepseek-v4-flash"
+    );
+    expect(canaryRequests).toEqual([{ url: "http://runtime.test/ds4/v1/chat/completions", model: "deepseek-v4-flash" }]);
     expect(runtimeProbe.probe.modelEndpoints.find((endpoint) => endpoint.id === "lmstudio")?.status).toBe("unreachable");
     const runtimeArtifactChecks = await generateArtifactCheckReport({ project: "ariadne", vaultRoot });
     expect(runtimeArtifactChecks.report.checks.find((check) => check.id === "local-runtime-probes")?.status).toBe(
       "present"
     );
     const usageReport = await generateUsageMetricsReport({ project: "ariadne", vaultRoot });
-    expect(usageReport.report.bySource.find((source) => source.name === "local-llm")?.totalTokens).toBe(14);
+    expect(usageReport.report.bySource.find((source) => source.name === "local-llm")?.totalTokens).toBe(8);
 
     const parsedSsh = parseSshInventory(
       [

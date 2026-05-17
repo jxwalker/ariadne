@@ -13,6 +13,7 @@ import type {
 } from "./types.js";
 
 const execFileAsync = promisify(execFile);
+export type RuntimeModelEndpointId = "ollama" | "ds4-openai" | "lmstudio";
 
 interface CommandResult {
   exitCode: number;
@@ -42,6 +43,8 @@ export async function collectLocalRuntimeProbe(
     ollamaUrl?: string;
     ds4Url?: string;
     lmStudioUrl?: string;
+    canaryEndpointIds?: RuntimeModelEndpointId[];
+    canaryModels?: Partial<Record<RuntimeModelEndpointId, string>>;
     timeoutMs?: number;
   },
   deps: RuntimeProbeDeps = {}
@@ -64,14 +67,38 @@ export async function collectLocalRuntimeProbe(
     probeCommand("hermes gateway status", "hermes", ["gateway", "status"], runCommand, timeoutMs)
   ]);
 
-  const endpointInputs = [
-    { id: "ollama", kind: "ollama" as const, url: input.ollamaUrl ?? "http://127.0.0.1:11434" },
-    { id: "ds4-openai", kind: "openai-compatible" as const, url: input.ds4Url ?? "http://127.0.0.1:8000/v1" },
-    { id: "lmstudio", kind: "openai-compatible" as const, url: input.lmStudioUrl ?? "http://127.0.0.1:1234/v1" }
+  const endpointInputs: Array<{
+    id: RuntimeModelEndpointId;
+    kind: RuntimeModelEndpointProbe["kind"];
+    url: string;
+    canaryModel?: string;
+  }> = [
+    {
+      id: "ollama",
+      kind: "ollama",
+      url: input.ollamaUrl ?? "http://127.0.0.1:11434",
+      canaryModel: input.canaryModels?.ollama
+    },
+    {
+      id: "ds4-openai",
+      kind: "openai-compatible",
+      url: input.ds4Url ?? "http://127.0.0.1:8000/v1",
+      canaryModel: input.canaryModels?.["ds4-openai"]
+    },
+    {
+      id: "lmstudio",
+      kind: "openai-compatible",
+      url: input.lmStudioUrl ?? "http://127.0.0.1:1234/v1",
+      canaryModel: input.canaryModels?.lmstudio
+    }
   ];
-  const modelEndpoints = await Promise.all(
-    endpointInputs.map((endpoint) => probeModelEndpoint(endpoint, Boolean(input.canary), fetchJson, timeoutMs))
-  );
+  const canaryEndpointIds = input.canary
+    ? new Set<RuntimeModelEndpointId>(input.canaryEndpointIds ?? endpointInputs.map((endpoint) => endpoint.id))
+    : new Set<RuntimeModelEndpointId>();
+  const modelEndpoints: RuntimeModelEndpointProbe[] = [];
+  for (const endpoint of endpointInputs) {
+    modelEndpoints.push(await probeModelEndpoint(endpoint, canaryEndpointIds.has(endpoint.id), fetchJson, timeoutMs));
+  }
 
   const usageRecords = modelEndpoints.flatMap((endpoint, index) =>
     endpoint.canary?.usage
@@ -177,7 +204,7 @@ async function probeCommand(
 }
 
 async function probeModelEndpoint(
-  endpoint: { id: string; kind: RuntimeModelEndpointProbe["kind"]; url: string },
+  endpoint: { id: RuntimeModelEndpointId; kind: RuntimeModelEndpointProbe["kind"]; url: string; canaryModel?: string },
   canary: boolean,
   fetchJson: NonNullable<RuntimeProbeDeps["fetchJson"]>,
   timeoutMs: number
@@ -207,7 +234,7 @@ async function probeModelEndpoint(
     return canary ? { ...base, canary: { status: "skipped" } } : base;
   }
 
-  const model = models[0];
+  const model = endpoint.canaryModel ?? models[0];
   const canaryResult =
     endpoint.kind === "ollama"
       ? await runOllamaCanary(endpoint.url, model, fetchJson, timeoutMs)

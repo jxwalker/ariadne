@@ -64,7 +64,7 @@ import { generateLiveAdapterOperatorEvidenceWorkspace } from "./liveAdapterOpera
 import { generateLiveAdapterReadiness } from "./liveAdapterReadiness.js";
 import { generateLiveAdapterReviewSession } from "./liveAdapterReviewSession.js";
 import { generateLiveAdapterTargetDossier, liveAdapterDossierTargetOption } from "./liveAdapterTargetDossier.js";
-import { collectLocalRuntimeProbe } from "./localRuntimeProbe.js";
+import { collectLocalRuntimeProbe, type RuntimeModelEndpointId } from "./localRuntimeProbe.js";
 import { importNotebookLmExport } from "./notebooklm.js";
 import { notebookLmMutationActionOption, planNotebookLmMutation } from "./notebookLmMutation.js";
 import { mutationTargetOption, planMutationReadiness } from "./mutationReadiness.js";
@@ -174,7 +174,7 @@ function usage(): string {
     "  ariadne infra --project <project>",
     "  ariadne infra-snapshot --project <project> --from <manifest.json>",
     "  ariadne infra-live-local --project <project> [--notes <text>]",
-    "  ariadne local-runtime-probe --project <project> [--canary] [--hermes-dashboard-url <url>] [--ollama-url <url>] [--ds4-url <url>] [--lmstudio-url <url>] [--timeout-ms <ms>]",
+    "  ariadne local-runtime-probe --project <project> [--canary] [--canary-endpoints <ollama,ds4-openai,lmstudio>] [--ollama-canary-model <id>] [--ds4-canary-model <id>] [--lmstudio-canary-model <id>] [--hermes-dashboard-url <url>] [--ollama-url <url>] [--ds4-url <url>] [--lmstudio-url <url>] [--timeout-ms <ms>]",
     "  ariadne infra-live-ssh --project <project> --host <id> --target <ssh-target> [--ssh-binary <path>] [--notes <text>]",
     "  ariadne openscorpion-draft --project <project> --title <title> --type <type> --evidence <paths>",
     "  ariadne openscorpion-mutation-plan --project <project> --activity <id> --type <type> --action <submit-activity|update-activity|withdraw-activity> --route <governed|staging> --scope <text> --auth-evidence <paths> --dry-run <cmd> --live-command <cmd> --post-verify <cmd> --rollback <text> [--approval <id|json>] [--risk <low|medium|high>] [--evidence <paths>] [--notes <text>]",
@@ -927,6 +927,8 @@ async function main(): Promise<void> {
       ollamaUrl: optionString(parsed.options, "ollama-url", "") || undefined,
       ds4Url: optionString(parsed.options, "ds4-url", "") || undefined,
       lmStudioUrl: optionString(parsed.options, "lmstudio-url", "") || undefined,
+      canaryEndpointIds: optionalRuntimeCanaryEndpointIds(parsed.options),
+      canaryModels: optionalRuntimeCanaryModels(parsed.options),
       timeoutMs: optionalNumber(parsed.options, "timeout-ms")
     });
     console.log(`Local runtime probe: ${result.markdownPath}`);
@@ -1610,6 +1612,31 @@ function usageSourceOption(
     return value;
   }
   throw new Error("--source must be hermes, coderabbit, openai, ci, local-llm, or manual.");
+}
+
+function optionalRuntimeCanaryEndpointIds(options: Map<string, string | true>): RuntimeModelEndpointId[] | undefined {
+  const value = optionString(options, "canary-endpoints", "");
+  if (!value) return undefined;
+  const endpoints = splitList(value).map(runtimeModelEndpointIdOption);
+  return Array.from(new Set(endpoints));
+}
+
+function runtimeModelEndpointIdOption(value: string): RuntimeModelEndpointId {
+  if (value === "ollama" || value === "ds4-openai" || value === "lmstudio") return value;
+  throw new Error("--canary-endpoints must contain ollama, ds4-openai, or lmstudio.");
+}
+
+function optionalRuntimeCanaryModels(
+  options: Map<string, string | true>
+): Partial<Record<RuntimeModelEndpointId, string>> | undefined {
+  const canaryModels: Partial<Record<RuntimeModelEndpointId, string>> = {};
+  const ollama = optionString(options, "ollama-canary-model", "");
+  const ds4 = optionString(options, "ds4-canary-model", "");
+  const lmstudio = optionString(options, "lmstudio-canary-model", "");
+  if (ollama) canaryModels.ollama = ollama;
+  if (ds4) canaryModels["ds4-openai"] = ds4;
+  if (lmstudio) canaryModels.lmstudio = lmstudio;
+  return Object.keys(canaryModels).length > 0 ? canaryModels : undefined;
 }
 
 function agentLeaseStatusOption(options: Map<string, string | true>): "acquired" | "released" | "expired" {
