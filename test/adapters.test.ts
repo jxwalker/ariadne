@@ -1600,6 +1600,16 @@ describe("roadmap adapters", () => {
     expect(status.liveAdapterOperatorEvidenceMissingSections).toBeGreaterThan(0);
     expect(status.liveAdapterOperatorEvidenceQueueStatus).toBe("evidence_required");
     expect(status.liveAdapterOperatorEvidenceQueueNeedsEvidence).toBeGreaterThan(0);
+    expect(status.liveAdapterOperatorEvidenceNextTarget).toBe(nextTarget);
+    expect(status.liveAdapterOperatorEvidenceNextTargetStatus).toBeTruthy();
+    expect(status.liveAdapterOperatorEvidenceNextTargetMissingSections).toBeGreaterThan(0);
+    expect(status.liveAdapterOperatorEvidenceNextAction).toBeTruthy();
+    expect(status.liveAdapterOperatorEvidenceNextCommands).toContain(
+      `npm run ariadne -- live-adapter-operator-evidence-workspace --project ariadne --target ${nextTarget}`
+    );
+    expect(status.liveAdapterOperatorEvidenceNextCommands).toContain(
+      `npm run ariadne -- live-adapter-cutover-audit --project ariadne --target ${nextTarget}`
+    );
     expect(status.liveAdapterCutoverStatus).toBe("blocked");
     expect(status.liveAdapterCutoverReady).toBe(1);
     expect(status.liveAdapterCutoverBlockedGates).toBeGreaterThan(0);

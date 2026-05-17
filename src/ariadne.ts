@@ -1628,6 +1628,17 @@ async function main(): Promise<void> {
         `Operator queue: ${status.liveAdapterOperatorEvidenceQueueStatus} (${status.liveAdapterOperatorEvidenceQueueReadyForImport ?? 0} ready, ${status.liveAdapterOperatorEvidenceQueueNeedsEvidence ?? 0} needs evidence, ${status.liveAdapterOperatorEvidenceQueueNeedsRework ?? 0} rework, ${status.liveAdapterOperatorEvidenceQueueUnchecked ?? 0} unchecked)`
       );
     }
+    if (status.liveAdapterOperatorEvidenceNextTarget) {
+      console.log(
+        `Operator next target: ${status.liveAdapterOperatorEvidenceNextTarget} (${status.liveAdapterOperatorEvidenceNextTargetStatus ?? "unknown"}, ${status.liveAdapterOperatorEvidenceNextTargetMissingSections ?? 0} missing sections)`
+      );
+      if (status.liveAdapterOperatorEvidenceNextAction) {
+        console.log(`Operator next action: ${status.liveAdapterOperatorEvidenceNextAction}`);
+      }
+      for (const command of status.liveAdapterOperatorEvidenceNextCommands ?? []) {
+        console.log(`Operator next command: ${command}`);
+      }
+    }
     if (status.liveAdapterCutoverStatus) {
       console.log(
         `Cutover: ${status.liveAdapterCutoverStatus} (${status.liveAdapterCutoverReady ?? 0} ready, ${status.liveAdapterCutoverBlocked ?? 0} blocked, ${status.liveAdapterCutoverBlockedGates ?? 0} blocked gates)`
