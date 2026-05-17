@@ -2,11 +2,12 @@
 
 Project: ariadne
 Status: ready_for_operator_review
-Generated: 2026-05-17T00:44:46.810Z
+Generated: 2026-05-17T00:55:13.149Z
 
 ## Summary
 
-- Blockers: 5
+- Blockers: 4
+- Review audit blockers: 1
 - Actions: 4
 - Approval packet present: true
 - Review audit status: missing_review
@@ -58,4 +59,3 @@ Suggested queries:
 - projects/ariadne/control/live-adapter-approval-pack.json
 - projects/ariadne/control/live-adapter-approval-review-audit.json
 - projects/ariadne/control/mutation-readiness-audit.json
-- control/mutation-readiness-audit.json

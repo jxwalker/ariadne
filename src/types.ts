@@ -561,7 +561,7 @@ export interface LiveAdapterTargetDossier {
   project: string;
   generatedAt: string;
   target: Exclude<MutationReadinessPlan["target"], "generic">;
-  status: "ready_for_operator_review" | "blocked";
+  status: "ready_for_operator_review" | "ready_for_adapter_work" | "blocked";
   readinessRef: string;
   nextActionsRef: string;
   approvalPackRef: string;
@@ -569,6 +569,7 @@ export interface LiveAdapterTargetDossier {
   mutationReadinessAuditRef: string;
   summary: {
     blockers: number;
+    reviewAuditBlockers: number;
     actions: number;
     packetPresent: boolean;
     reviewAuditStatus: LiveAdapterApprovalReviewAudit["targets"][number]["status"];

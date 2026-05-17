@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "project": "ariadne",
-  "generatedAt": "2026-05-17T00:44:57.235Z",
+  "generatedAt": "2026-05-17T00:55:14.984Z",
   "target": "gsd2",
   "status": "ready_for_operator_review",
   "readinessRef": "projects/ariadne/control/live-adapter-readiness.json",
@@ -10,7 +10,8 @@
   "approvalReviewAuditRef": "projects/ariadne/control/live-adapter-approval-review-audit.json",
   "mutationReadinessAuditRef": "projects/ariadne/control/mutation-readiness-audit.json",
   "summary": {
-    "blockers": 6,
+    "blockers": 5,
+    "reviewAuditBlockers": 1,
     "actions": 6,
     "packetPresent": true,
     "reviewAuditStatus": "missing_review",
@@ -175,7 +176,6 @@
     "projects/ariadne/control/live-adapter-next-actions.json",
     "projects/ariadne/control/live-adapter-approval-pack.json",
     "projects/ariadne/control/live-adapter-approval-review-audit.json",
-    "projects/ariadne/control/mutation-readiness-audit.json",
-    "control/mutation-readiness-audit.json"
+    "projects/ariadne/control/mutation-readiness-audit.json"
   ]
 }

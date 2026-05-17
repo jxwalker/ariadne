@@ -28,35 +28,35 @@ export async function generateLiveAdapterTargetDossier(input: {
   const mutationReadinessChecks = mutationReadinessAudit.audit.checks.filter((check) => check.target === input.target);
   const gbrainContext = await readGbrainContext(input.vaultRoot, project, input.target);
   const evidenceRefs = Array.from(
-    new Set([
-      path.relative(input.vaultRoot, readiness.jsonPath),
-      path.relative(input.vaultRoot, nextActions.jsonPath),
-      path.relative(input.vaultRoot, approvalPack.jsonPath),
-      path.relative(input.vaultRoot, approvalReviewAudit.jsonPath),
-      path.relative(input.vaultRoot, mutationReadinessAudit.jsonPath),
-      ...readinessTarget.evidenceRefs,
-      ...nextActionTarget.actions.flatMap((action) => action.evidenceRefs),
-      ...(approvalPacket?.evidenceRefs ?? []),
-      ...(approvalReviewAuditTarget?.evidenceRefs ?? []),
-      ...gbrainContext.reportRefs
-    ])
+    new Set(
+      [
+        path.relative(input.vaultRoot, readiness.jsonPath),
+        path.relative(input.vaultRoot, nextActions.jsonPath),
+        path.relative(input.vaultRoot, approvalPack.jsonPath),
+        path.relative(input.vaultRoot, approvalReviewAudit.jsonPath),
+        path.relative(input.vaultRoot, mutationReadinessAudit.jsonPath),
+        ...readinessTarget.evidenceRefs,
+        ...nextActionTarget.actions.flatMap((action) => action.evidenceRefs),
+        ...(approvalPacket?.evidenceRefs ?? []),
+        ...(approvalReviewAuditTarget?.evidenceRefs ?? []),
+        ...gbrainContext.reportRefs
+      ].map((ref) => canonicalEvidenceRef(input.vaultRoot, project, ref))
+    )
   );
   const dossier: LiveAdapterTargetDossier = {
     schemaVersion: 1,
     project,
     generatedAt: new Date().toISOString(),
     target: input.target,
-    status:
-      approvalPacket && nextActionTarget.actions.length > 0 && approvalReviewAuditTarget.status !== "current_accepted"
-        ? "ready_for_operator_review"
-        : "blocked",
+    status: dossierStatus(readinessTarget.status, Boolean(approvalPacket), nextActionTarget.actions.length),
     readinessRef: path.relative(input.vaultRoot, readiness.jsonPath),
     nextActionsRef: path.relative(input.vaultRoot, nextActions.jsonPath),
     approvalPackRef: path.relative(input.vaultRoot, approvalPack.jsonPath),
     approvalReviewAuditRef: path.relative(input.vaultRoot, approvalReviewAudit.jsonPath),
     mutationReadinessAuditRef: path.relative(input.vaultRoot, mutationReadinessAudit.jsonPath),
     summary: {
-      blockers: readinessTarget.blockers.length + approvalReviewAuditTarget.blockers.length,
+      blockers: readinessTarget.blockers.length,
+      reviewAuditBlockers: approvalReviewAuditTarget.blockers.length,
       actions: nextActionTarget.actions.length,
       packetPresent: Boolean(approvalPacket),
       reviewAuditStatus: approvalReviewAuditTarget.status,
@@ -99,6 +99,16 @@ function mustFind<T extends { target: LiveAdapterTarget }>(items: T[], target: L
   const item = items.find((candidate) => candidate.target === target);
   if (!item) throw new Error(`Missing ${label} for ${target}.`);
   return item;
+}
+
+function dossierStatus(
+  readinessStatus: LiveAdapterTargetDossier["readiness"]["status"],
+  packetPresent: boolean,
+  actionCount: number
+): LiveAdapterTargetDossier["status"] {
+  if (readinessStatus === "ready_for_adapter") return "ready_for_adapter_work";
+  if (packetPresent && actionCount > 0) return "ready_for_operator_review";
+  return "blocked";
 }
 
 async function readGbrainContext(
@@ -177,6 +187,7 @@ function renderDossier(dossier: LiveAdapterTargetDossier): string {
     "## Summary",
     "",
     `- Blockers: ${dossier.summary.blockers}`,
+    `- Review audit blockers: ${dossier.summary.reviewAuditBlockers}`,
     `- Actions: ${dossier.summary.actions}`,
     `- Approval packet present: ${dossier.summary.packetPresent}`,
     `- Review audit status: ${dossier.summary.reviewAuditStatus}`,
@@ -219,7 +230,12 @@ function vaultRelative(vaultRoot: string, absolutePath: string): string {
   return path.relative(vaultRoot, absolutePath).split(path.sep).join("/");
 }
 
+function canonicalEvidenceRef(vaultRoot: string, project: string, ref: string): string {
+  if (path.isAbsolute(ref)) return vaultRelative(vaultRoot, ref);
+  const normalized = ref.split(path.sep).join("/");
+  return normalized.startsWith(`projects/${project}/`) ? normalized : `projects/${project}/${normalized}`;
+}
+
 function list(items: string[]): string[] {
   return items.length === 0 ? ["- none"] : items.map((item) => `- ${item}`);
 }
-
