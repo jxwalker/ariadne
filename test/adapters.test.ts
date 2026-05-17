@@ -1069,6 +1069,19 @@ describe("roadmap adapters", () => {
     expect(reviewSessionMarkdown).toContain("Mutation repair plan");
     expect(reviewSessionMarkdown).toContain("#### Mutation Repair");
     expect(reviewSessionMarkdown).toContain("deployment-mutation-plan");
+    const staleReviewSessionJson = JSON.parse(await fs.readFile(reviewSession.jsonPath, "utf8"));
+    // Simulate a stale deployment review-session target that predates mutation repair fields.
+    staleReviewSessionJson.targets = staleReviewSessionJson.targets.map((target: Record<string, unknown>) => {
+      if (target.target !== "deployment") return target;
+      delete target.mutationRepairStatus;
+      delete target.mutationRepairNextActionCommands;
+      return target;
+    });
+    await fs.writeFile(reviewSession.jsonPath, `${JSON.stringify(staleReviewSessionJson, null, 2)}\n`);
+    const staleReviewConsole = await generateConsoleHtml({ project: "ariadne", vaultRoot, refreshData: true });
+    const staleReviewHtml = await fs.readFile(staleReviewConsole.htmlPath, "utf8");
+    expect(staleReviewHtml).toContain("unknown");
+    expect(staleReviewHtml).toContain("Mutation repair commands remain scaffolds");
     const malformedQueue = path.join(vaultRoot, "projects", "ariadne", "control", "live-adapter-operator-evidence-queue.json");
     const malformedAssist = path.join(vaultRoot, "projects", "ariadne", "control", "live-adapter-operator-evidence-assist.json");
     await fs.writeFile(malformedQueue, JSON.stringify({ schemaVersion: 1, targets: [{ target: 123 }] }));

@@ -651,15 +651,17 @@ function reviewSession(data: ConsoleData): string {
 }
 
 function reviewSessionTargetRow(target: NonNullable<ConsoleData["liveAdapterReviewSession"]>["targets"][number]): string {
+  const mutationRepairStatus = target.mutationRepairStatus ?? "unknown";
+  const mutationRepairNextActionCommands = target.mutationRepairNextActionCommands ?? [];
   return [
     "<tr>",
     `<td>${escapeHtml(target.target)}</td>`,
     `<td class="${statusClass(target.status)}">${escapeHtml(target.status)}</td>`,
     `<td class="${statusClass(target.cutoverStatus)}">${escapeHtml(target.cutoverStatus)}</td>`,
     `<td>${escapeHtml(target.reviewAuditStatus)}</td>`,
-    `<td class="${statusClass(target.mutationRepairStatus)}">${escapeHtml(target.mutationRepairStatus)}</td>`,
+    `<td class="${statusClass(mutationRepairStatus)}">${escapeHtml(mutationRepairStatus)}</td>`,
     `<td>${escapeHtml(target.firstAction ?? "none")}</td>`,
-    `<td>${escapeHtml(String(target.mutationRepairNextActionCommands.length))}</td>`,
+    `<td>${escapeHtml(String(mutationRepairNextActionCommands.length))}</td>`,
     `<td>${escapeHtml(String(target.gbrainContext.suggestedQueries.length))}</td>`,
     "</tr>"
   ].join("");
