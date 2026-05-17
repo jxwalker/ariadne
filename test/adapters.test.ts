@@ -1418,6 +1418,8 @@ describe("roadmap adapters", () => {
     expect(liveAdapterHtml).toContain("cutover deployment");
     expect(liveAdapterHtml).toContain("Current accepted operator packet review");
     expect(liveAdapterHtml).toContain("mutationApproved=false");
+    expect(liveAdapterHtml).toContain("Mutation repair commands remain scaffolds");
+    expect(liveAdapterHtml).toContain("operator_action_required");
     expect(liveAdapterHtml).toContain("Templates are blank collection aids");
     expect(liveAdapterHtml).toContain("The workplan is an evidence collection queue");
     expect(liveAdapterHtml).toContain("The queue orders operator work from preflight checks");
