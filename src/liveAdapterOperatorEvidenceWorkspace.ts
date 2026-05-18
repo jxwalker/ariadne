@@ -1,6 +1,6 @@
 import fs from "node:fs/promises";
 import path from "node:path";
-import { writeJsonArtifact, writeTextArtifact } from "./artifacts.js";
+import { ensureArtifactDir, writeJsonArtifact, writeTextArtifact } from "./artifacts.js";
 import { generateLiveAdapterOperatorEvidenceQueue } from "./liveAdapterOperatorEvidenceQueue.js";
 import { isLiveAdapterTarget, type LiveAdapterTarget } from "./liveAdapterTargets.js";
 import { projectDir, slugifyProject } from "./paths.js";
@@ -113,7 +113,7 @@ async function writeTargetWorkspace(
   const importCommand = `npm run ariadne -- live-adapter-operator-evidence --project ${project} --target ${queueTarget.target} --from vault/${evidenceFileRef} --by <operator>`;
   const supportFileRefs = SUPPORT_FILES.map((fileName) => `projects/${project}/${workspaceDir}/${fileName}`);
 
-  await writeTextArtifact(
+  await writeTextArtifactIfMissing(
     vaultRoot,
     project,
     workspaceDir,
@@ -129,7 +129,7 @@ async function writeTargetWorkspace(
     })
   );
   for (const fileName of SUPPORT_FILES) {
-    await writeTextArtifact(
+    await writeTextArtifactIfMissing(
       vaultRoot,
       project,
       workspaceDir,
@@ -151,6 +151,23 @@ async function writeTargetWorkspace(
     cutoverBlockers: workplanTarget.cutoverBlockers,
     gbrainQueries: workplanTarget.gbrainQueries
   };
+}
+
+async function writeTextArtifactIfMissing(
+  vaultRoot: string,
+  project: string,
+  subdir: string,
+  fileName: string,
+  content: string
+): Promise<string> {
+  const dir = await ensureArtifactDir(vaultRoot, project, subdir);
+  const filePath = path.join(dir, fileName);
+  try {
+    await fs.writeFile(filePath, content.endsWith("\n") ? content : `${content}\n`, { flag: "wx" });
+  } catch (error) {
+    if ((error as NodeJS.ErrnoException).code !== "EEXIST") throw error;
+  }
+  return filePath;
 }
 
 async function readWorkplan(vaultRoot: string, relativeRef: string): Promise<LiveAdapterOperatorEvidenceWorkplan> {
