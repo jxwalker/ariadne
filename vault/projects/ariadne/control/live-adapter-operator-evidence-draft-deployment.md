@@ -1,7 +1,7 @@
 # Live Adapter Operator Evidence Draft Report: deployment
 
 Project: ariadne
-Generated: 2026-05-18T05:43:29.020Z
+Generated: 2026-05-18T08:09:23.198Z
 Status: drafted_for_human_verification
 Mutation approved: false
 Approval granted: false

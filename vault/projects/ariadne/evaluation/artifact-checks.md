@@ -2,7 +2,7 @@
 
 Project: ariadne
 Status: passed
-Generated: 2026-05-18T05:43:30.880Z
+Generated: 2026-05-18T08:09:25.008Z
 
 ## Summary
 
@@ -33,7 +33,7 @@ Generated: 2026-05-18T05:43:30.880Z
 | benchmark-runs | no | missing | 0 | projects/ariadne/evaluation/benchmark-run-*.json |
 | infra-registry | yes | present | - | projects/ariadne/infrastructure/registry.json |
 | infra-snapshots | no | present | 5 | projects/ariadne/infrastructure/infra-snapshot-*.json |
-| local-runtime-probes | no | present | 24 | projects/ariadne/infrastructure/runtime/local-runtime-probe-*.json |
+| local-runtime-probes | no | present | 26 | projects/ariadne/infrastructure/runtime/local-runtime-probe-*.json |
 | control-report | yes | present | - | projects/ariadne/control/merge-readiness.json |
 | console-data | no | present | - | projects/ariadne/console/console-data.json |
 | console-html | no | present | - | projects/ariadne/console/index.html |
@@ -42,7 +42,7 @@ Generated: 2026-05-18T05:43:30.880Z
 | recovery-report | no | present | - | projects/ariadne/control/recovery-report.json |
 | usage-report | no | present | - | projects/ariadne/evaluation/usage-report.json |
 | behavior-checks | no | present | - | projects/ariadne/evaluation/behavior-checks.json |
-| e2e-smoke-reports | no | present | 12 | projects/ariadne/evaluation/e2e-smoke-*.json |
+| e2e-smoke-reports | no | present | 13 | projects/ariadne/evaluation/e2e-smoke-*.json |
 | gbrain-export | no | present | - | projects/ariadne/integrations/gbrain/gbrain-export.json |
 | github-snapshots | no | present | 1 | projects/ariadne/integrations/github/github-snapshot-*.json |
 | approval-records | no | present | 1 | projects/ariadne/control/approvals/approval-*.json |

@@ -3,7 +3,7 @@
 Project: ariadne
 Target: hermes-cron
 Status: blocked
-Generated: 2026-05-18T05:43:29.465Z
+Generated: 2026-05-18T08:09:23.651Z
 Mutation allowed: false
 
 This audit does not enable or execute live adapters. It verifies whether a target has enough current evidence to replace placeholder commands with a target-specific live adapter implementation.

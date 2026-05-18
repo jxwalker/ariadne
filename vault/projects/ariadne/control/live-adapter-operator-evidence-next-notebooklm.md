@@ -1,7 +1,7 @@
 # Live Adapter Operator Evidence Next Packet: notebooklm
 
 Project: ariadne
-Generated: 2026-05-18T05:43:30.811Z
+Generated: 2026-05-18T08:09:24.941Z
 Target: notebooklm
 Selected by: explicit
 Status: operator_action_required
@@ -78,6 +78,70 @@ npm run ariadne -- live-adapter-operator-evidence --project ariadne --target not
 | Dry-run command and safe output | Human operator must verify notebooklm Dry-run command and safe output from source systems or cited Ariadne refs before recording it in operator-evidence.md. | 11 | 0 | 3 |
 | Target-guarded execution wrapper | Human operator must verify notebooklm Target-guarded execution wrapper from source systems or cited Ariadne refs before recording it in operator-evidence.md. | 11 | 0 | 3 |
 | Exact confirm-plan proof | Human operator must verify notebooklm Exact confirm-plan proof from source systems or cited Ariadne refs before recording it in operator-evidence.md. | 11 | 0 | 3 |
+
+## Human Verification Reference Details
+
+### Common References
+
+Existing refs:
+- projects/ariadne/control/live-adapter-evidence-templates/live-adapter-evidence-template-notebooklm.md
+- projects/ariadne/control/live-adapter-dossiers/live-adapter-dossier-notebooklm.json
+- projects/ariadne/control/mutation-readiness-repair-plan.json
+- projects/ariadne/control/live-adapter-readiness.json
+- projects/ariadne/control/live-adapter-next-actions.json
+- projects/ariadne/control/live-adapter-approval-pack.json
+- projects/ariadne/control/live-adapter-approval-review-audit.json
+- projects/ariadne/control/mutation-readiness-audit.json
+- projects/ariadne/control/live-adapter-operator-evidence-workspace-notebooklm.json
+- projects/ariadne/control/operator-evidence/notebooklm/operator-evidence.md
+- projects/ariadne/control/live-adapter-operator-evidence-audit.json
+
+Promoted live evidence refs:
+- none
+
+GBrain queries:
+- Find prior Ariadne decisions and evidence for the notebooklm live adapter.
+- List risks, rollback requirements, and stale assumptions for notebooklm approval.
+- Summarize operator-review evidence still missing before notebooklm mutation readiness.
+
+### Section-Specific Prompts
+
+#### Operator identity and timestamp
+
+Prompt: Human operator must verify notebooklm Operator identity and timestamp from source systems or cited Ariadne refs before recording it in operator-evidence.md.
+
+#### Approval packet review
+
+Prompt: Human operator must verify notebooklm Approval packet review from source systems or cited Ariadne refs before recording it in operator-evidence.md.
+
+#### Authentication or authorization boundary
+
+Prompt: Human operator must verify notebooklm Authentication or authorization boundary from source systems or cited Ariadne refs before recording it in operator-evidence.md.
+
+#### Bounded action statement
+
+Prompt: Human operator must verify notebooklm Bounded action statement from source systems or cited Ariadne refs before recording it in operator-evidence.md.
+
+#### Rollback or disable path
+
+Prompt: Human operator must verify notebooklm Rollback or disable path from source systems or cited Ariadne refs before recording it in operator-evidence.md.
+
+#### Post-action verification command
+
+Prompt: Human operator must verify notebooklm Post-action verification command from source systems or cited Ariadne refs before recording it in operator-evidence.md.
+
+#### Dry-run command and safe output
+
+Prompt: Human operator must verify notebooklm Dry-run command and safe output from source systems or cited Ariadne refs before recording it in operator-evidence.md.
+
+#### Target-guarded execution wrapper
+
+Prompt: Human operator must verify notebooklm Target-guarded execution wrapper from source systems or cited Ariadne refs before recording it in operator-evidence.md.
+
+#### Exact confirm-plan proof
+
+Prompt: Human operator must verify notebooklm Exact confirm-plan proof from source systems or cited Ariadne refs before recording it in operator-evidence.md.
+
 
 ## Evidence Refs
 
