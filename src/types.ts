@@ -994,6 +994,17 @@ export interface LiveAdapterOperatorEvidenceWorkspace {
   }>;
 }
 
+export interface PromotedLiveEvidenceSummary {
+  ref: string;
+  title: string;
+  generatedAt: string;
+  sources: number;
+  parsedSources: number;
+  redactedValues: number;
+  sourceKinds: string[];
+  summaryBullets: string[];
+}
+
 export interface LiveAdapterOperatorEvidenceAssist {
   schemaVersion: 1;
   project: string;
@@ -1010,6 +1021,7 @@ export interface LiveAdapterOperatorEvidenceAssist {
     targets: number;
     assistFiles: number;
     existingEvidenceRefs: number;
+    promotedLiveEvidence: number;
     supportFileRefs: number;
     missingSections: number;
     cutoverBlockers: number;
@@ -1024,6 +1036,7 @@ export interface LiveAdapterOperatorEvidenceAssist {
     checkCommand: string;
     importCommand: string;
     existingEvidenceRefs: string[];
+    promotedLiveEvidence: PromotedLiveEvidenceSummary[];
     supportFileRefs: string[];
     missingSections: string[];
     requiredEvidence: string[];
