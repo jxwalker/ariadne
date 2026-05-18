@@ -1503,11 +1503,14 @@ async function main(): Promise<void> {
   }
 
   if (parsed.command === "roadmap-control-refresh") {
-    const result = await refreshRoadmapControlArtifacts({ project, vaultRoot });
+    const result = await refreshRoadmapControlArtifacts({ project, vaultRoot, refreshConsole: true });
     console.log(`Roadmap control refresh: ${result.markdownPath}`);
     console.log(`Status: ${result.report.status}`);
     console.log(`Roadmap blocked: ${result.report.summary.roadmapBlocked}`);
     console.log(`GBrain documents: ${result.report.summary.gbrainDocuments}`);
+    if (result.report.artifacts.consoleHtml) {
+      console.log(`Console: ${path.join(vaultRoot, result.report.artifacts.consoleHtml)}`);
+    }
     if (result.report.commands.nextOperatorPacket) {
       console.log(`Next operator packet: ${result.report.commands.nextOperatorPacket}`);
     }

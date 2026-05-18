@@ -1,6 +1,7 @@
 import path from "node:path";
 import { generateArtifactCheckReport } from "./artifactChecks.js";
 import { writeJsonArtifact, writeTextArtifact } from "./artifacts.js";
+import { generateConsoleHtml } from "./consoleHtml.js";
 import { exportGbrainBundle } from "./gbrainAdapter.js";
 import { generateLiveAdapterApprovalPack } from "./liveAdapterApprovalPack.js";
 import { generateLiveAdapterApprovalReviewAudit } from "./liveAdapterApprovalReviewAudit.js";
@@ -51,6 +52,7 @@ export interface RoadmapControlRefreshReport {
     operatorNextTargetStatus?: string;
     operatorNextTargetMissingSections?: number;
     dossiers: number;
+    consoleRefreshed?: boolean;
   };
   artifacts: {
     mutationReadinessAudit: string;
@@ -75,6 +77,8 @@ export interface RoadmapControlRefreshReport {
     gbrainExport: string;
     artifactChecks: string;
     roadmapCompletionAudit: string;
+    consoleData?: string;
+    consoleHtml?: string;
   };
   commands: {
     status: string;
@@ -90,6 +94,7 @@ export interface RoadmapControlRefreshReport {
 export async function refreshRoadmapControlArtifacts(input: {
   project: string;
   vaultRoot: string;
+  refreshConsole?: boolean;
 }): Promise<{ jsonPath: string; markdownPath: string; report: RoadmapControlRefreshReport }> {
   const project = slugifyProject(input.project);
   // Keep this ordered: later reports intentionally read stable artifacts written by earlier generators.
@@ -162,7 +167,8 @@ export async function refreshRoadmapControlArtifacts(input: {
       operatorNextTarget: selected?.target,
       operatorNextTargetStatus: selected?.status,
       operatorNextTargetMissingSections: selected?.missingSections,
-      dossiers: dossiers.length
+      dossiers: dossiers.length,
+      consoleRefreshed: false
     },
     artifacts: {
       mutationReadinessAudit: ref(input.vaultRoot, mutationAudit.jsonPath),
@@ -212,6 +218,14 @@ export async function refreshRoadmapControlArtifacts(input: {
   report.summary.artifactStatus = finalArtifactChecks.report.status;
   report.summary.artifactMissingRequired = finalArtifactChecks.report.summary.missingRequired;
   report.artifacts.artifactChecks = ref(input.vaultRoot, finalArtifactChecks.jsonPath);
+  if (input.refreshConsole) {
+    const console = await generateConsoleHtml({ project, vaultRoot: input.vaultRoot, refreshData: true });
+    report.summary.consoleRefreshed = true;
+    report.artifacts.consoleHtml = ref(input.vaultRoot, console.htmlPath);
+    if (console.dataPath) {
+      report.artifacts.consoleData = ref(input.vaultRoot, console.dataPath);
+    }
+  }
   jsonPath = await writeJsonArtifact(input.vaultRoot, project, "control", "roadmap-control-refresh.json", report);
   markdownPath = await writeTextArtifact(input.vaultRoot, project, "control", "roadmap-control-refresh.md", renderReport(report));
   return { jsonPath, markdownPath, report };
@@ -249,6 +263,7 @@ function renderReport(report: RoadmapControlRefreshReport): string {
     `- Operator next target: ${report.summary.operatorNextTarget ?? "none"}`,
     `- GBrain documents: ${report.summary.gbrainDocuments}`,
     `- Dossiers: ${report.summary.dossiers}`,
+    `- Console refreshed: ${report.summary.consoleRefreshed ? "yes" : "no"}`,
     "",
     "## Commands",
     "",
