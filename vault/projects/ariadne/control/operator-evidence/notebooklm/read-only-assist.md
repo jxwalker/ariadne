@@ -1,7 +1,7 @@
 # Read-Only Operator Evidence Assist: notebooklm
 
 Project: ariadne
-Generated: 2026-05-18T08:09:24.701Z
+Generated: 2026-05-18T08:16:03.359Z
 Target: notebooklm
 Status: needs_evidence
 Mutation approved: false

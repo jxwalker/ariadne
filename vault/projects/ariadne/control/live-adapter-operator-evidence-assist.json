@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "project": "ariadne",
-  "generatedAt": "2026-05-18T08:09:21.975Z",
+  "generatedAt": "2026-05-18T08:16:00.636Z",
   "status": "awaiting_operator_review",
   "mutationApproved": false,
   "approvalGranted": false,
@@ -12,8 +12,8 @@
   "summary": {
     "targets": 6,
     "assistFiles": 6,
-    "existingEvidenceRefs": 67,
-    "promotedLiveEvidence": 1,
+    "existingEvidenceRefs": 68,
+    "promotedLiveEvidence": 2,
     "supportFileRefs": 36,
     "missingSections": 54,
     "cutoverBlockers": 42,
@@ -338,7 +338,8 @@
         "projects/ariadne/control/live-adapter-operator-evidence-workspace-deployment.json",
         "projects/ariadne/control/operator-evidence/deployment/operator-evidence.md",
         "projects/ariadne/control/live-adapter-operator-evidence-audit.json",
-        "projects/ariadne/control/live-evidence-promotions/live-evidence-promotion-deployment-2026-05-17T23-37-04-509Z.json"
+        "projects/ariadne/control/live-evidence-promotions/live-evidence-promotion-deployment-2026-05-17T23-37-04-509Z.json",
+        "projects/ariadne/control/live-evidence-promotions/live-evidence-promotion-deployment-2026-05-18T08-15-50-017Z.json"
       ],
       "promotedLiveEvidence": [
         {
@@ -355,6 +356,22 @@
           "summaryBullets": [
             "local-runtime-probe; 8/8 services reachable; 13 models; atlas canary passed qwen3.6-35b-a3b-nvfp4-atlas; 1 redaction(s)",
             "e2e-smoke; 11 passed, 1 blocked, 0 failed; 1 redaction(s)"
+          ]
+        },
+        {
+          "ref": "projects/ariadne/control/live-evidence-promotions/live-evidence-promotion-deployment-2026-05-18T08-15-50-017Z.json",
+          "title": "Latest Atlas Qwen runtime and smoke evidence",
+          "generatedAt": "2026-05-18T08:15:50.017Z",
+          "sources": 2,
+          "parsedSources": 2,
+          "redactedValues": 2,
+          "sourceKinds": [
+            "local-runtime-probe",
+            "e2e-smoke"
+          ],
+          "summaryBullets": [
+            "local-runtime-probe; 8/8 services reachable; 13 models; atlas canary passed qwen3.6-35b-a3b-nvfp4-atlas; 1 redaction(s)",
+            "e2e-smoke; 11 passed, 2 blocked, 0 failed; 1 redaction(s)"
           ]
         }
       ],
@@ -374,10 +391,12 @@
             "projects/ariadne/control/live-adapter-operator-evidence-workspace-deployment.json",
             "projects/ariadne/control/operator-evidence/deployment/operator-evidence.md",
             "projects/ariadne/control/live-adapter-operator-evidence-audit.json",
-            "projects/ariadne/control/live-evidence-promotions/live-evidence-promotion-deployment-2026-05-17T23-37-04-509Z.json"
+            "projects/ariadne/control/live-evidence-promotions/live-evidence-promotion-deployment-2026-05-17T23-37-04-509Z.json",
+            "projects/ariadne/control/live-evidence-promotions/live-evidence-promotion-deployment-2026-05-18T08-15-50-017Z.json"
           ],
           "promotedLiveEvidenceRefs": [
-            "projects/ariadne/control/live-evidence-promotions/live-evidence-promotion-deployment-2026-05-17T23-37-04-509Z.json"
+            "projects/ariadne/control/live-evidence-promotions/live-evidence-promotion-deployment-2026-05-17T23-37-04-509Z.json",
+            "projects/ariadne/control/live-evidence-promotions/live-evidence-promotion-deployment-2026-05-18T08-15-50-017Z.json"
           ],
           "gbrainQueries": [
             "Find prior Ariadne decisions and evidence for the deployment live adapter.",
@@ -401,10 +420,12 @@
             "projects/ariadne/control/live-adapter-operator-evidence-workspace-deployment.json",
             "projects/ariadne/control/operator-evidence/deployment/operator-evidence.md",
             "projects/ariadne/control/live-adapter-operator-evidence-audit.json",
-            "projects/ariadne/control/live-evidence-promotions/live-evidence-promotion-deployment-2026-05-17T23-37-04-509Z.json"
+            "projects/ariadne/control/live-evidence-promotions/live-evidence-promotion-deployment-2026-05-17T23-37-04-509Z.json",
+            "projects/ariadne/control/live-evidence-promotions/live-evidence-promotion-deployment-2026-05-18T08-15-50-017Z.json"
           ],
           "promotedLiveEvidenceRefs": [
-            "projects/ariadne/control/live-evidence-promotions/live-evidence-promotion-deployment-2026-05-17T23-37-04-509Z.json"
+            "projects/ariadne/control/live-evidence-promotions/live-evidence-promotion-deployment-2026-05-17T23-37-04-509Z.json",
+            "projects/ariadne/control/live-evidence-promotions/live-evidence-promotion-deployment-2026-05-18T08-15-50-017Z.json"
           ],
           "gbrainQueries": [
             "Find prior Ariadne decisions and evidence for the deployment live adapter.",
@@ -428,10 +449,12 @@
             "projects/ariadne/control/live-adapter-operator-evidence-workspace-deployment.json",
             "projects/ariadne/control/operator-evidence/deployment/operator-evidence.md",
             "projects/ariadne/control/live-adapter-operator-evidence-audit.json",
-            "projects/ariadne/control/live-evidence-promotions/live-evidence-promotion-deployment-2026-05-17T23-37-04-509Z.json"
+            "projects/ariadne/control/live-evidence-promotions/live-evidence-promotion-deployment-2026-05-17T23-37-04-509Z.json",
+            "projects/ariadne/control/live-evidence-promotions/live-evidence-promotion-deployment-2026-05-18T08-15-50-017Z.json"
           ],
           "promotedLiveEvidenceRefs": [
-            "projects/ariadne/control/live-evidence-promotions/live-evidence-promotion-deployment-2026-05-17T23-37-04-509Z.json"
+            "projects/ariadne/control/live-evidence-promotions/live-evidence-promotion-deployment-2026-05-17T23-37-04-509Z.json",
+            "projects/ariadne/control/live-evidence-promotions/live-evidence-promotion-deployment-2026-05-18T08-15-50-017Z.json"
           ],
           "gbrainQueries": [
             "Find prior Ariadne decisions and evidence for the deployment live adapter.",
@@ -455,10 +478,12 @@
             "projects/ariadne/control/live-adapter-operator-evidence-workspace-deployment.json",
             "projects/ariadne/control/operator-evidence/deployment/operator-evidence.md",
             "projects/ariadne/control/live-adapter-operator-evidence-audit.json",
-            "projects/ariadne/control/live-evidence-promotions/live-evidence-promotion-deployment-2026-05-17T23-37-04-509Z.json"
+            "projects/ariadne/control/live-evidence-promotions/live-evidence-promotion-deployment-2026-05-17T23-37-04-509Z.json",
+            "projects/ariadne/control/live-evidence-promotions/live-evidence-promotion-deployment-2026-05-18T08-15-50-017Z.json"
           ],
           "promotedLiveEvidenceRefs": [
-            "projects/ariadne/control/live-evidence-promotions/live-evidence-promotion-deployment-2026-05-17T23-37-04-509Z.json"
+            "projects/ariadne/control/live-evidence-promotions/live-evidence-promotion-deployment-2026-05-17T23-37-04-509Z.json",
+            "projects/ariadne/control/live-evidence-promotions/live-evidence-promotion-deployment-2026-05-18T08-15-50-017Z.json"
           ],
           "gbrainQueries": [
             "Find prior Ariadne decisions and evidence for the deployment live adapter.",
@@ -482,10 +507,12 @@
             "projects/ariadne/control/live-adapter-operator-evidence-workspace-deployment.json",
             "projects/ariadne/control/operator-evidence/deployment/operator-evidence.md",
             "projects/ariadne/control/live-adapter-operator-evidence-audit.json",
-            "projects/ariadne/control/live-evidence-promotions/live-evidence-promotion-deployment-2026-05-17T23-37-04-509Z.json"
+            "projects/ariadne/control/live-evidence-promotions/live-evidence-promotion-deployment-2026-05-17T23-37-04-509Z.json",
+            "projects/ariadne/control/live-evidence-promotions/live-evidence-promotion-deployment-2026-05-18T08-15-50-017Z.json"
           ],
           "promotedLiveEvidenceRefs": [
-            "projects/ariadne/control/live-evidence-promotions/live-evidence-promotion-deployment-2026-05-17T23-37-04-509Z.json"
+            "projects/ariadne/control/live-evidence-promotions/live-evidence-promotion-deployment-2026-05-17T23-37-04-509Z.json",
+            "projects/ariadne/control/live-evidence-promotions/live-evidence-promotion-deployment-2026-05-18T08-15-50-017Z.json"
           ],
           "gbrainQueries": [
             "Find prior Ariadne decisions and evidence for the deployment live adapter.",
@@ -509,10 +536,12 @@
             "projects/ariadne/control/live-adapter-operator-evidence-workspace-deployment.json",
             "projects/ariadne/control/operator-evidence/deployment/operator-evidence.md",
             "projects/ariadne/control/live-adapter-operator-evidence-audit.json",
-            "projects/ariadne/control/live-evidence-promotions/live-evidence-promotion-deployment-2026-05-17T23-37-04-509Z.json"
+            "projects/ariadne/control/live-evidence-promotions/live-evidence-promotion-deployment-2026-05-17T23-37-04-509Z.json",
+            "projects/ariadne/control/live-evidence-promotions/live-evidence-promotion-deployment-2026-05-18T08-15-50-017Z.json"
           ],
           "promotedLiveEvidenceRefs": [
-            "projects/ariadne/control/live-evidence-promotions/live-evidence-promotion-deployment-2026-05-17T23-37-04-509Z.json"
+            "projects/ariadne/control/live-evidence-promotions/live-evidence-promotion-deployment-2026-05-17T23-37-04-509Z.json",
+            "projects/ariadne/control/live-evidence-promotions/live-evidence-promotion-deployment-2026-05-18T08-15-50-017Z.json"
           ],
           "gbrainQueries": [
             "Find prior Ariadne decisions and evidence for the deployment live adapter.",
@@ -536,10 +565,12 @@
             "projects/ariadne/control/live-adapter-operator-evidence-workspace-deployment.json",
             "projects/ariadne/control/operator-evidence/deployment/operator-evidence.md",
             "projects/ariadne/control/live-adapter-operator-evidence-audit.json",
-            "projects/ariadne/control/live-evidence-promotions/live-evidence-promotion-deployment-2026-05-17T23-37-04-509Z.json"
+            "projects/ariadne/control/live-evidence-promotions/live-evidence-promotion-deployment-2026-05-17T23-37-04-509Z.json",
+            "projects/ariadne/control/live-evidence-promotions/live-evidence-promotion-deployment-2026-05-18T08-15-50-017Z.json"
           ],
           "promotedLiveEvidenceRefs": [
-            "projects/ariadne/control/live-evidence-promotions/live-evidence-promotion-deployment-2026-05-17T23-37-04-509Z.json"
+            "projects/ariadne/control/live-evidence-promotions/live-evidence-promotion-deployment-2026-05-17T23-37-04-509Z.json",
+            "projects/ariadne/control/live-evidence-promotions/live-evidence-promotion-deployment-2026-05-18T08-15-50-017Z.json"
           ],
           "gbrainQueries": [
             "Find prior Ariadne decisions and evidence for the deployment live adapter.",
@@ -563,10 +594,12 @@
             "projects/ariadne/control/live-adapter-operator-evidence-workspace-deployment.json",
             "projects/ariadne/control/operator-evidence/deployment/operator-evidence.md",
             "projects/ariadne/control/live-adapter-operator-evidence-audit.json",
-            "projects/ariadne/control/live-evidence-promotions/live-evidence-promotion-deployment-2026-05-17T23-37-04-509Z.json"
+            "projects/ariadne/control/live-evidence-promotions/live-evidence-promotion-deployment-2026-05-17T23-37-04-509Z.json",
+            "projects/ariadne/control/live-evidence-promotions/live-evidence-promotion-deployment-2026-05-18T08-15-50-017Z.json"
           ],
           "promotedLiveEvidenceRefs": [
-            "projects/ariadne/control/live-evidence-promotions/live-evidence-promotion-deployment-2026-05-17T23-37-04-509Z.json"
+            "projects/ariadne/control/live-evidence-promotions/live-evidence-promotion-deployment-2026-05-17T23-37-04-509Z.json",
+            "projects/ariadne/control/live-evidence-promotions/live-evidence-promotion-deployment-2026-05-18T08-15-50-017Z.json"
           ],
           "gbrainQueries": [
             "Find prior Ariadne decisions and evidence for the deployment live adapter.",
@@ -590,10 +623,12 @@
             "projects/ariadne/control/live-adapter-operator-evidence-workspace-deployment.json",
             "projects/ariadne/control/operator-evidence/deployment/operator-evidence.md",
             "projects/ariadne/control/live-adapter-operator-evidence-audit.json",
-            "projects/ariadne/control/live-evidence-promotions/live-evidence-promotion-deployment-2026-05-17T23-37-04-509Z.json"
+            "projects/ariadne/control/live-evidence-promotions/live-evidence-promotion-deployment-2026-05-17T23-37-04-509Z.json",
+            "projects/ariadne/control/live-evidence-promotions/live-evidence-promotion-deployment-2026-05-18T08-15-50-017Z.json"
           ],
           "promotedLiveEvidenceRefs": [
-            "projects/ariadne/control/live-evidence-promotions/live-evidence-promotion-deployment-2026-05-17T23-37-04-509Z.json"
+            "projects/ariadne/control/live-evidence-promotions/live-evidence-promotion-deployment-2026-05-17T23-37-04-509Z.json",
+            "projects/ariadne/control/live-evidence-promotions/live-evidence-promotion-deployment-2026-05-18T08-15-50-017Z.json"
           ],
           "gbrainQueries": [
             "Find prior Ariadne decisions and evidence for the deployment live adapter.",

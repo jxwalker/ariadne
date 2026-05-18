@@ -3,7 +3,7 @@
 Project: ariadne
 Target: deployment
 Status: awaiting_operator_review
-Generated: 2026-05-18T08:09:22.522Z
+Generated: 2026-05-18T08:16:01.128Z
 Mutation approved: false
 Approval granted: false
 Operator evidence record created: false
@@ -22,8 +22,8 @@ This assist packet gathers read-only Ariadne support refs for operator review. I
 
 - Targets: 1
 - Assist files: 1
-- Existing evidence refs: 12
-- Promoted live evidence: 1
+- Existing evidence refs: 13
+- Promoted live evidence: 2
 - Support file refs: 6
 - Missing sections: 9
 - Cutover blockers: 7
@@ -33,4 +33,4 @@ This assist packet gathers read-only Ariadne support refs for operator review. I
 
 | Target | Status | Assist file | Existing refs | Missing sections | Cutover blockers |
 | --- | --- | --- | ---: | ---: | ---: |
-| deployment | needs_evidence | projects/ariadne/control/operator-evidence/deployment/read-only-assist.md | 12 | 9 | 7 |
+| deployment | needs_evidence | projects/ariadne/control/operator-evidence/deployment/read-only-assist.md | 13 | 9 | 7 |

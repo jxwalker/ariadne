@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "project": "ariadne",
-  "checkedAt": "2026-05-18T04:47:24.931Z",
+  "checkedAt": "2026-05-18T08:15:59.706Z",
   "target": "deployment",
   "status": "incomplete",
   "mutationApproved": false,
@@ -26,8 +26,8 @@
       "status": "incomplete",
       "sourceFileRef": "projects/ariadne/control/operator-evidence/deployment/operator-evidence.md",
       "evidenceFileRef": "projects/ariadne/control/operator-evidence/deployment/operator-evidence.md",
-      "checkRef": "projects/ariadne/control/live-adapter-operator-evidence-checks/operator-evidence-check-deployment-2026-05-18T04-47-24-930Z.json",
-      "checkMarkdownRef": "projects/ariadne/control/live-adapter-operator-evidence-checks/operator-evidence-check-deployment-2026-05-18T04-47-24-930Z.md",
+      "checkRef": "projects/ariadne/control/live-adapter-operator-evidence-checks/operator-evidence-check-deployment-2026-05-18T08-15-59-706Z.json",
+      "checkMarkdownRef": "projects/ariadne/control/live-adapter-operator-evidence-checks/operator-evidence-check-deployment-2026-05-18T08-15-59-706Z.md",
       "missingSections": 9,
       "missingSectionLabels": [
         "Operator identity and timestamp",

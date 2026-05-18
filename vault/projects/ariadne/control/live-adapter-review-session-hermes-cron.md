@@ -3,7 +3,7 @@
 Project: ariadne
 Target: hermes-cron
 Status: operator_review_required
-Generated: 2026-05-18T08:09:23.646Z
+Generated: 2026-05-18T08:16:02.258Z
 Mutation approved: false
 Operator decision required: true
 
@@ -67,7 +67,7 @@ Missing operator evidence sections:
 - Target-guarded execution wrapper
 - Exact confirm-plan proof
 
-Latest preflight: projects/ariadne/control/live-adapter-operator-evidence-checks/operator-evidence-check-hermes-cron-2026-05-18T08-09-23-505Z.json
+Latest preflight: projects/ariadne/control/live-adapter-operator-evidence-checks/operator-evidence-check-hermes-cron-2026-05-18T08-16-02-133Z.json
 
 Read-only assist: projects/ariadne/control/operator-evidence/hermes-cron/read-only-assist.md
 

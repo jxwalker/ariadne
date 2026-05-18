@@ -1,7 +1,7 @@
 # Live Adapter Operator Evidence Draft Report: deployment
 
 Project: ariadne
-Generated: 2026-05-18T08:09:23.198Z
+Generated: 2026-05-18T08:16:01.821Z
 Status: drafted_for_human_verification
 Mutation approved: false
 Approval granted: false
@@ -16,8 +16,8 @@ This report creates a non-authoritative draft only. It does not import operator 
 - Target: deployment
 - Missing sections: 9
 - Candidate rows: 9
-- Existing evidence refs: 12
-- Promoted live evidence refs: 1
+- Existing evidence refs: 13
+- Promoted live evidence refs: 2
 - GBrain queries: 3
 
 ## Refs
@@ -43,15 +43,15 @@ npm run ariadne -- live-adapter-operator-evidence --project ariadne --target dep
 
 | Missing section | Human verification required | Existing refs | Promoted refs | GBrain queries |
 | --- | --- | ---: | ---: | ---: |
-| Operator identity and timestamp | true | 12 | 1 | 3 |
-| Approval packet review | true | 12 | 1 | 3 |
-| Authentication or authorization boundary | true | 12 | 1 | 3 |
-| Bounded action statement | true | 12 | 1 | 3 |
-| Rollback or disable path | true | 12 | 1 | 3 |
-| Post-action verification command | true | 12 | 1 | 3 |
-| Dry-run command and safe output | true | 12 | 1 | 3 |
-| Target-guarded execution wrapper | true | 12 | 1 | 3 |
-| Exact confirm-plan proof | true | 12 | 1 | 3 |
+| Operator identity and timestamp | true | 13 | 2 | 3 |
+| Approval packet review | true | 13 | 2 | 3 |
+| Authentication or authorization boundary | true | 13 | 2 | 3 |
+| Bounded action statement | true | 13 | 2 | 3 |
+| Rollback or disable path | true | 13 | 2 | 3 |
+| Post-action verification command | true | 13 | 2 | 3 |
+| Dry-run command and safe output | true | 13 | 2 | 3 |
+| Target-guarded execution wrapper | true | 13 | 2 | 3 |
+| Exact confirm-plan proof | true | 13 | 2 | 3 |
 
 ## Notes
 

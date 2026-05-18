@@ -3,7 +3,7 @@
 Project: ariadne
 Target: deployment
 Status: operator_review_required
-Generated: 2026-05-18T08:09:22.745Z
+Generated: 2026-05-18T08:16:01.379Z
 Mutation approved: false
 Operator decision required: true
 
@@ -67,7 +67,7 @@ Missing operator evidence sections:
 - Target-guarded execution wrapper
 - Exact confirm-plan proof
 
-Latest preflight: projects/ariadne/control/live-adapter-operator-evidence-checks/operator-evidence-check-deployment-2026-05-18T08-09-22-087Z.json
+Latest preflight: projects/ariadne/control/live-adapter-operator-evidence-checks/operator-evidence-check-deployment-2026-05-18T08-16-00-743Z.json
 
 Read-only assist: projects/ariadne/control/operator-evidence/deployment/read-only-assist.md
 

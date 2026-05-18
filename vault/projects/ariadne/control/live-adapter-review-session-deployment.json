@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "project": "ariadne",
-  "generatedAt": "2026-05-18T08:09:22.745Z",
+  "generatedAt": "2026-05-18T08:16:01.379Z",
   "target": "deployment",
   "status": "operator_review_required",
   "mutationApproved": false,
@@ -53,7 +53,7 @@
       "operatorEvidenceFileRef": "projects/ariadne/control/operator-evidence/deployment/operator-evidence.md",
       "operatorEvidenceCheckCommand": "npm run ariadne -- live-adapter-operator-evidence-check --project ariadne --target deployment --from vault/projects/ariadne/control/operator-evidence/deployment/operator-evidence.md",
       "operatorEvidenceImportCommand": "npm run ariadne -- live-adapter-operator-evidence --project ariadne --target deployment --from vault/projects/ariadne/control/operator-evidence/deployment/operator-evidence.md --by <operator>",
-      "latestOperatorEvidenceCheckRef": "projects/ariadne/control/live-adapter-operator-evidence-checks/operator-evidence-check-deployment-2026-05-18T08-09-22-087Z.json",
+      "latestOperatorEvidenceCheckRef": "projects/ariadne/control/live-adapter-operator-evidence-checks/operator-evidence-check-deployment-2026-05-18T08-16-00-743Z.json",
       "operatorEvidenceAssistFileRef": "projects/ariadne/control/operator-evidence/deployment/read-only-assist.md",
       "operatorEvidenceAssistNextSteps": [
         "Open read-only-assist.md and the listed support refs.",
