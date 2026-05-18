@@ -88,6 +88,7 @@ import {
   planOpenScorpionMutation
 } from "./openScorpionMutation.js";
 import { defaultVaultRoot } from "./paths.js";
+import { generateOperatorSectionHandoff } from "./operatorSectionHandoff.js";
 import { recordPlaywrightEvidence } from "./playwrightEvidence.js";
 import { generatePlaywrightPlan } from "./playwrightPlan.js";
 import { generatePrd } from "./prd.js";
@@ -221,6 +222,7 @@ function usage(): string {
     "  ariadne live-adapter-operator-evidence-audit --project <project>",
     "  ariadne live-adapter-operator-evidence-next --project <project> [--target <github|deployment|hermes-cron|openscorpion|gsd2|notebooklm>]",
     "  ariadne operator-next --project <project> [--target <github|deployment|hermes-cron|openscorpion|gsd2|notebooklm>]",
+    "  ariadne operator-section --project <project> [--target <github|deployment|hermes-cron|openscorpion|gsd2|notebooklm>] [--section <label>]",
     "  ariadne live-adapter-operator-evidence-workplan --project <project>",
     "  ariadne live-adapter-operator-evidence-queue --project <project>",
     "  ariadne live-adapter-operator-evidence-workspace --project <project> [--target <github|deployment|hermes-cron|openscorpion|gsd2|notebooklm>]",
@@ -1468,11 +1470,34 @@ async function main(): Promise<void> {
     console.log(`Ariadne operator next: ${packet.packet.target}`);
     console.log(`Status: ${packet.packet.status}`);
     console.log(`Missing sections: ${packet.packet.summary.missingSections}`);
+    console.log(`Current section: ${packet.packet.verificationWorksheet[0]?.missingSection ?? "none"}`);
     console.log(`Console: ${consoleHtml.htmlPath}`);
     console.log(`Packet: ${packet.markdownPath}`);
     console.log(`Fill: ${path.join(vaultRoot, evidenceRef)}`);
+    console.log(`Section guide: npm run ariadne -- operator-section --project ${packet.packet.project} --target ${packet.packet.target}`);
     console.log(`Preflight: ${packet.packet.commands.check}`);
     console.log(`Import after human verification: ${packet.packet.afterHumanVerificationCommands.import}`);
+    console.log("Rule: do not import until a human has filled the evidence file and the preflight reports complete evidence.");
+    return;
+  }
+
+  if (parsed.command === "operator-section") {
+    const section = optionalTextOption(parsed.options, "section");
+    const result = await generateOperatorSectionHandoff({
+      project,
+      vaultRoot,
+      target: optionalLiveAdapterOperatorEvidenceTarget(parsed.options),
+      section
+    });
+    console.log(`Ariadne operator section: ${result.handoff.target}`);
+    console.log(`Step: ${result.handoff.summary.step} of ${result.handoff.summary.totalMissingSections}`);
+    console.log(`Section: ${result.handoff.section.missingSection}`);
+    console.log(`Start with: ${result.handoff.section.startWith}`);
+    console.log(`Record in: ${result.handoff.section.recordIn}`);
+    console.log(`Fill: ${path.join(vaultRoot, result.handoff.refs.evidenceFile)}`);
+    console.log(`Section guide: ${result.markdownPath}`);
+    console.log(`Preflight: ${result.handoff.commands.check}`);
+    console.log(`Import after human verification: ${result.handoff.afterHumanVerificationCommands.import}`);
     console.log("Rule: do not import until a human has filled the evidence file and the preflight reports complete evidence.");
     return;
   }
@@ -1534,6 +1559,9 @@ async function main(): Promise<void> {
     }
     if (result.report.commands.nextOperatorPacket) {
       console.log(`Next operator packet: ${result.report.commands.nextOperatorPacket}`);
+    }
+    if (result.report.commands.nextOperatorSection) {
+      console.log(`Next operator section: ${result.report.commands.nextOperatorSection}`);
     }
     if (result.report.commands.nextOperatorDraft) {
       console.log(`Next operator draft: ${result.report.commands.nextOperatorDraft}`);
@@ -1935,6 +1963,13 @@ function operatorEvidenceFileRef(project: string, target: string, evidenceRefs: 
     evidenceRefs.find((ref) => ref.endsWith(`/control/operator-evidence/${target}/operator-evidence.md`)) ??
     `projects/${project}/control/operator-evidence/${target}/operator-evidence.md`
   );
+}
+
+function optionalTextOption(options: Map<string, string | true>, key: string): string | undefined {
+  const value = options.get(key);
+  if (value === undefined) return undefined;
+  if (value === true) throw new Error(`--${key} requires a value.`);
+  return value;
 }
 
 function optionalLiveAdapterTarget(options: Map<string, string | true>) {
