@@ -52,6 +52,12 @@ When operator evidence is the blocker, the checklist becomes the main work surfa
 
 The checklist can tell you where context exists and where to begin. It still cannot verify facts for you. Only the human-filled `operator-evidence.md` plus a passing preflight can move the gate.
 
+To prepare the current operator packet and print only the file to fill plus the preflight/import commands:
+
+```bash
+npm run ariadne -- operator-next --project ariadne
+```
+
 ## The Four Routes
 
 | Route | Use it when | Main surface |
@@ -70,10 +76,10 @@ The current blocker is intentional: live-adapter work is stopped until operator 
 For the current target:
 
 ```bash
-npm run ariadne -- guide --project ariadne
+npm run ariadne -- operator-next --project ariadne
 ```
 
-Follow the **Evidence checklist**:
+Then follow the generated packet and the console **Evidence checklist**:
 
 - Start with the current section.
 - Use the listed assist and evidence refs as context.

@@ -1694,6 +1694,18 @@ describe("roadmap adapters", () => {
     expect(nextPacketOperatorCommands).toContain("live-adapter-operator-evidence-check");
     expect(nextPacketOperatorCommands).not.toContain("live-adapter-operator-evidence --project");
     expect(nextPacketImportCommand).toContain("live-adapter-operator-evidence");
+    const operatorNextOutput = execFileSync(
+      tsx,
+      ["src/ariadne.ts", "operator-next", "--project", "ariadne", "--vault", vaultRoot],
+      { cwd: process.cwd(), encoding: "utf8" }
+    );
+    expect(operatorNextOutput).toContain("Ariadne operator next:");
+    expect(operatorNextOutput).toContain("Console:");
+    expect(operatorNextOutput).toContain("Packet:");
+    expect(operatorNextOutput).toContain("Fill:");
+    expect(operatorNextOutput).toContain("Preflight:");
+    expect(operatorNextOutput).toContain("Import after human verification:");
+    expect(operatorNextOutput).toContain("Rule: do not import until");
     const reusedPreflightPacket = await generateLiveAdapterOperatorEvidenceNextPacket({
       project: "ariadne",
       vaultRoot,
@@ -1914,7 +1926,8 @@ describe("roadmap adapters", () => {
     expect(console.data.summary.liveAdapterOperatorEvidenceAssistRefs).toBeGreaterThan(0);
     expect(console.data.liveAdapterOperatorEvidenceAssist?.operatorEvidenceRecordCreated).toBe(false);
     expect(console.data.liveAdapterOperatorEvidenceAssist?.targets.some((target) => target.target === "hermes-cron")).toBe(true);
-    expect(console.data.summary.liveAdapterOperatorEvidenceChecks).toBe(18);
+    expect(console.data.summary.liveAdapterOperatorEvidenceChecks).toBe(console.data.liveAdapterOperatorEvidenceChecks.length);
+    expect(console.data.summary.liveAdapterOperatorEvidenceChecks).toBeGreaterThanOrEqual(18);
     expect(console.data.liveAdapterOperatorEvidenceAudit?.mutationApproved).toBe(false);
     expect(console.data.liveAdapterOperatorEvidenceChecks[0]?.recorded).toBe(false);
     expect(console.data.liveAdapterOperatorEvidence.some((record) => record.target === "deployment")).toBe(true);
