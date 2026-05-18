@@ -2150,6 +2150,13 @@ export interface ConsoleOperatorChecklist {
   checkCommand: string;
   importCommand: string;
   missingSections: number;
+  fillProgress: {
+    currentSection: string;
+    readyForHumanFill: number;
+    contextBacked: number;
+    promotedLiveEvidenceBacked: number;
+    gbrainBacked: number;
+  };
   sections: ConsoleOperatorChecklistSection[];
 }
 
@@ -2160,6 +2167,8 @@ export type ConsoleOperatorChecklistStatus =
 
 export interface ConsoleOperatorChecklistSection {
   missingSection: string;
+  status: "ready_for_human_fill" | "context_available" | "missing_context";
+  current: boolean;
   prompt: string;
   startWith: string;
   recordIn: string;

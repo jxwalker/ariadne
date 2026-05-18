@@ -37,6 +37,7 @@ export async function generateConsoleBrowserCheckReport(input: {
     checks.push(await visibleCheck(page, "next-best-action", "Next best action", "text=Next best action"));
     checks.push(await visibleCheck(page, "next-action-steps", "Next action steps", '[data-visual-role="next-action-steps"]'));
     checks.push(await operatorChecklistVisibleCheck(page));
+    checks.push(await operatorChecklistProgressVisibleCheck(page));
     checks.push(await visibleCheck(page, "workflow-routes", "Workflow interaction routes", '[data-visual-role="workflow-routes"]'));
     checks.push(await visibleCheck(page, "operator-modes", "Operator modes", "text=Operator modes"));
     checks.push(await visibleCheck(page, "workflow-surfaces", "Workflow surfaces", "text=Surface split"));
@@ -140,8 +141,17 @@ async function embeddedWorkflowDataCheck(page: Page): Promise<ConsoleBrowserChec
               checkCommand?: string;
               importCommand?: string;
               missingSections?: number;
+              fillProgress?: {
+                currentSection?: string;
+                readyForHumanFill?: number;
+                contextBacked?: number;
+                promotedLiveEvidenceBacked?: number;
+                gbrainBacked?: number;
+              };
               sections?: Array<{
                 missingSection?: string;
+                status?: string;
+                current?: boolean;
                 prompt?: string;
                 startWith?: string;
                 recordIn?: string;
@@ -188,11 +198,21 @@ async function embeddedWorkflowDataCheck(page: Page): Promise<ConsoleBrowserChec
                 checklist.importCommand
             ) &&
               Number.isInteger(checklist.missingSections) &&
+              Boolean(
+                checklist.fillProgress &&
+                  checklist.fillProgress.currentSection &&
+                  Number.isInteger(checklist.fillProgress.readyForHumanFill) &&
+                  Number.isInteger(checklist.fillProgress.contextBacked) &&
+                  Number.isInteger(checklist.fillProgress.promotedLiveEvidenceBacked) &&
+                  Number.isInteger(checklist.fillProgress.gbrainBacked)
+              ) &&
               Array.isArray(checklist.sections) &&
               checklist.sections.length > 0 &&
               checklist.sections.every(
                 (section) =>
                   section.missingSection &&
+                  section.status &&
+                  typeof section.current === "boolean" &&
                   section.prompt &&
                   section.startWith &&
                   section.recordIn &&
@@ -261,6 +281,34 @@ async function operatorChecklistVisibleCheck(page: Page): Promise<ConsoleBrowser
     "operator-evidence-checklist",
     "Operator evidence checklist",
     '[data-visual-role="operator-evidence-checklist"]'
+  );
+}
+
+async function operatorChecklistProgressVisibleCheck(page: Page): Promise<ConsoleBrowserCheckReport["checks"][number]> {
+  const required = await page
+    .locator("#console-data")
+    .evaluate((node) => {
+      try {
+        const data = JSON.parse(node.textContent ?? "{}") as { workflow?: { operatorChecklist?: unknown } };
+        return Boolean(data.workflow?.operatorChecklist);
+      } catch {
+        return false;
+      }
+    })
+    .catch(() => false);
+  if (!required) {
+    return {
+      id: "operator-evidence-progress",
+      label: "Operator evidence progress",
+      status: "passed",
+      detail: "No operator progress is required."
+    };
+  }
+  return visibleCheck(
+    page,
+    "operator-evidence-progress",
+    "Operator evidence progress",
+    '[data-visual-role="operator-evidence-progress"]'
   );
 }
 

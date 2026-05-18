@@ -3070,7 +3070,13 @@ describe("roadmap adapters", () => {
       );
       expect(console.data.workflow.operatorChecklist?.target).toBe(console.data.workflow.nextAction.title.split(" ")[0]);
       expect(console.data.workflow.operatorChecklist?.sections.length).toBeGreaterThan(0);
+      expect(console.data.workflow.operatorChecklist?.fillProgress.currentSection).toBe(
+        console.data.workflow.operatorChecklist?.sections[0]?.missingSection
+      );
+      expect(console.data.workflow.operatorChecklist?.fillProgress.readyForHumanFill).toBeGreaterThan(0);
       const checklistSection = console.data.workflow.operatorChecklist?.sections[0];
+      expect(checklistSection?.current).toBe(true);
+      expect(checklistSection?.status).toBe("ready_for_human_fill");
       expect(checklistSection?.startWith).toBeTruthy();
       expect(checklistSection?.recordIn).toBe("operator-evidence.md");
       expect(checklistSection?.preflight).toBeTruthy();
@@ -3082,6 +3088,8 @@ describe("roadmap adapters", () => {
     expect(guidedGuide).toContain("Mode: Guided");
     expect(guidedGuide).toContain("Next best action:");
     expect(guidedGuide).toContain("Evidence checklist:");
+    expect(guidedGuide).toContain("Start here:");
+    expect(guidedGuide).toContain("ready for human fill");
     expect(guidedGuide).toContain("Interaction routes:");
     expect(guidedGuide).toContain("Sleep, memory, and automation loop");
     expect(guidedGuide).toContain("GBrain queries");
@@ -3205,6 +3213,7 @@ describe("roadmap adapters", () => {
     expect(html).toContain("command-disclosure");
     expect(html).toContain("Runner command");
     expect(html).toContain("operator-evidence-checklist");
+    expect(html).toContain("operator-evidence-progress");
     expect(html).toContain("Evidence checklist");
     expect(html).toContain("workflow-routes");
     expect(html).toContain("Interaction routes");

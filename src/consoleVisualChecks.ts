@@ -24,6 +24,7 @@ export async function generateConsoleVisualCheckReport(input: {
     checkContains(html, "next-best-action", "Next best action panel", "Next best action"),
     checkContains(html, "next-action-steps", "Next action steps", 'data-visual-role="next-action-steps"'),
     operatorChecklistVisualCheck(html, embeddedData),
+    operatorChecklistProgressVisualCheck(html, embeddedData),
     checkContains(html, "workflow-routes", "Workflow interaction routes", 'data-visual-role="workflow-routes"'),
     checkContains(html, "operator-modes", "Operator modes panel", 'data-visual-role="operator-modes"'),
     checkContains(html, "workflow-surfaces", "Workflow surfaces panel", 'data-visual-role="workflow-surfaces"'),
@@ -148,10 +149,20 @@ function embeddedWorkflowDataCheck(data: ConsoleData | undefined): ConsoleVisual
           checklist.importCommand
       ) &&
         Number.isInteger(checklist.missingSections) &&
+        Boolean(
+          checklist.fillProgress &&
+            checklist.fillProgress.currentSection &&
+            Number.isInteger(checklist.fillProgress.readyForHumanFill) &&
+            Number.isInteger(checklist.fillProgress.contextBacked) &&
+            Number.isInteger(checklist.fillProgress.promotedLiveEvidenceBacked) &&
+            Number.isInteger(checklist.fillProgress.gbrainBacked)
+        ) &&
         checklist.sections.length > 0 &&
         checklist.sections.every((section) =>
           Boolean(
             section.missingSection &&
+              section.status &&
+              typeof section.current === "boolean" &&
               section.prompt &&
               section.startWith &&
               section.recordIn &&
@@ -197,6 +208,22 @@ function operatorChecklistVisualCheck(html: string, data: ConsoleData | undefine
     detail: required
       ? detailSentence(present ? "Found" : "Missing", "operator evidence checklist")
       : "No operator checklist is required."
+  };
+}
+
+function operatorChecklistProgressVisualCheck(
+  html: string,
+  data: ConsoleData | undefined
+): ConsoleVisualCheckReport["checks"][number] {
+  const required = Boolean(data?.workflow?.operatorChecklist);
+  const present = !required || html.includes('data-visual-role="operator-evidence-progress"');
+  return {
+    id: "operator-evidence-progress",
+    label: "Operator evidence progress",
+    status: present ? "passed" : "failed",
+    detail: required
+      ? detailSentence(present ? "Found" : "Missing", "operator evidence progress")
+      : "No operator progress is required."
   };
 }
 

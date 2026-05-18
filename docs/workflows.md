@@ -141,7 +141,7 @@ When adding a new command, also decide which workflow stage it supports and whet
 - `workflow.stages`: the ordered Capture, Shape, Build, Verify, Review, Operate lane with status, detail, and proof refs.
 - `workflow.nextAction`: the selected human next action, its source, artifact ref, and optional runner command.
 - `workflow.nextAction.steps`: the progressive action plan behind the selected next action. Guided users can follow the step titles in order; experienced operators can expand the attached commands and artifact refs.
-- `workflow.operatorChecklist`: when operator evidence blocks the roadmap, the selected target's missing sections with start refs, recording location, preflight guidance, promoted-live-evidence counts, and GBrain query counts. This is a fill aid only; it does not create evidence or approve mutation.
+- `workflow.operatorChecklist`: the selected target's missing sections with start refs, recording location, preflight guidance, a current-section marker, advisory context counts, promoted-live-evidence counts, and GBrain query counts when operator evidence blocks the roadmap. This is a fill aid only; it does not create evidence or approve mutation.
 - `workflow.routes`: the four canonical interaction routes, their audiences, primary/support surfaces, current-route marker, and route-specific steps. This is the main answer to "how does the operator interact?".
 - `workflow.modes`: guided, developer, operator, and automation interaction modes with primary surface, support surfaces, command policy, and next-step guidance.
 - `workflow.surfaces`: the responsibility split for Ariadne Console, Hermes, NotebookLM, GBrain, and the `ariadne` runner.

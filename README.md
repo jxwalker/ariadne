@@ -77,6 +77,16 @@ Ariadne is operated workflow-first. Start from the console and its Next Best Act
 
 The main runner is named `ariadne`. Use `npm run ariadne -- <command>` during local development; installed builds expose the same command as the package binary. Do not use the old scaffold name `cli` for commands, docs, or new entrypoints.
 
+For the MVP path, run the one-shot setup:
+
+```bash
+./scripts/ariadne-mvp-setup.sh
+```
+
+Then open `vault/projects/ariadne/console/index.html` and follow the current route and Next Best Action.
+
+The manual development path is:
+
 ```bash
 npm install
 npm run check
@@ -91,7 +101,7 @@ npm run ariadne -- guide --project ariadne
 
 The runner also loads local `ARIADNE_` defaults from a git-ignored `.env` file in the current working directory. This is the preferred unattended path for private LAN or tailnet model endpoints such as Atlas; explicit shell variables still win over `.env` values, and non-`ARIADNE_` keys are ignored.
 
-Read [Ariadne Workflows](docs/workflows.md) before using the longer command reference in [User Guide](docs/user-guide.md). The `guide` command is the terminal front door: guided mode hides runner commands, developer/operator modes reveal them when useful, and the generated console keeps the same flow visible as UI. The console includes a Capture -> Shape -> Build -> Verify -> Review -> Operate workflow lane, a single Next Best Action panel with ordered action steps, interaction routes for idea-to-system, implementation, operator-evidence, and Hermes automation work, an operator evidence checklist for the current blocked target, operator interaction modes for guided users, developers, operators, and Hermes automation, mutation-readiness repair state, operator evidence state, and read-only runtime/deployment evidence. The same journey state is available as typed `workflow` data in `console/console-data.json` for Hermes dashboards and future live UIs. Blocked live-adapter work is visible by target without granting approval or running a live command.
+Start with the [MVP user guide](docs/user-guide.md), then use [Ariadne Workflows](docs/workflows.md) and the [command reference](docs/command-reference.md) when the console points to a specific path. The `guide` command is the terminal front door: guided mode hides runner commands, developer/operator modes reveal them when useful, and the generated console keeps the same flow visible as UI. The console includes a Capture -> Shape -> Build -> Verify -> Review -> Operate workflow lane, a single Next Best Action panel with ordered action steps, interaction routes for idea-to-system, implementation, operator-evidence, and Hermes automation work, an operator evidence checklist for the current blocked target, operator interaction modes for guided users, developers, operators, and Hermes automation, mutation-readiness repair state, operator evidence state, and read-only runtime/deployment evidence. The same journey state is available as typed `workflow` data in `console/console-data.json` for Hermes dashboards and future live UIs. Blocked live-adapter work is visible by target without granting approval or running a live command.
 
 ## Vault Layout
 
@@ -235,7 +245,8 @@ npm run ariadne -- openscorpion-mutation-plan --project ariadne --activity activ
 
 ## Documentation
 
-- [User guide](docs/user-guide.md)
+- [MVP user guide](docs/user-guide.md)
+- [Command reference](docs/command-reference.md)
 - [Developer guide](docs/developer-guide.md)
 - [Evaluation system](docs/evaluation.md)
 - [Deployment guide](docs/deployment.md)

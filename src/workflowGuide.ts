@@ -120,11 +120,13 @@ function operatorChecklistLines(data: ConsoleData, commandVisible: boolean): str
   return [
     "",
     `Evidence checklist: ${checklist.target} (${checklist.missingSections} missing)`,
+    `Start here: ${checklist.fillProgress.currentSection}`,
+    `Progress: ${checklist.fillProgress.readyForHumanFill}/${checklist.missingSections} ready for human fill; ${checklist.fillProgress.contextBacked} context-backed; ${checklist.fillProgress.promotedLiveEvidenceBacked} live-evidence-backed; ${checklist.fillProgress.gbrainBacked} GBrain-backed`,
     `Evidence file: ${checklist.evidenceFileRef}`,
     `Assist file: ${checklist.assistFileRef}`,
     ...checklist.sections.flatMap((section, index) => {
       const lines = [
-        `${index + 1}. ${section.missingSection}`,
+        `${index + 1}. ${section.missingSection}${section.current ? " (current)" : ""} - ${section.status}`,
         `   Prompt: ${section.prompt}`,
         `   Start with: ${section.startWith}`,
         `   Record in: ${section.recordIn}`,
