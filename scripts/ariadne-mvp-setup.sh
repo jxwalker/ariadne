@@ -9,8 +9,8 @@ cd "$ROOT_DIR"
 echo "==> Installing Ariadne dependencies"
 npm install
 
-echo "==> Installing Playwright Chromium"
-npx playwright install chromium
+echo "==> Installing Playwright Chromium (~100MB, may take several minutes on slower connections)"
+npx --yes playwright install chromium
 
 echo "==> Typechecking and testing"
 npm run check

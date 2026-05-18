@@ -353,15 +353,15 @@ npm run ariadne -- github-mutation-plan --project ariadne --repo jxwalker/ariadn
 
 This writes a GitHub mutation-readiness plan with the dry-run, live command, post-verification command, and rollback text already scoped to the requested PR or workflow run. It still does not execute; use `mutation-dry-run` and `mutation-execute` after audit approval.
 
-For deployment plans, prefer `deployment-mutation-plan` over the generic `mutation-readiness` command because it forces a supported estate system and host label into the reviewed scope.
+Prefer `deployment-mutation-plan` for deployment plans; it forces a supported estate system and host label into the reviewed scope.
 
-For Hermes scheduler plans, prefer `hermes-cron-mutation-plan` because it forces a supported scheduler action and job label into the reviewed scope.
+Hermes scheduler plans should use `hermes-cron-mutation-plan`, which forces a supported scheduler action and job label into the reviewed scope.
 
-For GSD2 plans, prefer `gsd2-mutation-plan` because it forces the task id, package, and execution mode into the reviewed scope.
+Use `gsd2-mutation-plan` for GSD2 plans so the task id, package, and execution mode are forced into the reviewed scope.
 
-For NotebookLM plans, prefer `notebooklm-mutation-plan` because it forces the notebook label and supported action into the reviewed scope.
+NotebookLM plans should go through `notebooklm-mutation-plan`; the notebook label and supported action are then part of the reviewed scope.
 
-For OpenScorpion plans, prefer `openscorpion-mutation-plan` because it forces the activity id, activity type, action, and route into the reviewed scope.
+OpenScorpion work uses `openscorpion-mutation-plan` to force the activity id, activity type, action, and route into the reviewed scope.
 
 ## Request Mutation Approval
 
