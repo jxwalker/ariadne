@@ -137,7 +137,7 @@ When the persisted roadmap-completion audit is older than newer control artifact
 
 When `live-adapter-operator-evidence-workspace` is run with `--target` and a current queue/workplan already exists, it reuses those artifacts and writes only the scoped workspace plus that target's fillable files. This keeps one-adapter paperwork from refreshing unrelated global control reports.
 
-`live-adapter-operator-evidence-assist` writes read-only per-target assist files beside the operator workspace files. It gathers existing Ariadne support refs from the workplan so the operator has a shorter review path, while keeping `operatorEvidenceRecordCreated=false`, `mutationApproved=false`, and `approvalGranted=false`.
+`live-adapter-operator-evidence-assist` writes read-only per-target assist files beside the operator workspace files. It gathers existing Ariadne support refs from the workplan so the operator has a shorter review path, adds a human verification worksheet for every missing section, and keeps the import command behind an explicit after-verification heading. It keeps `operatorEvidenceRecordCreated=false`, `mutationApproved=false`, and `approvalGranted=false`.
 
 `live-adapter-operator-evidence` and `live-adapter-operator-evidence-audit` evaluate those filled operator files. The importer hashes the source, checks required evidence sections, keeps GBrain notes advisory, and writes `mutationApproved=false` plus `approvalGranted=false`.
 

@@ -1430,11 +1430,21 @@ describe("roadmap adapters", () => {
     expect(githubAssist?.promotedLiveEvidence).toEqual([]);
     const hermesAssist = operatorEvidenceAssist.assist.targets.find((target) => target.target === "hermes-cron");
     expect(hermesAssist?.nextSteps).toContain("Verify each relevant fact manually before copying it into operator-evidence.md.");
+    expect(hermesAssist?.reviewChecklist.length).toBeGreaterThan(0);
+    expect(hermesAssist?.reviewChecklist[0]?.humanVerificationRequired).toBe(true);
+    expect(hermesAssist?.reviewChecklist[0]?.humanVerificationPrompt).toContain("Human operator must verify hermes-cron");
     const assistMarkdown = await fs.readFile(operatorEvidenceAssist.markdownPath, "utf8");
     expect(assistMarkdown).toContain("does not create operator evidence records");
     const githubAssistMarkdown = await fs.readFile(path.join(vaultRoot, githubAssist?.assistFileRef ?? ""), "utf8");
     expect(githubAssistMarkdown).toContain("This file is generated from existing Ariadne artifacts.");
     expect(githubAssistMarkdown).toContain("GBrain Advisory Queries");
+    expect(githubAssistMarkdown).toContain("Human Verification Worksheet");
+    expect(githubAssistMarkdown).toContain("Import Command After Human Verification");
+    const preflightCommandBlock = markdownCodeBlockAfterHeading(githubAssistMarkdown, "Commands");
+    const importCommandBlock = markdownCodeBlockAfterHeading(githubAssistMarkdown, "Import Command After Human Verification");
+    expect(preflightCommandBlock).toContain("live-adapter-operator-evidence-check");
+    expect(preflightCommandBlock).not.toContain("live-adapter-operator-evidence-import-ready");
+    expect(importCommandBlock).toContain("live-adapter-operator-evidence");
     expect(await fs.readFile(githubWorkspaceFile, "utf8")).toContain("Operator draft marker: keep me");
     const scopedHermesAssist = await generateLiveAdapterOperatorEvidenceAssist({
       project: "ariadne",
@@ -2544,6 +2554,10 @@ describe("roadmap adapters", () => {
     expect(assistWithPromotion.assist.summary.promotedLiveEvidence).toBe(1);
     expect(deploymentPromotedLiveEvidence[0]?.title).toBe("Read-only deployment runtime evidence");
     expect(deploymentPromotedLiveEvidence[0]?.summaryBullets.join("\n")).toContain("qwen3.6-35b-a3b-nvfp4-atlas");
+    expect(
+      assistWithPromotion.assist.targets.find((target) => target.target === "deployment")?.reviewChecklist[0]
+        ?.promotedLiveEvidenceRefs
+    ).toContain(promotionRef);
     expect(assistWithPromotion.assist.workplanRef).toBe(
       "projects/ariadne/control/live-adapter-operator-evidence-workplan.json"
     );
@@ -2551,6 +2565,7 @@ describe("roadmap adapters", () => {
     const deploymentAssistMarkdown = await fs.readFile(path.join(vaultRoot, assistWithPromotion.assist.targets[0]?.assistFileRef ?? ""), "utf8");
     expect(deploymentAssistMarkdown).toContain("Promoted Live Evidence");
     expect(deploymentAssistMarkdown).toContain("Read-only deployment runtime evidence");
+    expect(deploymentAssistMarkdown).toContain("| Missing section | Human verification prompt | Existing refs | Promoted live evidence | GBrain queries |");
     const roadmapWithPromotion = await generateRoadmapCompletionAudit({ project: "ariadne", vaultRoot });
     const operatorRequirementWithPromotion = roadmapWithPromotion.audit.requirements.find(
       (requirement) => requirement.id === "operator-evidence"
@@ -3304,6 +3319,17 @@ async function readJsonl(filePath: string): Promise<Array<Record<string, string>
     .map((line) => line.trim())
     .filter(Boolean)
     .map((line) => JSON.parse(line) as Record<string, string>);
+}
+
+function markdownCodeBlockAfterHeading(markdown: string, heading: string): string {
+  const headingIndex = markdown.indexOf(`## ${heading}`);
+  if (headingIndex === -1) return "";
+  const fence = "```bash\n";
+  const fenceIndex = markdown.indexOf(fence, headingIndex);
+  if (fenceIndex === -1) return "";
+  const start = fenceIndex + fence.length;
+  const end = markdown.indexOf("\n```", start);
+  return end === -1 ? "" : markdown.slice(start, end);
 }
 
 function restoreEnv(name: string, value: string | undefined): void {

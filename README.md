@@ -50,7 +50,7 @@ The system starts with source-grounded intake: drawings, white papers, dictated 
 - Batch-import only ready live-adapter operator evidence files whose latest preflight checks are complete, while leaving all mutation and approval gates closed.
 - Scope batch preflight and ready-import to one adapter with `--target` when the operator wants to move a single target through evidence collection.
 - Generate fillable live-adapter operator evidence workspaces for every adapter or one target at a time, with support files for packet, auth, rollback, dry-run, GBrain notes, and read-only assist packets.
-- Generate read-only operator evidence assist packets for every adapter or one target at a time, gathering existing Ariadne support refs without counting generated text as operator proof.
+- Generate read-only operator evidence assist packets for every adapter or one target at a time, gathering existing Ariadne support refs and human verification worksheets without counting generated text as operator proof.
 - Generate a next-target operator evidence packet that selects the current blocked adapter and refreshes the workspace, read-only assist, preflight, review session, and cutover audit in one non-mutating step.
 - Record file-backed sleep routines, memory proposals, agent mail, interagent leases, read-only Hermes cron snapshots/proposals, and read-only deployment snapshots.
 - Render evaluation trend charts in the static console and generate deterministic plus browser-backed console checks.
@@ -191,7 +191,7 @@ vault/projects/<project>/
 21. Use `live-adapter-operator-evidence-workplan` to turn missing or incomplete operator evidence into target-specific check/import commands and collection queues.
 22. Use `live-adapter-operator-evidence-queue` to rank targets as unchecked, needs evidence, ready for import, needs rework, or complete.
 23. Use `live-adapter-operator-evidence-workspace` to create fillable per-target files under `control/operator-evidence/`; add `--target <target>` to focus the summary artifact on one adapter without changing the all-target workspace.
-24. Use `live-adapter-operator-evidence-assist` to gather current read-only Ariadne support refs into per-target assist files before the operator fills the real evidence file; add `--target <target>` when an operator is reviewing one adapter at a time.
+24. Use `live-adapter-operator-evidence-assist` to gather current read-only Ariadne support refs into per-target assist files before the operator fills the real evidence file; add `--target <target>` when an operator is reviewing one adapter at a time. Assist files separate non-mutating preflight commands from the later import command and include a human verification worksheet for each missing section.
 25. Use `live-adapter-operator-evidence-check` to preflight a filled workspace file before creating any operator evidence record.
 26. Use `live-adapter-operator-evidence-check-all --source workspace` to preflight every target workspace file and refresh the queue without recording evidence; add `--target <target>` to preflight one adapter from its target-scoped workspace when available.
 27. Use `live-adapter-operator-evidence-import-ready` when the queue contains ready targets and you want to import only files whose latest preflight checks are complete; add `--target <target>` to import one ready adapter without touching the rest of the queue.

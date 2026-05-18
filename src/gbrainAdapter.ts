@@ -187,6 +187,11 @@ export async function exportGbrainBundle(input: {
             ...item.summaryBullets.map((bullet) => `  - ${bullet}`)
           ]),
           "",
+          "Human verification worksheet:",
+          ...(target.reviewChecklist ?? []).map(
+            (item) => `- ${item.missingSection}: ${item.humanVerificationPrompt}`
+          ),
+          "",
           "GBrain advisory queries:",
           ...target.gbrainQueries.map((query) => `- ${query}`)
         ].join("\n"),
@@ -469,8 +474,23 @@ function isLiveAdapterOperatorEvidenceAssistTarget(value: unknown): boolean {
     stringArray(target.cutoverBlockers) &&
     stringArray(target.gbrainQueries) &&
     stringArray(target.nextSteps) &&
+    (target.reviewChecklist === undefined ||
+      (Array.isArray(target.reviewChecklist) && target.reviewChecklist.every(isOperatorAssistReviewChecklistItem))) &&
     Array.isArray(target.promotedLiveEvidence) &&
     target.promotedLiveEvidence.every(isPromotedLiveEvidenceSummary)
+  );
+}
+
+function isOperatorAssistReviewChecklistItem(value: unknown): boolean {
+  const item = objectValue(value);
+  return (
+    Boolean(item) &&
+    typeof item?.missingSection === "string" &&
+    typeof item.humanVerificationPrompt === "string" &&
+    stringArray(item.existingEvidenceRefs) &&
+    stringArray(item.promotedLiveEvidenceRefs) &&
+    stringArray(item.gbrainQueries) &&
+    item.humanVerificationRequired === true
   );
 }
 
