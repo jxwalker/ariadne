@@ -22,6 +22,7 @@ export async function generateConsoleVisualCheckReport(input: {
     checkContains(html, "brand", "Ariadne brand lockup", "Ariadne Console"),
     checkContains(html, "workflow", "Workflow overview", 'aria-label="Ariadne workflow"'),
     checkContains(html, "next-best-action", "Next best action panel", "Next best action"),
+    embeddedWorkflowDataCheck(embeddedData),
     checkContains(html, "gate-matrix", "Gate matrix section", "Gate Matrix"),
     checkContains(html, "timeline", "Timeline section", "Timeline"),
     checkContains(html, "approval-queue", "Approval queue section", "Approval Queue"),
@@ -117,6 +118,24 @@ function embeddedDataCheck(data: ConsoleData | undefined): ConsoleVisualCheckRep
     label: "Embedded console data parses",
     status: valid ? "passed" : "failed",
     detail: valid ? `Project ${data?.project} summary is present.` : "Embedded console data is missing or malformed."
+  };
+}
+
+function embeddedWorkflowDataCheck(data: ConsoleData | undefined): ConsoleVisualCheckReport["checks"][number] {
+  const stageIds = data?.workflow?.stages.map((stage) => stage.id) ?? [];
+  const valid =
+    data?.workflow?.schemaVersion === 1 &&
+    stageIds.join(",") === "capture,shape,build,verify,review,operate" &&
+    Boolean(data?.workflow?.nextAction?.artifactRef) &&
+    Boolean(data?.workflow?.surfaces?.some((surface) => surface.id === "hermes")) &&
+    Boolean(data?.workflow?.surfaces?.some((surface) => surface.id === "gbrain"));
+  return {
+    id: "workflow-data",
+    label: "Embedded workflow data",
+    status: valid ? "passed" : "failed",
+    detail: valid
+      ? `Workflow stages and ${data?.workflow?.surfaces?.length ?? 0} surface contract entries are present.`
+      : "Embedded console workflow data is missing or malformed."
   };
 }
 

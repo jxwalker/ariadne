@@ -1904,6 +1904,7 @@ export interface ConsoleData {
   project: string;
   generatedAt: string;
   projectDir: string;
+  workflow: ConsoleWorkflow;
   summary: {
     sources: number;
     extractionResults: number;
@@ -2100,4 +2101,36 @@ export interface ConsoleData {
     hermesCronSnapshots?: string;
     hermesCronProposals?: string;
   };
+}
+
+export interface ConsoleWorkflow {
+  schemaVersion: 1;
+  stages: ConsoleWorkflowStage[];
+  nextAction: ConsoleWorkflowAction;
+  surfaces: ConsoleWorkflowSurface[];
+}
+
+export interface ConsoleWorkflowStage {
+  id: "capture" | "shape" | "build" | "verify" | "review" | "operate";
+  label: string;
+  status: string;
+  detail: string;
+  proofRef: string;
+}
+
+export interface ConsoleWorkflowAction {
+  id: string;
+  title: string;
+  status: string;
+  detail: string;
+  artifactRef: string;
+  command?: string;
+  source: "operator-evidence-queue" | "roadmap-completion-audit" | "merge-readiness" | "workflow-fallback";
+}
+
+export interface ConsoleWorkflowSurface {
+  id: "ariadne-console" | "hermes" | "notebooklm" | "gbrain" | "ariadne-runner";
+  label: string;
+  role: string;
+  mutationAuthority: "none" | "reviewed-external" | "approved-mutation-only";
 }

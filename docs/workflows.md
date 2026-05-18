@@ -6,6 +6,8 @@ Ariadne is used through a small set of human workflows, not by memorising every 
 
 The primary human surface is the Ariadne Console. It shows the project journey, the current blocking gate, the evidence chain, verification state, review state, and operations substrate.
 
+The same workflow state is part of `console/console-data.json` under `workflow`. UI surfaces should consume that typed contract instead of scraping the rendered HTML or re-deriving next actions independently.
+
 Hermes is the long-running runtime layer: scheduling, sleep routines, memory reviews, sessions, mail, and background coordination. Hermes should feed Ariadne evidence and receive reviewed work from Ariadne, but it is not the only operator interface.
 
 NotebookLM is a research and source-grounding tool. Its reviewed exports enter Ariadne as preserved source material.
@@ -112,3 +114,13 @@ Console stage: `Operate`.
 Commands are implementation details behind the workflows. Keep the first screen focused on the workflow lane and next action. Put dense command recipes in generated packets, developer docs, or expert command reference sections.
 
 When adding a new command, also decide which workflow stage it supports and whether it should appear in the console as a human next action, a supporting artifact, or expert-only detail.
+
+## Console Data Contract
+
+`console/console-data.json` contains:
+
+- `workflow.stages`: the ordered Capture, Shape, Build, Verify, Review, Operate lane with status, detail, and proof refs.
+- `workflow.nextAction`: the selected human next action, its source, artifact ref, and optional runner command.
+- `workflow.surfaces`: the responsibility split for Ariadne Console, Hermes, NotebookLM, GBrain, and the `ariadne` runner.
+
+Hermes dashboards, a future live Ariadne UI, and other operator displays should read that object as the canonical workflow projection.

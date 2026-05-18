@@ -43,6 +43,7 @@ export async function generateConsoleBrowserCheckReport(input: {
     checks.push(await visibleCheck(page, "evidence-checks", "Evidence Checks metric", "text=Evidence Checks"));
     checks.push(await operatorEvidenceCheckCommandCheck(page));
     checks.push(await embeddedDataCheck(page));
+    checks.push(await embeddedWorkflowDataCheck(page));
     checks.push(await screenshotSizeCheck(screenshotPath));
   } finally {
     await browser.close();
@@ -110,6 +111,41 @@ async function embeddedDataCheck(page: Page): Promise<ConsoleBrowserCheckReport[
     label: "Embedded console data parses",
     status: valid ? "passed" : "failed",
     detail: valid ? "Embedded console data is parseable." : "Embedded console data is missing or malformed."
+  };
+}
+
+async function embeddedWorkflowDataCheck(page: Page): Promise<ConsoleBrowserCheckReport["checks"][number]> {
+  const valid = await page
+    .locator("#console-data")
+    .evaluate((node) => {
+      try {
+        const data = JSON.parse(node.textContent ?? "{}") as {
+          workflow?: {
+            schemaVersion?: number;
+            stages?: Array<{ id?: string }>;
+            nextAction?: { artifactRef?: string };
+            surfaces?: Array<{ id?: string }>;
+          };
+        };
+        const stageIds = data.workflow?.stages?.map((stage) => stage.id).join(",");
+        const surfaceIds = new Set(data.workflow?.surfaces?.map((surface) => surface.id));
+        return (
+          data.workflow?.schemaVersion === 1 &&
+          stageIds === "capture,shape,build,verify,review,operate" &&
+          Boolean(data.workflow.nextAction?.artifactRef) &&
+          surfaceIds.has("hermes") &&
+          surfaceIds.has("gbrain")
+        );
+      } catch {
+        return false;
+      }
+    })
+    .catch(() => false);
+  return {
+    id: "workflow-data",
+    label: "Embedded workflow data parses",
+    status: valid ? "passed" : "failed",
+    detail: valid ? "Embedded workflow data is parseable." : "Embedded workflow data is missing or malformed."
   };
 }
 
