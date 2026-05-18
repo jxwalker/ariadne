@@ -1,6 +1,11 @@
 import fs from "node:fs/promises";
 import path from "node:path";
 import { writeJsonArtifact, writeTextArtifact } from "./artifacts.js";
+import {
+  markdownCell,
+  renderHumanVerificationReferenceDetails,
+  renderHumanVerificationWorksheetTable
+} from "./humanVerificationWorksheetMarkdown.js";
 import type { LiveAdapterTarget } from "./liveAdapterTargets.js";
 import { generateLiveAdapterOperatorEvidenceWorkspace } from "./liveAdapterOperatorEvidenceWorkspace.js";
 import { generateLiveAdapterOperatorEvidenceWorkplan } from "./liveAdapterOperatorEvidenceWorkplan.js";
@@ -381,7 +386,11 @@ function renderTargetAssist(project: string, generatedAt: string, target: Assist
     "",
     "## Human Verification Worksheet",
     "",
-    ...reviewChecklistLines(target.reviewChecklist),
+    ...renderHumanVerificationWorksheetTable(target.reviewChecklist),
+    "",
+    "## Human Verification Reference Details",
+    "",
+    ...renderHumanVerificationReferenceDetails(target.reviewChecklist),
     "",
     "## Support File Refs",
     "",
@@ -428,21 +437,4 @@ function promotedLiveEvidenceLines(items: PromotedLiveEvidenceSummary[]): string
   ]);
 }
 
-function reviewChecklistLines(items: AssistTarget["reviewChecklist"]): string[] {
-  return [
-    "| Missing section | Human verification prompt | Existing refs | Promoted live evidence | GBrain queries |",
-    "| --- | --- | ---: | ---: | ---: |",
-    ...(items.length === 0
-      ? [
-          "| none | No missing sections. Confirm the imported operator record remains current before relying on it. | 0 | 0 | 0 |"
-        ]
-      : items.map(
-          (item) =>
-            `| ${cell(item.missingSection)} | ${cell(item.humanVerificationPrompt)} | ${item.existingEvidenceRefs.length} | ${item.promotedLiveEvidenceRefs.length} | ${item.gbrainQueries.length} |`
-        ))
-  ];
-}
-
-function cell(value: string): string {
-  return value.replace(/\|/g, "\\|").replace(/[`<>]/g, "").replace(/\n/g, " ");
-}
+const cell = markdownCell;
