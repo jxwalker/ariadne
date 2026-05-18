@@ -23,6 +23,7 @@ const CANARY_RESPONSE_TOKEN_BUDGET = 128;
 const CANARY_GENERATION_TIMEOUT_MS = 30_000;
 const CANARY_READY_PROMPT = "/no_think\nReply with exactly READY and no other text.";
 const CANARY_SYSTEM_PROMPT = "You are a local runtime health check. Do not reason. Output exactly READY.";
+const REDACTED_RUNTIME_URL = "<redacted-runtime-url>";
 
 interface CommandResult {
   exitCode: number;
@@ -194,7 +195,7 @@ async function probeHttpService(
   const result = await fetchJson(url, undefined, timeoutMs);
   return {
     id,
-    url,
+    url: redactRuntimeUrl(url),
     status: result.ok ? "reachable" : "unreachable",
     httpStatus: result.status || undefined,
     detail: result.ok ? "HTTP endpoint responded." : result.error ?? `HTTP ${result.status || "unreachable"}.`
@@ -225,13 +226,14 @@ async function probeModelEndpoint(
   fetchJson: NonNullable<RuntimeProbeDeps["fetchJson"]>,
   timeoutMs: number
 ): Promise<RuntimeModelEndpointProbe> {
+  const persistedEndpoint = { ...endpoint, url: redactRuntimeUrl(endpoint.url) };
   const modelsResult =
     endpoint.kind === "ollama"
       ? await fetchJson(`${endpoint.url.replace(/\/$/, "")}/api/tags`, undefined, timeoutMs)
       : await fetchJson(`${endpoint.url.replace(/\/$/, "")}/models`, undefined, timeoutMs);
   if (!modelsResult.ok) {
     return {
-      ...endpoint,
+      ...persistedEndpoint,
       status: "unreachable",
       models: [],
       detail: modelsResult.error ?? `Model list failed with HTTP ${modelsResult.status || "unreachable"}.`,
@@ -241,7 +243,7 @@ async function probeModelEndpoint(
 
   const models = endpoint.kind === "ollama" ? ollamaModels(modelsResult.json) : openAiModels(modelsResult.json);
   const base: RuntimeModelEndpointProbe = {
-    ...endpoint,
+    ...persistedEndpoint,
     status: models.length > 0 ? "reachable" : "degraded",
     models,
     detail: models.length > 0 ? `Discovered ${models.length} model(s).` : "Endpoint responded without model ids."
@@ -402,11 +404,11 @@ function renderProbe(probe: LocalRuntimeProbe): string {
     "",
     "## Model Endpoints",
     "",
-    "| Id | Kind | Status | Models | Canary |",
-    "| --- | --- | --- | --- | --- |",
+    "| Id | Kind | URL | Status | Models | Canary |",
+    "| --- | --- | --- | --- | --- | --- |",
     ...probe.modelEndpoints.map(
       (endpoint) =>
-        `| ${endpoint.id} | ${endpoint.kind} | ${endpoint.status} | ${endpoint.models.length} | ${endpoint.canary?.status ?? "not-run"} |`
+        `| ${endpoint.id} | ${endpoint.kind} | ${endpoint.url} | ${endpoint.status} | ${endpoint.models.length} | ${endpoint.canary?.status ?? "not-run"} |`
     ),
     "",
     "## Warnings",
@@ -485,8 +487,28 @@ function sanitize(value: string): string {
   return value
     .replace(home ? new RegExp(escapeRegExp(home), "g") : /$a/, "<HOME>")
     .replace(new RegExp(escapeRegExp(process.cwd()), "g"), "<WORKSPACE_ROOT>")
+    .replace(/https?:\/\/[^\s"')]+/g, (url) => redactRuntimeUrl(url))
     .replace(/sk-[A-Za-z0-9_-]{8,}/g, "sk-[redacted]")
     .replace(/gh[pousr]_[A-Za-z0-9_]{8,}/g, "gh_[redacted]");
+}
+
+function redactRuntimeUrl(value: string): string {
+  try {
+    const parsed = new URL(value);
+    if (isLocalhost(parsed.hostname)) return value;
+    return REDACTED_RUNTIME_URL;
+  } catch {
+    return REDACTED_RUNTIME_URL;
+  }
+}
+
+function isLocalhost(hostname: string): boolean {
+  const normalized = hostname.toLowerCase();
+  if (normalized === "localhost" || normalized === "::1" || normalized === "[::1]") return true;
+  const ipv4Parts = normalized.split(".");
+  if (ipv4Parts.length !== 4) return false;
+  const octets = ipv4Parts.map((part) => Number(part));
+  return octets.every((octet) => Number.isInteger(octet) && octet >= 0 && octet <= 255) && octets[0] === 127;
 }
 
 function objectValue(value: unknown): Record<string, unknown> | undefined {

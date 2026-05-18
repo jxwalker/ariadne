@@ -2203,13 +2203,19 @@ describe("roadmap adapters", () => {
         }
       );
 
-      expect(runtimeProbe.probe.hermes.dashboard.url).toBe("http://runtime.env/hermes");
+      expect(runtimeProbe.probe.hermes.dashboard.url).toBe("<redacted-runtime-url>");
       expect(runtimeProbe.probe.modelEndpoints.find((endpoint) => endpoint.id === "atlas")?.url).toBe(
-        "http://runtime.env/atlas/v1"
+        "<redacted-runtime-url>"
       );
       expect(runtimeProbe.probe.modelEndpoints.find((endpoint) => endpoint.id === "atlas")?.canary?.model).toBe(
         "qwen3.6-35b-a3b-nvfp4-atlas"
       );
+      const runtimeProbeJson = await fs.readFile(runtimeProbe.jsonPath, "utf8");
+      const runtimeProbeMarkdown = await fs.readFile(runtimeProbe.markdownPath, "utf8");
+      expect(runtimeProbeJson).not.toContain("http://runtime.env");
+      expect(runtimeProbeJson).toContain("<redacted-runtime-url>");
+      expect(runtimeProbeMarkdown).not.toContain("http://runtime.env");
+      expect(runtimeProbeMarkdown).toContain("<redacted-runtime-url>");
       expect(canaryRequests).toEqual([
         {
           url: "http://runtime.env/atlas/v1/chat/completions",
@@ -2223,6 +2229,56 @@ describe("roadmap adapters", () => {
       restoreEnv("ARIADNE_ATLAS_URL", previous.atlasUrl);
       restoreEnv("ARIADNE_ATLAS_CANARY_MODEL", previous.atlasModel);
     }
+  });
+
+  it("preserves loopback runtime URLs and redacts private non-loopback URLs", async () => {
+    const { vaultRoot } = await preparedProject();
+    const runtimeProbe = await collectLocalRuntimeProbe(
+      {
+        project: "ariadne",
+        vaultRoot,
+        hermesDashboardUrl: "http://localhost:9119",
+        ollamaUrl: "http://127.0.0.2:11434",
+        ds4Url: "http://[::1]:8000/v1",
+        lmStudioUrl: "http://127.0.0.1:1234/v1",
+        atlasUrl: "http://10.0.0.5:8888/v1",
+        timeoutMs: 100
+      },
+      {
+        runCommand: async () => ({ exitCode: 0, stdout: "ok", stderr: "" }),
+        fetchJson: async (url) => {
+          if (url === "http://localhost:9119") return { ok: true, status: 200, text: "<html></html>" };
+          if (url.endsWith("/api/tags")) {
+            return { ok: true, status: 200, text: "{}", json: { models: [{ name: "qwen-local" }] } };
+          }
+          if (url.endsWith("/models")) {
+            return { ok: true, status: 200, text: "{}", json: { data: [{ id: "local-model" }] } };
+          }
+          return { ok: false, status: 0, text: "", error: "connection refused" };
+        }
+      }
+    );
+
+    expect(runtimeProbe.probe.hermes.dashboard.url).toBe("http://localhost:9119");
+    expect(runtimeProbe.probe.modelEndpoints.find((endpoint) => endpoint.id === "ollama")?.url).toBe(
+      "http://127.0.0.2:11434"
+    );
+    expect(runtimeProbe.probe.modelEndpoints.find((endpoint) => endpoint.id === "ds4-openai")?.url).toBe(
+      "http://[::1]:8000/v1"
+    );
+    expect(runtimeProbe.probe.modelEndpoints.find((endpoint) => endpoint.id === "lmstudio")?.url).toBe(
+      "http://127.0.0.1:1234/v1"
+    );
+    expect(runtimeProbe.probe.modelEndpoints.find((endpoint) => endpoint.id === "atlas")?.url).toBe(
+      "<redacted-runtime-url>"
+    );
+    const runtimeProbeJson = await fs.readFile(runtimeProbe.jsonPath, "utf8");
+    const runtimeProbeMarkdown = await fs.readFile(runtimeProbe.markdownPath, "utf8");
+    expect(runtimeProbeJson).toContain("http://127.0.0.2:11434");
+    expect(runtimeProbeJson).not.toContain("http://10.0.0.5:8888/v1");
+    expect(runtimeProbeMarkdown).toContain("http://127.0.0.2:11434");
+    expect(runtimeProbeMarkdown).not.toContain("http://10.0.0.5:8888/v1");
+    expect(runtimeProbeMarkdown).toContain("<redacted-runtime-url>");
   });
 
   it("records CI, CodeRabbit, Playwright, infra, OpenScorpion, and guarded worktree evidence", async () => {
@@ -2443,6 +2499,13 @@ describe("roadmap adapters", () => {
     );
     expect(runtimeProbe.probe.summary.models).toBe(3);
     expect(runtimeProbe.probe.summary.usageRecords).toBe(3);
+    expect(runtimeProbe.probe.hermes.dashboard.url).toBe("<redacted-runtime-url>");
+    expect(runtimeProbe.probe.modelEndpoints.map((endpoint) => endpoint.url)).toEqual([
+      "<redacted-runtime-url>",
+      "<redacted-runtime-url>",
+      "<redacted-runtime-url>",
+      "<redacted-runtime-url>"
+    ]);
     expect(runtimeProbe.probe.modelEndpoints.find((endpoint) => endpoint.id === "ollama")?.canary?.status).toBe(
       "passed"
     );
