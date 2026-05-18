@@ -1763,6 +1763,7 @@ describe("roadmap adapters", () => {
     expect(nextPacketOperatorCommands).toContain("live-adapter-operator-evidence-check");
     expect(nextPacketOperatorCommands).not.toContain("live-adapter-operator-evidence --project");
     expect(nextPacketImportCommand).toContain("live-adapter-operator-evidence");
+    await generateRoadmapCompletionAudit({ project: "ariadne", vaultRoot });
     const operatorNextOutput = execFileSync(
       tsx,
       ["src/ariadne.ts", "operator-next", "--project", "ariadne", "--vault", vaultRoot],
@@ -1780,6 +1781,8 @@ describe("roadmap adapters", () => {
     expect(operatorNextOutput).toContain("Preflight:");
     expect(operatorNextOutput).toContain("Import after human verification:");
     expect(operatorNextOutput).toContain("Rule: do not import until");
+    const operatorNextStatus = await projectStatus(vaultRoot, "ariadne");
+    expect(operatorNextStatus.roadmapCompletionStale).toBe(false);
     const operatorSectionOutput = execFileSync(
       tsx,
       ["src/ariadne.ts", "operator-section", "--project", "ariadne", "--vault", vaultRoot],

@@ -1466,6 +1466,7 @@ async function main(): Promise<void> {
       vaultRoot,
       target: optionalLiveAdapterOperatorEvidenceTarget(parsed.options)
     });
+    await generateRoadmapCompletionAudit({ project, vaultRoot });
     const consoleHtml = await generateConsoleHtml({ project, vaultRoot, refreshData: true });
     const evidenceRef = operatorEvidenceFileRef(packet.packet.project, packet.packet.target, packet.packet.evidenceRefs);
     const currentSection = packet.packet.verificationWorksheet[0]?.missingSection;
