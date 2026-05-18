@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "project": "ariadne",
-  "generatedAt": "2026-05-17T09:47:18.483Z",
+  "generatedAt": "2026-05-18T03:38:00.091Z",
   "status": "awaiting_operator_evidence",
   "mutationApproved": false,
   "reviewSessionRef": "projects/ariadne/control/live-adapter-review-session.json",
@@ -17,7 +17,7 @@
       "status": "awaiting_operator_evidence",
       "templateRef": "projects/ariadne/control/live-adapter-evidence-templates/live-adapter-evidence-template-github.md",
       "reviewSessionStatus": "operator_review_required",
-      "firstAction": "Fill and import operator evidence",
+      "firstAction": "Prepare, fill, and import operator evidence",
       "suggestedEvidenceRefs": [
         "control/operator-evidence/github-packet-review.md",
         "control/operator-evidence/github-auth-boundary.md",
@@ -61,7 +61,7 @@
       "status": "awaiting_operator_evidence",
       "templateRef": "projects/ariadne/control/live-adapter-evidence-templates/live-adapter-evidence-template-deployment.md",
       "reviewSessionStatus": "operator_review_required",
-      "firstAction": "Fill and import operator evidence",
+      "firstAction": "Prepare, fill, and import operator evidence",
       "suggestedEvidenceRefs": [
         "control/operator-evidence/deployment-packet-review.md",
         "control/operator-evidence/deployment-auth-boundary.md",
@@ -105,7 +105,7 @@
       "status": "awaiting_operator_evidence",
       "templateRef": "projects/ariadne/control/live-adapter-evidence-templates/live-adapter-evidence-template-hermes-cron.md",
       "reviewSessionStatus": "operator_review_required",
-      "firstAction": "Fill and import operator evidence",
+      "firstAction": "Prepare, fill, and import operator evidence",
       "suggestedEvidenceRefs": [
         "control/operator-evidence/hermes-cron-packet-review.md",
         "control/operator-evidence/hermes-cron-auth-boundary.md",
@@ -149,7 +149,7 @@
       "status": "awaiting_operator_evidence",
       "templateRef": "projects/ariadne/control/live-adapter-evidence-templates/live-adapter-evidence-template-openscorpion.md",
       "reviewSessionStatus": "operator_review_required",
-      "firstAction": "Fill and import operator evidence",
+      "firstAction": "Prepare, fill, and import operator evidence",
       "suggestedEvidenceRefs": [
         "control/operator-evidence/openscorpion-packet-review.md",
         "control/operator-evidence/openscorpion-auth-boundary.md",
@@ -193,7 +193,7 @@
       "status": "awaiting_operator_evidence",
       "templateRef": "projects/ariadne/control/live-adapter-evidence-templates/live-adapter-evidence-template-gsd2.md",
       "reviewSessionStatus": "operator_review_required",
-      "firstAction": "Fill and import operator evidence",
+      "firstAction": "Prepare, fill, and import operator evidence",
       "suggestedEvidenceRefs": [
         "control/operator-evidence/gsd2-packet-review.md",
         "control/operator-evidence/gsd2-auth-boundary.md",
@@ -237,7 +237,7 @@
       "status": "awaiting_operator_evidence",
       "templateRef": "projects/ariadne/control/live-adapter-evidence-templates/live-adapter-evidence-template-notebooklm.md",
       "reviewSessionStatus": "operator_review_required",
-      "firstAction": "Fill and import operator evidence",
+      "firstAction": "Prepare, fill, and import operator evidence",
       "suggestedEvidenceRefs": [
         "control/operator-evidence/notebooklm-packet-review.md",
         "control/operator-evidence/notebooklm-auth-boundary.md",

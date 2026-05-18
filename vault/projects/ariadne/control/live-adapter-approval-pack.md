@@ -2,7 +2,7 @@
 
 Project: ariadne
 Status: ready_for_operator_review
-Generated: 2026-05-17T09:47:18.471Z
+Generated: 2026-05-18T03:38:00.168Z
 Next actions: projects/ariadne/control/live-adapter-next-actions.json
 
 ## Summary
@@ -70,7 +70,7 @@ Post-verification: Verify PR/workflow status, check rollup, and repository state
 
 #### Next Actions
 
-- pending: Fill and import operator evidence
+- pending: Prepare, fill, and import operator evidence
 - pending: Record operator review of the approval packet
 - pending: Resolve existing readiness plan blockers
 - pending: Run the reviewed dry-run command
@@ -129,7 +129,7 @@ Post-verification: Verify service state, host health, and affected endpoint beha
 
 #### Next Actions
 
-- pending: Fill and import operator evidence
+- pending: Prepare, fill, and import operator evidence
 - pending: Record operator review of the approval packet
 - pending: Record an operator approval request
 - blocked: Create a target-specific mutation-readiness plan
@@ -190,7 +190,7 @@ Post-verification: Verify job state, schedule, next run, and expected enabled/di
 
 #### Next Actions
 
-- pending: Fill and import operator evidence
+- pending: Prepare, fill, and import operator evidence
 - pending: Record operator review of the approval packet
 - pending: Record an operator approval request
 - blocked: Create a target-specific mutation-readiness plan
@@ -251,7 +251,7 @@ Post-verification: Verify governed activity status and audit record after execut
 
 #### Next Actions
 
-- pending: Fill and import operator evidence
+- pending: Prepare, fill, and import operator evidence
 - pending: Record operator review of the approval packet
 - pending: Record an operator approval request
 - blocked: Create a target-specific mutation-readiness plan
@@ -312,7 +312,7 @@ Post-verification: Verify task/package state and generated workspace effects aft
 
 #### Next Actions
 
-- pending: Fill and import operator evidence
+- pending: Prepare, fill, and import operator evidence
 - pending: Record operator review of the approval packet
 - pending: Record an operator approval request
 - blocked: Create a target-specific mutation-readiness plan
@@ -373,7 +373,7 @@ Post-verification: Verify notebook/source/export state and saved artifact digest
 
 #### Next Actions
 
-- pending: Fill and import operator evidence
+- pending: Prepare, fill, and import operator evidence
 - pending: Record operator review of the approval packet
 - pending: Record an operator approval request
 - blocked: Create a target-specific mutation-readiness plan

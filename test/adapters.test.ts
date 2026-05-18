@@ -1526,9 +1526,10 @@ describe("roadmap adapters", () => {
     expect(nextOperatorPacket.packet.refs.workspace).toContain("live-adapter-operator-evidence-workspace-");
     expect(nextOperatorPacket.packet.refs.assist).toContain("live-adapter-operator-evidence-assist-");
     expect(nextOperatorPacket.packet.refs.checkBatch).toContain("live-adapter-operator-evidence-check-all-");
-    expect(nextOperatorPacket.packet.commands.import).toContain("--by <operator>");
+    expect("import" in nextOperatorPacket.packet.commands).toBe(false);
     const nextOperatorPacketMarkdown = await fs.readFile(nextOperatorPacket.markdownPath, "utf8");
     expect(nextOperatorPacketMarkdown).toContain("does not import operator evidence");
+    expect(nextOperatorPacketMarkdown).not.toContain("live-adapter-operator-evidence --project");
     const explicitHermesPacket = await generateLiveAdapterOperatorEvidenceNextPacket({
       project: "ariadne",
       vaultRoot,
@@ -1950,6 +1951,32 @@ describe("roadmap adapters", () => {
     expect(controlRefresh.report.artifacts.liveAdapterNextActions).toContain("control/live-adapter-next-actions.json");
     expect(controlRefresh.report.artifacts.roadmapCompletionAudit).toContain("control/roadmap-completion-audit.json");
     expect(controlRefresh.report.artifacts.gbrainExport).toContain("integrations/gbrain/gbrain-export.json");
+    expect(controlRefresh.report.artifacts.liveAdapterOperatorEvidenceNext).toBeTruthy();
+    const refreshedNextPacket = JSON.parse(
+      await fs.readFile(path.join(vaultRoot, controlRefresh.report.artifacts.liveAdapterOperatorEvidenceNext ?? ""), "utf8")
+    ) as {
+      target: LiveAdapterTarget;
+      commands: Record<string, string>;
+      refs: { queue: string; checkBatch: string };
+      evidenceRefs: string[];
+    };
+    expect(refreshedNextPacket.commands.check).toContain("live-adapter-operator-evidence-check");
+    expect(refreshedNextPacket.commands.import).toBeUndefined();
+    expect(refreshedNextPacket.evidenceRefs.every((ref) => ref.startsWith("projects/ariadne/"))).toBe(true);
+    const refreshedQueue = JSON.parse(await fs.readFile(path.join(vaultRoot, refreshedNextPacket.refs.queue), "utf8")) as {
+      targets: Array<{ target: LiveAdapterTarget; latestCheckRef?: string }>;
+    };
+    const refreshedCheckBatch = JSON.parse(
+      await fs.readFile(path.join(vaultRoot, refreshedNextPacket.refs.checkBatch), "utf8")
+    ) as { targets: Array<{ target: LiveAdapterTarget; checkRef?: string }> };
+    const refreshedQueueTarget = refreshedQueue.targets.find((target) => target.target === refreshedNextPacket.target);
+    const refreshedCheckTarget = refreshedCheckBatch.targets.find((target) => target.target === refreshedNextPacket.target);
+    expect(refreshedQueueTarget?.latestCheckRef).toBe(refreshedCheckTarget?.checkRef);
+    const refreshedCheckBatchMarkdown = await fs.readFile(
+      path.join(vaultRoot, controlRefresh.report.artifacts.liveAdapterOperatorEvidenceBatchCheck.replace(/\.json$/, ".md")),
+      "utf8"
+    );
+    expect(refreshedCheckBatchMarkdown).toContain("Check markdown:");
     const refreshedNextActions = JSON.parse(
       await fs.readFile(path.join(vaultRoot, controlRefresh.report.artifacts.liveAdapterNextActions), "utf8")
     ) as Awaited<ReturnType<typeof generateLiveAdapterNextActions>>["report"];

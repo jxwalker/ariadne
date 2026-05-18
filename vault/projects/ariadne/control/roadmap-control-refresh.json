@@ -1,0 +1,63 @@
+{
+  "schemaVersion": 1,
+  "project": "ariadne",
+  "generatedAt": "2026-05-18T03:38:00.201Z",
+  "status": "blocked",
+  "mutationApproved": false,
+  "approvalGranted": false,
+  "operatorEvidenceRecordCreated": false,
+  "summary": {
+    "roadmapStatus": "blocked",
+    "roadmapBlocked": 3,
+    "artifactStatus": "passed",
+    "artifactMissingRequired": 0,
+    "gbrainDocuments": 35,
+    "liveAdapterStatus": "actions_required",
+    "operatorEvidenceStatus": "blocked",
+    "operatorQueueStatus": "evidence_required",
+    "operatorNextTarget": "deployment",
+    "operatorNextTargetStatus": "needs_evidence",
+    "operatorNextTargetMissingSections": 9,
+    "dossiers": 6
+  },
+  "artifacts": {
+    "mutationReadinessAudit": "projects/ariadne/control/mutation-readiness-audit.json",
+    "mutationReadinessRepairPlan": "projects/ariadne/control/mutation-readiness-repair-plan.json",
+    "liveAdapterReadiness": "projects/ariadne/control/live-adapter-readiness.json",
+    "liveAdapterNextActions": "projects/ariadne/control/live-adapter-next-actions.json",
+    "liveAdapterApprovalPack": "projects/ariadne/control/live-adapter-approval-pack.json",
+    "liveAdapterApprovalReviewAudit": "projects/ariadne/control/live-adapter-approval-review-audit.json",
+    "liveAdapterEvidenceTemplates": "projects/ariadne/control/live-adapter-evidence-templates.json",
+    "liveAdapterOperatorEvidenceAudit": "projects/ariadne/control/live-adapter-operator-evidence-audit.json",
+    "liveAdapterOperatorEvidenceWorkplan": "projects/ariadne/control/live-adapter-operator-evidence-workplan.json",
+    "liveAdapterOperatorEvidenceWorkspace": "projects/ariadne/control/live-adapter-operator-evidence-workspace.json",
+    "liveAdapterOperatorEvidenceAssist": "projects/ariadne/control/live-adapter-operator-evidence-assist.json",
+    "liveAdapterOperatorEvidenceBatchCheck": "projects/ariadne/control/live-adapter-operator-evidence-check-all.json",
+    "liveAdapterOperatorEvidenceQueue": "projects/ariadne/control/live-adapter-operator-evidence-queue.json",
+    "liveAdapterOperatorEvidenceNext": "projects/ariadne/control/live-adapter-operator-evidence-next-deployment.json",
+    "liveAdapterReviewSession": "projects/ariadne/control/live-adapter-review-session.json",
+    "liveAdapterCutoverAudit": "projects/ariadne/control/live-adapter-cutover-audit.json",
+    "liveAdapterDossiers": [
+      "projects/ariadne/control/live-adapter-dossiers/live-adapter-dossier-github.json",
+      "projects/ariadne/control/live-adapter-dossiers/live-adapter-dossier-deployment.json",
+      "projects/ariadne/control/live-adapter-dossiers/live-adapter-dossier-hermes-cron.json",
+      "projects/ariadne/control/live-adapter-dossiers/live-adapter-dossier-openscorpion.json",
+      "projects/ariadne/control/live-adapter-dossiers/live-adapter-dossier-gsd2.json",
+      "projects/ariadne/control/live-adapter-dossiers/live-adapter-dossier-notebooklm.json"
+    ],
+    "gbrainExport": "projects/ariadne/integrations/gbrain/gbrain-export.json",
+    "artifactChecks": "projects/ariadne/evaluation/artifact-checks.json",
+    "roadmapCompletionAudit": "projects/ariadne/control/roadmap-completion-audit.json"
+  },
+  "commands": {
+    "status": "npm run ariadne -- status --project ariadne",
+    "e2eSmoke": "npm run ariadne -- e2e-smoke --project ariadne",
+    "roadmapControlRefresh": "npm run ariadne -- roadmap-control-refresh --project ariadne",
+    "nextOperatorPacket": "npm run ariadne -- live-adapter-operator-evidence-next --project ariadne --target deployment"
+  },
+  "notes": [
+    "This refresh is non-mutating: it does not approve mutations, grant live-adapter authority, or import operator evidence.",
+    "The GBrain export is refreshed after the roadmap completion audit so advisory memory sees the latest control state.",
+    "A blocked status is expected while operator evidence or cutover gates still require human proof."
+  ]
+}

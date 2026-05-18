@@ -1079,7 +1079,6 @@ export interface LiveAdapterOperatorEvidenceNextPacket {
   };
   commands: {
     check: string;
-    import: string;
     reviewSession: string;
     cutoverAudit: string;
   };

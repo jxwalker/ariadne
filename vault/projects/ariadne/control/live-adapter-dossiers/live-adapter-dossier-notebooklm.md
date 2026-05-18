@@ -2,7 +2,7 @@
 
 Project: ariadne
 Status: ready_for_operator_review
-Generated: 2026-05-17T09:47:18.476Z
+Generated: 2026-05-18T03:38:00.174Z
 
 ## Summary
 
@@ -25,7 +25,7 @@ Generated: 2026-05-17T09:47:18.476Z
 
 ## Next Actions
 
-- pending: Fill and import operator evidence - npm run ariadne -- live-adapter-operator-evidence --project <project> --target notebooklm --from vault/projects/<project>/control/operator-evidence/notebooklm/operator-evidence.md --by <operator>
+- pending: Prepare, fill, and import operator evidence - npm run ariadne -- live-adapter-operator-evidence-next --project <project> --target notebooklm
 - pending: Record operator review of the approval packet - npm run ariadne -- live-adapter-approval-review --project <project> --target notebooklm --by <operator> --status accepted --packet control/live-adapter-approval-pack.json --evidence <operator-review-evidence>
 - pending: Record an operator approval request - npm run ariadne -- approval-request --project <project> --by <operator> --target notebooklm --action "<bounded action>" --risk <low|medium|high> --reason "<why this target should mutate>" --rollback "<operator rollback path>" --evidence <auth-or-policy-evidence>
 - blocked: Create a target-specific mutation-readiness plan - npm run ariadne -- notebooklm-mutation-plan --project <project> --notebook <id> --action <create-source|refresh-source|generate-summary|export-notes> --scope <scope> --auth-evidence <paths> --dry-run <cmd> --live-command <cmd> --post-verify <cmd> --rollback <text> --approval <approval-id>

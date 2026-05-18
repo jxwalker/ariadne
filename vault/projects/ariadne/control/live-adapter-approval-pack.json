@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "project": "ariadne",
-  "generatedAt": "2026-05-17T09:47:18.471Z",
+  "generatedAt": "2026-05-18T03:38:00.168Z",
   "status": "ready_for_operator_review",
   "summary": {
     "targets": 6,
@@ -38,7 +38,7 @@
         "no passed target-guarded execution evidence exists"
       ],
       "nextActions": [
-        "pending: Fill and import operator evidence",
+        "pending: Prepare, fill, and import operator evidence",
         "pending: Record operator review of the approval packet",
         "pending: Resolve existing readiness plan blockers",
         "pending: Run the reviewed dry-run command",
@@ -78,7 +78,7 @@
         "no passed target-guarded execution evidence exists"
       ],
       "nextActions": [
-        "pending: Fill and import operator evidence",
+        "pending: Prepare, fill, and import operator evidence",
         "pending: Record operator review of the approval packet",
         "pending: Record an operator approval request",
         "blocked: Create a target-specific mutation-readiness plan",
@@ -120,7 +120,7 @@
         "no passed target-guarded execution evidence exists"
       ],
       "nextActions": [
-        "pending: Fill and import operator evidence",
+        "pending: Prepare, fill, and import operator evidence",
         "pending: Record operator review of the approval packet",
         "pending: Record an operator approval request",
         "blocked: Create a target-specific mutation-readiness plan",
@@ -162,7 +162,7 @@
         "no passed target-guarded execution evidence exists"
       ],
       "nextActions": [
-        "pending: Fill and import operator evidence",
+        "pending: Prepare, fill, and import operator evidence",
         "pending: Record operator review of the approval packet",
         "pending: Record an operator approval request",
         "blocked: Create a target-specific mutation-readiness plan",
@@ -204,7 +204,7 @@
         "no passed target-guarded execution evidence exists"
       ],
       "nextActions": [
-        "pending: Fill and import operator evidence",
+        "pending: Prepare, fill, and import operator evidence",
         "pending: Record operator review of the approval packet",
         "pending: Record an operator approval request",
         "blocked: Create a target-specific mutation-readiness plan",
@@ -246,7 +246,7 @@
         "no passed target-guarded execution evidence exists"
       ],
       "nextActions": [
-        "pending: Fill and import operator evidence",
+        "pending: Prepare, fill, and import operator evidence",
         "pending: Record operator review of the approval packet",
         "pending: Record an operator approval request",
         "blocked: Create a target-specific mutation-readiness plan",

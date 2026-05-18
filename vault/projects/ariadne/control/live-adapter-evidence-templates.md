@@ -2,7 +2,7 @@
 
 Project: ariadne
 Status: awaiting_operator_evidence
-Generated: 2026-05-17T09:47:18.483Z
+Generated: 2026-05-18T03:38:00.091Z
 Mutation approved: false
 Review session: projects/ariadne/control/live-adapter-review-session.json
 
@@ -21,9 +21,9 @@ These files are blank operator templates. They are not approval records, not pac
 
 | Target | Status | Template | First action | Evidence items | GBrain queries |
 | --- | --- | --- | --- | --- | --- |
-| github | awaiting_operator_evidence | projects/ariadne/control/live-adapter-evidence-templates/live-adapter-evidence-template-github.md | Fill and import operator evidence | 16 | 3 |
-| deployment | awaiting_operator_evidence | projects/ariadne/control/live-adapter-evidence-templates/live-adapter-evidence-template-deployment.md | Fill and import operator evidence | 16 | 3 |
-| hermes-cron | awaiting_operator_evidence | projects/ariadne/control/live-adapter-evidence-templates/live-adapter-evidence-template-hermes-cron.md | Fill and import operator evidence | 16 | 3 |
-| openscorpion | awaiting_operator_evidence | projects/ariadne/control/live-adapter-evidence-templates/live-adapter-evidence-template-openscorpion.md | Fill and import operator evidence | 16 | 3 |
-| gsd2 | awaiting_operator_evidence | projects/ariadne/control/live-adapter-evidence-templates/live-adapter-evidence-template-gsd2.md | Fill and import operator evidence | 16 | 3 |
-| notebooklm | awaiting_operator_evidence | projects/ariadne/control/live-adapter-evidence-templates/live-adapter-evidence-template-notebooklm.md | Fill and import operator evidence | 16 | 3 |
+| github | awaiting_operator_evidence | projects/ariadne/control/live-adapter-evidence-templates/live-adapter-evidence-template-github.md | Prepare, fill, and import operator evidence | 16 | 3 |
+| deployment | awaiting_operator_evidence | projects/ariadne/control/live-adapter-evidence-templates/live-adapter-evidence-template-deployment.md | Prepare, fill, and import operator evidence | 16 | 3 |
+| hermes-cron | awaiting_operator_evidence | projects/ariadne/control/live-adapter-evidence-templates/live-adapter-evidence-template-hermes-cron.md | Prepare, fill, and import operator evidence | 16 | 3 |
+| openscorpion | awaiting_operator_evidence | projects/ariadne/control/live-adapter-evidence-templates/live-adapter-evidence-template-openscorpion.md | Prepare, fill, and import operator evidence | 16 | 3 |
+| gsd2 | awaiting_operator_evidence | projects/ariadne/control/live-adapter-evidence-templates/live-adapter-evidence-template-gsd2.md | Prepare, fill, and import operator evidence | 16 | 3 |
+| notebooklm | awaiting_operator_evidence | projects/ariadne/control/live-adapter-evidence-templates/live-adapter-evidence-template-notebooklm.md | Prepare, fill, and import operator evidence | 16 | 3 |

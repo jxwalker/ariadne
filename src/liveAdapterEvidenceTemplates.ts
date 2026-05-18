@@ -181,7 +181,7 @@ function renderTargetTemplate(
     "",
     "## Current Cutover Blockers",
     "",
-    ...list(cutoverBlockers),
+    ...blockerList(cutoverBlockers),
     "",
     "## GBrain Advisory Queries",
     "",
@@ -198,6 +198,16 @@ function renderTargetTemplate(
 
 function list(items: string[]): string[] {
   return items.length === 0 ? ["- none"] : items.map((item) => `- ${item}`);
+}
+
+function blockerList(items: string[]): string[] {
+  if (items.length === 0) return ["- none"];
+  return items.flatMap((item) => {
+    const marker = "; Missing operator evidence section: ";
+    if (!item.includes(marker)) return [`- ${item}`];
+    const [summary, ...missingSections] = item.split(marker);
+    return [`- ${summary}`, ...missingSections.map((section) => `  - Missing: ${section}`)];
+  });
 }
 
 function tableCell(value: string): string {

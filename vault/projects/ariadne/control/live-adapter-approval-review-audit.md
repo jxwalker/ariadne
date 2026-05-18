@@ -2,7 +2,7 @@
 
 Project: ariadne
 Status: blocked
-Generated: 2026-05-17T09:47:18.487Z
+Generated: 2026-05-18T03:38:00.184Z
 Approval pack: control/live-adapter-approval-pack.json
 
 ## Summary
