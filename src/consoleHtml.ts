@@ -324,6 +324,7 @@ function workflowOverview(workflow: ConsoleData["workflow"]): string {
     actionSteps(workflow.nextAction.steps),
     "</div>",
     operatorChecklist(workflow.operatorChecklist),
+    workflowRoutes(workflow.routes),
     '<div class="workflow-modes" data-visual-role="operator-modes">',
     '<div class="workflow-subhead"><span class="label">Operator modes</span><p>Choose the surface by user intent; Hermes is the runtime backplane, not the only front door.</p></div>',
     ...workflow.modes.map(
@@ -339,6 +340,24 @@ function workflowOverview(workflow: ConsoleData["workflow"]): string {
     ),
     "</div>",
     "</section>"
+  ].join("");
+}
+
+function workflowRoutes(routes: ConsoleData["workflow"]["routes"] | undefined): string {
+  if (!routes || routes.length === 0) return "";
+  return [
+    '<div class="workflow-routes" data-visual-role="workflow-routes">',
+    '<div class="workflow-subhead"><span class="label">Interaction routes</span><p>Choose one route by intent; Hermes coordinates background work, while the Console remains the human cockpit.</p></div>',
+    ...routes.map(
+      (route) =>
+        `<article class="route-card${route.current ? " route-current" : ""}"><div><strong>${escapeHtml(route.label)}</strong><span>${route.current ? "current" : escapeHtml(route.primarySurface)}</span></div><p>${escapeHtml(route.summary)}</p><small>${escapeHtml(route.audience)}</small><ol>${route.steps
+          .map(
+            (step) =>
+              `<li><span>${escapeHtml(step.stage)}</span><strong>${escapeHtml(step.title)}</strong><p>${escapeHtml(step.detail)}</p>${step.artifactRef ? `<small>${escapeHtml(step.artifactRef)}</small>` : ""}${step.command ? commandDisclosure("Runner command", step.command) : ""}</li>`
+          )
+          .join("")}</ol></article>`
+    ),
+    "</div>"
   ].join("");
 }
 
@@ -1315,6 +1334,7 @@ h1 {
   line-height: 1.35;
   overflow-wrap: anywhere;
 }
+.workflow-routes,
 .workflow-modes,
 .workflow-surfaces {
   grid-column: 1 / -1;
@@ -1322,6 +1342,11 @@ h1 {
   border: 1px solid var(--line);
   background: var(--panel);
   padding: 16px;
+}
+.workflow-routes {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 14px;
 }
 .workflow-modes {
   display: grid;
@@ -1350,6 +1375,7 @@ h1 {
   text-align: right;
   overflow-wrap: anywhere;
 }
+.route-card,
 .mode-tile,
 .surface-row {
   min-width: 0;
@@ -1357,18 +1383,30 @@ h1 {
   gap: 10px;
   align-content: start;
 }
+.route-card {
+  border: 1px solid var(--line);
+  background: var(--bg);
+  padding: 12px;
+}
+.route-current {
+  border-color: var(--accent);
+  box-shadow: inset 0 3px 0 var(--accent);
+}
 .mode-tile {
   padding-right: 0;
 }
+.route-card div,
 .mode-tile div,
 .surface-row {
   display: grid;
   gap: 6px;
 }
+.route-card div,
 .mode-tile div {
   grid-template-columns: minmax(0, 1fr) auto;
   align-items: baseline;
 }
+.route-card strong,
 .mode-tile strong,
 .surface-row strong {
   color: var(--ink);
@@ -1377,6 +1415,7 @@ h1 {
   line-height: 1.2;
   overflow-wrap: anywhere;
 }
+.route-card span,
 .mode-tile span,
 .surface-row span {
   color: var(--muted);
@@ -1386,6 +1425,8 @@ h1 {
   text-transform: uppercase;
   overflow-wrap: anywhere;
 }
+.route-card p,
+.route-card small,
 .mode-tile p,
 .mode-tile small,
 .mode-tile em,
@@ -1396,6 +1437,30 @@ h1 {
   font-style: normal;
   line-height: 1.45;
   overflow-wrap: anywhere;
+}
+.route-card ol {
+  margin: 0;
+  padding-left: 18px;
+  display: grid;
+  gap: 10px;
+}
+.route-card li {
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.4;
+}
+.route-card li > * + * {
+  margin-top: 5px;
+}
+.route-card li strong {
+  display: block;
+  font-size: 12px;
+}
+.route-card li p {
+  margin: 0;
+}
+.route-card code {
+  font-size: 11px;
 }
 .mode-tile em {
   color: var(--ink);
@@ -1630,6 +1695,7 @@ meter {
   .hero, .layout, .workflow { grid-template-columns: 1fr; }
   .workflow-lanes { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .workflow-stage:nth-child(2n) { border-right: 0; }
+  .workflow-routes { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .workflow-modes { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .workflow-surfaces { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .checklist-sections { grid-template-columns: repeat(2, minmax(0, 1fr)); }
@@ -1646,6 +1712,7 @@ meter {
   .workflow-lanes { grid-template-columns: 1fr; }
   .workflow-stage { border-right: 0; border-bottom: 1px solid var(--line); }
   .workflow-stage:last-child { border-bottom: 0; }
+  .workflow-routes,
   .workflow-modes, .workflow-surfaces { grid-template-columns: 1fr; }
   .checklist-sections { grid-template-columns: 1fr; }
 }

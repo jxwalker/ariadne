@@ -2108,6 +2108,7 @@ export interface ConsoleWorkflow {
   stages: ConsoleWorkflowStage[];
   nextAction: ConsoleWorkflowAction;
   operatorChecklist?: ConsoleOperatorChecklist;
+  routes: ConsoleWorkflowRoute[];
   modes: ConsoleWorkflowMode[];
   surfaces: ConsoleWorkflowSurface[];
 }
@@ -2166,6 +2167,27 @@ export interface ConsoleOperatorChecklistSection {
   existingEvidenceRefs: string[];
   promotedLiveEvidenceRefs: string[];
   gbrainQueries: string[];
+}
+
+export interface ConsoleWorkflowRoute {
+  id: "idea-to-system" | "implementation-slice" | "operator-evidence" | "automation-loop";
+  label: string;
+  audience: string;
+  current: boolean;
+  primarySurface: ConsoleWorkflowSurface["id"];
+  supportSurfaces: ConsoleWorkflowSurface["id"][];
+  summary: string;
+  steps: ConsoleWorkflowRouteStep[];
+}
+
+export interface ConsoleWorkflowRouteStep {
+  id: string;
+  title: string;
+  detail: string;
+  stage: ConsoleWorkflowStage["id"];
+  surface: ConsoleWorkflowSurface["id"];
+  artifactRef?: string;
+  command?: string;
 }
 
 export interface ConsoleWorkflowMode {

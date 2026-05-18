@@ -37,6 +37,7 @@ export async function generateConsoleBrowserCheckReport(input: {
     checks.push(await visibleCheck(page, "next-best-action", "Next best action", "text=Next best action"));
     checks.push(await visibleCheck(page, "next-action-steps", "Next action steps", '[data-visual-role="next-action-steps"]'));
     checks.push(await operatorChecklistVisibleCheck(page));
+    checks.push(await visibleCheck(page, "workflow-routes", "Workflow interaction routes", '[data-visual-role="workflow-routes"]'));
     checks.push(await visibleCheck(page, "operator-modes", "Operator modes", "text=Operator modes"));
     checks.push(await visibleCheck(page, "workflow-surfaces", "Workflow surfaces", "text=Surface split"));
     checks.push(await visibleCheck(page, "gate-matrix", "Gate matrix section", "text=Gate Matrix"));
@@ -150,6 +151,16 @@ async function embeddedWorkflowDataCheck(page: Page): Promise<ConsoleBrowserChec
                 gbrainQueries?: unknown[];
               }>;
             };
+            routes?: Array<{
+              id?: string;
+              label?: string;
+              audience?: string;
+              current?: boolean;
+              primarySurface?: string;
+              supportSurfaces?: string[];
+              summary?: string;
+              steps?: Array<{ id?: string; title?: string; detail?: string; stage?: string; surface?: string }>;
+            }>;
             modes?: Array<{ id?: string; primarySurface?: string }>;
             surfaces?: Array<{ id?: string }>;
           };
@@ -157,6 +168,7 @@ async function embeddedWorkflowDataCheck(page: Page): Promise<ConsoleBrowserChec
         const stageIds = data.workflow?.stages?.map((stage) => stage.id).join(",");
         const steps = data.workflow?.nextAction?.steps;
         const checklist = data.workflow?.operatorChecklist;
+        const routes = data.workflow?.routes;
         const modes = data.workflow?.modes ?? [];
         const surfaceIds = new Set(data.workflow?.surfaces?.map((surface) => surface.id));
         return (
@@ -189,6 +201,23 @@ async function embeddedWorkflowDataCheck(page: Page): Promise<ConsoleBrowserChec
                   Array.isArray(section.promotedLiveEvidenceRefs) &&
                   Array.isArray(section.gbrainQueries)
               ))) &&
+          Array.isArray(routes) &&
+          routes.length === 4 &&
+          routes.some((route) => route.id === "operator-evidence" && route.primarySurface === "ariadne-console") &&
+          routes.some((route) => route.id === "automation-loop" && route.primarySurface === "hermes") &&
+          routes.every(
+            (route) =>
+              route.id &&
+              route.label &&
+              route.audience &&
+              typeof route.current === "boolean" &&
+              route.primarySurface &&
+              Array.isArray(route.supportSurfaces) &&
+              route.summary &&
+              Array.isArray(route.steps) &&
+              route.steps.length > 0 &&
+              route.steps.every((step) => step.id && step.title && step.detail && step.stage && step.surface)
+          ) &&
           modes.some((mode) => mode.id === "guided" && mode.primarySurface === "ariadne-console") &&
           modes.some((mode) => mode.id === "automation" && mode.primarySurface === "hermes") &&
           surfaceIds.has("hermes") &&

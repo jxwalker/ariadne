@@ -3026,6 +3026,26 @@ describe("roadmap adapters", () => {
       "expert",
       "background-only"
     ]);
+    expect(console.data.workflow.routes.map((route) => route.id)).toEqual([
+      "idea-to-system",
+      "implementation-slice",
+      "operator-evidence",
+      "automation-loop"
+    ]);
+    expect(console.data.workflow.routes.find((route) => route.id === "operator-evidence")?.primarySurface).toBe(
+      "ariadne-console"
+    );
+    expect(console.data.workflow.routes.find((route) => route.id === "automation-loop")?.primarySurface).toBe("hermes");
+    for (const route of console.data.workflow.routes) {
+      expect(route.audience).toBeTruthy();
+      expect(route.summary).toBeTruthy();
+      expect(route.steps.length).toBeGreaterThan(0);
+      for (const step of route.steps) {
+        expect(step.title).toBeTruthy();
+        expect(step.stage).toBeTruthy();
+        expect(step.surface).toBeTruthy();
+      }
+    }
     expect(console.data.workflow.nextAction.artifactRef).toBeTruthy();
     expect(console.data.workflow.nextAction.steps.length).toBeGreaterThan(0);
     for (const step of console.data.workflow.nextAction.steps) {
@@ -3055,12 +3075,15 @@ describe("roadmap adapters", () => {
       expect(checklistSection?.recordIn).toBe("operator-evidence.md");
       expect(checklistSection?.preflight).toBeTruthy();
       expect(checklistSection?.gbrainQueries.length).toBeGreaterThan(0);
+      expect(console.data.workflow.routes.find((route) => route.id === "operator-evidence")?.current).toBe(true);
     }
     const guidedGuide = renderWorkflowGuide(console.data, { mode: "guided", vaultRoot });
     expect(guidedGuide).toContain("Ariadne guide: ariadne");
     expect(guidedGuide).toContain("Mode: Guided");
     expect(guidedGuide).toContain("Next best action:");
     expect(guidedGuide).toContain("Evidence checklist:");
+    expect(guidedGuide).toContain("Interaction routes:");
+    expect(guidedGuide).toContain("Sleep, memory, and automation loop");
     expect(guidedGuide).toContain("GBrain queries");
     expect(guidedGuide).toContain("Commands are hidden");
     expect(guidedGuide).not.toContain("Command: npm run ariadne");
@@ -3183,6 +3206,8 @@ describe("roadmap adapters", () => {
     expect(html).toContain("Runner command");
     expect(html).toContain("operator-evidence-checklist");
     expect(html).toContain("Evidence checklist");
+    expect(html).toContain("workflow-routes");
+    expect(html).toContain("Interaction routes");
     expect(html).not.toContain(temp);
     expect(visual.report.status).toBe("passed");
     expect(browser.report.status).toBe("passed");
