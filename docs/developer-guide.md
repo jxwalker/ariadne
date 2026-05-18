@@ -4,6 +4,16 @@ This repo is a TypeScript runner that writes typed artifacts to a local vault. I
 
 ## Setup
 
+Use the one-shot MVP setup when you are starting from a fresh clone or want to prove the local console path:
+
+```bash
+npm run setup:mvp
+```
+
+That command installs dependencies, installs Playwright Chromium, runs checks, builds the runner, refreshes the control plane, verifies the console, captures a browser screenshot, and prints the current operator handoff.
+
+For a shorter development loop after setup has already run:
+
 ```bash
 npm install
 npm run check

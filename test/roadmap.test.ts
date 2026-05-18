@@ -21,11 +21,15 @@ describe("roadmap generation", () => {
 
     expect(packageJson.scripts["setup:mvp"]).toBe("./scripts/ariadne-mvp-setup.sh");
     expect(setupScript).toContain("roadmap-control-refresh --project");
+    expect(setupScript).toContain("console-browser-checks --project");
     expect(setupScript).toContain("operator-next --project");
+    expect(setupScript).toContain("Open command:");
     expect(setupScript).toContain("Docs:");
     expect(readme).toContain("npm run setup:mvp");
+    expect(readme).toContain("Ariadne console overview");
     expect(userGuide).toContain("npm run setup:mvp");
     expect(userGuide).toContain("npm run ariadne -- operator-next --project ariadne");
+    expect(userGuide).toContain("Operator evidence checklist");
   });
 
   it("turns an evidence dossier into PRD, GSD, execution, verification, infra, and control artifacts", async () => {
