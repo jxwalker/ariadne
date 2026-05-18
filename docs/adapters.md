@@ -386,7 +386,7 @@ Artifacts:
 
 ## GBrain
 
-`gbrain-export` writes a read-only Ariadne evidence bundle for optional import into [GBrain](https://github.com/garrytan/gbrain). Ariadne remains the source of truth; GBrain is treated as a derived memory/search substrate.
+`gbrain-export` writes a read-only Ariadne evidence bundle for optional import into [GBrain](https://github.com/garrytan/gbrain). Ariadne remains the source of truth; GBrain is treated as a derived memory/search substrate. The export includes source records, requirements, tasks, decisions, evaluations, infrastructure registry data, live-adapter dossiers, operator assist summaries, promoted live evidence, and the current roadmap-completion audit when those artifacts exist.
 
 Artifacts:
 
