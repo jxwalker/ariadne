@@ -1747,6 +1747,8 @@ describe("roadmap adapters", () => {
     );
     const nextOperatorPacketMarkdown = await fs.readFile(nextOperatorPacket.markdownPath, "utf8");
     expect(nextOperatorPacketMarkdown).toContain("does not import operator evidence");
+    expect(nextOperatorPacketMarkdown).toContain("Current Section Handoff");
+    expect(nextOperatorPacketMarkdown).toContain("Start with:");
     expect(nextOperatorPacketMarkdown).toContain("Human Verification Worksheet");
     expect(nextOperatorPacketMarkdown).toContain("Human Verification Fill Order");
     expect(nextOperatorPacketMarkdown).toContain("Human Verification Reference Details");
@@ -1768,6 +1770,9 @@ describe("roadmap adapters", () => {
     );
     expect(operatorNextOutput).toContain("Ariadne operator next:");
     expect(operatorNextOutput).toContain("Current section:");
+    expect(operatorNextOutput).toContain("Start with:");
+    expect(operatorNextOutput).toContain("Record in:");
+    expect(operatorNextOutput).toContain("Preflight expectation:");
     expect(operatorNextOutput).toContain("Console:");
     expect(operatorNextOutput).toContain("Packet:");
     expect(operatorNextOutput).toContain("Fill:");
