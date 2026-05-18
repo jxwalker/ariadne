@@ -1,165 +1,168 @@
 # Ariadne MVP User Guide
 
-This guide is for getting from messy project material to a visible, tested, reviewable Ariadne workflow without learning every command.
+This guide is for the first useful version of Ariadne: install it once, open the console, follow the next action, and keep the work evidence-backed.
 
-## Install Once
+You do not need to learn every command to use the MVP.
+
+## 1. Install Once
 
 From the repo root:
-
-```bash
-./scripts/ariadne-mvp-setup.sh
-```
-
-You can also use the npm alias:
 
 ```bash
 npm run setup:mvp
 ```
 
-The script installs dependencies, installs Playwright Chromium, typechecks, runs tests, builds the runner, refreshes the control plane, regenerates the console, and prints the current operator handoff.
+The setup command checks Node.js, installs dependencies, installs Playwright Chromium, runs type checks and tests, builds Ariadne, refreshes the control plane, verifies the console, captures a browser screenshot, and prints the next operator handoff.
 
-If you use a different project name:
-
-```bash
-ARIADNE_PROJECT=my-project ./scripts/ariadne-mvp-setup.sh
-```
-
-## Daily Start
-
-Use this as the normal entrypoint:
+If you want to initialise a different project name:
 
 ```bash
-npm run ariadne -- operator-next --project ariadne
+ARIADNE_PROJECT=my-project npm run setup:mvp
 ```
 
-Then open:
+When setup completes, open the console path it prints:
 
 ```text
 vault/projects/ariadne/console/index.html
 ```
 
-The console is the human cockpit. Hermes is the background runtime for scheduling, sleep, memory, mail, and coordination. GBrain is advisory memory. NotebookLM is source-grounded research input. The `ariadne` runner is the expert automation surface behind the UI.
-
-Use `guide` only when you want the broader workflow explanation:
+On macOS you can open it directly:
 
 ```bash
-npm run ariadne -- guide --project ariadne
+open vault/projects/ariadne/console/index.html
 ```
 
-## What To Look At First
+## 2. Start In The Console
 
 ![Ariadne console overview](images/console-overview.png)
 
-Read the console top to bottom:
+The console is the normal operating surface. Read it in this order:
 
-1. **Workflow lane**: Capture, Shape, Build, Verify, Review, Operate.
-2. **Next Best Action**: the one thing to do now.
-3. **Evidence checklist**: the current operator evidence target, current section, and context counts.
-4. **Interaction routes**: choose the route that matches your intent.
-5. **Gate and evidence panels**: proof, blockers, runtime state, and reviews.
+1. Workflow lane: where the project sits from Capture to Operate.
+2. Next Best Action: the one thing to do now.
+3. Action steps: the few steps behind that next action.
+4. Evidence checklist: the current human proof gate, if one exists.
+5. Gate and evidence panels: checks, runtime state, reviews, blockers, and trend evidence.
 
-When operator evidence is the blocker, the checklist becomes the main work surface:
+The console is local static HTML. It does not mutate external systems.
 
-![Operator evidence checklist](images/evidence-checklist.png)
+## 3. Use One Handoff Command
 
-The checklist can tell you where context exists and where to begin. It still cannot verify facts for you. Only the human-filled `operator-evidence.md` plus a passing preflight can move the gate.
-
-To prepare the current operator packet and print only the file to fill plus the preflight/import commands:
+When you need the smallest current instruction:
 
 ```bash
 npm run ariadne -- operator-next --project ariadne
 ```
 
-To focus on just the current missing section:
+This refreshes the current operator packet and prints:
+
+- target;
+- evidence file to fill;
+- current missing section;
+- one-section guide command;
+- preflight command; and
+- later import command.
+
+When you want only the current missing section:
 
 ```bash
 npm run ariadne -- operator-section --project ariadne
 ```
 
-## The Four Routes
-
-| Route | Use it when | Main surface |
-| --- | --- | --- |
-| Idea to working system | You have notes, drawings, dictated ideas, screenshots, white papers, or NotebookLM exports. | Ariadne Console |
-| Implementation slice | You are building a bounded feature through branch, tests, PR, review, and merge. | Ariadne Console plus runner |
-| Operator evidence gate | Ariadne is blocked because a human must verify real external-system facts. | Ariadne Console |
-| Sleep, memory, and automation loop | You are wiring Hermes routines, GBrain memory, agent mail, or recurring refreshes. | Hermes plus Ariadne evidence |
-
-## Current MVP State
-
-The current Ariadne project already has the intake, planning, verification, console, GBrain advisory context, and evaluation spine working.
-
-The current blocker is intentional: live-adapter work is stopped until operator evidence is filled from real systems. Generated notes, GBrain output, and promoted live evidence can help you review, but they do not count as operator proof by themselves.
-
-For the current target:
+When you want a guided workflow explanation:
 
 ```bash
-npm run ariadne -- operator-next --project ariadne
+npm run ariadne -- guide --project ariadne
 ```
 
-Then follow the generated packet and the console **Evidence checklist**:
+## 4. Understand The Current MVP Blocker
 
-- Start with the current section.
-- Use the listed assist and evidence refs as context.
-- Use `operator-section` when you want a one-section handoff with the exact start refs, GBrain advisory queries, and preflight command.
-- Record only verified observations in `operator-evidence.md`.
-- Run the preflight command.
-- Import only after the preflight is complete.
+The MVP can already ingest sources, shape work, plan implementation, generate verification plans, render the console, run checks, collect evidence, and score evaluation runs.
 
-## Add New Source Material
+The current whole-roadmap blocker is deliberate: live adapters are stopped until a human verifies real external-system facts.
 
-Put ideas and research into Ariadne as files:
+![Operator evidence checklist](images/evidence-checklist.png)
+
+For an operator evidence gate:
+
+1. Run `operator-next`.
+2. Open the evidence file it prints.
+3. Fill only facts you verified from the real system.
+4. Use generated assist files, GBrain notes, and promoted live evidence as review context only.
+5. Run the printed preflight command.
+6. Import the evidence only after preflight passes.
+
+Generated notes are never proof by themselves.
+
+## 5. Add New Ideas Or Research
+
+Put raw project material into the vault:
 
 ```bash
 npm run ariadne -- ingest --project ariadne ./notes.md ./whitepaper.docx
 npm run ariadne -- assemble --project ariadne
-npm run ariadne -- console-html --project ariadne --refresh-data
+npm run ariadne -- roadmap-control-refresh --project ariadne
 ```
 
-For NotebookLM, export reviewed notes to a file, then import:
+Then reopen:
+
+```text
+vault/projects/ariadne/console/index.html
+```
+
+NotebookLM exports should be imported as reviewed source files:
 
 ```bash
 npm run ariadne -- notebooklm-import --project ariadne --from notebooklm-export.md
 ```
 
-For drawings, audio, or PDFs, create an extraction plan first, then import reviewed extracted text:
+Drawings, screenshots, PDFs, and dictated audio should be turned into reviewed text before they become planning evidence:
 
 ```bash
 npm run ariadne -- extraction-plan --project ariadne --record <record-id> --tool manual --host "M5 Max" --runner mac
 npm run ariadne -- extraction-import --project ariadne --record <record-id> --from extracted.md --kind visual-description --tool manual-review
 ```
 
-## Refresh The Console
+## 6. Choose The Right Route
 
-Use this when the state feels stale:
+| Route | Start here | What you do |
+| --- | --- | --- |
+| Idea to working system | Console | Add sources, assemble context, shape PRD/GSD tasks, then follow the next action. |
+| Implementation slice | Console plus runner | Work one branch, run checks, capture Playwright evidence, import review/CI state, then assess readiness. |
+| Operator evidence gate | Console plus evidence file | Verify real external-system facts, fill `operator-evidence.md`, preflight, then import. |
+| Sleep and memory loop | Hermes plus Ariadne evidence | Record scheduled routines, memory proposals, agent mail, leases, and runtime state. |
 
-```bash
-npm run ariadne -- roadmap-control-refresh --project ariadne
-```
+Hermes is the background runtime, not the whole UI. Ariadne remains the evidence cockpit. NotebookLM and GBrain provide context; they do not approve work.
 
-The command refreshes the control artifacts, GBrain export, console data, and console HTML in one pass.
+## 7. Verify The MVP
 
-## Verify The MVP
-
-Before trusting a change:
+For normal development:
 
 ```bash
 npm run check
 npm test
 npm run build
+```
+
+For console/UI evidence:
+
+```bash
 npm run ariadne -- console-visual-checks --project ariadne
 npm run ariadne -- console-browser-checks --project ariadne
+```
+
+For the full local smoke path:
+
+```bash
 npm run ariadne -- e2e-smoke --project ariadne
 ```
 
-`e2e-smoke` may report `blocked` while operator evidence is missing. That is a correct MVP result if the failed count is zero.
+`e2e-smoke` can correctly report `blocked` while operator evidence is missing. The MVP pass condition is that the pipeline runs and reports `0 failed`.
 
-## Command Reference
+## 8. Where To Go Next
 
-Most users should not start with the full command list. Use it only when the console or guide points you there:
-
-- [Command reference](command-reference.md)
-- [Workflows](workflows.md)
-- [Developer guide](developer-guide.md)
-- [Evaluation guide](evaluation.md)
-- [Deployment guide](deployment.md)
+- [Workflow Guide](workflows.md): how the user routes fit together.
+- [Developer Guide](developer-guide.md): how to change Ariadne safely.
+- [Command Reference](command-reference.md): dense expert command list.
+- [Evaluation Guide](evaluation.md): how to measure pipeline quality.
+- [Deployment Guide](deployment.md): how Ariadne maps across Macs, DGX Spark, Proxmox, and TrueNAS.
