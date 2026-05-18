@@ -320,7 +320,7 @@ function workflowOverview(workflow: ConsoleData["workflow"]): string {
     `<strong class="${statusClass(workflow.nextAction.status)}">${escapeHtml(workflow.nextAction.title)}</strong>`,
     `<p>${escapeHtml(workflow.nextAction.detail)}</p>`,
     `<small>${escapeHtml(workflow.nextAction.artifactRef)}</small>`,
-    ...(workflow.nextAction.command ? [`<code>${escapeHtml(workflow.nextAction.command)}</code>`] : []),
+    ...(workflow.nextAction.command ? [commandDisclosure("Primary runner command", workflow.nextAction.command)] : []),
     actionSteps(workflow.nextAction.steps),
     "</div>",
     '<div class="workflow-modes" data-visual-role="operator-modes">',
@@ -347,10 +347,14 @@ function actionSteps(steps: ConsoleData["workflow"]["nextAction"]["steps"] | und
     '<ol class="action-steps" data-visual-role="next-action-steps">',
     ...steps.map(
       (step) =>
-        `<li><div><span>${escapeHtml(step.kind)}</span><strong>${escapeHtml(step.title)}</strong></div><p>${escapeHtml(step.detail)}</p>${step.artifactRef ? `<small>${escapeHtml(step.artifactRef)}</small>` : ""}${step.command ? `<code>${escapeHtml(step.command)}</code>` : ""}</li>`
+        `<li><div><span>${escapeHtml(step.kind)}</span><strong>${escapeHtml(step.title)}</strong></div><p>${escapeHtml(step.detail)}</p>${step.artifactRef ? `<small>${escapeHtml(step.artifactRef)}</small>` : ""}${step.command ? commandDisclosure("Runner command", step.command) : ""}</li>`
     ),
     "</ol>"
   ].join("");
+}
+
+function commandDisclosure(label: string, command: string): string {
+  return `<details class="command-disclosure"><summary>${escapeHtml(label)}</summary><code>${escapeHtml(command)}</code></details>`;
 }
 
 function metric(label: string, value: string | number, note = "total"): string {
@@ -1148,6 +1152,16 @@ h1 {
   border: 1px solid var(--line);
   background: var(--bg);
   color: var(--ink);
+  font-family: var(--mono);
+  font-size: 12px;
+  line-height: 1.4;
+}
+.command-disclosure {
+  min-width: 0;
+}
+.command-disclosure summary {
+  cursor: pointer;
+  color: var(--accent);
   font-family: var(--mono);
   font-size: 12px;
   line-height: 1.4;

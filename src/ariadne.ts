@@ -98,6 +98,7 @@ import { captureTargetAppEvidence, waitUntilOption } from "./targetAppCapture.js
 import { runTargetMutationExecution, targetForMutationExecutionCommand } from "./targetMutationExecute.js";
 import { generateUsageMetricsReport, importUsageMetrics } from "./usageMetrics.js";
 import { assembleDossier, ingestFiles, projectStatus } from "./vault.js";
+import { generateWorkflowGuide, type WorkflowGuideMode } from "./workflowGuide.js";
 import { guardWorktrees } from "./worktreeGuard.js";
 
 interface ParsedArgs {
@@ -239,8 +240,9 @@ function usage(): string {
     "  ariadne console-html --project <project> [--refresh-data]",
     "  ariadne console-visual-checks --project <project> [--html <index.html>]",
     "  ariadne console-browser-checks --project <project> [--html <index.html>] [--width <px>] [--height <px>]",
+    "  ariadne guide --project <project> [--mode <guided|developer|operator|automation>] [--show-commands] [--refresh-data]",
     "  ariadne roadmap --project <project> [--target-url <url>] [--repo <path>]",
-    "  ariadne status --project <project>",
+    "  ariadne status --project <project> [--expert]",
     "",
     "Options:",
     "  --vault <path>       Override the vault root. Defaults to ./vault.",
@@ -1645,6 +1647,25 @@ async function main(): Promise<void> {
     return;
   }
 
+  if (parsed.command === "guide") {
+    const rawMode = parsed.options.get("mode");
+    if (rawMode === true) {
+      throw new Error("--mode requires one of: guided, developer, operator, automation.");
+    }
+    const guide = await generateWorkflowGuide({
+      project,
+      vaultRoot,
+      mode: workflowGuideModeOption(rawMode ?? "guided"),
+      refreshData: parsed.options.has("refresh-data"),
+      showCommands: parsed.options.has("show-commands")
+    });
+    console.log(guide.text);
+    if (guide.dataPath) {
+      console.log(`\nRefreshed data: ${guide.dataPath}`);
+    }
+    return;
+  }
+
   if (parsed.command === "roadmap") {
     const prd = await generatePrd({ project, vaultRoot });
     const gsd = await generateGsd({ project, vaultRoot });
@@ -1692,8 +1713,11 @@ async function main(): Promise<void> {
 
   if (parsed.command === "status") {
     const status = await projectStatus(vaultRoot, project);
+    const expert = parsed.options.has("expert");
     console.log(`Project: ${status.project}`);
     console.log(`Directory: ${status.projectDir}`);
+    console.log(`Console: ${path.join(status.projectDir, "console", "index.html")}`);
+    console.log(`Guide: npm run ariadne -- guide --project ${status.project}`);
     console.log(`Records: ${status.records}`);
     console.log(`Extracted: ${status.extracted}`);
     if (status.latestIngestedAt) {
@@ -1738,8 +1762,16 @@ async function main(): Promise<void> {
       if (status.liveAdapterOperatorEvidenceNextAction) {
         console.log(`Operator next action: ${status.liveAdapterOperatorEvidenceNextAction}`);
       }
-      for (const command of status.liveAdapterOperatorEvidenceNextCommands ?? []) {
-        console.log(`Operator next command: ${command}`);
+      const nextPacketCommand = status.liveAdapterOperatorEvidenceNextCommands?.[0];
+      if (nextPacketCommand) {
+        console.log(`Operator packet: ${nextPacketCommand}`);
+      }
+      if (expert) {
+        for (const command of status.liveAdapterOperatorEvidenceNextCommands?.slice(1) ?? []) {
+          console.log(`Operator expert command: ${command}`);
+        }
+      } else if ((status.liveAdapterOperatorEvidenceNextCommands?.length ?? 0) > 1) {
+        console.log("Operator expert commands hidden; rerun status with --expert or use guide --mode operator.");
       }
     }
     if (status.liveAdapterCutoverStatus) {
@@ -1777,6 +1809,11 @@ function splitList(value: string): string[] {
     .split(/[|,]/)
     .map((item) => item.trim())
     .filter(Boolean);
+}
+
+function workflowGuideModeOption(value: string): WorkflowGuideMode {
+  if (value === "guided" || value === "developer" || value === "operator" || value === "automation") return value;
+  throw new Error(`Invalid workflow guide mode: ${value}`);
 }
 
 function parseScores(value: string): Array<{ id: string; score: number; notes: string }> {

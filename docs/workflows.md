@@ -16,6 +16,8 @@ GBrain is advisory semantic memory. Ariadne can export evidence for indexing and
 
 The `ariadne` runner is the expert and automation surface. Guided users should normally start from the console and follow the next action. Experienced developers can use the runner directly when they already know which artifact they need to refresh.
 
+For terminal use, `ariadne guide --project <project>` is the front door. It reads the same `workflow` contract as the console and prints the current mode, surface split, workflow lane, and progressive Next Best Action steps. Guided mode hides commands; `--mode developer`, `--mode operator`, or `--show-commands` reveals the runner details for experienced users.
+
 ## Operator Interaction Modes
 
 The console exposes the interaction model as `workflow.modes` so a UI can route users without showing every command at once.
@@ -125,6 +127,8 @@ Console stage: `Operate`.
 ## Command Use
 
 Commands are implementation details behind the workflows. Keep the first screen focused on the workflow lane and next action. Put dense command recipes in generated packets, developer docs, or expert command reference sections.
+
+Use `status` as a diagnostic summary, not the main operating surface. It points to the console and `guide`, then prints only the next operator packet by default. `status --expert` is for experienced operators who deliberately want the full command list.
 
 When adding a new command, also decide which workflow stage it supports and whether it should appear in the console as a human next action, a supporting artifact, or expert-only detail.
 
