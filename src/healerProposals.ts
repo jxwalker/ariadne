@@ -4,6 +4,18 @@ import { timestampFile, writeJsonArtifact, writeTextArtifact } from "./artifacts
 import { projectDir, slugifyProject } from "./paths.js";
 import type { HealerProposalRecord, PlaywrightEvidenceRecord } from "./types.js";
 
+export const HEALER_AUTOMATION_REQUIRED_GATES = [
+  "Human review accepts the healer proposal and target files.",
+  "An explicit approval request is approved for the bounded repair.",
+  "A generic mutation-readiness plan binds the repair command, rollback, and post-verification command.",
+  "The mutation-readiness audit passes.",
+  "The mutation dry-run passes.",
+  "Mutation execution is invoked only with an exact --confirm-plan match.",
+  "Fresh Playwright evidence passes after execution."
+] as const;
+
+export const HEALER_MUTATION_PLAN_TEMPLATE = "mutation-readiness-generic-...";
+
 export async function generateHealerProposal(input: {
   project: string;
   vaultRoot: string;
@@ -41,6 +53,12 @@ export async function generateHealerProposal(input: {
       "Rerun the failing Playwright capture or test before accepting the repair.",
       "Record new Playwright evidence and CodeRabbit or human review before merge."
     ],
+    automationGates: {
+      status: "blocked_until_review_and_approval",
+      mutationAllowed: false,
+      requiredGates: [...HEALER_AUTOMATION_REQUIRED_GATES]
+    },
+    nextCommands: nextCommands(project, evidence),
     apply: false,
     notes: input.notes
   };
@@ -170,6 +188,25 @@ function inferActions(
   return actions;
 }
 
+export function quoteHealerShellArg(value: string): string {
+  // These commands are POSIX shell templates for review packets; single quotes neutralize $, backticks, double quotes, and backslashes for copy/paste, while newlines are flattened.
+  const normalized = value.replace(/\r?\n/g, " ");
+  return `'${normalized.replace(/'/g, "'\\''")}'`;
+}
+
+function nextCommands(project: string, evidence: PlaywrightEvidenceRecord): HealerProposalRecord["nextCommands"] {
+  const targetUrl = evidence.targetUrl;
+  const recaptureCommand = `npm run ariadne -- playwright-capture --project ${project} --target-url ${quoteHealerShellArg(targetUrl)}`;
+  const scope = quoteHealerShellArg(`Repair failed Playwright evidence ${evidence.id} for ${evidence.targetUrl}`);
+  return {
+    approvalRequest: `npm run ariadne -- approval-request --project ${project} --by <operator> --target generic --action ${quoteHealerShellArg(`Approve bounded healer repair for ${evidence.id}`)} --risk medium --reason ${scope} --rollback ${quoteHealerShellArg("Revert the repair branch or restore the prior UI/test files.")} --evidence ${evidenceRef(evidence)}`,
+    mutationPlan: `npm run ariadne -- mutation-readiness --project ${project} --target generic --scope ${scope} --auth-evidence control/approvals/approval-...json --dry-run ${quoteHealerShellArg("npm run check && npm test")} --live-command ${quoteHealerShellArg("<bounded repair command or reviewed patch application>")} --post-verify ${quoteHealerShellArg(recaptureCommand)} --rollback ${quoteHealerShellArg("Revert the repair branch or restore the prior UI/test files.")} --approval approval-...`,
+    dryRun: `npm run ariadne -- mutation-dry-run --project ${project} --plan ${HEALER_MUTATION_PLAN_TEMPLATE}`,
+    execute: `npm run ariadne -- mutation-execute --project ${project} --plan ${HEALER_MUTATION_PLAN_TEMPLATE} --confirm-plan ${HEALER_MUTATION_PLAN_TEMPLATE}`,
+    recaptureEvidence: recaptureCommand
+  };
+}
+
 function renderProposal(proposal: HealerProposalRecord): string {
   return [
     `# Healer Proposal: ${proposal.id}`,
@@ -207,6 +244,47 @@ function renderProposal(proposal: HealerProposalRecord): string {
     "## Review Gates",
     "",
     ...proposal.reviewGates.map((gate) => `- ${gate}`),
+    "",
+    "## Automation Gates",
+    "",
+    `Status: ${proposal.automationGates.status}`,
+    `Mutation allowed: ${proposal.automationGates.mutationAllowed}`,
+    "",
+    ...proposal.automationGates.requiredGates.map((gate) => `- ${gate}`),
+    "",
+    "## Next Commands",
+    "",
+    "Template commands - replace placeholder values before use. Do not run mutation dry-run or execution until the review and approval gates above are satisfied.",
+    "",
+    "### Approval Request",
+    "",
+    "```bash",
+    proposal.nextCommands.approvalRequest,
+    "```",
+    "",
+    "### Mutation Plan",
+    "",
+    "```bash",
+    proposal.nextCommands.mutationPlan,
+    "```",
+    "",
+    "### Dry Run After Audit Passes",
+    "",
+    "```bash",
+    proposal.nextCommands.dryRun,
+    "```",
+    "",
+    "### Execute After Passed Dry Run",
+    "",
+    "```bash",
+    proposal.nextCommands.execute,
+    "```",
+    "",
+    "### Recapture Evidence",
+    "",
+    "```bash",
+    proposal.nextCommands.recaptureEvidence,
+    "```",
     "",
     proposal.notes ? `Notes: ${proposal.notes}` : "Notes: none",
     ""

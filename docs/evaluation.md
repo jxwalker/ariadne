@@ -198,6 +198,8 @@ vault/projects/<project>/verification/healer-proposals/healer-<timestamp>.json
 vault/projects/<project>/verification/healer-proposals/healer-<timestamp>.md
 ```
 
+Each proposal now includes explicit automation gates and scaffold commands for approval, mutation-readiness planning, dry-run, execution, and fresh Playwright recapture. The commands are intentionally inert guidance until human review, approval, mutation-readiness, dry-run, exact `--confirm-plan`, and post-repair Playwright evidence gates have all passed.
+
 ## Dimensions
 
 | Id | Dimension | Sensors |
@@ -273,4 +275,4 @@ A run is acceptable when:
 
 ## Future Automation
 
-Next evaluation work should add optional automatic repair execution only after review gates and mutation approvals are explicit.
+Optional automatic repair execution remains future work. The current healer proposal contract exposes the gates and next-command scaffold, but actual execution is still blocked until review, approval, dry-run, exact `--confirm-plan`, and fresh Playwright evidence are explicit.

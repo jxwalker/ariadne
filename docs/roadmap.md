@@ -90,10 +90,11 @@ Implemented:
 - target-app screenshot and trace evidence capture
 - browser-backed console screenshot checks with Playwright Chromium
 - healer proposals tied to failed Playwright evidence and review gates
+- healer automation gate scaffolds that keep repair execution blocked until review, approval, dry-run, exact `--confirm-plan`, and fresh Playwright evidence are explicit
 
 Next:
 
-- optional automatic repair execution only after review gates and mutation approvals are explicit
+- optional automatic repair execution after the existing healer automation gates can be satisfied by operator-reviewed repair plans
 
 ## Milestone 5: Control Plane
 

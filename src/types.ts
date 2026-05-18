@@ -336,6 +336,18 @@ export interface HealerProposalRecord {
     reviewGate: string;
   }>;
   reviewGates: string[];
+  automationGates: {
+    status: "blocked_until_review_and_approval";
+    mutationAllowed: false;
+    requiredGates: string[];
+  };
+  nextCommands: {
+    approvalRequest: string;
+    mutationPlan: string;
+    dryRun: string;
+    execute: string;
+    recaptureEvidence: string;
+  };
   apply: false;
   notes?: string;
 }
