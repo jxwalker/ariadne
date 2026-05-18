@@ -1316,8 +1316,10 @@ describe("roadmap adapters", () => {
     expect(operatorEvidenceAssist.assist.summary.targets).toBe(6);
     expect(operatorEvidenceAssist.assist.summary.assistFiles).toBe(6);
     expect(operatorEvidenceAssist.assist.summary.supportFileRefs).toBe(36);
+    expect(operatorEvidenceAssist.assist.summary.promotedLiveEvidence).toBe(0);
     const githubAssist = operatorEvidenceAssist.assist.targets.find((target) => target.target === "github");
     expect(githubAssist?.assistFileRef).toBe("projects/ariadne/control/operator-evidence/github/read-only-assist.md");
+    expect(githubAssist?.promotedLiveEvidence).toEqual([]);
     const hermesAssist = operatorEvidenceAssist.assist.targets.find((target) => target.target === "hermes-cron");
     expect(hermesAssist?.nextSteps).toContain("Verify each relevant fact manually before copying it into operator-evidence.md.");
     const assistMarkdown = await fs.readFile(operatorEvidenceAssist.markdownPath, "utf8");
@@ -2281,11 +2283,19 @@ describe("roadmap adapters", () => {
     });
     const deploymentAssistEvidenceRefs =
       assistWithPromotion.assist.targets.find((target) => target.target === "deployment")?.existingEvidenceRefs ?? [];
+    const deploymentPromotedLiveEvidence =
+      assistWithPromotion.assist.targets.find((target) => target.target === "deployment")?.promotedLiveEvidence ?? [];
     expect(deploymentAssistEvidenceRefs).toContain(promotionRef);
+    expect(assistWithPromotion.assist.summary.promotedLiveEvidence).toBe(1);
+    expect(deploymentPromotedLiveEvidence[0]?.title).toBe("Read-only deployment runtime evidence");
+    expect(deploymentPromotedLiveEvidence[0]?.summaryBullets.join("\n")).toContain("qwen3.6-35b-a3b-nvfp4-atlas");
     expect(assistWithPromotion.assist.workplanRef).toBe(
       "projects/ariadne/control/live-adapter-operator-evidence-workplan.json"
     );
     expect(assistWithPromotion.assist.workspaceRef).toBe(path.relative(vaultRoot, staleDeploymentWorkspace.jsonPath));
+    const deploymentAssistMarkdown = await fs.readFile(path.join(vaultRoot, assistWithPromotion.assist.targets[0]?.assistFileRef ?? ""), "utf8");
+    expect(deploymentAssistMarkdown).toContain("Promoted Live Evidence");
+    expect(deploymentAssistMarkdown).toContain("Read-only deployment runtime evidence");
     expect(await fs.readFile(staleDeploymentEvidencePath, "utf8")).toContain("Operator draft marker: keep deployment draft");
     const falseJson = path.join(vaultRoot, "projects", "ariadne", "deployment", "false.json");
     await fs.writeFile(falseJson, "false");

@@ -7,12 +7,16 @@ import { generateLiveAdapterOperatorEvidenceWorkplan } from "./liveAdapterOperat
 import { projectDir, slugifyProject } from "./paths.js";
 import type {
   LiveAdapterOperatorEvidenceAssist,
-  LiveAdapterOperatorEvidenceWorkspace
+  LiveAdapterOperatorEvidenceWorkspace,
+  LiveEvidencePromotion,
+  PromotedLiveEvidenceSummary
 } from "./types.js";
 
 type AssistTarget = LiveAdapterOperatorEvidenceAssist["targets"][number];
 type WorkspaceResult = { jsonPath: string; workspace: LiveAdapterOperatorEvidenceWorkspace };
 type WorkspaceTarget = LiveAdapterOperatorEvidenceWorkspace["targets"][number];
+const LIVE_EVIDENCE_PROMOTIONS_DIR = "control/live-evidence-promotions";
+const MAX_PROMOTED_LIVE_EVIDENCE_SUMMARIES = 12;
 
 export async function generateLiveAdapterOperatorEvidenceAssist(input: {
   project: string;
@@ -35,6 +39,7 @@ export async function generateLiveAdapterOperatorEvidenceAssist(input: {
     const workplanTarget = workplanByTarget.get(workspaceTarget.target);
     if (!workplanTarget) throw new Error(`Missing workplan target for ${workspaceTarget.target}.`);
     const existingEvidenceRefs = await existingRefs(input.vaultRoot, project, workplanTarget.evidenceRefs);
+    const promotedLiveEvidence = await promotedLiveEvidenceSummaries(input.vaultRoot, project, existingEvidenceRefs);
     const assistFileRef = `projects/${project}/control/operator-evidence/${workspaceTarget.target}/read-only-assist.md`;
     const supportFileRefs = Array.from(new Set([...workspaceTarget.supportFileRefs, assistFileRef]));
     const target: AssistTarget = {
@@ -46,6 +51,7 @@ export async function generateLiveAdapterOperatorEvidenceAssist(input: {
       checkCommand: workspaceTarget.checkCommand,
       importCommand: workspaceTarget.importCommand,
       existingEvidenceRefs,
+      promotedLiveEvidence,
       supportFileRefs,
       missingSections: workspaceTarget.missingSections,
       requiredEvidence: workspaceTarget.requiredEvidence,
@@ -67,6 +73,7 @@ export async function generateLiveAdapterOperatorEvidenceAssist(input: {
     targets: targets.length,
     assistFiles: targets.length,
     existingEvidenceRefs: targets.reduce((count, target) => count + target.existingEvidenceRefs.length, 0),
+    promotedLiveEvidence: targets.reduce((count, target) => count + target.promotedLiveEvidence.length, 0),
     supportFileRefs: targets.reduce((count, target) => count + target.supportFileRefs.length, 0),
     missingSections: targets.reduce((count, target) => count + target.missingSections.length, 0),
     cutoverBlockers: targets.reduce((count, target) => count + target.cutoverBlockers.length, 0),
@@ -134,6 +141,87 @@ async function existingRefs(vaultRoot: string, project: string, refs: string[]):
   return Array.from(new Set(existing));
 }
 
+async function promotedLiveEvidenceSummaries(
+  vaultRoot: string,
+  project: string,
+  refs: string[]
+): Promise<PromotedLiveEvidenceSummary[]> {
+  const promotions: PromotedLiveEvidenceSummary[] = [];
+  for (const ref of refs) {
+    if (promotions.length >= MAX_PROMOTED_LIVE_EVIDENCE_SUMMARIES) break;
+    if (!isLiveEvidencePromotionRef(project, ref)) continue;
+    const promotion = await readPromotionRef(vaultRoot, project, ref);
+    if (!promotion || promotion.project !== project || promotion.status !== "promoted_for_operator_review") continue;
+    promotions.push({
+      ref,
+      title: promotion.title,
+      generatedAt: promotion.generatedAt,
+      sources: promotion.summary.sources,
+      parsedSources: promotion.summary.parsedSources,
+      redactedValues: promotion.summary.redactedValues,
+      sourceKinds: Array.from(new Set(promotion.sources.map((source) => source.kind))),
+      summaryBullets: promotion.sources.map((source) => promotionSourceBullet(source))
+    });
+  }
+  return promotions;
+}
+
+function isLiveEvidencePromotionRef(project: string, ref: string): boolean {
+  const normalized = ref.split(path.sep).join("/");
+  return normalized.startsWith(`projects/${project}/${LIVE_EVIDENCE_PROMOTIONS_DIR}/`) && normalized.endsWith(".json");
+}
+
+async function readPromotionRef(vaultRoot: string, project: string, ref: string): Promise<LiveEvidencePromotion | undefined> {
+  try {
+    const parsed = JSON.parse(await fs.readFile(resolveVaultRef(vaultRoot, project, ref), "utf8")) as unknown;
+    if (isLiveEvidencePromotion(parsed)) return parsed;
+  } catch (error) {
+    console.warn(`Skipping unreadable promoted live evidence ${ref}: ${(error as Error).message}`);
+  }
+  return undefined;
+}
+
+function isLiveEvidencePromotion(value: unknown): value is LiveEvidencePromotion {
+  return (
+    Boolean(value && typeof value === "object" && !Array.isArray(value)) &&
+    (value as LiveEvidencePromotion).schemaVersion === 1 &&
+    typeof (value as LiveEvidencePromotion).project === "string" &&
+    typeof (value as LiveEvidencePromotion).title === "string" &&
+    typeof (value as LiveEvidencePromotion).generatedAt === "string" &&
+    (value as LiveEvidencePromotion).status === "promoted_for_operator_review" &&
+    (value as LiveEvidencePromotion).mutationApproved === false &&
+    (value as LiveEvidencePromotion).approvalGranted === false &&
+    (value as LiveEvidencePromotion).operatorEvidenceRecordCreated === false &&
+    Boolean((value as LiveEvidencePromotion).summary && typeof (value as LiveEvidencePromotion).summary.sources === "number") &&
+    Array.isArray((value as LiveEvidencePromotion).sources)
+  );
+}
+
+function promotionSourceBullet(source: LiveEvidencePromotion["sources"][number]): string {
+  const summary = objectValue(source.summary);
+  const nestedSummary = objectValue(summary?.summary);
+  const parts: string[] = [source.kind];
+  if (typeof nestedSummary?.reachable === "number" && typeof nestedSummary.services === "number") {
+    parts.push(`${nestedSummary.reachable}/${nestedSummary.services} services reachable`);
+  }
+  if (typeof nestedSummary?.models === "number") parts.push(`${nestedSummary.models} models`);
+  if (typeof nestedSummary?.passed === "number" || typeof nestedSummary?.blocked === "number" || typeof nestedSummary?.failed === "number") {
+    parts.push(`${nestedSummary.passed ?? 0} passed, ${nestedSummary.blocked ?? 0} blocked, ${nestedSummary.failed ?? 0} failed`);
+  }
+  const modelEndpoints = Array.isArray(summary?.modelEndpoints) ? summary.modelEndpoints : [];
+  const canaryEndpoints = modelEndpoints
+    .map((endpoint) => objectValue(endpoint))
+    .filter((endpoint) => endpoint?.canaryStatus || endpoint?.canaryModel)
+    .map((endpoint) => `${String(endpoint?.id ?? "endpoint")} canary ${String(endpoint?.canaryStatus ?? "unknown")} ${String(endpoint?.canaryModel ?? "")}`.trim());
+  parts.push(...canaryEndpoints);
+  parts.push(`${source.redactedValues} redaction(s)`);
+  return parts.join("; ");
+}
+
+function objectValue(value: unknown): Record<string, unknown> | undefined {
+  return value && typeof value === "object" && !Array.isArray(value) ? (value as Record<string, unknown>) : undefined;
+}
+
 function resolveVaultRef(vaultRoot: string, project: string, ref: string): string {
   const resolved = path.isAbsolute(ref)
     ? path.resolve(ref)
@@ -195,6 +283,7 @@ function renderAssist(assist: LiveAdapterOperatorEvidenceAssist): string {
     `- Targets: ${assist.summary.targets}`,
     `- Assist files: ${assist.summary.assistFiles}`,
     `- Existing evidence refs: ${assist.summary.existingEvidenceRefs}`,
+    `- Promoted live evidence: ${assist.summary.promotedLiveEvidence}`,
     `- Support file refs: ${assist.summary.supportFileRefs}`,
     `- Missing sections: ${assist.summary.missingSections}`,
     `- Cutover blockers: ${assist.summary.cutoverBlockers}`,
@@ -244,6 +333,10 @@ function renderTargetAssist(project: string, generatedAt: string, target: Assist
     "",
     ...list(target.existingEvidenceRefs),
     "",
+    "## Promoted Live Evidence",
+    "",
+    ...promotedLiveEvidenceLines(target.promotedLiveEvidence),
+    "",
     "## Support File Refs",
     "",
     ...list(target.supportFileRefs),
@@ -273,6 +366,20 @@ function renderTargetAssist(project: string, generatedAt: string, target: Assist
 
 function list(items: string[]): string[] {
   return items.length === 0 ? ["- none"] : items.map((item) => `- ${item}`);
+}
+
+function promotedLiveEvidenceLines(items: PromotedLiveEvidenceSummary[]): string[] {
+  if (items.length === 0) return ["- none"];
+  return items.flatMap((item) => [
+    `### ${item.title}`,
+    "",
+    `- Ref: ${item.ref}`,
+    `- Generated: ${item.generatedAt}`,
+    `- Sources: ${item.sources} (${item.parsedSources} parsed, ${item.redactedValues} redaction(s))`,
+    `- Source kinds: ${item.sourceKinds.join(", ") || "none"}`,
+    ...item.summaryBullets.map((bullet) => `- ${bullet}`),
+    ""
+  ]);
 }
 
 function cell(value: string): string {
