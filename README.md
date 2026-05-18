@@ -110,6 +110,7 @@ npm run ariadne -- live-adapter-operator-evidence-workspace --project ariadne
 npm run ariadne -- live-adapter-operator-evidence-workspace --project ariadne --target hermes-cron
 npm run ariadne -- live-adapter-operator-evidence-assist --project ariadne
 npm run ariadne -- live-adapter-operator-evidence-assist --project ariadne --target hermes-cron
+npm run ariadne -- live-adapter-operator-evidence-draft --project ariadne --target hermes-cron
 npm run ariadne -- live-adapter-operator-evidence-check --project ariadne --target github --from vault/projects/ariadne/control/operator-evidence/github/operator-evidence.md
 npm run ariadne -- live-adapter-operator-evidence-check-all --project ariadne --source workspace
 npm run ariadne -- live-adapter-operator-evidence-check-all --project ariadne --source workspace --target hermes-cron
@@ -259,6 +260,7 @@ npm run ariadne -- live-adapter-operator-evidence-workspace --project ariadne
 npm run ariadne -- live-adapter-operator-evidence-workspace --project ariadne --target hermes-cron
 npm run ariadne -- live-adapter-operator-evidence-assist --project ariadne
 npm run ariadne -- live-adapter-operator-evidence-assist --project ariadne --target hermes-cron
+npm run ariadne -- live-adapter-operator-evidence-draft --project ariadne --target hermes-cron
 npm run ariadne -- live-adapter-operator-evidence-check --project ariadne --target github --from vault/projects/ariadne/control/operator-evidence/github/operator-evidence.md
 npm run ariadne -- live-adapter-operator-evidence-check-all --project ariadne --source workspace
 npm run ariadne -- live-adapter-operator-evidence-check-all --project ariadne --source workspace --target hermes-cron

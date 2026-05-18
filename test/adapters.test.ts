@@ -45,6 +45,7 @@ import {
 } from "../src/liveAdapterOperatorEvidence.js";
 import { checkAllLiveAdapterOperatorEvidence } from "../src/liveAdapterOperatorEvidenceCheckAll.js";
 import { generateLiveAdapterOperatorEvidenceAssist } from "../src/liveAdapterOperatorEvidenceAssist.js";
+import { generateLiveAdapterOperatorEvidenceDraft } from "../src/liveAdapterOperatorEvidenceDraft.js";
 import { importReadyLiveAdapterOperatorEvidence } from "../src/liveAdapterOperatorEvidenceImportReady.js";
 import { generateLiveAdapterOperatorEvidenceNextPacket } from "../src/liveAdapterOperatorEvidenceNextPacket.js";
 import { generateLiveAdapterOperatorEvidenceWorkplan } from "../src/liveAdapterOperatorEvidenceWorkplan.js";
@@ -1584,6 +1585,36 @@ describe("roadmap adapters", () => {
     expect(explicitHermesPacket.packet.verificationWorksheet[0]?.existingEvidenceRefs).not.toContain(
       "projects/ariadne/control/live-adapter-operator-evidence-workspace.json"
     );
+    await expect(
+      generateLiveAdapterOperatorEvidenceDraft({
+        project: "ariadne",
+        vaultRoot,
+        target: "github",
+        nextPacket: explicitHermesPacket
+      })
+    ).rejects.toThrow(/does not match requested draft target/);
+    const hermesDraft = await generateLiveAdapterOperatorEvidenceDraft({
+      project: "ariadne",
+      vaultRoot,
+      target: "hermes-cron",
+      nextPacket: explicitHermesPacket
+    });
+    expect(hermesDraft.jsonPath).toContain("live-adapter-operator-evidence-draft-hermes-cron.json");
+    expect(hermesDraft.draft.target).toBe("hermes-cron");
+    expect(hermesDraft.draft.status).toBe("drafted_for_human_verification");
+    expect(hermesDraft.draft.operatorEvidenceRecordCreated).toBe(false);
+    expect(hermesDraft.draft.mutationApproved).toBe(false);
+    expect(hermesDraft.draft.commands.check).toContain("live-adapter-operator-evidence-check");
+    expect(hermesDraft.draft.commands.importAfterHumanVerification).toContain("live-adapter-operator-evidence");
+    expect(hermesDraft.draft.rows.length).toBeGreaterThan(0);
+    expect(hermesDraft.draft.rows[0]?.humanVerificationRequired).toBe(true);
+    expect(hermesDraft.draft.rows[0]?.candidateAction).toContain("operator");
+    const hermesDraftMarkdown = await fs.readFile(hermesDraft.markdownPath, "utf8");
+    expect(hermesDraftMarkdown).toContain("non-authoritative draft only");
+    const hermesDraftFile = await fs.readFile(hermesDraft.draftFilePath, "utf8");
+    expect(hermesDraftFile).toContain("Do not import this file directly");
+    expect(hermesDraftFile).toContain("Copy Checklist Into operator-evidence.md After Verification");
+    expect(hermesDraftFile).toContain("- Operator: <human operator>");
     const gsd2Workspace = operatorEvidenceWorkspace.workspace.targets.find((target) => target.target === "gsd2");
     expect(gsd2Workspace?.evidenceFileRef).toContain("control/operator-evidence/gsd2/operator-evidence.md");
     const gsd2WorkspaceFile = path.join(vaultRoot, gsd2Workspace?.evidenceFileRef ?? "");

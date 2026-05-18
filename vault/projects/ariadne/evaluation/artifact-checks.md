@@ -2,13 +2,13 @@
 
 Project: ariadne
 Status: passed
-Generated: 2026-05-18T04:58:56.310Z
+Generated: 2026-05-18T05:22:24.588Z
 
 ## Summary
 
 - Required checks: 13
-- Optional checks: 52
-- Present artifacts: 55
+- Optional checks: 53
+- Present artifacts: 56
 - Missing required artifacts: 0
 
 ## Checks
@@ -58,7 +58,7 @@ Generated: 2026-05-18T04:58:56.310Z
 | live-adapter-cutover-audit | no | present | 2 | projects/ariadne/control/live-adapter-cutover-audit*.json |
 | live-adapter-review-session | no | present | 2 | projects/ariadne/control/live-adapter-review-session*.json |
 | live-adapter-evidence-templates | no | present | - | projects/ariadne/control/live-adapter-evidence-templates.json |
-| live-adapter-operator-evidence-checks | no | present | 33 | projects/ariadne/control/live-adapter-operator-evidence-checks/operator-evidence-check-*.json |
+| live-adapter-operator-evidence-checks | no | present | 32 | projects/ariadne/control/live-adapter-operator-evidence-checks/operator-evidence-check-*.json |
 | live-adapter-operator-evidence-check-all | no | present | 2 | projects/ariadne/control/live-adapter-operator-evidence-check-all*.json |
 | live-adapter-operator-evidence-import-ready | no | missing | 0 | projects/ariadne/control/live-adapter-operator-evidence-import-ready*.json |
 | live-adapter-operator-evidence | no | missing | 0 | projects/ariadne/control/live-adapter-operator-evidence/operator-evidence-*.json |
@@ -68,6 +68,7 @@ Generated: 2026-05-18T04:58:56.310Z
 | live-adapter-operator-evidence-workspace | no | present | 2 | projects/ariadne/control/live-adapter-operator-evidence-workspace*.json |
 | live-adapter-operator-evidence-assist | no | present | 2 | projects/ariadne/control/live-adapter-operator-evidence-assist*.json |
 | live-adapter-operator-evidence-next | no | present | 1 | projects/ariadne/control/live-adapter-operator-evidence-next-*.json |
+| live-adapter-operator-evidence-drafts | no | present | 1 | projects/ariadne/control/live-adapter-operator-evidence-draft-*.json |
 | live-evidence-promotions | no | present | 1 | projects/ariadne/control/live-evidence-promotions/live-evidence-promotion-*.json |
 | live-adapter-operator-evidence-workspace-files | no | present | 42 | projects/ariadne/control/operator-evidence/**/*.md |
 | roadmap-completion-audit | no | present | - | projects/ariadne/control/roadmap-completion-audit.json |

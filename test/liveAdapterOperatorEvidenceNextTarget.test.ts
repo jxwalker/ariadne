@@ -124,6 +124,7 @@ describe("live adapter operator evidence next target", () => {
       "npm run ariadne -- live-adapter-operator-evidence-next --project ariadne --target hermes-cron",
       "npm run ariadne -- live-adapter-operator-evidence-workspace --project ariadne --target hermes-cron",
       "npm run ariadne -- live-adapter-operator-evidence-assist --project ariadne --target hermes-cron",
+      "npm run ariadne -- live-adapter-operator-evidence-draft --project ariadne --target hermes-cron",
       "npm run ariadne -- live-adapter-operator-evidence-check-all --project ariadne --source workspace --target hermes-cron",
       "npm run ariadne -- live-adapter-operator-evidence-import-ready --project ariadne --by <operator> --target hermes-cron",
       "npm run ariadne -- live-adapter-review-session --project ariadne --target hermes-cron",

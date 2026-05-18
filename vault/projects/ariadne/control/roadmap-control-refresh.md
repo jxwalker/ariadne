@@ -2,7 +2,7 @@
 
 Project: ariadne
 Status: blocked
-Generated: 2026-05-18T04:58:56.309Z
+Generated: 2026-05-18T05:22:24.586Z
 Mutation approved: false
 Approval granted: false
 Operator evidence record created: false
@@ -24,6 +24,7 @@ Operator evidence record created: false
 - E2E smoke: `npm run ariadne -- e2e-smoke --project ariadne`
 - Refresh: `npm run ariadne -- roadmap-control-refresh --project ariadne`
 - Next operator packet: `npm run ariadne -- live-adapter-operator-evidence-next --project ariadne --target deployment`
+- Next operator draft: `npm run ariadne -- live-adapter-operator-evidence-draft --project ariadne --target deployment`
 
 ## Artifacts
 
@@ -43,6 +44,7 @@ Operator evidence record created: false
 | liveAdapterOperatorEvidenceBatchCheck | projects/ariadne/control/live-adapter-operator-evidence-check-all.json |
 | liveAdapterOperatorEvidenceQueue | projects/ariadne/control/live-adapter-operator-evidence-queue.json |
 | liveAdapterOperatorEvidenceNext | projects/ariadne/control/live-adapter-operator-evidence-next-deployment.json |
+| liveAdapterOperatorEvidenceDraft | projects/ariadne/control/live-adapter-operator-evidence-draft-deployment.json |
 | liveAdapterReviewSession | projects/ariadne/control/live-adapter-review-session.json |
 | liveAdapterCutoverAudit | projects/ariadne/control/live-adapter-cutover-audit.json |
 | liveAdapterDossiers | projects/ariadne/control/live-adapter-dossiers/live-adapter-dossier-github.json |

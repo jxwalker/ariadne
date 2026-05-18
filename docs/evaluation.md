@@ -139,6 +139,16 @@ When `live-adapter-operator-evidence-workspace` is run with `--target` and a cur
 
 `live-adapter-operator-evidence-assist` writes read-only per-target assist files beside the operator workspace files. It gathers existing Ariadne support refs from the workplan so the operator has a shorter review path, adds a human verification worksheet for every missing section, and keeps the import command behind an explicit after-verification heading. It keeps `operatorEvidenceRecordCreated=false`, `mutationApproved=false`, and `approvalGranted=false`.
 
+`live-adapter-operator-evidence-draft` turns the current next-packet worksheet into a non-authoritative operator review draft:
+
+```text
+vault/projects/<project>/control/live-adapter-operator-evidence-draft-<target>.json
+vault/projects/<project>/control/live-adapter-operator-evidence-draft-<target>.md
+vault/projects/<project>/control/operator-evidence/<target>/operator-evidence-draft.md
+```
+
+The draft is intentionally separate from `operator-evidence.md`. It gathers candidate actions, existing refs, promoted live evidence refs, and GBrain advisory queries, but it must not be imported directly. A human operator still has to verify the facts, update `operator-evidence.md`, run the preflight check, and only then run the import command.
+
 `live-adapter-operator-evidence` and `live-adapter-operator-evidence-audit` evaluate those filled operator files. The importer hashes the source, checks required evidence sections, keeps GBrain notes advisory, and writes `mutationApproved=false` plus `approvalGranted=false`.
 
 The audit reports complete, incomplete, and missing targets. It expands missing targets into the full required section count so the console and roadmap audit can show the actual evidence workload before any live-adapter implementation work proceeds.
