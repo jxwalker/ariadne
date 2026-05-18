@@ -906,7 +906,7 @@ describe("roadmap adapters", () => {
     expect(githubActions?.actions[0]?.command).toBe(
       "npm run ariadne -- live-adapter-operator-evidence-next --project <project> --target github"
     );
-    expect(githubActions?.actions[0]?.evidenceRefs).toContain("control/live-adapter-operator-evidence-next-github.json");
+    expect(githubActions?.actions[0]?.evidenceRefs).toContain("control/live-adapter-operator-evidence-workspace.json");
     expect(githubActions?.actions.some((action) => action.id === "github-replace-placeholder" && action.status === "ready")).toBe(true);
     expect(deploymentActions?.actions[0]?.id).toBe("deployment-operator-evidence");
     expect(deploymentActions?.actions[0]?.command).toBe(

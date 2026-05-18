@@ -87,7 +87,6 @@ function targetNextActions(
       command: `npm run ariadne -- live-adapter-operator-evidence-next --project <project> --target ${target.target}`,
       evidenceRefs: [
         ...(operatorEvidence?.evidenceRefs ?? []),
-        `control/live-adapter-operator-evidence-next-${target.target}.json`,
         "control/live-adapter-operator-evidence-workspace.json",
         `control/operator-evidence/${target.target}/operator-evidence.md`
       ]
