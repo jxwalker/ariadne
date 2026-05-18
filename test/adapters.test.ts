@@ -1763,6 +1763,9 @@ describe("roadmap adapters", () => {
     expect(status.readinessStatus).toBe("review_required");
     expect(status.roadmapCompletionStatus).toBe("blocked");
     expect(status.roadmapCompletionBlocked).toBe(3);
+    expect(status.roadmapCompletionGeneratedAt).toBeTruthy();
+    expect(status.roadmapCompletionStale).toBe(false);
+    expect(status.roadmapCompletionRefreshCommand).toBeUndefined();
     expect(status.mutationReadinessRepairStatus).toBe("actions_required");
     expect(status.mutationReadinessRepairMissingPlans).toBeGreaterThan(0);
     expect(status.liveAdapterOperatorEvidenceStatus).toBe("blocked");
@@ -1791,6 +1794,21 @@ describe("roadmap adapters", () => {
     expect(status.latestE2eSmoke?.passed).toBeGreaterThan(0);
     expect(status.latestE2eSmoke?.reportRef).toContain("evaluation/e2e-smoke-");
 
+    const roadmapCompletionPath = path.join(
+      vaultRoot,
+      "projects",
+      "ariadne",
+      "control",
+      "roadmap-completion-audit.json"
+    );
+    const roadmapCompletionJson = JSON.parse(await fs.readFile(roadmapCompletionPath, "utf8"));
+    delete roadmapCompletionJson.generatedAt;
+    await fs.writeFile(roadmapCompletionPath, `${JSON.stringify(roadmapCompletionJson, null, 2)}\n`);
+    const missingBaselineStatus = await projectStatus(vaultRoot, "ariadne");
+    expect(missingBaselineStatus.roadmapCompletionGeneratedAt).toBeUndefined();
+    expect(missingBaselineStatus.roadmapCompletionStale).toBe(false);
+    await generateRoadmapCompletionAudit({ project: "ariadne", vaultRoot });
+
     // Simulate a stale audit by zeroing operatorEvidenceAuditJson summary.missingSections
     // and clearing each missing target's missingSections array at operatorEvidenceAuditPath.
     // projectStatus should still derive liveAdapterOperatorEvidenceMissingSections from
@@ -1803,13 +1821,22 @@ describe("roadmap adapters", () => {
       "live-adapter-operator-evidence-audit.json"
     );
     const operatorEvidenceAuditJson = JSON.parse(await fs.readFile(operatorEvidenceAuditPath, "utf8"));
+    const originalOperatorEvidenceAuditGeneratedAt = operatorEvidenceAuditJson.generatedAt;
     operatorEvidenceAuditJson.summary.missingSections = 0;
+    operatorEvidenceAuditJson.generatedAt = "2099-01-01T00:00:00.000Z";
     operatorEvidenceAuditJson.targets = operatorEvidenceAuditJson.targets.map((target: { status: string; missingSections: string[] }) =>
       target.status === "missing_evidence" ? { ...target, missingSections: [] } : target
     );
     await fs.writeFile(operatorEvidenceAuditPath, `${JSON.stringify(operatorEvidenceAuditJson, null, 2)}\n`);
     const staleStatus = await projectStatus(vaultRoot, "ariadne");
     expect(staleStatus.liveAdapterOperatorEvidenceMissingSections).toBeGreaterThan(0);
+    expect(staleStatus.roadmapCompletionStale).toBe(true);
+    expect(staleStatus.roadmapCompletionStaleSources).toContain("operator-evidence-audit");
+    expect(staleStatus.roadmapCompletionRefreshCommand).toBe(
+      "npm run ariadne -- roadmap-control-refresh --project ariadne"
+    );
+    operatorEvidenceAuditJson.generatedAt = originalOperatorEvidenceAuditGeneratedAt;
+    await fs.writeFile(operatorEvidenceAuditPath, `${JSON.stringify(operatorEvidenceAuditJson, null, 2)}\n`);
     const staleRoadmapCompletion = await generateRoadmapCompletionAudit({ project: "ariadne", vaultRoot });
     const staleOperatorEvidenceRequirement = staleRoadmapCompletion.audit.requirements.find(
       (requirement) => requirement.id === "operator-evidence"

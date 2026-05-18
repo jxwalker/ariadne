@@ -83,6 +83,10 @@ export interface ProjectStatus {
   readinessStatus?: ControlReport["status"];
   roadmapCompletionStatus?: RoadmapCompletionAudit["status"];
   roadmapCompletionBlocked?: number;
+  roadmapCompletionGeneratedAt?: string;
+  roadmapCompletionStale?: boolean;
+  roadmapCompletionStaleSources?: string[];
+  roadmapCompletionRefreshCommand?: string;
   mutationReadinessRepairStatus?: MutationReadinessRepairPlan["status"];
   mutationReadinessRepairMissingPlans?: number;
   mutationReadinessRepairOperatorActionRequired?: number;
