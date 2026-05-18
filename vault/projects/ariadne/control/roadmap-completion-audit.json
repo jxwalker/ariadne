@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "project": "ariadne",
-  "generatedAt": "2026-05-18T05:22:24.574Z",
+  "generatedAt": "2026-05-18T06:57:22.456Z",
   "status": "blocked",
   "summary": {
     "requirements": 9,
@@ -14,7 +14,7 @@
       "id": "core-artifact-contracts",
       "title": "Core pipeline artifacts are present",
       "status": "passed",
-      "detail": "56 artifacts present; 0 required missing.",
+      "detail": "57 artifacts present; 0 required missing.",
       "evidenceRefs": [
         "projects/ariadne/evaluation/artifact-checks.json"
       ],
