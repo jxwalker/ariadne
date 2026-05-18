@@ -6,6 +6,8 @@ The runner is called `ariadne`. In this repo, invoke it with `npm run ariadne --
 
 ## Mental Model
 
+Ariadne is workflow-first. Use the generated console as the human cockpit, then use runner commands only to refresh the artifact that the console points at. See [Ariadne Workflows](workflows.md) for the user-facing journey and surface responsibilities.
+
 The repo turns messy project input into auditable work packages:
 
 1. Raw evidence goes into the vault.
@@ -15,6 +17,8 @@ The repo turns messy project input into auditable work packages:
 5. Tasks become execution and verification plans.
 6. Checks, reviews, Playwright evidence, and evaluations decide whether the work is ready.
 
+The console renders that journey as Capture, Shape, Build, Verify, Review, and Operate. Hermes supports the runtime, scheduler, sleep, memory, and coordination layer; it is not the only interface. NotebookLM exports and GBrain reports are inputs to the evidence chain, not control surfaces that approve work.
+
 ## Start A Project
 
 ```bash
@@ -23,9 +27,10 @@ npm run check
 npm test
 npm run ariadne -- ingest --project ariadne ./notes.md ./whitepaper.docx
 npm run ariadne -- assemble --project ariadne
+npm run ariadne -- console-html --project ariadne --refresh-data
 ```
 
-The important output paths are printed by the runner. The hot index is always at:
+Open the generated console at `vault/projects/ariadne/console/index.html` and follow its Next Best Action panel. The important output paths are printed by the runner. The hot index is always at:
 
 ```text
 vault/projects/ariadne/HOT_INDEX.md

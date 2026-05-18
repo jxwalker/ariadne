@@ -33,6 +33,8 @@ export async function generateConsoleBrowserCheckReport(input: {
     await page.goto(pathToFileURL(htmlPath).toString(), { waitUntil: "networkidle" });
     await page.screenshot({ path: screenshotPath, fullPage: true });
     checks.push(await visibleCheck(page, "brand", "Ariadne brand", "text=Ariadne Console"));
+    checks.push(await visibleCheck(page, "workflow", "Workflow overview", "text=Capture"));
+    checks.push(await visibleCheck(page, "next-best-action", "Next best action", "text=Next best action"));
     checks.push(await visibleCheck(page, "gate-matrix", "Gate matrix section", "text=Gate Matrix"));
     checks.push(await visibleCheck(page, "evaluation-trends", "Evaluation trends section", "text=Evaluation Trends"));
     checks.push(await visibleCheck(page, "recovery", "Recovery section", "text=Recovery"));

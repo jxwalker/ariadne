@@ -27,6 +27,7 @@ Do not add `npm run cli`, `src/cli.ts`, or docs that describe the main runner as
 ## Design Rules
 
 - Add adapters as file contracts before live integrations.
+- Keep the user-facing path workflow-first: console stage, next action, evidence artifact, then expert command.
 - Keep every artifact JSON-serializable and schema-versioned.
 - Prefer deterministic validation over model judgment.
 - Keep external mutation behind explicit commands and human approval.
@@ -49,7 +50,7 @@ Do not add `npm run cli`, `src/cli.ts`, or docs that describe the main runner as
 - `src/approvals.ts`: explicit approval requests and decisions for mutation-capable adapters.
 - `src/recovery.ts`: crash recovery reports from recorded vault state.
 - `src/consoleData.ts`: normalised read-only console projection.
-- `src/consoleHtml.ts`: static console renderer over console data.
+- `src/consoleHtml.ts`: static workflow and evidence console renderer over console data.
 - `src/consoleVisualChecks.ts`: deterministic visual contract checks for the generated console.
 - `src/consoleBrowserChecks.ts`: Playwright-backed console rendering and screenshot evidence.
 - `src/evaluation.ts`: pipeline evaluation plans and run scores.

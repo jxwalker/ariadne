@@ -1,6 +1,29 @@
 # Orchestration Visualisation
 
-The first visualisation should be an operations surface over evidence, not a chat UI.
+The first visualisation should be an operations surface over evidence, not a chat UI. It should show the human workflow before the command surface.
+
+## Operator Interaction
+
+Ariadne has several surfaces with different jobs:
+
+- Ariadne Console: primary human cockpit for workflow stage, next action, evidence lineage, gates, review, and operations state.
+- Hermes: runtime and backplane for sessions, sleep, scheduler, memory review, mail, and background coordination.
+- NotebookLM: source-grounded research input whose reviewed exports are imported as evidence.
+- GBrain: advisory semantic memory whose reports can inform review without becoming approval evidence.
+- `ariadne` runner: expert automation surface for refreshing artifacts, importing evidence, and executing approved mutation plans.
+
+The console should therefore answer two questions first: where is this project in the idea-to-shipped-system journey, and what is the next human action? Dense command recipes belong in packets, guides, and expert sections after those questions are answered.
+
+## Workflow Lane
+
+The top-level console lane is:
+
+- Capture: raw source material, hashes, hygiene, extraction status.
+- Shape: dossier, PRD, requirements, GSD/GSD2 tasks.
+- Build: execution runs, worktree guards, branch scope.
+- Verify: deterministic checks, Playwright evidence, browser checks, CI, evaluation.
+- Review: human review, bot review, approvals, live-adapter evidence, roadmap completion.
+- Operate: Hermes, sleep, memory, mail, leases, runtime probes, deployment, infrastructure.
 
 ## Objects To Visualise
 

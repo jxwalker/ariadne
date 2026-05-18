@@ -21,6 +21,8 @@ function renderConsole(data: ConsoleData): string {
   const latestEvaluation = data.evaluations.at(-1);
   const failedChecks = data.checks.filter((check) => check.status === "failed").length;
   const missingGates = data.readiness?.missing.length ?? 0;
+  const workflowStages = projectWorkflowStages(data);
+  const nextAction = nextBestAction(data);
   const timeline = [
     ...data.sources.map((source) => ({
       time: source.ingestedAt,
@@ -216,6 +218,7 @@ function renderConsole(data: ConsoleData): string {
     `<span>${missingGates} missing gates</span>`,
     "</div>",
     "</section>",
+    workflowOverview(workflowStages, nextAction),
     '<section class="metrics" aria-label="Project metrics">',
     metric("Sources", data.summary.sources),
     metric("Extractions", data.summary.extractionResults, "results"),
@@ -305,9 +308,138 @@ function renderConsole(data: ConsoleData): string {
   ].join("\n");
 }
 
-function metric(label: string, value: string | number, note = "total"): string {
+type WorkflowStage = {
+  title: string;
+  status: string;
+  detail: string;
+  proof: string;
+};
+
+type NextBestAction = {
+  title: string;
+  status: string;
+  detail: string;
+  artifact: string;
+  command?: string;
+};
+
+function workflowOverview(stages: WorkflowStage[], nextAction: NextBestAction): string {
   return [
-    '<div class="metric">',
+    '<section class="workflow" aria-label="Ariadne workflow">',
+    '<div class="workflow-lanes">',
+    ...stages.map(
+      (stage) =>
+        `<article class="workflow-stage"><div><span>${escapeHtml(stage.title)}</span><strong class="${statusClass(stage.status)}">${escapeHtml(stage.status)}</strong></div><p>${escapeHtml(stage.detail)}</p><small>${escapeHtml(stage.proof)}</small></article>`
+    ),
+    "</div>",
+    '<div class="next-action" data-visual-role="next-best-action">',
+    '<span class="label">Next best action</span>',
+    `<strong class="${statusClass(nextAction.status)}">${escapeHtml(nextAction.title)}</strong>`,
+    `<p>${escapeHtml(nextAction.detail)}</p>`,
+    `<small>${escapeHtml(nextAction.artifact)}</small>`,
+    ...(nextAction.command ? [`<code>${escapeHtml(nextAction.command)}</code>`] : []),
+    "</div>",
+    "</section>"
+  ].join("");
+}
+
+function projectWorkflowStages(data: ConsoleData): WorkflowStage[] {
+  const failedChecks = data.checks.filter((check) => check.status === "failed").length;
+  const passedChecks = data.checks.filter((check) => check.status === "passed").length;
+  const latestRun = data.executionRuns.at(-1);
+  const hasPlaywrightEvidence = data.playwrightEvidence.length > 0 || Boolean(data.consoleBrowserChecks);
+  const reviewStatus = data.summary.roadmapCompletionStatus ?? data.summary.liveAdapterReviewSessionStatus ?? "pending";
+  const operateStatus =
+    data.summary.hermesCronSnapshots > 0 || data.summary.localRuntimeProbes > 0 || data.summary.deploymentSnapshots > 0
+      ? "ready"
+      : "pending";
+
+  return [
+    {
+      title: "Capture",
+      status: data.summary.sources > 0 ? "complete" : "missing",
+      detail: `${data.summary.sources} source file(s), ${data.summary.extractionResults} extraction result(s).`,
+      proof: data.artifacts.hotIndex ?? "HOT_INDEX.md"
+    },
+    {
+      title: "Shape",
+      status: data.summary.requirements > 0 && data.summary.tasks > 0 ? "complete" : "pending",
+      detail: `${data.summary.requirements} requirement(s), ${data.summary.tasks} task(s).`,
+      proof: data.artifacts.prd ?? data.artifacts.roadmap ?? "requirements and GSD artifacts"
+    },
+    {
+      title: "Build",
+      status: latestRun ? latestRun.status : "pending",
+      detail: latestRun ? `${latestRun.taskIds.length} task(s) in latest run.` : "No execution run recorded.",
+      proof: latestRun?.id ?? data.artifacts.roadmap ?? "execution run"
+    },
+    {
+      title: "Verify",
+      status: failedChecks > 0 ? "failed" : passedChecks > 0 || hasPlaywrightEvidence ? "ready" : "pending",
+      detail: `${passedChecks} passed check(s), ${failedChecks} failed check(s), ${data.playwrightEvidence.length} UI evidence record(s).`,
+      proof: data.artifacts.consoleBrowserChecks ?? data.artifacts.artifactChecks ?? "verification artifacts"
+    },
+    {
+      title: "Review",
+      status: reviewStatus,
+      detail: `${data.summary.pendingApprovals} pending approval(s), ${data.summary.roadmapCompletionBlocked ?? 0} roadmap blocker(s).`,
+      proof: data.artifacts.roadmapCompletionAudit ?? data.artifacts.liveAdapterReviewSession ?? "review artifacts"
+    },
+    {
+      title: "Operate",
+      status: operateStatus,
+      detail: `${data.summary.hermesCronSnapshots} Hermes snapshot(s), ${data.summary.localRuntimeProbes} runtime probe(s), ${data.summary.deploymentSnapshots} deployment snapshot(s).`,
+      proof: data.artifacts.localRuntimeProbes ?? "operations artifacts"
+    }
+  ];
+}
+
+function nextBestAction(data: ConsoleData): NextBestAction {
+  const nextTarget = data.liveAdapterOperatorEvidenceQueue?.targets.find((target) =>
+    ["needs_evidence", "unchecked", "needs_rework"].includes(target.status)
+  );
+  if (nextTarget) {
+    const missing = nextTarget.latestCheckMissingSections ?? nextTarget.missingSections.length;
+    return {
+      title: `${nextTarget.target} operator evidence`,
+      status: nextTarget.status,
+      detail: `${missing} missing section(s). ${nextTarget.nextAction}`,
+      artifact: nextTarget.evidenceRefs[0] ?? nextTarget.templateRef,
+      command: `npm run ariadne -- live-adapter-operator-evidence-next --project ${data.project} --target ${nextTarget.target}`
+    };
+  }
+
+  const blockedRequirement = data.roadmapCompletionAudit?.requirements.find((requirement) => requirement.status === "blocked");
+  if (blockedRequirement) {
+    return {
+      title: blockedRequirement.id,
+      status: blockedRequirement.status,
+      detail: blockedRequirement.detail,
+      artifact: data.artifacts.roadmapCompletionAudit ?? "control/roadmap-completion-audit.md"
+    };
+  }
+
+  if ((data.readiness?.missing.length ?? 0) > 0) {
+    return {
+      title: "Merge readiness gates",
+      status: data.summary.readinessStatus ?? "blocked",
+      detail: data.readiness?.missing[0] ?? "A merge-readiness gate is missing.",
+      artifact: data.artifacts.control ?? "control/merge-readiness.md"
+    };
+  }
+
+  return {
+    title: "Ready for next slice",
+    status: "ready",
+    detail: "Current artifacts do not expose a blocking action.",
+    artifact: data.artifacts.hotIndex ?? "HOT_INDEX.md"
+  };
+}
+
+function metric(label: string, value: string | number, note = "total"): string {
+  const isLongText = typeof value === "string" && (value.length > 6 || value.includes("_"));
+  return [
+    `<div class="metric${isLongText ? " metric-text" : ""}">`,
     `<span>${escapeHtml(label)}</span>`,
     `<strong>${escapeHtml(String(value))}</strong>`,
     `<small>${escapeHtml(note)}</small>`,
@@ -1023,6 +1155,86 @@ h1 {
   font-family: var(--mono);
   font-size: 22px;
 }
+.workflow {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(300px, .42fr);
+  gap: 20px;
+  padding: 22px 0;
+  border-bottom: 1px solid var(--line);
+}
+.workflow-lanes {
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  border: 1px solid var(--line);
+  background: var(--panel);
+}
+.workflow-stage {
+  min-width: 0;
+  min-height: 164px;
+  padding: 14px;
+  border-right: 1px solid var(--line);
+  display: grid;
+  align-content: space-between;
+  gap: 14px;
+}
+.workflow-stage:last-child { border-right: 0; }
+.workflow-stage div {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  align-items: baseline;
+}
+.workflow-stage span, .workflow-stage small, .next-action small {
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+}
+.workflow-stage strong {
+  font-family: var(--mono);
+  font-size: 12px;
+  text-align: right;
+  overflow-wrap: anywhere;
+}
+.workflow-stage p, .next-action p {
+  margin: 0;
+  color: var(--ink);
+  font-size: 13px;
+  line-height: 1.45;
+  overflow-wrap: anywhere;
+}
+.workflow-stage small, .next-action small {
+  display: block;
+  overflow-wrap: anywhere;
+}
+.next-action {
+  min-width: 0;
+  border: 1px solid var(--line);
+  background: var(--panel);
+  padding: 16px;
+  display: grid;
+  align-content: space-between;
+  gap: 12px;
+}
+.next-action strong {
+  font-family: var(--mono);
+  font-size: 20px;
+  line-height: 1.2;
+  overflow-wrap: anywhere;
+}
+.next-action code {
+  display: block;
+  max-width: 100%;
+  overflow-x: auto;
+  padding: 10px;
+  border: 1px solid var(--line);
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--mono);
+  font-size: 12px;
+  line-height: 1.4;
+}
 .metrics {
   display: grid;
   grid-template-columns: repeat(6, minmax(0, 1fr));
@@ -1046,6 +1258,12 @@ h1 {
   font-family: var(--mono);
   font-size: clamp(28px, 3vw, 44px);
   line-height: 1;
+  overflow-wrap: anywhere;
+}
+.metric-text strong {
+  font-size: 18px;
+  line-height: 1.18;
+  align-self: center;
 }
 .layout {
   display: grid;
@@ -1244,13 +1462,20 @@ meter {
 }
 @media (max-width: 980px) {
   .shell { width: min(calc(100vw - 28px), 760px); }
-  .hero, .layout { grid-template-columns: 1fr; }
+  .hero, .layout, .workflow { grid-template-columns: 1fr; }
+  .workflow-lanes { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .workflow-stage:nth-child(2n) { border-right: 0; }
   .metrics { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .metric:nth-child(2n) { border-right: 0; }
   .gate-grid { grid-template-columns: 1fr; }
   .gate, .gate:nth-child(3n) { border-right: 0; }
   .timeline li { grid-template-columns: 1fr; gap: 6px; }
   .trend-card { grid-template-columns: 1fr; }
+}
+@media (max-width: 640px) {
+  .workflow-lanes { grid-template-columns: 1fr; }
+  .workflow-stage { border-right: 0; border-bottom: 1px solid var(--line); }
+  .workflow-stage:last-child { border-bottom: 0; }
 }
 `;
 }

@@ -20,6 +20,8 @@ export async function generateConsoleVisualCheckReport(input: {
   const checks: ConsoleVisualCheckReport["checks"] = [
     checkContains(html, "doctype", "HTML document shell", "<!doctype html>"),
     checkContains(html, "brand", "Ariadne brand lockup", "Ariadne Console"),
+    checkContains(html, "workflow", "Workflow overview", 'aria-label="Ariadne workflow"'),
+    checkContains(html, "next-best-action", "Next best action panel", "Next best action"),
     checkContains(html, "gate-matrix", "Gate matrix section", "Gate Matrix"),
     checkContains(html, "timeline", "Timeline section", "Timeline"),
     checkContains(html, "approval-queue", "Approval queue section", "Approval Queue"),
