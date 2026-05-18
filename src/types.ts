@@ -2107,6 +2107,7 @@ export interface ConsoleWorkflow {
   schemaVersion: 1;
   stages: ConsoleWorkflowStage[];
   nextAction: ConsoleWorkflowAction;
+  modes: ConsoleWorkflowMode[];
   surfaces: ConsoleWorkflowSurface[];
 }
 
@@ -2126,6 +2127,17 @@ export interface ConsoleWorkflowAction {
   artifactRef: string;
   command?: string;
   source: "operator-evidence-queue" | "roadmap-completion-audit" | "merge-readiness" | "workflow-fallback";
+}
+
+export interface ConsoleWorkflowMode {
+  id: "guided" | "developer" | "operator" | "automation";
+  label: string;
+  audience: string;
+  primarySurface: ConsoleWorkflowSurface["id"];
+  supportSurfaces: ConsoleWorkflowSurface["id"][];
+  interaction: string;
+  commandPolicy: "hidden-by-default" | "shown-as-needed" | "expert" | "background-only";
+  nextStep: string;
 }
 
 export interface ConsoleWorkflowSurface {

@@ -3006,6 +3006,25 @@ describe("roadmap adapters", () => {
       "gbrain",
       "ariadne-runner"
     ]);
+    expect(console.data.workflow.modes.map((mode) => mode.id)).toEqual([
+      "guided",
+      "developer",
+      "operator",
+      "automation"
+    ]);
+    expect(console.data.workflow.modes.find((mode) => mode.id === "guided")?.primarySurface).toBe("ariadne-console");
+    expect(console.data.workflow.modes.find((mode) => mode.id === "automation")?.primarySurface).toBe("hermes");
+    expect(console.data.workflow.modes.find((mode) => mode.id === "developer")?.supportSurfaces).toContain("ariadne-runner");
+    for (const mode of console.data.workflow.modes) {
+      expect(mode.interaction).toBeTruthy();
+      expect(mode.nextStep).toBeTruthy();
+    }
+    expect(console.data.workflow.modes.map((mode) => mode.commandPolicy)).toEqual([
+      "hidden-by-default",
+      "shown-as-needed",
+      "expert",
+      "background-only"
+    ]);
     expect(console.data.workflow.nextAction.artifactRef).toBeTruthy();
     const { workflow: _workflow, ...consoleWorkflowInput } = console.data;
     const failedBrowserWorkflow = buildConsoleWorkflow({
