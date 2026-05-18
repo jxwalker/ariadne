@@ -139,6 +139,8 @@ npm run ariadne -- infra-live-ssh --project ariadne --host beast --target james@
 npm run ariadne -- status --project ariadne
 ```
 
+The CLI also loads local `ARIADNE_` defaults from a git-ignored `.env` file in the current working directory. This is the preferred unattended path for private LAN or tailnet model endpoints such as Atlas; explicit shell variables still win over `.env` values, and non-`ARIADNE_` keys are ignored.
+
 The generated console includes the mutation-readiness repair plan beside the mutation audit, and `e2e-smoke` now refreshes that read-only repair guidance before rendering the console. Blocked live-adapter work is visible by target without granting approval or running a live command. `status` also surfaces the live-adapter operator-evidence, queue, next target, the one-step next operator packet command, target-scoped follow-up commands, cutover, and review-session summaries so a blocked smoke result is explainable from one command.
 
 ## Vault Layout
