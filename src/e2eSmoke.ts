@@ -12,6 +12,7 @@ import { collectLocalRuntimeProbe, type RuntimeModelEndpointId } from "./localRu
 import { generateMutationReadinessRepairPlan } from "./mutationReadinessRepairPlan.js";
 import { slugifyProject } from "./paths.js";
 import { generatePlaywrightPlan } from "./playwrightPlan.js";
+import { refreshRoadmapControlArtifacts, type RoadmapControlRefreshReport } from "./roadmapControlRefresh.js";
 import { generateRoadmapCompletionAudit } from "./roadmapCompletionAudit.js";
 import type {
   ArtifactCheckReport,
@@ -53,6 +54,10 @@ export interface E2eSmokeReport {
     mutationReadinessRepairPlan?: string;
     artifactChecks?: string;
     roadmapCompletionAudit?: string;
+    roadmapControlRefresh?: string;
+    roadmapControlRefreshArtifactChecks?: string;
+    roadmapControlRefreshCompletionAudit?: string;
+    roadmapControlRefreshGbrainExport?: string;
   };
 }
 
@@ -63,6 +68,13 @@ export interface E2eSmokeStep {
   detail: string;
   artifactRefs: string[];
 }
+
+type RoadmapControlRefreshArtifactRefs = Pick<
+  RoadmapControlRefreshReport["artifacts"],
+  "artifactChecks" | "roadmapCompletionAudit" | "gbrainExport"
+> & {
+  report: string;
+};
 
 export async function runE2eSmoke(input: {
   project: string;
@@ -194,6 +206,23 @@ export async function runE2eSmoke(input: {
   artifacts.roadmapCompletionAudit = relative(input.vaultRoot, roadmap.jsonPath);
   steps.push(roadmapStep(roadmap.audit, artifacts.roadmapCompletionAudit));
 
+  const controlRefresh = await refreshRoadmapControlArtifacts({ project, vaultRoot: input.vaultRoot });
+  artifacts.roadmapControlRefresh = relative(input.vaultRoot, controlRefresh.jsonPath);
+  artifacts.roadmapControlRefreshArtifactChecks = relative(input.vaultRoot, controlRefresh.report.artifacts.artifactChecks);
+  artifacts.roadmapControlRefreshCompletionAudit = relative(
+    input.vaultRoot,
+    controlRefresh.report.artifacts.roadmapCompletionAudit
+  );
+  artifacts.roadmapControlRefreshGbrainExport = relative(input.vaultRoot, controlRefresh.report.artifacts.gbrainExport);
+  steps.push(
+    controlRefreshStep(controlRefresh.report, {
+      report: artifacts.roadmapControlRefresh,
+      artifactChecks: artifacts.roadmapControlRefreshArtifactChecks,
+      roadmapCompletionAudit: artifacts.roadmapControlRefreshCompletionAudit,
+      gbrainExport: artifacts.roadmapControlRefreshGbrainExport
+    })
+  );
+
   const summary = {
     steps: steps.length,
     passed: steps.filter((step) => step.status === "passed").length,
@@ -288,6 +317,35 @@ function roadmapStep(audit: RoadmapCompletionAudit, artifactRef: string): E2eSmo
     detail: `${audit.summary.passed} passed, ${audit.summary.blocked} blocked.`,
     artifactRefs: [artifactRef]
   };
+}
+
+function controlRefreshStep(
+  report: RoadmapControlRefreshReport,
+  artifactRefs: RoadmapControlRefreshArtifactRefs
+): E2eSmokeStep {
+  return {
+    id: "roadmap-control-refresh",
+    label: "Roadmap control refresh",
+    status: controlRefreshStatus(report.status),
+    detail: `${report.summary.roadmapBlocked} roadmap blocker(s), ${report.summary.gbrainDocuments} GBrain document(s), next target ${report.summary.operatorNextTarget ?? "none"}.`,
+    artifactRefs: [
+      artifactRefs.report,
+      artifactRefs.artifactChecks,
+      artifactRefs.roadmapCompletionAudit,
+      artifactRefs.gbrainExport
+    ]
+  };
+}
+
+function controlRefreshStatus(status: RoadmapControlRefreshReport["status"]): E2eSmokeStep["status"] {
+  switch (status) {
+    case "complete":
+      return "passed";
+    case "blocked":
+      return "blocked";
+    default:
+      return "failed";
+  }
 }
 
 function renderReport(report: E2eSmokeReport): string {
