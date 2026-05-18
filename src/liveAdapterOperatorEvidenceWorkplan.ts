@@ -1,16 +1,20 @@
+import fs from "node:fs/promises";
 import path from "node:path";
 import { writeJsonArtifact, writeTextArtifact } from "./artifacts.js";
 import { generateLiveAdapterCutoverAudit } from "./liveAdapterCutoverAudit.js";
 import { generateLiveAdapterEvidenceTemplates } from "./liveAdapterEvidenceTemplates.js";
 import { generateLiveAdapterOperatorEvidenceAudit, operatorEvidenceTargetMissingSections } from "./liveAdapterOperatorEvidence.js";
 import { generateLiveAdapterReviewSession } from "./liveAdapterReviewSession.js";
-import { slugifyProject } from "./paths.js";
+import { isLiveAdapterTarget } from "./liveAdapterTargets.js";
+import { projectDir, slugifyProject } from "./paths.js";
 import type {
   LiveAdapterCutoverAudit,
+  LiveAdapterEvidenceTarget,
   LiveAdapterEvidenceTemplatePack,
   LiveAdapterOperatorEvidenceAudit,
   LiveAdapterOperatorEvidenceWorkplan,
-  LiveAdapterReviewSession
+  LiveAdapterReviewSession,
+  LiveEvidencePromotion
 } from "./types.js";
 
 type WorkplanTarget = LiveAdapterOperatorEvidenceWorkplan["targets"][number];
@@ -28,6 +32,7 @@ export async function generateLiveAdapterOperatorEvidenceWorkplan(input: {
   const reviewSession = await generateLiveAdapterReviewSession({ project, vaultRoot: input.vaultRoot });
   const evidenceTemplates = await generateLiveAdapterEvidenceTemplates({ project, vaultRoot: input.vaultRoot });
   const cutoverAudit = await generateLiveAdapterCutoverAudit({ project, vaultRoot: input.vaultRoot });
+  const promotionRefsByTarget = await readLiveEvidencePromotionRefs(input.vaultRoot, project);
 
   const templatesByTarget = new Map(evidenceTemplates.pack.templates.map((template) => [template.target, template]));
   const reviewByTarget = new Map(reviewSession.session.targets.map((target) => [target.target, target]));
@@ -39,7 +44,8 @@ export async function generateLiveAdapterOperatorEvidenceWorkplan(input: {
       target,
       mustGet(templatesByTarget, target.target, "evidence template"),
       mustGet(reviewByTarget, target.target, "review-session target"),
-      mustGet(cutoverByTarget, target.target, "cutover target")
+      mustGet(cutoverByTarget, target.target, "cutover target"),
+      promotionRefsByTarget.get(target.target) ?? []
     )
   );
   const summary = {
@@ -80,7 +86,8 @@ function workplanTarget(
   auditTarget: EvidenceAuditTarget,
   template: TemplateTarget,
   review: ReviewTarget,
-  cutover: CutoverTarget
+  cutover: CutoverTarget,
+  liveEvidencePromotionRefs: string[]
 ): WorkplanTarget {
   const status: WorkplanTarget["status"] =
     auditTarget.status === "complete" ? "complete" : auditTarget.status === "incomplete" ? "needs_rework" : "needs_evidence";
@@ -98,9 +105,73 @@ function workplanTarget(
     cutoverBlockers: cutover.blockers,
     gbrainQueries: template.gbrainQueries,
     evidenceRefs: Array.from(
-      new Set([template.templateRef, ...auditTarget.evidenceRefs, ...review.evidenceRefs, ...cutover.evidenceRefs].map((ref) => canonicalRef(project, ref)))
+      new Set(
+        [template.templateRef, ...auditTarget.evidenceRefs, ...review.evidenceRefs, ...cutover.evidenceRefs, ...liveEvidencePromotionRefs].map(
+          (ref) => canonicalRef(project, ref)
+        )
+      )
     )
   };
+}
+
+async function readLiveEvidencePromotionRefs(
+  vaultRoot: string,
+  project: string
+): Promise<Map<LiveAdapterEvidenceTarget, string[]>> {
+  const promotionsDir = path.join(projectDir(vaultRoot, project), "control", "live-evidence-promotions");
+  let entries: string[];
+  try {
+    entries = (await fs.readdir(promotionsDir, { withFileTypes: true }))
+      .filter((entry) => entry.isFile() && entry.name.endsWith(".json"))
+      .map((entry) => entry.name)
+      .sort();
+  } catch (error) {
+    if ((error as NodeJS.ErrnoException).code !== "ENOENT") {
+      console.warn(`Skipping live evidence promotions in ${path.relative(vaultRoot, promotionsDir)}: ${(error as Error).message}`);
+    }
+    return new Map();
+  }
+
+  const refsByTarget = new Map<LiveAdapterEvidenceTarget, string[]>();
+  const promotions = await Promise.all(
+    entries.map(async (entry) => {
+      const promotionPath = path.join(promotionsDir, entry);
+      return { promotionPath, promotion: await readPromotion(vaultRoot, promotionPath) };
+    })
+  );
+  for (const { promotionPath, promotion } of promotions) {
+    if (!promotion || !isReviewablePromotion(project, promotion)) continue;
+    const refs = refsByTarget.get(promotion.target) ?? [];
+    refs.push(path.relative(vaultRoot, promotionPath).split(path.sep).join("/"));
+    refsByTarget.set(promotion.target, refs);
+  }
+  return refsByTarget;
+}
+
+async function readPromotion(vaultRoot: string, promotionPath: string): Promise<unknown> {
+  try {
+    return JSON.parse(await fs.readFile(promotionPath, "utf8"));
+  } catch (error) {
+    console.warn(`Skipping unreadable live evidence promotion ${path.relative(vaultRoot, promotionPath)}: ${(error as Error).message}`);
+    return undefined;
+  }
+}
+
+function isReviewablePromotion(project: string, promotion: unknown): promotion is LiveEvidencePromotion {
+  if (!promotion || typeof promotion !== "object") return false;
+  const candidate = promotion as Record<string, unknown>;
+  return (
+    candidate.schemaVersion === 1 &&
+    candidate.project === project &&
+    typeof candidate.target === "string" &&
+    isLiveAdapterTarget(candidate.target) &&
+    candidate.status === "promoted_for_operator_review" &&
+    candidate.mutationApproved === false &&
+    candidate.approvalGranted === false &&
+    candidate.operatorEvidenceRecordCreated === false &&
+    typeof candidate.id === "string" &&
+    candidate.id.startsWith(`live-evidence-promotion-${candidate.target}-`)
+  );
 }
 
 function canonicalRef(project: string, ref: string): string {
