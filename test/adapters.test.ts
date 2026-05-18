@@ -902,9 +902,16 @@ describe("roadmap adapters", () => {
     expect(nextActions.report.status).toBe("actions_required");
     expect(nextActions.report.operatorEvidenceAuditRef).toContain("live-adapter-operator-evidence-audit.json");
     expect(githubActions?.actions[0]?.id).toBe("github-operator-evidence");
-    expect(githubActions?.actions[0]?.command).toContain("live-adapter-operator-evidence");
+    expect(githubActions?.actions[0]?.title).toBe("Prepare, fill, and import operator evidence");
+    expect(githubActions?.actions[0]?.command).toBe(
+      "npm run ariadne -- live-adapter-operator-evidence-next --project <project> --target github"
+    );
+    expect(githubActions?.actions[0]?.evidenceRefs).toContain("control/live-adapter-operator-evidence-workspace.json");
     expect(githubActions?.actions.some((action) => action.id === "github-replace-placeholder" && action.status === "ready")).toBe(true);
     expect(deploymentActions?.actions[0]?.id).toBe("deployment-operator-evidence");
+    expect(deploymentActions?.actions[0]?.command).toBe(
+      "npm run ariadne -- live-adapter-operator-evidence-next --project <project> --target deployment"
+    );
     expect(deploymentActions?.actions.some((action) => action.id === "deployment-approval-pack-review")).toBe(true);
     expect(deploymentActions?.actions.some((action) => action.id === "deployment-audit-fix")).toBe(true);
     expect(deploymentActions?.actions.some((action) => action.id === "deployment-dry-run" && action.status === "pending")).toBe(true);
@@ -935,7 +942,7 @@ describe("roadmap adapters", () => {
     expect(repairPlanMarkdown).toContain("#### Approval Request");
     expect(repairPlanMarkdown).toContain("npm run ariadne -- approval-request --project <project> --by <operator> --target deployment");
     expect(repairPlanMarkdown).toContain("#### Next Action Commands");
-    expect(repairPlanMarkdown).toContain("live-adapter-operator-evidence --project <project> --target deployment");
+    expect(repairPlanMarkdown).toContain("live-adapter-operator-evidence-next --project <project> --target deployment");
     const approvalPack = await generateLiveAdapterApprovalPack({ project: "ariadne", vaultRoot });
     expect(approvalPack.report.status).toBe("ready_for_operator_review");
     expect(approvalPack.report.summary.packets).toBe(5);
