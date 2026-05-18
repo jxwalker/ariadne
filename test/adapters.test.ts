@@ -736,6 +736,7 @@ describe("roadmap adapters", () => {
     expect(dossier.dossier.gbrainContext.exportRef).toContain("integrations/gbrain/gbrain-export.json");
     expect(dossier.dossier.gbrainContext.suggestedQueries.some((query) => query.includes("github"))).toBe(true);
     expect(dossier.dossier.operatorChecklist.some((item) => item.includes("Query GBrain"))).toBe(true);
+    expect(dossier.dossier.evidenceRefs.every((ref) => !ref.includes("/vault/projects/"))).toBe(true);
   });
 
   it("records behavior checks, sleep routines, memory proposals, agent mail, leases, Hermes cron, and deployment snapshots", async () => {
@@ -2926,6 +2927,7 @@ describe("roadmap adapters", () => {
       const deploymentEvidenceRefs =
         workplanWithPromotion.workplan.targets.find((target) => target.target === "deployment")?.evidenceRefs ?? [];
       expect(deploymentEvidenceRefs).toContain(promotionRef);
+      expect(deploymentEvidenceRefs.some((ref) => ref.includes("projects/ariadne/vault/projects"))).toBe(false);
       expect(deploymentEvidenceRefs).not.toContain(mutationApprovedPromotionRef);
       expect(deploymentEvidenceRefs).not.toContain(approvalGrantedPromotionRef);
       expect(deploymentEvidenceRefs).not.toContain(operatorEvidenceCreatedPromotionRef);
@@ -3955,6 +3957,41 @@ describe("roadmap adapters", () => {
     expect(plan.plan.rollback).toContain("proxmox/beast");
     expect(plan.plan.requiredGates).toContain("deployment target and rollback host verified");
     expect(plan.plan.execute).toBe(false);
+    const duplicateEvidencePlan = await planDeploymentMutation({
+      project: "ariadne",
+      vaultRoot,
+      system: "mac",
+      host: "jimm5.local",
+      scope: "Verify duplicate evidence refs are normalized in audits.",
+      authEvidenceRefs: [relativeAuthEvidence],
+      evidenceRefs: [relativeAuthEvidence, approved.jsonPath],
+      dryRunCommand: "printf dry-run",
+      liveCommand: "printf live",
+      postVerificationCommand: "printf verify",
+      rollback: "discard duplicate-ref fixture plan",
+      approvalRef: approval.record.id,
+      risk: "low"
+    });
+    const alreadyQualifiedPlan = await planDeploymentMutation({
+      project: "ariadne",
+      vaultRoot,
+      system: "mac",
+      host: "jimm5.local",
+      scope: "mac/jimm5.local: Preserve already-qualified scope.",
+      authEvidenceRefs: [relativeAuthEvidence],
+      evidenceRefs: [],
+      dryRunCommand: "printf dry-run",
+      liveCommand: "printf live",
+      postVerificationCommand: "printf verify",
+      rollback: "mac/jimm5.local: discard already-qualified rollback",
+      approvalRef: approval.record.id,
+      risk: "low"
+    });
+    expect(alreadyQualifiedPlan.plan.scope).toBe("mac/jimm5.local: Preserve already-qualified scope.");
+    expect(alreadyQualifiedPlan.plan.rollback).toBe("mac/jimm5.local: discard already-qualified rollback");
+    const readinessAudit = await generateMutationReadinessAudit({ project: "ariadne", vaultRoot });
+    const duplicateEvidenceCheck = readinessAudit.audit.checks.find((check) => check.planId === duplicateEvidencePlan.plan.id);
+    expect(duplicateEvidenceCheck?.evidenceRefs.filter((ref) => ref === relativeAuthEvidence)).toHaveLength(1);
 
     const spacedHostPlan = await planDeploymentMutation({
       project: "ariadne",

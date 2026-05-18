@@ -1,13 +1,13 @@
 {
   "schemaVersion": 1,
   "project": "ariadne",
-  "generatedAt": "2026-05-18T08:36:33.338Z",
+  "generatedAt": "2026-05-18T15:10:37.333Z",
   "status": "actions_required",
   "summary": {
     "targets": 6,
     "ready": 0,
     "blocked": 6,
-    "actionItems": 40
+    "actionItems": 36
   },
   "readinessRef": "projects/ariadne/control/live-adapter-readiness.json",
   "operatorEvidenceAuditRef": "projects/ariadne/control/live-adapter-operator-evidence-audit.json",
@@ -81,72 +81,31 @@
       "readinessStatus": "blocked",
       "executeCommand": "deployment-mutation-execute",
       "blockers": [
-        "no accepted operator review exists for live-adapter approval packet",
-        "no target-specific readiness plan exists",
         "no readiness plan passes audit",
         "no passed dry-run evidence exists for an audit-passed plan",
         "no passed target-guarded execution evidence exists"
       ],
       "actions": [
         {
-          "id": "deployment-operator-evidence",
-          "status": "pending",
-          "title": "Prepare, fill, and import operator evidence",
-          "rationale": "The target has no imported operator evidence record. Refresh the target packet, fill the generated workspace file with real observations, and import it before packet review or cutover.",
-          "command": "npm run ariadne -- live-adapter-operator-evidence-next --project <project> --target deployment",
-          "evidenceRefs": [
-            "control/live-adapter-operator-evidence-workspace-deployment.json",
-            "control/operator-evidence/deployment/operator-evidence.md"
-          ]
-        },
-        {
-          "id": "deployment-approval-pack-review",
-          "status": "pending",
-          "title": "Record operator review of the approval packet",
-          "rationale": "Before a live adapter can replace placeholder shell commands, an operator must review the target packet and record whether the packet is accepted, rejected, or needs changes. This does not approve live mutation.",
-          "command": "npm run ariadne -- live-adapter-approval-review --project <project> --target deployment --by <operator> --status accepted --packet control/live-adapter-approval-pack.json --evidence <operator-review-evidence>",
-          "evidenceRefs": [
-            "control/mutation-readiness-audit.json"
-          ]
-        },
-        {
-          "id": "deployment-approval-request",
-          "status": "pending",
-          "title": "Record an operator approval request",
-          "rationale": "Live adapters need explicit human authorization before any target-specific readiness plan can be treated as reviewable.",
-          "command": "npm run ariadne -- approval-request --project <project> --by <operator> --target deployment --action \"<bounded action>\" --risk <low|medium|high> --reason \"<why this target should mutate>\" --rollback \"<operator rollback path>\" --evidence <auth-or-policy-evidence>",
-          "evidenceRefs": [
-            "control/mutation-readiness-audit.json"
-          ]
-        },
-        {
-          "id": "deployment-mutation-plan",
-          "status": "blocked",
-          "title": "Create a target-specific mutation-readiness plan",
-          "rationale": "Ariadne needs reviewed dry-run, live, post-verification, rollback, auth evidence, and approval refs before any live adapter can be wired.",
-          "command": "npm run ariadne -- deployment-mutation-plan --project <project> --system <proxmox|truenas|dgx-spark|mac> --host <host> --scope <scope> --auth-evidence <paths> --dry-run <cmd> --live-command <cmd> --post-verify <cmd> --rollback <text> --approval <approval-id>",
-          "evidenceRefs": [
-            "control/mutation-readiness-audit.json"
-          ]
-        },
-        {
           "id": "deployment-audit-fix",
           "status": "pending",
-          "title": "Fix readiness audit blockers",
-          "rationale": "The readiness audit must pass before dry-run or execution evidence can count for a live adapter.",
-          "command": "npm run ariadne -- mutation-readiness-audit --project <project>",
+          "title": "Resolve existing readiness plan blockers",
+          "rationale": "Existing plan mutation-readiness-deployment-2026-05-18T14-54-52-671Z is blocked by: approval state is approval_required; approval record is requested. Approve the existing plan only after operator review, and regenerate it with post-action verification if that gate is missing.",
+          "command": "Review mutation-readiness-deployment-2026-05-18T14-54-52-671Z; after operator approval, record approval-decision, ensure --post-verify is present, then rerun npm run ariadne -- mutation-readiness-audit --project <project>",
           "evidenceRefs": [
-            "control/mutation-readiness-audit.json"
+            "control/mutation-readiness-audit.json",
+            "control/live-adapter-approval-reviews/approval-review-deployment-2026-05-18T14-57-00-710Z.json"
           ]
         },
         {
           "id": "deployment-dry-run",
-          "status": "blocked",
+          "status": "pending",
           "title": "Run the reviewed dry-run command",
           "rationale": "Dry-run evidence proves the reviewed command path before the live command is eligible for target-guarded execution.",
-          "command": "Create and audit-pass a target-specific readiness plan first.",
+          "command": "After mutation-readiness-deployment-2026-05-18T14-54-52-671Z passes audit, run npm run ariadne -- mutation-dry-run --project <project> --plan mutation-readiness-deployment-2026-05-18T14-54-52-671Z",
           "evidenceRefs": [
-            "control/mutation-readiness-audit.json"
+            "control/mutation-readiness-audit.json",
+            "control/live-adapter-approval-reviews/approval-review-deployment-2026-05-18T14-57-00-710Z.json"
           ]
         },
         {
@@ -156,7 +115,8 @@
           "rationale": "The live adapter should only replace placeholder shell commands after the audited target wrapper has successfully verified the same target and recorded post-action verification evidence.",
           "command": "Run a passed dry-run for an audit-passed plan first.",
           "evidenceRefs": [
-            "control/mutation-readiness-audit.json"
+            "control/mutation-readiness-audit.json",
+            "control/live-adapter-approval-reviews/approval-review-deployment-2026-05-18T14-57-00-710Z.json"
           ]
         }
       ]

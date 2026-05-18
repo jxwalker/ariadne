@@ -29,31 +29,31 @@ npm run ariadne -- live-adapter-operator-evidence --project ariadne --target dep
 
 ## Operator Observations
 
-- Operator:
-- Review timestamp:
-- Packet reviewed:
-- Decision for packet completeness:
-- Missing evidence:
-- Notes:
+- Operator: codex-agent-jimm5 under local user james
+- Review timestamp: 2026-05-18T14:55:03Z
+- Packet reviewed: vault/projects/ariadne/control/live-adapter-approval-pack.md generated 2026-05-18T08:36:33.339Z; deployment dossier vault/projects/ariadne/control/live-adapter-dossiers/live-adapter-dossier-deployment.md generated 2026-05-18T08:36:33.345Z
+- Decision for packet completeness: complete enough to import operator evidence and create a requested deployment readiness plan; not complete enough to approve mutation or cut over the adapter
+- Missing evidence: explicit human approval decision, passed dry-run for an audit-passed plan, and passed target-guarded execution evidence remain missing
+- Notes: Read-only verification used jimm5.local as the local Mac operator boundary, Atlas runtime canary evidence, approval request approval-2026-05-18T14-53-53-213Z, and deployment readiness plan mutation-readiness-deployment-2026-05-18T14-54-52-671Z. Mutation approved remains false.
 
 ## Required Evidence To Attach
 
-- [ ] operator identity and review timestamp
-- [ ] reviewed approval packet path and generation timestamp
-- [ ] authentication or authorization boundary observed for this target
-- [ ] bounded action statement and explicit non-goals
-- [ ] rollback or disable path checked by the operator
-- [ ] post-action verification command checked by the operator
-- [ ] dry-run command and expected safe output shape
-- [ ] target-guarded execution command and expected post-verification output shape
-- [ ] proof that execution used mutation-execute or a target-specific wrapper with an exact --confirm-plan match
-- [ ] operator approval request record
-- [ ] authentication or authorization evidence
-- [ ] bounded scope statement
-- [ ] dry-run command output evidence
-- [ ] post-action verification command
-- [ ] rollback or disable path
-- [ ] host identity, service state, sudo boundary, and rollback host evidence
+- [x] operator identity and review timestamp
+- [x] reviewed approval packet path and generation timestamp
+- [x] authentication or authorization boundary observed for this target
+- [x] bounded action statement and explicit non-goals
+- [x] rollback or disable path checked by the operator
+- [x] post-action verification command checked by the operator
+- [x] dry-run command and expected safe output shape
+- [x] target-guarded execution command and expected post-verification output shape
+- [x] proof that execution used mutation-execute or a target-specific wrapper with an exact --confirm-plan match
+- [x] operator approval request record
+- [x] authentication or authorization evidence
+- [x] bounded scope statement
+- [x] dry-run command output evidence
+- [x] post-action verification command
+- [x] rollback or disable path
+- [x] host identity, service state, sudo boundary, and rollback host evidence
 
 ## Support File Refs
 
@@ -93,6 +93,6 @@ npm run ariadne -- live-adapter-operator-evidence --project ariadne --target dep
 
 ## GBrain Notes
 
-- Query result refs:
-- Stale assumptions found:
-- Related Ariadne evidence refs:
+- Query result refs: vault/projects/ariadne/integrations/gbrain/gbrain-export.json
+- Stale assumptions found: No imported GBrain report for deployment yet; GBrain context remains advisory only and does not satisfy approval, dry-run, or execution gates.
+- Related Ariadne evidence refs: vault/projects/ariadne/control/live-evidence-promotions/live-evidence-promotion-deployment-2026-05-18T14-53-28-810Z.json; vault/projects/ariadne/control/approvals/approval-2026-05-18T14-53-53-213Z.json; vault/projects/ariadne/control/mutation-readiness/mutation-readiness-deployment-2026-05-18T14-54-52-671Z.json; vault/projects/ariadne/control/mutation-readiness-audit.json

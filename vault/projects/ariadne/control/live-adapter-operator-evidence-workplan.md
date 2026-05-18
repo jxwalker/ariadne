@@ -2,7 +2,7 @@
 
 Project: ariadne
 Status: evidence_required
-Generated: 2026-05-18T08:36:33.254Z
+Generated: 2026-05-18T15:27:15.725Z
 Mutation approved: false
 
 ## Rule
@@ -19,11 +19,11 @@ This workplan collects the evidence still needed from an operator. It does not a
 ## Summary
 
 - Targets: 6
-- Complete targets: 0
-- Missing targets: 6
+- Complete targets: 1
+- Missing targets: 5
 - Incomplete targets: 0
 - Check commands: 6
-- Import commands: 6
+- Import commands: 5
 - GBrain queries: 18
 
 ## Targets
@@ -115,9 +115,9 @@ npm run ariadne -- live-adapter-approval-review --project ariadne --target githu
 
 ### deployment
 
-Status: needs_evidence
+Status: complete
 Template: projects/ariadne/control/live-adapter-evidence-templates/live-adapter-evidence-template-deployment.md
-First action: Prepare, fill, and import operator evidence
+First action: Resolve existing readiness plan blockers
 
 #### Check Command
 
@@ -139,15 +139,7 @@ npm run ariadne -- live-adapter-approval-review --project ariadne --target deplo
 
 #### Missing Sections
 
-- Operator identity and timestamp
-- Approval packet review
-- Authentication or authorization boundary
-- Bounded action statement
-- Rollback or disable path
-- Post-action verification command
-- Dry-run command and safe output
-- Target-guarded execution wrapper
-- Exact confirm-plan proof
+- none
 
 #### Required Evidence
 
@@ -170,8 +162,6 @@ npm run ariadne -- live-adapter-approval-review --project ariadne --target deplo
 
 #### Cutover Blockers
 
-- Operator evidence complete: No operator evidence record exists for deployment.; Missing operator evidence section: Operator identity and timestamp; Missing operator evidence section: Approval packet review; Missing operator evidence section: Authentication or authorization boundary; Missing operator evidence section: Bounded action statement; Missing operator evidence section: Rollback or disable path; Missing operator evidence section: Post-action verification command; Missing operator evidence section: Dry-run command and safe output; Missing operator evidence section: Target-guarded execution wrapper; Missing operator evidence section: Exact confirm-plan proof
-- Current accepted operator packet review: no accepted operator review exists
 - Mutation-readiness audit passed: No target-specific mutation-readiness plan passes audit.
 - Credential and auth-boundary evidence accepted: No passing readiness audit is available to prove auth evidence.
 - Rollback and post-verification contract accepted: A passing readiness audit is required to prove rollback and post-verification.
@@ -187,6 +177,7 @@ npm run ariadne -- live-adapter-approval-review --project ariadne --target deplo
 #### Evidence
 
 - projects/ariadne/control/live-adapter-evidence-templates/live-adapter-evidence-template-deployment.md
+- projects/ariadne/control/live-adapter-operator-evidence/operator-evidence-deployment-2026-05-18T14-56-47-861Z.json
 - projects/ariadne/control/live-adapter-dossiers/live-adapter-dossier-deployment.json
 - projects/ariadne/control/mutation-readiness-repair-plan.json
 - projects/ariadne/control/live-adapter-readiness.json
@@ -194,13 +185,14 @@ npm run ariadne -- live-adapter-approval-review --project ariadne --target deplo
 - projects/ariadne/control/live-adapter-approval-pack.json
 - projects/ariadne/control/live-adapter-approval-review-audit.json
 - projects/ariadne/control/mutation-readiness-audit.json
-- projects/ariadne/control/live-adapter-operator-evidence-workspace-deployment.json
+- projects/ariadne/control/live-adapter-approval-reviews/approval-review-deployment-2026-05-18T14-57-00-710Z.json
 - projects/ariadne/control/operator-evidence/deployment/operator-evidence.md
 - projects/ariadne/control/live-adapter-operator-evidence-audit.json
 - projects/ariadne/control/live-evidence-promotions/live-evidence-promotion-deployment-2026-05-17T23-37-04-509Z.json
 - projects/ariadne/control/live-evidence-promotions/live-evidence-promotion-deployment-2026-05-18T08-15-50-017Z.json
 - projects/ariadne/control/live-evidence-promotions/live-evidence-promotion-deployment-2026-05-18T08-28-02-295Z.json
 - projects/ariadne/control/live-evidence-promotions/live-evidence-promotion-deployment-2026-05-18T08-36-20-265Z.json
+- projects/ariadne/control/live-evidence-promotions/live-evidence-promotion-deployment-2026-05-18T14-53-28-810Z.json
 
 ### hermes-cron
 

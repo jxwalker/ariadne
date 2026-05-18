@@ -9,10 +9,23 @@ You do not need to learn every command to use the MVP.
 From the repo root:
 
 ```bash
-npm run setup:mvp
+./install.sh
 ```
 
-The setup command checks Node.js, installs dependencies, installs Playwright Chromium, runs type checks and tests, builds Ariadne, refreshes the control plane, verifies the console, captures a browser screenshot, and prints the next operator handoff.
+The installer checks Node.js, installs dependencies, installs Playwright Chromium, runs type checks and tests, builds Ariadne, refreshes the control plane, verifies the console, captures a browser screenshot, and prints the next operator handoff.
+
+Use the same command after pulling updates:
+
+```bash
+git pull --ff-only
+./install.sh
+```
+
+If the wrapper is not executable on your machine, use the npm script directly:
+
+```bash
+npm run setup:mvp
+```
 
 If you want to initialise a different project name:
 
@@ -45,6 +58,12 @@ The console is the normal operating surface. Read it in this order:
 5. Gate and evidence panels: checks, runtime state, reviews, blockers, and trend evidence.
 
 The console is local static HTML. It does not mutate external systems.
+
+For the MVP, treat every session as this loop:
+
+```text
+Open console -> read Next Best Action -> do only that action -> run the printed check -> reopen console
+```
 
 ## 3. Use One Handoff Command
 

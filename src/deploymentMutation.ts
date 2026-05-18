@@ -26,21 +26,26 @@ export async function planDeploymentMutation(input: {
   const host = validateHost(input.host);
   const scope = validateText(input.scope, "--scope");
   const rollback = validateText(input.rollback, "--rollback");
+  const targetPrefix = `${system}/${host}:`;
   return planMutationReadiness({
     project,
     vaultRoot: input.vaultRoot,
     target: "deployment",
     risk: input.risk,
-    scope: `${system}/${host}: ${scope}`,
+    scope: qualifyTargetText(targetPrefix, scope),
     authEvidenceRefs: input.authEvidenceRefs,
     evidenceRefs: input.evidenceRefs,
     dryRunCommand: input.dryRunCommand,
     proposedLiveCommand: input.liveCommand,
     postVerificationCommand: input.postVerificationCommand,
-    rollback: `${system}/${host}: ${rollback}`,
+    rollback: qualifyTargetText(targetPrefix, rollback),
     approvalRef: input.approvalRef,
     notes: input.notes
   });
+}
+
+function qualifyTargetText(prefix: string, text: string): string {
+  return text.startsWith(prefix) ? text : `${prefix} ${text}`;
 }
 
 function validateHost(host: string): string {

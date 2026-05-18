@@ -11,10 +11,10 @@ Ariadne is not another coding assistant. It is the harness around assistants, lo
 From the repo root:
 
 ```bash
-npm run setup:mvp
+./install.sh
 ```
 
-The setup command is the one-shot MVP path. It:
+That is the one-shot MVP install and local update path. It:
 
 - checks that Node.js 22 or newer is available;
 - installs npm dependencies and Playwright Chromium;
@@ -24,6 +24,19 @@ The setup command is the one-shot MVP path. It:
 - runs deterministic and browser-backed console checks;
 - captures a console screenshot; and
 - prints the next operator handoff.
+
+It is safe to run again after pulling updates:
+
+```bash
+git pull --ff-only
+./install.sh
+```
+
+If your shell cannot execute the wrapper, use the npm script directly:
+
+```bash
+npm run setup:mvp
+```
 
 When it finishes, open:
 
@@ -48,6 +61,12 @@ When the system is blocked on human evidence, use the operator checklist:
 The checklist tells the operator which real-world fact to verify next and where to record it. Generated notes, GBrain reports, and assist files can help review, but they do not count as operator proof until a human fills the evidence file and the preflight passes.
 
 ## Daily Use
+
+The normal loop is intentionally small:
+
+```text
+install/update -> open console -> follow Next Best Action -> verify -> refresh console
+```
 
 For the current Ariadne project:
 

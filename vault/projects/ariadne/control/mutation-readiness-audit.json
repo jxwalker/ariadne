@@ -1,20 +1,46 @@
 {
   "schemaVersion": 1,
   "project": "ariadne",
-  "generatedAt": "2026-05-18T08:36:33.355Z",
+  "generatedAt": "2026-05-18T15:10:37.351Z",
   "status": "blocked",
   "mutationAllowed": false,
   "summary": {
-    "plans": 1,
+    "plans": 2,
     "ready": 0,
-    "blocked": 1,
-    "approvalRequired": 1,
+    "blocked": 2,
+    "approvalRequired": 2,
     "approvalRejected": 0,
     "missingEvidence": 0,
     "unsafeDryRuns": 0,
     "executablePlans": 0
   },
   "checks": [
+    {
+      "planId": "mutation-readiness-deployment-2026-05-18T14-54-52-671Z",
+      "target": "deployment",
+      "status": "blocked",
+      "blockers": [
+        "approval state is approval_required",
+        "approval record is requested"
+      ],
+      "warnings": [
+        "high-risk plan requires explicit operator review even after this audit passes"
+      ],
+      "evidenceRefs": [
+        "vault/projects/ariadne/control/live-evidence-promotions/live-evidence-promotion-deployment-2026-05-18T14-53-28-810Z.json",
+        "vault/projects/ariadne/control/approvals/approval-2026-05-18T14-53-53-213Z.json"
+      ],
+      "requiredGates": [
+        "bounded scope recorded",
+        "auth evidence reviewed",
+        "dry-run command reviewed",
+        "rollback command reviewed",
+        "human approval record approved",
+        "CodeRabbit or human review approval",
+        "post-action verification command defined",
+        "deployment target and rollback host verified"
+      ]
+    },
     {
       "planId": "mutation-readiness-github-2026-05-16T16-50-54-241Z",
       "target": "github",

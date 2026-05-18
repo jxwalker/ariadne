@@ -1,0 +1,35 @@
+{
+  "schemaVersion": 1,
+  "id": "mutation-readiness-deployment-2026-05-18T14-54-52-671Z",
+  "project": "ariadne",
+  "generatedAt": "2026-05-18T14:54:52.671Z",
+  "target": "deployment",
+  "status": "approval_required",
+  "risk": "high",
+  "scope": "mac/jimm5.local: Atlas runtime health verification and local Mac deployment boundary review; no service mutation",
+  "approvalRef": "approval-2026-05-18T14-53-53-213Z",
+  "approvalStatus": "requested",
+  "authEvidenceRefs": [
+    "vault/projects/ariadne/control/live-evidence-promotions/live-evidence-promotion-deployment-2026-05-18T14-53-28-810Z.json"
+  ],
+  "evidenceRefs": [
+    "vault/projects/ariadne/control/approvals/approval-2026-05-18T14-53-53-213Z.json",
+    "vault/projects/ariadne/control/live-evidence-promotions/live-evidence-promotion-deployment-2026-05-18T14-53-28-810Z.json"
+  ],
+  "dryRunCommand": "ARIADNE_ATLAS_URL=http://100.91.237.82:8888/v1 ARIADNE_ATLAS_CANARY_MODEL=qwen3.6-35b-a3b-nvfp4-atlas npm run ariadne -- local-runtime-probe --project ariadne --canary --canary-endpoints atlas --timeout-ms 60000",
+  "proposedLiveCommand": "printf 'deployment live command intentionally disabled until an explicit approval decision is approved and a target-specific command is substituted'",
+  "postVerificationCommand": "npm run ariadne -- status --project ariadne",
+  "rollback": "mac/jimm5.local: no live mutation is approved by this plan; rollback is to discard the requested approval and readiness plan, then rerun status and runtime probe",
+  "requiredGates": [
+    "bounded scope recorded",
+    "auth evidence reviewed",
+    "dry-run command reviewed",
+    "rollback command reviewed",
+    "human approval record approved",
+    "CodeRabbit or human review approval",
+    "post-action verification command defined",
+    "deployment target and rollback host verified"
+  ],
+  "notes": "Plan records deployment evidence and command shape only. approvalStatus=requested keeps mutation blocked.",
+  "execute": false
+}

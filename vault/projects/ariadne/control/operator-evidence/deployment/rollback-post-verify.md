@@ -10,11 +10,11 @@ Record rollback or disable steps and the exact post-action verification command 
 
 ## Observations
 
-- Operator:
-- Timestamp:
-- Evidence refs:
-- Decision or finding:
-- Notes:
+- Operator: codex-agent-jimm5 under local user james
+- Timestamp: 2026-05-18T14:54:52Z
+- Evidence refs: vault/projects/ariadne/control/mutation-readiness/mutation-readiness-deployment-2026-05-18T14-54-52-671Z.json; vault/projects/ariadne/control/mutation-readiness-audit.json
+- Decision or finding: rollback path for the current plan is discard-only because the plan does not approve live mutation; post-action verification command is `npm run ariadne -- status --project ariadne`.
+- Notes: The readiness plan rollback text is `mac/jimm5.local: no live mutation is approved by this plan; rollback is to discard the requested approval and readiness plan, then rerun status and runtime probe`. Any future real deployment mutation still needs a host-specific rollback command before approval.
 
 ## Related Commands
 

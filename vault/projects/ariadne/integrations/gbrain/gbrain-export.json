@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "project": "ariadne",
-  "generatedAt": "2026-05-18T08:36:33.386Z",
+  "generatedAt": "2026-05-18T15:10:37.381Z",
   "source": "ariadne",
   "mode": "read_only_export",
   "instructions": [
@@ -370,7 +370,7 @@
       "slug": "infrastructure/registry",
       "title": "Infrastructure Registry",
       "kind": "infrastructure",
-      "content": "m1-hermes: M1 Mac mini / always-on Hermes supervisor / Control-plane host for long-running supervision; verify live details before automation.\nm1-max: M1 Max / local development and testing / Apple Silicon development machine; use for local validation where available.\nm5-max: M5 Max / high-memory local agent workstation / Primary Mac-class local execution surface mentioned by user.\ndgx-spark: DGX Spark / local inference and memory-heavy workloads / Treat as planned/observed only until live endpoint inventory exists.\nbeast: Proxmox dev server / runners, services, model endpoints, infrastructure substrate / Read-only inventory first; Proxmox live state is authoritative at execution time.\natlas-node: Atlas model host / fast OpenAI-compatible local model endpoint / Use ARIADNE_ATLAS_URL or local-runtime-probe --atlas-url for the actual LAN or tailnet address; registry keeps a neutral endpoint alias.\nopenscorpion-router: governed model route / planned\ndgx-local-models: local inference / planned\natlas-local-models: openai-compatible / observed\ntrusted-private-runners: private jxwalker project repositories / persistent self-hosted runners only for trusted private repositories\npublic-repo-safe-path: public repositories / manual or ephemeral approval path; no untrusted public PRs on persistent runners",
+      "content": "m1-hermes: M1 Mac mini / always-on Hermes supervisor / Control-plane host for long-running supervision; verify live details before automation.\nm1-max: M1 Max / local development and testing / Apple Silicon development machine; use for local validation where available.\nm5-max: M5 Max / high-memory local agent workstation / Primary Mac-class local execution surface mentioned by user.\ndgx-spark: DGX Spark / local inference and memory-heavy workloads / Treat as planned/observed only until live endpoint inventory exists.\nbeast: Proxmox dev server / runners, services, model endpoints, infrastructure substrate / Read-only inventory first; Proxmox live state is authoritative at execution time.\nopenscorpion-router: governed model route / planned\ndgx-local-models: local inference / planned\ntrusted-private-runners: private jxwalker project repositories / persistent self-hosted runners only for trusted private repositories\npublic-repo-safe-path: public repositories / manual or ephemeral approval path; no untrusted public PRs on persistent runners",
       "evidenceRefs": [
         "infrastructure/registry.json"
       ],
@@ -383,7 +383,7 @@
       "slug": "live-adapter/dossier/deployment",
       "title": "Live Adapter Dossier: deployment",
       "kind": "live-adapter",
-      "content": "Target: deployment\nStatus: ready_for_operator_review\nReadiness: blocked\nBlockers: 5\nGBrain export: projects/ariadne/integrations/gbrain/gbrain-export.json\n\nNext actions:\n- pending: Prepare, fill, and import operator evidence - npm run ariadne -- live-adapter-operator-evidence-next --project <project> --target deployment\n- pending: Record operator review of the approval packet - npm run ariadne -- live-adapter-approval-review --project <project> --target deployment --by <operator> --status accepted --packet control/live-adapter-approval-pack.json --evidence <operator-review-evidence>\n- pending: Record an operator approval request - npm run ariadne -- approval-request --project <project> --by <operator> --target deployment --action \"<bounded action>\" --risk <low|medium|high> --reason \"<why this target should mutate>\" --rollback \"<operator rollback path>\" --evidence <auth-or-policy-evidence>\n- blocked: Create a target-specific mutation-readiness plan - npm run ariadne -- deployment-mutation-plan --project <project> --system <proxmox|truenas|dgx-spark|mac> --host <host> --scope <scope> --auth-evidence <paths> --dry-run <cmd> --live-command <cmd> --post-verify <cmd> --rollback <text> --approval <approval-id>\n- pending: Fix readiness audit blockers - npm run ariadne -- mutation-readiness-audit --project <project>\n- blocked: Run the reviewed dry-run command - Create and audit-pass a target-specific readiness plan first.\n- blocked: Capture target-guarded execution evidence - Run a passed dry-run for an audit-passed plan first.\n\nGBrain advisory queries:\n- Find prior Ariadne decisions and evidence for the deployment live adapter.\n- List risks, rollback requirements, and stale assumptions for deployment approval.\n- Summarize operator-review evidence still missing before deployment mutation readiness.",
+      "content": "Target: deployment\nStatus: ready_for_operator_review\nReadiness: blocked\nBlockers: 3\nGBrain export: projects/ariadne/integrations/gbrain/gbrain-export.json\n\nNext actions:\n- pending: Resolve existing readiness plan blockers - Review mutation-readiness-deployment-2026-05-18T14-54-52-671Z; after operator approval, record approval-decision, ensure --post-verify is present, then rerun npm run ariadne -- mutation-readiness-audit --project <project>\n- pending: Run the reviewed dry-run command - After mutation-readiness-deployment-2026-05-18T14-54-52-671Z passes audit, run npm run ariadne -- mutation-dry-run --project <project> --plan mutation-readiness-deployment-2026-05-18T14-54-52-671Z\n- blocked: Capture target-guarded execution evidence - Run a passed dry-run for an audit-passed plan first.\n\nGBrain advisory queries:\n- Find prior Ariadne decisions and evidence for the deployment live adapter.\n- List risks, rollback requirements, and stale assumptions for deployment approval.\n- Summarize operator-review evidence still missing before deployment mutation readiness.",
       "evidenceRefs": [
         "control/live-adapter-dossiers/live-adapter-dossier-deployment.json",
         "projects/ariadne/control/live-adapter-readiness.json",
@@ -391,7 +391,7 @@
         "projects/ariadne/control/live-adapter-approval-pack.json",
         "projects/ariadne/control/live-adapter-approval-review-audit.json",
         "projects/ariadne/control/mutation-readiness-audit.json",
-        "projects/ariadne/control/live-adapter-operator-evidence-workspace-deployment.json",
+        "projects/ariadne/control/live-adapter-approval-reviews/approval-review-deployment-2026-05-18T14-57-00-710Z.json",
         "projects/ariadne/control/operator-evidence/deployment/operator-evidence.md",
         "projects/ariadne/integrations/gbrain/gbrain-export.json"
       ],
@@ -527,11 +527,12 @@
       "slug": "live-adapter/operator-assist/deployment",
       "title": "Operator Evidence Assist: deployment",
       "kind": "live-adapter",
-      "content": "Target: deployment\nStatus: needs_evidence\nExisting refs: 15\nSupport files: 6\nPromoted live evidence: 4\n\nMissing sections:\n- Operator identity and timestamp\n- Approval packet review\n- Authentication or authorization boundary\n- Bounded action statement\n- Rollback or disable path\n- Post-action verification command\n- Dry-run command and safe output\n- Target-guarded execution wrapper\n- Exact confirm-plan proof\n\nPromoted live evidence summaries:\n- Atlas Qwen runtime canary evidence (projects/ariadne/control/live-evidence-promotions/live-evidence-promotion-deployment-2026-05-17T23-37-04-509Z.json)\n  - local-runtime-probe; 8/8 services reachable; 13 models; atlas canary passed qwen3.6-35b-a3b-nvfp4-atlas; 1 redaction(s)\n  - e2e-smoke; 11 passed, 1 blocked, 0 failed; 1 redaction(s)\n- Latest Atlas Qwen runtime and smoke evidence (projects/ariadne/control/live-evidence-promotions/live-evidence-promotion-deployment-2026-05-18T08-15-50-017Z.json)\n  - local-runtime-probe; 8/8 services reachable; 13 models; atlas canary passed qwen3.6-35b-a3b-nvfp4-atlas; 1 redaction(s)\n  - e2e-smoke; 11 passed, 2 blocked, 0 failed; 1 redaction(s)\n- Atlas qwen3.6 canary runtime evidence (projects/ariadne/control/live-evidence-promotions/live-evidence-promotion-deployment-2026-05-18T08-28-02-295Z.json)\n  - local-runtime-probe; 8/8 services reachable; 13 models; atlas canary passed qwen3.6-35b-a3b-nvfp4-atlas; 1 redaction(s)\n- Atlas e2e smoke and runtime evidence (projects/ariadne/control/live-evidence-promotions/live-evidence-promotion-deployment-2026-05-18T08-36-20-265Z.json)\n  - e2e-smoke; 11 passed, 2 blocked, 0 failed; 1 redaction(s)\n  - local-runtime-probe; 8/8 services reachable; 13 models; atlas canary passed qwen3.6-35b-a3b-nvfp4-atlas; 1 redaction(s)\n\nHuman verification worksheet:\n- Operator identity and timestamp: Human operator must verify deployment Operator identity and timestamp from source systems or cited Ariadne refs before recording it in operator-evidence.md.\n- Approval packet review: Human operator must verify deployment Approval packet review from source systems or cited Ariadne refs before recording it in operator-evidence.md.\n- Authentication or authorization boundary: Human operator must verify deployment Authentication or authorization boundary from source systems or cited Ariadne refs before recording it in operator-evidence.md.\n- Bounded action statement: Human operator must verify deployment Bounded action statement from source systems or cited Ariadne refs before recording it in operator-evidence.md.\n- Rollback or disable path: Human operator must verify deployment Rollback or disable path from source systems or cited Ariadne refs before recording it in operator-evidence.md.\n- Post-action verification command: Human operator must verify deployment Post-action verification command from source systems or cited Ariadne refs before recording it in operator-evidence.md.\n- Dry-run command and safe output: Human operator must verify deployment Dry-run command and safe output from source systems or cited Ariadne refs before recording it in operator-evidence.md.\n- Target-guarded execution wrapper: Human operator must verify deployment Target-guarded execution wrapper from source systems or cited Ariadne refs before recording it in operator-evidence.md.\n- Exact confirm-plan proof: Human operator must verify deployment Exact confirm-plan proof from source systems or cited Ariadne refs before recording it in operator-evidence.md.\n\nGBrain advisory queries:\n- Find prior Ariadne decisions and evidence for the deployment live adapter.\n- List risks, rollback requirements, and stale assumptions for deployment approval.\n- Summarize operator-review evidence still missing before deployment mutation readiness.",
+      "content": "Target: deployment\nStatus: complete\nExisting refs: 17\nSupport files: 6\nPromoted live evidence: 5\n\nMissing sections:\n\nPromoted live evidence summaries:\n- Atlas Qwen runtime canary evidence (projects/ariadne/control/live-evidence-promotions/live-evidence-promotion-deployment-2026-05-17T23-37-04-509Z.json)\n  - local-runtime-probe; 8/8 services reachable; 13 models; atlas canary passed qwen3.6-35b-a3b-nvfp4-atlas; 1 redaction(s)\n  - e2e-smoke; 11 passed, 1 blocked, 0 failed; 1 redaction(s)\n- Latest Atlas Qwen runtime and smoke evidence (projects/ariadne/control/live-evidence-promotions/live-evidence-promotion-deployment-2026-05-18T08-15-50-017Z.json)\n  - local-runtime-probe; 8/8 services reachable; 13 models; atlas canary passed qwen3.6-35b-a3b-nvfp4-atlas; 1 redaction(s)\n  - e2e-smoke; 11 passed, 2 blocked, 0 failed; 1 redaction(s)\n- Atlas qwen3.6 canary runtime evidence (projects/ariadne/control/live-evidence-promotions/live-evidence-promotion-deployment-2026-05-18T08-28-02-295Z.json)\n  - local-runtime-probe; 8/8 services reachable; 13 models; atlas canary passed qwen3.6-35b-a3b-nvfp4-atlas; 1 redaction(s)\n- Atlas e2e smoke and runtime evidence (projects/ariadne/control/live-evidence-promotions/live-evidence-promotion-deployment-2026-05-18T08-36-20-265Z.json)\n  - e2e-smoke; 11 passed, 2 blocked, 0 failed; 1 redaction(s)\n  - local-runtime-probe; 8/8 services reachable; 13 models; atlas canary passed qwen3.6-35b-a3b-nvfp4-atlas; 1 redaction(s)\n- Atlas deployment runtime evidence 2026-05-18 (projects/ariadne/control/live-evidence-promotions/live-evidence-promotion-deployment-2026-05-18T14-53-28-810Z.json)\n  - local-runtime-probe; 8/8 services reachable; 13 models; atlas canary passed qwen3.6-35b-a3b-nvfp4-atlas; 1 redaction(s)\n\nHuman verification worksheet:\n\nGBrain advisory queries:\n- Find prior Ariadne decisions and evidence for the deployment live adapter.\n- List risks, rollback requirements, and stale assumptions for deployment approval.\n- Summarize operator-review evidence still missing before deployment mutation readiness.",
       "evidenceRefs": [
         "control/live-adapter-operator-evidence-assist-deployment.json",
         "projects/ariadne/control/operator-evidence/deployment/read-only-assist.md",
         "projects/ariadne/control/live-adapter-evidence-templates/live-adapter-evidence-template-deployment.md",
+        "projects/ariadne/control/live-adapter-operator-evidence/operator-evidence-deployment-2026-05-18T14-56-47-861Z.json",
         "projects/ariadne/control/live-adapter-dossiers/live-adapter-dossier-deployment.json",
         "projects/ariadne/control/mutation-readiness-repair-plan.json",
         "projects/ariadne/control/live-adapter-readiness.json",
@@ -539,20 +540,21 @@
         "projects/ariadne/control/live-adapter-approval-pack.json",
         "projects/ariadne/control/live-adapter-approval-review-audit.json",
         "projects/ariadne/control/mutation-readiness-audit.json",
-        "projects/ariadne/control/live-adapter-operator-evidence-workspace-deployment.json",
+        "projects/ariadne/control/live-adapter-approval-reviews/approval-review-deployment-2026-05-18T14-57-00-710Z.json",
         "projects/ariadne/control/operator-evidence/deployment/operator-evidence.md",
         "projects/ariadne/control/live-adapter-operator-evidence-audit.json",
         "projects/ariadne/control/live-evidence-promotions/live-evidence-promotion-deployment-2026-05-17T23-37-04-509Z.json",
         "projects/ariadne/control/live-evidence-promotions/live-evidence-promotion-deployment-2026-05-18T08-15-50-017Z.json",
         "projects/ariadne/control/live-evidence-promotions/live-evidence-promotion-deployment-2026-05-18T08-28-02-295Z.json",
-        "projects/ariadne/control/live-evidence-promotions/live-evidence-promotion-deployment-2026-05-18T08-36-20-265Z.json"
+        "projects/ariadne/control/live-evidence-promotions/live-evidence-promotion-deployment-2026-05-18T08-36-20-265Z.json",
+        "projects/ariadne/control/live-evidence-promotions/live-evidence-promotion-deployment-2026-05-18T14-53-28-810Z.json"
       ],
       "tags": [
         "ariadne",
         "live-adapter",
         "operator-assist",
         "deployment",
-        "needs_evidence"
+        "complete"
       ]
     },
     {
@@ -727,11 +729,12 @@
       "slug": "live-adapter/operator-assist/all/deployment",
       "title": "Operator Evidence Assist: deployment (aggregate)",
       "kind": "live-adapter",
-      "content": "Target: deployment\nStatus: needs_evidence\nExisting refs: 15\nSupport files: 6\nPromoted live evidence: 4\n\nMissing sections:\n- Operator identity and timestamp\n- Approval packet review\n- Authentication or authorization boundary\n- Bounded action statement\n- Rollback or disable path\n- Post-action verification command\n- Dry-run command and safe output\n- Target-guarded execution wrapper\n- Exact confirm-plan proof\n\nPromoted live evidence summaries:\n- Atlas Qwen runtime canary evidence (projects/ariadne/control/live-evidence-promotions/live-evidence-promotion-deployment-2026-05-17T23-37-04-509Z.json)\n  - local-runtime-probe; 8/8 services reachable; 13 models; atlas canary passed qwen3.6-35b-a3b-nvfp4-atlas; 1 redaction(s)\n  - e2e-smoke; 11 passed, 1 blocked, 0 failed; 1 redaction(s)\n- Latest Atlas Qwen runtime and smoke evidence (projects/ariadne/control/live-evidence-promotions/live-evidence-promotion-deployment-2026-05-18T08-15-50-017Z.json)\n  - local-runtime-probe; 8/8 services reachable; 13 models; atlas canary passed qwen3.6-35b-a3b-nvfp4-atlas; 1 redaction(s)\n  - e2e-smoke; 11 passed, 2 blocked, 0 failed; 1 redaction(s)\n- Atlas qwen3.6 canary runtime evidence (projects/ariadne/control/live-evidence-promotions/live-evidence-promotion-deployment-2026-05-18T08-28-02-295Z.json)\n  - local-runtime-probe; 8/8 services reachable; 13 models; atlas canary passed qwen3.6-35b-a3b-nvfp4-atlas; 1 redaction(s)\n- Atlas e2e smoke and runtime evidence (projects/ariadne/control/live-evidence-promotions/live-evidence-promotion-deployment-2026-05-18T08-36-20-265Z.json)\n  - e2e-smoke; 11 passed, 2 blocked, 0 failed; 1 redaction(s)\n  - local-runtime-probe; 8/8 services reachable; 13 models; atlas canary passed qwen3.6-35b-a3b-nvfp4-atlas; 1 redaction(s)\n\nHuman verification worksheet:\n- Operator identity and timestamp: Human operator must verify deployment Operator identity and timestamp from source systems or cited Ariadne refs before recording it in operator-evidence.md.\n- Approval packet review: Human operator must verify deployment Approval packet review from source systems or cited Ariadne refs before recording it in operator-evidence.md.\n- Authentication or authorization boundary: Human operator must verify deployment Authentication or authorization boundary from source systems or cited Ariadne refs before recording it in operator-evidence.md.\n- Bounded action statement: Human operator must verify deployment Bounded action statement from source systems or cited Ariadne refs before recording it in operator-evidence.md.\n- Rollback or disable path: Human operator must verify deployment Rollback or disable path from source systems or cited Ariadne refs before recording it in operator-evidence.md.\n- Post-action verification command: Human operator must verify deployment Post-action verification command from source systems or cited Ariadne refs before recording it in operator-evidence.md.\n- Dry-run command and safe output: Human operator must verify deployment Dry-run command and safe output from source systems or cited Ariadne refs before recording it in operator-evidence.md.\n- Target-guarded execution wrapper: Human operator must verify deployment Target-guarded execution wrapper from source systems or cited Ariadne refs before recording it in operator-evidence.md.\n- Exact confirm-plan proof: Human operator must verify deployment Exact confirm-plan proof from source systems or cited Ariadne refs before recording it in operator-evidence.md.\n\nGBrain advisory queries:\n- Find prior Ariadne decisions and evidence for the deployment live adapter.\n- List risks, rollback requirements, and stale assumptions for deployment approval.\n- Summarize operator-review evidence still missing before deployment mutation readiness.",
+      "content": "Target: deployment\nStatus: complete\nExisting refs: 17\nSupport files: 6\nPromoted live evidence: 5\n\nMissing sections:\n\nPromoted live evidence summaries:\n- Atlas Qwen runtime canary evidence (projects/ariadne/control/live-evidence-promotions/live-evidence-promotion-deployment-2026-05-17T23-37-04-509Z.json)\n  - local-runtime-probe; 8/8 services reachable; 13 models; atlas canary passed qwen3.6-35b-a3b-nvfp4-atlas; 1 redaction(s)\n  - e2e-smoke; 11 passed, 1 blocked, 0 failed; 1 redaction(s)\n- Latest Atlas Qwen runtime and smoke evidence (projects/ariadne/control/live-evidence-promotions/live-evidence-promotion-deployment-2026-05-18T08-15-50-017Z.json)\n  - local-runtime-probe; 8/8 services reachable; 13 models; atlas canary passed qwen3.6-35b-a3b-nvfp4-atlas; 1 redaction(s)\n  - e2e-smoke; 11 passed, 2 blocked, 0 failed; 1 redaction(s)\n- Atlas qwen3.6 canary runtime evidence (projects/ariadne/control/live-evidence-promotions/live-evidence-promotion-deployment-2026-05-18T08-28-02-295Z.json)\n  - local-runtime-probe; 8/8 services reachable; 13 models; atlas canary passed qwen3.6-35b-a3b-nvfp4-atlas; 1 redaction(s)\n- Atlas e2e smoke and runtime evidence (projects/ariadne/control/live-evidence-promotions/live-evidence-promotion-deployment-2026-05-18T08-36-20-265Z.json)\n  - e2e-smoke; 11 passed, 2 blocked, 0 failed; 1 redaction(s)\n  - local-runtime-probe; 8/8 services reachable; 13 models; atlas canary passed qwen3.6-35b-a3b-nvfp4-atlas; 1 redaction(s)\n- Atlas deployment runtime evidence 2026-05-18 (projects/ariadne/control/live-evidence-promotions/live-evidence-promotion-deployment-2026-05-18T14-53-28-810Z.json)\n  - local-runtime-probe; 8/8 services reachable; 13 models; atlas canary passed qwen3.6-35b-a3b-nvfp4-atlas; 1 redaction(s)\n\nHuman verification worksheet:\n\nGBrain advisory queries:\n- Find prior Ariadne decisions and evidence for the deployment live adapter.\n- List risks, rollback requirements, and stale assumptions for deployment approval.\n- Summarize operator-review evidence still missing before deployment mutation readiness.",
       "evidenceRefs": [
         "control/live-adapter-operator-evidence-assist.json",
         "projects/ariadne/control/operator-evidence/deployment/read-only-assist.md",
         "projects/ariadne/control/live-adapter-evidence-templates/live-adapter-evidence-template-deployment.md",
+        "projects/ariadne/control/live-adapter-operator-evidence/operator-evidence-deployment-2026-05-18T14-56-47-861Z.json",
         "projects/ariadne/control/live-adapter-dossiers/live-adapter-dossier-deployment.json",
         "projects/ariadne/control/mutation-readiness-repair-plan.json",
         "projects/ariadne/control/live-adapter-readiness.json",
@@ -739,20 +742,21 @@
         "projects/ariadne/control/live-adapter-approval-pack.json",
         "projects/ariadne/control/live-adapter-approval-review-audit.json",
         "projects/ariadne/control/mutation-readiness-audit.json",
-        "projects/ariadne/control/live-adapter-operator-evidence-workspace-deployment.json",
+        "projects/ariadne/control/live-adapter-approval-reviews/approval-review-deployment-2026-05-18T14-57-00-710Z.json",
         "projects/ariadne/control/operator-evidence/deployment/operator-evidence.md",
         "projects/ariadne/control/live-adapter-operator-evidence-audit.json",
         "projects/ariadne/control/live-evidence-promotions/live-evidence-promotion-deployment-2026-05-17T23-37-04-509Z.json",
         "projects/ariadne/control/live-evidence-promotions/live-evidence-promotion-deployment-2026-05-18T08-15-50-017Z.json",
         "projects/ariadne/control/live-evidence-promotions/live-evidence-promotion-deployment-2026-05-18T08-28-02-295Z.json",
-        "projects/ariadne/control/live-evidence-promotions/live-evidence-promotion-deployment-2026-05-18T08-36-20-265Z.json"
+        "projects/ariadne/control/live-evidence-promotions/live-evidence-promotion-deployment-2026-05-18T08-36-20-265Z.json",
+        "projects/ariadne/control/live-evidence-promotions/live-evidence-promotion-deployment-2026-05-18T14-53-28-810Z.json"
       ],
       "tags": [
         "ariadne",
         "live-adapter",
         "operator-assist",
         "deployment",
-        "needs_evidence"
+        "complete"
       ]
     },
     {
@@ -935,10 +939,26 @@
       ]
     },
     {
+      "slug": "live-adapter/promoted-live-evidence/live-evidence-promotion-deployment-2026-05-18T14-53-28-810Z",
+      "title": "Atlas deployment runtime evidence 2026-05-18",
+      "kind": "live-adapter",
+      "content": "Target: deployment\nStatus: promoted_for_operator_review\nGenerated: 2026-05-18T14:53:28.810Z\nSources: 1\nParsed sources: 1\nRedacted values: 1\n\nSource refs:\n- local-runtime-probe: projects/ariadne/infrastructure/runtime/local-runtime-probe-2026-05-18T14-53-07-316Z.json (ab211389a5868763f69b3bc63384947687883c9fd8f389cf7966a334311f112f)",
+      "evidenceRefs": [
+        "control/live-evidence-promotions/live-evidence-promotion-deployment-2026-05-18T14-53-28-810Z.json",
+        "projects/ariadne/infrastructure/runtime/local-runtime-probe-2026-05-18T14-53-07-316Z.json"
+      ],
+      "tags": [
+        "ariadne",
+        "live-adapter",
+        "promoted-live-evidence",
+        "deployment"
+      ]
+    },
+    {
       "slug": "live-adapter/roadmap-completion",
       "title": "Roadmap Completion Audit",
       "kind": "live-adapter",
-      "content": "Status: blocked\nPassed: 6\nBlocked: 3\n\nRequirements:\n- passed: Core pipeline artifacts are present - 57 artifacts present; 0 required missing.\n- passed: Behavior confidence checks are passing - 6/6 behavior checks passed; 0 failed.\n- passed: Evaluation harness has current trend evidence - Evaluation trend status is stable; latest score is 86.\n- passed: Orchestration console is rendered and browser-checked - Visual checks: passed; browser checks: passed.\n- passed: Sleep, memory, agent mail, and lease records are visible - sleep=1, memory=1, mail=1, leases=1.\n- passed: GBrain is incorporated as advisory memory - 6 live-adapter dossier(s) include GBrain advisory queries; export=present; imported reports=1.\n- blocked: All live-adapter targets have complete operator evidence - 0/6 targets complete; 6 missing evidence; 54 missing section(s). Workplan status is evidence_required with 6 check command(s) and 6 import command(s). Queue status is evidence_required with 0 target(s) ready for import and 0 unchecked target(s). Workspace status is awaiting_operator_input with 6 fillable file(s). Assist status is awaiting_operator_review with 4 promoted live-evidence item(s). Next target is deployment (needs_evidence, 9 missing section(s)). Next target assist has 15 existing ref(s), 4 promoted live-evidence item(s), and 6 support file(s).\n- blocked: Live-adapter cutover gates are ready - 0/6 targets ready; 42 gates blocked.\n- blocked: Operator review session reflects live-adapter state - 0/6 targets ready for adapter work; 6 still require operator review.",
+      "content": "Status: blocked\nPassed: 6\nBlocked: 3\n\nRequirements:\n- passed: Core pipeline artifacts are present - 60 artifacts present; 0 required missing.\n- passed: Behavior confidence checks are passing - 6/6 behavior checks passed; 0 failed.\n- passed: Evaluation harness has current trend evidence - Evaluation trend status is stable; latest score is 86.\n- passed: Orchestration console is rendered and browser-checked - Visual checks: passed; browser checks: passed.\n- passed: Sleep, memory, agent mail, and lease records are visible - sleep=1, memory=1, mail=1, leases=1.\n- passed: GBrain is incorporated as advisory memory - 6 live-adapter dossier(s) include GBrain advisory queries; export=present; imported reports=1.\n- blocked: All live-adapter targets have complete operator evidence - 1/6 targets complete; 5 missing evidence; 45 missing section(s). Workplan status is evidence_required with 6 check command(s) and 5 import command(s). Queue status is evidence_required with 0 target(s) ready for import and 0 unchecked target(s). Workspace status is awaiting_operator_input with 6 fillable file(s). Assist status is awaiting_operator_review with 0 promoted live-evidence item(s). Next target is github (needs_evidence, 9 missing section(s)). Next target assist has 11 existing ref(s), 0 promoted live-evidence item(s), and 6 support file(s).\n- blocked: Live-adapter cutover gates are ready - 0/6 targets ready; 40 gates blocked.\n- blocked: Operator review session reflects live-adapter state - 0/6 targets ready for adapter work; 5 still require operator review.",
       "evidenceRefs": [
         "control/roadmap-completion-audit.json",
         "projects/ariadne/evaluation/artifact-checks.json",
@@ -953,13 +973,9 @@
         "projects/ariadne/control/live-adapter-operator-evidence-workplan.json",
         "projects/ariadne/control/live-adapter-operator-evidence-queue.json",
         "projects/ariadne/control/live-adapter-operator-evidence-workspace.json",
-        "projects/ariadne/control/live-adapter-operator-evidence-assist-deployment.json",
-        "projects/ariadne/control/operator-evidence/deployment/operator-evidence.md",
-        "projects/ariadne/control/operator-evidence/deployment/read-only-assist.md",
-        "projects/ariadne/control/live-evidence-promotions/live-evidence-promotion-deployment-2026-05-17T23-37-04-509Z.json",
-        "projects/ariadne/control/live-evidence-promotions/live-evidence-promotion-deployment-2026-05-18T08-15-50-017Z.json",
-        "projects/ariadne/control/live-evidence-promotions/live-evidence-promotion-deployment-2026-05-18T08-28-02-295Z.json",
-        "projects/ariadne/control/live-evidence-promotions/live-evidence-promotion-deployment-2026-05-18T08-36-20-265Z.json",
+        "projects/ariadne/control/live-adapter-operator-evidence-assist-github.json",
+        "projects/ariadne/control/operator-evidence/github/operator-evidence.md",
+        "projects/ariadne/control/operator-evidence/github/read-only-assist.md",
         "projects/ariadne/control/live-adapter-cutover-audit.json",
         "projects/ariadne/control/live-adapter-review-session.json"
       ],

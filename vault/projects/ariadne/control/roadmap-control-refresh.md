@@ -2,7 +2,7 @@
 
 Project: ariadne
 Status: blocked
-Generated: 2026-05-18T08:36:33.389Z
+Generated: 2026-05-18T15:10:37.382Z
 Mutation approved: false
 Approval granted: false
 Operator evidence record created: false
@@ -14,17 +14,19 @@ Operator evidence record created: false
 - Live adapter next actions: actions_required
 - Operator evidence: blocked
 - Operator queue: evidence_required
-- Operator next target: deployment
-- GBrain documents: 43
+- Operator next target: github
+- GBrain documents: 44
 - Dossiers: 6
+- Console refreshed: yes
 
 ## Commands
 
 - Status: `npm run ariadne -- status --project ariadne`
 - E2E smoke: `npm run ariadne -- e2e-smoke --project ariadne`
 - Refresh: `npm run ariadne -- roadmap-control-refresh --project ariadne`
-- Next operator packet: `npm run ariadne -- live-adapter-operator-evidence-next --project ariadne --target deployment`
-- Next operator draft: `npm run ariadne -- live-adapter-operator-evidence-draft --project ariadne --target deployment`
+- Next operator packet: `npm run ariadne -- live-adapter-operator-evidence-next --project ariadne --target github`
+- Next operator section: `npm run ariadne -- operator-section --project ariadne --target github`
+- Next operator draft: `npm run ariadne -- live-adapter-operator-evidence-draft --project ariadne --target github`
 - Operator draft pack: `npm run ariadne -- live-adapter-operator-evidence-drafts --project ariadne`
 
 ## Artifacts
@@ -44,8 +46,9 @@ Operator evidence record created: false
 | liveAdapterOperatorEvidenceAssist | projects/ariadne/control/live-adapter-operator-evidence-assist.json |
 | liveAdapterOperatorEvidenceBatchCheck | projects/ariadne/control/live-adapter-operator-evidence-check-all.json |
 | liveAdapterOperatorEvidenceQueue | projects/ariadne/control/live-adapter-operator-evidence-queue.json |
-| liveAdapterOperatorEvidenceNext | projects/ariadne/control/live-adapter-operator-evidence-next-deployment.json |
-| liveAdapterOperatorEvidenceDraft | projects/ariadne/control/live-adapter-operator-evidence-draft-deployment.json |
+| liveAdapterOperatorEvidenceNext | projects/ariadne/control/live-adapter-operator-evidence-next-github.json |
+| liveAdapterOperatorEvidenceSection | projects/ariadne/control/live-adapter-operator-evidence-section-github.json |
+| liveAdapterOperatorEvidenceDraft | projects/ariadne/control/live-adapter-operator-evidence-draft-github.json |
 | liveAdapterOperatorEvidenceDraftPack | projects/ariadne/control/live-adapter-operator-evidence-drafts.json |
 | liveAdapterReviewSession | projects/ariadne/control/live-adapter-review-session.json |
 | liveAdapterCutoverAudit | projects/ariadne/control/live-adapter-cutover-audit.json |
@@ -58,6 +61,8 @@ Operator evidence record created: false
 | gbrainExport | projects/ariadne/integrations/gbrain/gbrain-export.json |
 | artifactChecks | projects/ariadne/evaluation/artifact-checks.json |
 | roadmapCompletionAudit | projects/ariadne/control/roadmap-completion-audit.json |
+| consoleHtml | projects/ariadne/console/index.html |
+| consoleData | projects/ariadne/console/console-data.json |
 
 ## Notes
 

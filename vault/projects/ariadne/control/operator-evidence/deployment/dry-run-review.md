@@ -10,11 +10,11 @@ Record the dry-run command, expected safe output, and whether the output was rev
 
 ## Observations
 
-- Operator:
-- Timestamp:
-- Evidence refs:
-- Decision or finding:
-- Notes:
+- Operator: codex-agent-jimm5 under local user james
+- Timestamp: 2026-05-18T14:54:52Z
+- Evidence refs: vault/projects/ariadne/control/mutation-readiness/mutation-readiness-deployment-2026-05-18T14-54-52-671Z.json; vault/projects/ariadne/control/mutation-readiness-audit.json; vault/projects/ariadne/infrastructure/runtime/local-runtime-probe-2026-05-18T14-53-07-316Z.json
+- Decision or finding: dry-run command shape is read-only local-runtime-probe with Atlas canary; mutation-readiness audit reports zero unsafe dry-runs and zero missing evidence for the deployment plan.
+- Notes: Dry-run execution is still blocked by approval_required status. Target-guarded execution must use `deployment-mutation-execute` with an exact `--confirm-plan` match after a future audit-passed plan and passed dry-run; current plan intentionally keeps the proposed live command disabled until explicit approval.
 
 ## Related Commands
 

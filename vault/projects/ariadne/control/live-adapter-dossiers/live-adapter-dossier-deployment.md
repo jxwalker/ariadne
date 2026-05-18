@@ -2,16 +2,16 @@
 
 Project: ariadne
 Status: ready_for_operator_review
-Generated: 2026-05-18T08:36:33.345Z
+Generated: 2026-05-18T15:10:37.341Z
 
 ## Summary
 
-- Blockers: 5
-- Review audit blockers: 1
-- Actions: 7
+- Blockers: 3
+- Review audit blockers: 0
+- Actions: 3
 - Approval packet present: true
-- Review audit status: missing_review
-- Mutation plans: 0/0 ready
+- Review audit status: current_accepted
+- Mutation plans: 0/1 ready
 - GBrain reports: 0
 
 ## Operator Checklist
@@ -21,30 +21,24 @@ Generated: 2026-05-18T08:36:33.345Z
 - Check rollback and post-verification commands are concrete enough to execute later.
 - Check dry-run and target-guarded execution steps remain non-placeholder and bounded.
 - Query GBrain for prior decisions, stale assumptions, and related evidence before accepting the packet.
-- Record an approval-packet review only after the packet and evidence are complete.
+- Do not record another packet review unless the packet or evidence changes.
 
 ## Next Actions
 
-- pending: Prepare, fill, and import operator evidence - npm run ariadne -- live-adapter-operator-evidence-next --project <project> --target deployment
-- pending: Record operator review of the approval packet - npm run ariadne -- live-adapter-approval-review --project <project> --target deployment --by <operator> --status accepted --packet control/live-adapter-approval-pack.json --evidence <operator-review-evidence>
-- pending: Record an operator approval request - npm run ariadne -- approval-request --project <project> --by <operator> --target deployment --action "<bounded action>" --risk <low|medium|high> --reason "<why this target should mutate>" --rollback "<operator rollback path>" --evidence <auth-or-policy-evidence>
-- blocked: Create a target-specific mutation-readiness plan - npm run ariadne -- deployment-mutation-plan --project <project> --system <proxmox|truenas|dgx-spark|mac> --host <host> --scope <scope> --auth-evidence <paths> --dry-run <cmd> --live-command <cmd> --post-verify <cmd> --rollback <text> --approval <approval-id>
-- pending: Fix readiness audit blockers - npm run ariadne -- mutation-readiness-audit --project <project>
-- blocked: Run the reviewed dry-run command - Create and audit-pass a target-specific readiness plan first.
+- pending: Resolve existing readiness plan blockers - Review mutation-readiness-deployment-2026-05-18T14-54-52-671Z; after operator approval, record approval-decision, ensure --post-verify is present, then rerun npm run ariadne -- mutation-readiness-audit --project <project>
+- pending: Run the reviewed dry-run command - After mutation-readiness-deployment-2026-05-18T14-54-52-671Z passes audit, run npm run ariadne -- mutation-dry-run --project <project> --plan mutation-readiness-deployment-2026-05-18T14-54-52-671Z
 - blocked: Capture target-guarded execution evidence - Run a passed dry-run for an audit-passed plan first.
 
 ## Readiness Blockers
 
-- no accepted operator review exists for live-adapter approval packet
-- no target-specific readiness plan exists
 - no readiness plan passes audit
 - no passed dry-run evidence exists for an audit-passed plan
 - no passed target-guarded execution evidence exists
 
 ## Approval Review Audit
 
-Status: missing_review
-- no accepted operator review exists
+Status: current_accepted
+- none
 
 ## GBrain Context
 
@@ -63,5 +57,5 @@ Suggested queries:
 - projects/ariadne/control/live-adapter-approval-pack.json
 - projects/ariadne/control/live-adapter-approval-review-audit.json
 - projects/ariadne/control/mutation-readiness-audit.json
-- projects/ariadne/control/live-adapter-operator-evidence-workspace-deployment.json
+- projects/ariadne/control/live-adapter-approval-reviews/approval-review-deployment-2026-05-18T14-57-00-710Z.json
 - projects/ariadne/control/operator-evidence/deployment/operator-evidence.md

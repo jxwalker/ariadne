@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "project": "ariadne",
-  "generatedAt": "2026-05-18T08:36:33.358Z",
+  "generatedAt": "2026-05-18T15:10:37.353Z",
   "status": "blocked",
   "mutationAllowed": false,
   "readinessRef": "control/live-adapter-readiness.json",
@@ -13,8 +13,8 @@
     "targets": 6,
     "ready": 0,
     "blocked": 6,
-    "passedGates": 12,
-    "blockedGates": 42,
+    "passedGates": 14,
+    "blockedGates": 40,
     "advisoryGates": 6
   },
   "targets": [
@@ -124,20 +124,26 @@
       "target": "deployment",
       "status": "blocked",
       "executeCommand": "deployment-mutation-execute",
+      "latestAcceptedApprovalReviewId": "approval-review-deployment-2026-05-18T14-57-00-710Z",
       "gates": [
         {
           "id": "operator-evidence-complete",
           "label": "Operator evidence complete",
-          "status": "blocked",
-          "detail": "No operator evidence record exists for deployment.; Missing operator evidence section: Operator identity and timestamp; Missing operator evidence section: Approval packet review; Missing operator evidence section: Authentication or authorization boundary; Missing operator evidence section: Bounded action statement; Missing operator evidence section: Rollback or disable path; Missing operator evidence section: Post-action verification command; Missing operator evidence section: Dry-run command and safe output; Missing operator evidence section: Target-guarded execution wrapper; Missing operator evidence section: Exact confirm-plan proof",
-          "evidenceRefs": []
+          "status": "passed",
+          "detail": "Operator evidence operator-evidence-deployment-2026-05-18T14-56-47-861Z is complete.",
+          "evidenceRefs": [
+            "projects/ariadne/control/live-adapter-operator-evidence/operator-evidence-deployment-2026-05-18T14-56-47-861Z.json"
+          ]
         },
         {
           "id": "operator-review-current",
           "label": "Current accepted operator packet review",
-          "status": "blocked",
-          "detail": "no accepted operator review exists",
-          "evidenceRefs": []
+          "status": "passed",
+          "detail": "Accepted packet review approval-review-deployment-2026-05-18T14-57-00-710Z is current.",
+          "evidenceRefs": [
+            "control/live-adapter-approval-reviews/approval-review-deployment-2026-05-18T14-57-00-710Z.json",
+            "vault/projects/ariadne/control/operator-evidence/deployment/operator-evidence.md"
+          ]
         },
         {
           "id": "mutation-readiness-passed",
@@ -201,8 +207,6 @@
         }
       ],
       "blockers": [
-        "Operator evidence complete: No operator evidence record exists for deployment.; Missing operator evidence section: Operator identity and timestamp; Missing operator evidence section: Approval packet review; Missing operator evidence section: Authentication or authorization boundary; Missing operator evidence section: Bounded action statement; Missing operator evidence section: Rollback or disable path; Missing operator evidence section: Post-action verification command; Missing operator evidence section: Dry-run command and safe output; Missing operator evidence section: Target-guarded execution wrapper; Missing operator evidence section: Exact confirm-plan proof",
-        "Current accepted operator packet review: no accepted operator review exists",
         "Mutation-readiness audit passed: No target-specific mutation-readiness plan passes audit.",
         "Credential and auth-boundary evidence accepted: No passing readiness audit is available to prove auth evidence.",
         "Rollback and post-verification contract accepted: A passing readiness audit is required to prove rollback and post-verification.",
@@ -219,6 +223,9 @@
         "control/live-adapter-approval-review-audit.json",
         "control/mutation-readiness-audit.json",
         "control/live-adapter-operator-evidence-audit.json",
+        "projects/ariadne/control/live-adapter-operator-evidence/operator-evidence-deployment-2026-05-18T14-56-47-861Z.json",
+        "control/live-adapter-approval-reviews/approval-review-deployment-2026-05-18T14-57-00-710Z.json",
+        "vault/projects/ariadne/control/operator-evidence/deployment/operator-evidence.md",
         "control/live-adapter-dossiers/live-adapter-dossier-deployment.json"
       ]
     },

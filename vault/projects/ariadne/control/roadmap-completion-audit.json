@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "project": "ariadne",
-  "generatedAt": "2026-05-18T08:36:33.369Z",
+  "generatedAt": "2026-05-18T15:10:37.998Z",
   "status": "blocked",
   "summary": {
     "requirements": 9,
@@ -14,7 +14,7 @@
       "id": "core-artifact-contracts",
       "title": "Core pipeline artifacts are present",
       "status": "passed",
-      "detail": "57 artifacts present; 0 required missing.",
+      "detail": "60 artifacts present; 0 required missing.",
       "evidenceRefs": [
         "projects/ariadne/evaluation/artifact-checks.json"
       ],
@@ -80,29 +80,25 @@
       "id": "operator-evidence",
       "title": "All live-adapter targets have complete operator evidence",
       "status": "blocked",
-      "detail": "0/6 targets complete; 6 missing evidence; 54 missing section(s). Workplan status is evidence_required with 6 check command(s) and 6 import command(s). Queue status is evidence_required with 0 target(s) ready for import and 0 unchecked target(s). Workspace status is awaiting_operator_input with 6 fillable file(s). Assist status is awaiting_operator_review with 4 promoted live-evidence item(s). Next target is deployment (needs_evidence, 9 missing section(s)). Next target assist has 15 existing ref(s), 4 promoted live-evidence item(s), and 6 support file(s).",
+      "detail": "1/6 targets complete; 5 missing evidence; 45 missing section(s). Workplan status is evidence_required with 6 check command(s) and 5 import command(s). Queue status is evidence_required with 0 target(s) ready for import and 0 unchecked target(s). Workspace status is awaiting_operator_input with 6 fillable file(s). Assist status is awaiting_operator_review with 0 promoted live-evidence item(s). Next target is github (needs_evidence, 9 missing section(s)). Next target assist has 11 existing ref(s), 0 promoted live-evidence item(s), and 6 support file(s).",
       "evidenceRefs": [
         "projects/ariadne/control/live-adapter-operator-evidence-audit.json",
         "projects/ariadne/control/live-adapter-operator-evidence-workplan.json",
         "projects/ariadne/control/live-adapter-operator-evidence-queue.json",
         "projects/ariadne/control/live-adapter-operator-evidence-workspace.json",
-        "projects/ariadne/control/live-adapter-operator-evidence-assist-deployment.json",
-        "projects/ariadne/control/operator-evidence/deployment/operator-evidence.md",
-        "projects/ariadne/control/operator-evidence/deployment/read-only-assist.md",
-        "projects/ariadne/control/live-evidence-promotions/live-evidence-promotion-deployment-2026-05-17T23-37-04-509Z.json",
-        "projects/ariadne/control/live-evidence-promotions/live-evidence-promotion-deployment-2026-05-18T08-15-50-017Z.json",
-        "projects/ariadne/control/live-evidence-promotions/live-evidence-promotion-deployment-2026-05-18T08-28-02-295Z.json",
-        "projects/ariadne/control/live-evidence-promotions/live-evidence-promotion-deployment-2026-05-18T08-36-20-265Z.json"
+        "projects/ariadne/control/live-adapter-operator-evidence-assist-github.json",
+        "projects/ariadne/control/operator-evidence/github/operator-evidence.md",
+        "projects/ariadne/control/operator-evidence/github/read-only-assist.md"
       ],
       "nextCommands": [
-        "npm run ariadne -- live-adapter-operator-evidence-next --project ariadne --target deployment",
-        "npm run ariadne -- live-adapter-operator-evidence-workspace --project ariadne --target deployment",
-        "npm run ariadne -- live-adapter-operator-evidence-assist --project ariadne --target deployment",
-        "npm run ariadne -- live-adapter-operator-evidence-draft --project ariadne --target deployment",
-        "npm run ariadne -- live-adapter-operator-evidence-check-all --project ariadne --source workspace --target deployment",
-        "npm run ariadne -- live-adapter-operator-evidence-import-ready --project ariadne --by <operator> --target deployment",
-        "npm run ariadne -- live-adapter-review-session --project ariadne --target deployment",
-        "npm run ariadne -- live-adapter-cutover-audit --project ariadne --target deployment",
+        "npm run ariadne -- live-adapter-operator-evidence-next --project ariadne --target github",
+        "npm run ariadne -- live-adapter-operator-evidence-workspace --project ariadne --target github",
+        "npm run ariadne -- live-adapter-operator-evidence-assist --project ariadne --target github",
+        "npm run ariadne -- live-adapter-operator-evidence-draft --project ariadne --target github",
+        "npm run ariadne -- live-adapter-operator-evidence-check-all --project ariadne --source workspace --target github",
+        "npm run ariadne -- live-adapter-operator-evidence-import-ready --project ariadne --by <operator> --target github",
+        "npm run ariadne -- live-adapter-review-session --project ariadne --target github",
+        "npm run ariadne -- live-adapter-cutover-audit --project ariadne --target github",
         "npm run ariadne -- live-adapter-operator-evidence-workplan --project ariadne",
         "npm run ariadne -- live-adapter-operator-evidence-queue --project ariadne",
         "npm run ariadne -- live-adapter-evidence-templates --project ariadne",
@@ -119,12 +115,12 @@
       "id": "live-adapter-cutover",
       "title": "Live-adapter cutover gates are ready",
       "status": "blocked",
-      "detail": "0/6 targets ready; 42 gates blocked.",
+      "detail": "0/6 targets ready; 40 gates blocked.",
       "evidenceRefs": [
         "projects/ariadne/control/live-adapter-cutover-audit.json"
       ],
       "nextCommands": [
-        "npm run ariadne -- live-adapter-cutover-audit --project ariadne --target deployment",
+        "npm run ariadne -- live-adapter-cutover-audit --project ariadne --target github",
         "npm run ariadne -- live-adapter-cutover-audit --project ariadne"
       ]
     },
@@ -132,12 +128,12 @@
       "id": "operator-review-session",
       "title": "Operator review session reflects live-adapter state",
       "status": "blocked",
-      "detail": "0/6 targets ready for adapter work; 6 still require operator review.",
+      "detail": "0/6 targets ready for adapter work; 5 still require operator review.",
       "evidenceRefs": [
         "projects/ariadne/control/live-adapter-review-session.json"
       ],
       "nextCommands": [
-        "npm run ariadne -- live-adapter-review-session --project ariadne --target deployment",
+        "npm run ariadne -- live-adapter-review-session --project ariadne --target github",
         "npm run ariadne -- live-adapter-review-session --project ariadne"
       ]
     }
