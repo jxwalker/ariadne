@@ -1,7 +1,7 @@
 # Read-Only Operator Evidence Assist: notebooklm
 
 Project: ariadne
-Generated: 2026-05-18T05:22:23.686Z
+Generated: 2026-05-18T06:33:39.399Z
 Target: notebooklm
 Status: needs_evidence
 Mutation approved: false
@@ -43,7 +43,7 @@ npm run ariadne -- live-adapter-operator-evidence --project ariadne --target not
 - projects/ariadne/control/live-adapter-approval-pack.json
 - projects/ariadne/control/live-adapter-approval-review-audit.json
 - projects/ariadne/control/mutation-readiness-audit.json
-- projects/ariadne/control/live-adapter-operator-evidence-workspace.json
+- projects/ariadne/control/live-adapter-operator-evidence-workspace-notebooklm.json
 - projects/ariadne/control/operator-evidence/notebooklm/operator-evidence.md
 - projects/ariadne/control/live-adapter-operator-evidence-audit.json
 

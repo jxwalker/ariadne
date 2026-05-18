@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "project": "ariadne",
-  "generatedAt": "2026-05-18T05:22:24.546Z",
+  "generatedAt": "2026-05-18T06:33:39.674Z",
   "status": "actions_required",
   "summary": {
     "targets": 6,
@@ -30,7 +30,7 @@
           "rationale": "The target has no imported operator evidence record. Refresh the target packet, fill the generated workspace file with real observations, and import it before packet review or cutover.",
           "command": "npm run ariadne -- live-adapter-operator-evidence-next --project <project> --target github",
           "evidenceRefs": [
-            "control/live-adapter-operator-evidence-workspace.json",
+            "control/live-adapter-operator-evidence-workspace-github.json",
             "control/operator-evidence/github/operator-evidence.md"
           ]
         },
@@ -95,7 +95,7 @@
           "rationale": "The target has no imported operator evidence record. Refresh the target packet, fill the generated workspace file with real observations, and import it before packet review or cutover.",
           "command": "npm run ariadne -- live-adapter-operator-evidence-next --project <project> --target deployment",
           "evidenceRefs": [
-            "control/live-adapter-operator-evidence-workspace.json",
+            "control/live-adapter-operator-evidence-workspace-deployment.json",
             "control/operator-evidence/deployment/operator-evidence.md"
           ]
         },
@@ -180,7 +180,7 @@
           "rationale": "The target has no imported operator evidence record. Refresh the target packet, fill the generated workspace file with real observations, and import it before packet review or cutover.",
           "command": "npm run ariadne -- live-adapter-operator-evidence-next --project <project> --target hermes-cron",
           "evidenceRefs": [
-            "control/live-adapter-operator-evidence-workspace.json",
+            "control/live-adapter-operator-evidence-workspace-hermes-cron.json",
             "control/operator-evidence/hermes-cron/operator-evidence.md"
           ]
         },
@@ -265,7 +265,7 @@
           "rationale": "The target has no imported operator evidence record. Refresh the target packet, fill the generated workspace file with real observations, and import it before packet review or cutover.",
           "command": "npm run ariadne -- live-adapter-operator-evidence-next --project <project> --target openscorpion",
           "evidenceRefs": [
-            "control/live-adapter-operator-evidence-workspace.json",
+            "control/live-adapter-operator-evidence-workspace-openscorpion.json",
             "control/operator-evidence/openscorpion/operator-evidence.md"
           ]
         },
@@ -350,7 +350,7 @@
           "rationale": "The target has no imported operator evidence record. Refresh the target packet, fill the generated workspace file with real observations, and import it before packet review or cutover.",
           "command": "npm run ariadne -- live-adapter-operator-evidence-next --project <project> --target gsd2",
           "evidenceRefs": [
-            "control/live-adapter-operator-evidence-workspace.json",
+            "control/live-adapter-operator-evidence-workspace-gsd2.json",
             "control/operator-evidence/gsd2/operator-evidence.md"
           ]
         },
@@ -435,7 +435,7 @@
           "rationale": "The target has no imported operator evidence record. Refresh the target packet, fill the generated workspace file with real observations, and import it before packet review or cutover.",
           "command": "npm run ariadne -- live-adapter-operator-evidence-next --project <project> --target notebooklm",
           "evidenceRefs": [
-            "control/live-adapter-operator-evidence-workspace.json",
+            "control/live-adapter-operator-evidence-workspace-notebooklm.json",
             "control/operator-evidence/notebooklm/operator-evidence.md"
           ]
         },

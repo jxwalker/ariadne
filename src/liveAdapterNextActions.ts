@@ -3,6 +3,7 @@ import path from "node:path";
 import { writeJsonArtifact, writeTextArtifact } from "./artifacts.js";
 import { generateLiveAdapterOperatorEvidenceAudit } from "./liveAdapterOperatorEvidence.js";
 import { generateLiveAdapterReadiness } from "./liveAdapterReadiness.js";
+import { isLiveAdapterTarget } from "./liveAdapterTargets.js";
 import { projectDir, slugifyProject } from "./paths.js";
 import type {
   LiveAdapterNextActionsReport,
@@ -86,8 +87,8 @@ function targetNextActions(
           : "The target has no imported operator evidence record. Refresh the target packet, fill the generated workspace file with real observations, and import it before packet review or cutover.",
       command: `npm run ariadne -- live-adapter-operator-evidence-next --project <project> --target ${target.target}`,
       evidenceRefs: [
-        ...(operatorEvidence?.evidenceRefs ?? []),
-        "control/live-adapter-operator-evidence-workspace.json",
+        ...withoutLegacyOperatorWorkspaceRefs(operatorEvidence?.evidenceRefs),
+        operatorWorkspaceEvidenceRef(target.target),
         `control/operator-evidence/${target.target}/operator-evidence.md`
       ]
     });
@@ -182,6 +183,23 @@ function targetNextActions(
     blockers: target.blockers,
     actions
   };
+}
+
+function operatorWorkspaceEvidenceRef(target: ReadinessTarget["target"]): string {
+  if (!isLiveAdapterTarget(target)) {
+    throw new Error(`Unexpected live adapter target '${String(target)}'.`);
+  }
+  return `control/live-adapter-operator-evidence-workspace-${target}.json`;
+}
+
+function withoutLegacyOperatorWorkspaceRefs(refs: string[] | undefined): string[] {
+  return (refs ?? []).filter((ref) => {
+    const normalized = ref.split(path.sep).join("/");
+    return (
+      normalized !== "control/live-adapter-operator-evidence-workspace.json" &&
+      !normalized.endsWith("/control/live-adapter-operator-evidence-workspace.json")
+    );
+  });
 }
 
 function planCommand(target: ReadinessTarget): string {

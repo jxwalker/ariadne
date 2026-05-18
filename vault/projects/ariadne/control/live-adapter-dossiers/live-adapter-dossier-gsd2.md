@@ -2,7 +2,7 @@
 
 Project: ariadne
 Status: ready_for_operator_review
-Generated: 2026-05-18T05:22:24.552Z
+Generated: 2026-05-18T06:33:39.681Z
 
 ## Summary
 
@@ -63,5 +63,5 @@ Suggested queries:
 - projects/ariadne/control/live-adapter-approval-pack.json
 - projects/ariadne/control/live-adapter-approval-review-audit.json
 - projects/ariadne/control/mutation-readiness-audit.json
-- projects/ariadne/control/live-adapter-operator-evidence-workspace.json
+- projects/ariadne/control/live-adapter-operator-evidence-workspace-gsd2.json
 - projects/ariadne/control/operator-evidence/gsd2/operator-evidence.md
