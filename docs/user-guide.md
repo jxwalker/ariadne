@@ -141,7 +141,7 @@ When a Playwright evidence record fails, create a review-gated repair proposal:
 npm run ariadne -- healer-proposal --project ariadne --evidence vault/projects/ariadne/verification/playwright-...json
 ```
 
-The proposal cites the failed evidence, screenshot, and trace; suggests bounded repair actions; and keeps `apply: false` so no test or app code changes without review.
+The proposal cites the failed evidence, screenshot, and trace; suggests bounded repair actions; and keeps `apply: false` so no test or app code changes without review. It also prints automation gates and next-command scaffolds for approval, mutation-readiness planning, dry-run, execution, and Playwright recapture. Treat those as a checklist: do not run mutation dry-run or execution until review, approval, readiness, dry-run, exact `--confirm-plan`, and fresh Playwright evidence gates are satisfied.
 
 ## Evaluate The Pipeline
 

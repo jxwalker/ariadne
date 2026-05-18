@@ -127,7 +127,7 @@ Artifacts:
 - `verification/healer-proposals/healer-<timestamp>.json`
 - `verification/healer-proposals/healer-<timestamp>.md`
 
-The proposal records observations, suggested files, verification commands, and review gates. It always writes `apply: false`.
+The proposal records observations, suggested files, verification commands, review gates, automation gates, and next-command scaffolds. It always writes `apply: false` and `automationGates.mutationAllowed: false`; the scaffolded approval, mutation-readiness, dry-run, execute, and recapture commands are not permission to mutate until the listed review and approval gates pass.
 
 `github-snapshot` records read-only pull request and check state from either a saved GitHub JSON export or the `gh` CLI:
 

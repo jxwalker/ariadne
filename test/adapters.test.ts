@@ -26,7 +26,12 @@ import { generateGsd } from "../src/gsd.js";
 import { exportGsd2Bundle, importGsd2Bundle } from "../src/gsdAdapter.js";
 import { planGsd2Mutation } from "../src/gsdMutation.js";
 import { collectGsd2ProcessSnapshot } from "../src/gsdProcess.js";
-import { generateHealerProposal } from "../src/healerProposals.js";
+import {
+  generateHealerProposal,
+  HEALER_AUTOMATION_REQUIRED_GATES,
+  HEALER_MUTATION_PLAN_TEMPLATE,
+  quoteHealerShellArg
+} from "../src/healerProposals.js";
 import { generateHermesCronProposal, importHermesCronSnapshot } from "../src/hermesCron.js";
 import { planHermesCronMutation } from "../src/hermesMutation.js";
 import { generateInfrastructureRegistry } from "../src/infrastructure.js";
@@ -490,10 +495,32 @@ describe("roadmap adapters", () => {
     expect(proposal.proposal.evidenceRecordId).toBe(evidence.record.id);
     expect(proposal.proposal.proposedActions[0]?.title).toContain("Repair locator");
     expect(proposal.proposal.reviewGates.some((gate) => gate.includes("review"))).toBe(true);
+    expect(proposal.proposal.automationGates.status).toBe("blocked_until_review_and_approval");
+    expect(proposal.proposal.automationGates.mutationAllowed).toBe(false);
+    expect(proposal.proposal.automationGates.requiredGates).toEqual([...HEALER_AUTOMATION_REQUIRED_GATES]);
+    expect(proposal.proposal.nextCommands).toMatchObject({
+      dryRun: `npm run ariadne -- mutation-dry-run --project ariadne --plan ${HEALER_MUTATION_PLAN_TEMPLATE}`,
+      execute:
+        `npm run ariadne -- mutation-execute --project ariadne --plan ${HEALER_MUTATION_PLAN_TEMPLATE} --confirm-plan ${HEALER_MUTATION_PLAN_TEMPLATE}`,
+      recaptureEvidence: "npm run ariadne -- playwright-capture --project ariadne --target-url 'http://localhost:3000'"
+    });
+    expect(proposal.proposal.nextCommands.approvalRequest).toContain("approval-request");
+    expect(proposal.proposal.nextCommands.mutationPlan).toContain("mutation-readiness");
+    expect(proposal.proposal.nextCommands.mutationPlan).toContain("--post-verify");
+    expect(proposal.proposal.nextCommands.mutationPlan).toContain("playwright-capture");
+    expect(proposal.proposal.nextCommands.dryRun).toContain("mutation-dry-run");
+    expect(proposal.proposal.nextCommands.execute).toContain("mutation-execute");
+    expect(proposal.proposal.nextCommands.execute).toContain("--confirm-plan");
+    expect(proposal.proposal.nextCommands.recaptureEvidence).toContain("playwright-capture");
 
     const markdown = await fs.readFile(proposal.markdownPath, "utf8");
     expect(markdown).toContain("Apply automatically: false");
     expect(markdown).toContain("Review gate:");
+    expect(markdown).toContain("## Automation Gates");
+    expect(markdown).toContain("Mutation allowed: false");
+    expect(markdown).toContain("## Next Commands");
+    expect(markdown).toContain("Template commands - replace placeholder values before use");
+    expect(markdown).toContain("--confirm-plan");
 
     const artifactChecks = await generateArtifactCheckReport({ project: "ariadne", vaultRoot });
     expect(artifactChecks.report.checks.find((check) => check.id === "healer-proposals")?.status).toBe("present");
@@ -510,6 +537,12 @@ describe("roadmap adapters", () => {
     await expect(
       generateHealerProposal({ project: "ariadne", vaultRoot, evidencePath: invalidEvidence })
     ).rejects.toThrow(/invalid targetUrl|invalid recordedAt/);
+  });
+
+  it("quotes healer command template arguments for review packet copy-paste", () => {
+    expect(quoteHealerShellArg("alpha 'beta'\n`gamma` $(delta) \"epsilon\"")).toBe(
+      "'alpha '\\''beta'\\'' `gamma` $(delta) \"epsilon\"'"
+    );
   });
 
   it("imports and reports token and cost metrics", async () => {
