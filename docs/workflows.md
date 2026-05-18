@@ -130,7 +130,7 @@ Console stage: `Operate`.
 
 Commands are implementation details behind the workflows. Keep the first screen focused on the workflow lane and next action. Put dense command recipes in generated packets, developer docs, or expert command reference sections.
 
-Use `status` as a diagnostic summary, not the main operating surface. It points to the console and `guide`, then prints only the next operator packet by default. `operator-next` is the short operator handoff when evidence is blocked: it refreshes the current packet and console, then prints the exact evidence file to fill, current section, section guide command, the preflight command, and the later import command. `operator-section` is the next step when the operator wants only one missing section with start refs, GBrain advisory queries, and the exact file to edit. `status --expert` is for experienced operators who deliberately want the full command list.
+Use `status` as a diagnostic summary, not the main operating surface. It points to the console and `guide`, then prints only the short `operator-next` handoff and `operator-section` guide by default. `operator-next` refreshes the current packet and console, then prints the exact evidence file to fill, current section, section guide command, the preflight command, and the later import command. `operator-section` is the next step when the operator wants only one missing section with start refs, GBrain advisory queries, and the exact file to edit. `status --expert` is for experienced operators who deliberately want the full command list.
 
 When adding a new command, also decide which workflow stage it supports and whether it should appear in the console as a human next action, a supporting artifact, or expert-only detail.
 

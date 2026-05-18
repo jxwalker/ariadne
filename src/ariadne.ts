@@ -1814,15 +1814,17 @@ async function main(): Promise<void> {
       if (status.liveAdapterOperatorEvidenceNextAction) {
         console.log(`Operator next action: ${status.liveAdapterOperatorEvidenceNextAction}`);
       }
-      const nextPacketCommand = status.liveAdapterOperatorEvidenceNextCommands?.[0];
-      if (nextPacketCommand) {
-        console.log(`Operator packet: ${nextPacketCommand}`);
-      }
+      console.log(
+        `Operator handoff: npm run ariadne -- operator-next --project ${status.project} --target ${status.liveAdapterOperatorEvidenceNextTarget}`
+      );
+      console.log(
+        `Operator section: npm run ariadne -- operator-section --project ${status.project} --target ${status.liveAdapterOperatorEvidenceNextTarget}`
+      );
       if (expert) {
-        for (const command of status.liveAdapterOperatorEvidenceNextCommands?.slice(1) ?? []) {
+        for (const command of status.liveAdapterOperatorEvidenceNextCommands ?? []) {
           console.log(`Operator expert command: ${command}`);
         }
-      } else if ((status.liveAdapterOperatorEvidenceNextCommands?.length ?? 0) > 1) {
+      } else if ((status.liveAdapterOperatorEvidenceNextCommands?.length ?? 0) > 0) {
         console.log("Operator expert commands hidden; rerun status with --expert or use guide --mode operator.");
       }
     }
