@@ -1052,7 +1052,7 @@ export interface LiveAdapterOperatorEvidenceNextPacket {
   generatedAt: string;
   target: Exclude<MutationReadinessPlan["target"], "generic">;
   selectedBy: "explicit" | "queue";
-  status: "operator_action_required" | "ready_for_import" | "complete";
+  status: "operator_action_required" | "ready_for_import";
   mutationApproved: false;
   approvalGranted: false;
   operatorEvidenceRecordCreated: false;

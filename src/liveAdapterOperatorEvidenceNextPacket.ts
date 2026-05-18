@@ -83,9 +83,7 @@ export async function generateLiveAdapterOperatorEvidenceNextPacket(input: {
   const status: LiveAdapterOperatorEvidenceNextPacket["status"] =
     checkTarget.status === "complete"
       ? "ready_for_import"
-      : workspaceTarget.status === "complete"
-        ? "complete"
-        : "operator_action_required";
+      : "operator_action_required";
   const packet: LiveAdapterOperatorEvidenceNextPacket = {
     schemaVersion: 1,
     project,
