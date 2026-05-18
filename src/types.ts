@@ -2126,7 +2126,18 @@ export interface ConsoleWorkflowAction {
   detail: string;
   artifactRef: string;
   command?: string;
+  steps: ConsoleWorkflowActionStep[];
   source: "operator-evidence-queue" | "roadmap-completion-audit" | "merge-readiness" | "workflow-fallback";
+}
+
+export interface ConsoleWorkflowActionStep {
+  id: string;
+  title: string;
+  detail: string;
+  surface: ConsoleWorkflowSurface["id"];
+  kind: "read" | "fill" | "check" | "import" | "review" | "operate";
+  artifactRef?: string;
+  command?: string;
 }
 
 export interface ConsoleWorkflowMode {

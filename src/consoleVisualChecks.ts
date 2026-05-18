@@ -22,6 +22,7 @@ export async function generateConsoleVisualCheckReport(input: {
     checkContains(html, "brand", "Ariadne brand lockup", "Ariadne Console"),
     checkContains(html, "workflow", "Workflow overview", 'aria-label="Ariadne workflow"'),
     checkContains(html, "next-best-action", "Next best action panel", "Next best action"),
+    checkContains(html, "next-action-steps", "Next action steps", 'data-visual-role="next-action-steps"'),
     checkContains(html, "operator-modes", "Operator modes panel", 'data-visual-role="operator-modes"'),
     checkContains(html, "workflow-surfaces", "Workflow surfaces panel", 'data-visual-role="workflow-surfaces"'),
     embeddedWorkflowDataCheck(embeddedData),
@@ -125,10 +126,14 @@ function embeddedDataCheck(data: ConsoleData | undefined): ConsoleVisualCheckRep
 
 function embeddedWorkflowDataCheck(data: ConsoleData | undefined): ConsoleVisualCheckReport["checks"][number] {
   const stageIds = data?.workflow?.stages.map((stage) => stage.id) ?? [];
+  const nextActionSteps = data?.workflow?.nextAction?.steps;
   const valid =
     data?.workflow?.schemaVersion === 1 &&
     stageIds.join(",") === "capture,shape,build,verify,review,operate" &&
     Boolean(data?.workflow?.nextAction?.artifactRef) &&
+    Array.isArray(nextActionSteps) &&
+    nextActionSteps.length > 0 &&
+    nextActionSteps.every((step) => Boolean(step.id && step.title && step.detail && step.surface && step.kind)) &&
     Boolean(data?.workflow?.modes?.some((mode) => mode.id === "guided" && mode.primarySurface === "ariadne-console")) &&
     Boolean(data?.workflow?.modes?.some((mode) => mode.id === "automation" && mode.primarySurface === "hermes")) &&
     Boolean(data?.workflow?.surfaces?.some((surface) => surface.id === "hermes")) &&
@@ -138,7 +143,7 @@ function embeddedWorkflowDataCheck(data: ConsoleData | undefined): ConsoleVisual
     label: "Embedded workflow data",
     status: valid ? "passed" : "failed",
     detail: valid
-      ? `Workflow stages, ${data?.workflow?.modes?.length ?? 0} operator modes, and ${data?.workflow?.surfaces?.length ?? 0} surface contract entries are present.`
+      ? `Workflow stages, ${data?.workflow?.nextAction?.steps.length ?? 0} action steps, ${data?.workflow?.modes?.length ?? 0} operator modes, and ${data?.workflow?.surfaces?.length ?? 0} surface contract entries are present.`
       : "Embedded console workflow data is missing or malformed."
   };
 }
