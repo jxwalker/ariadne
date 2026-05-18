@@ -2,7 +2,7 @@
 
 Project: ariadne
 Status: evidence_required
-Generated: 2026-05-18T08:16:03.565Z
+Generated: 2026-05-18T08:36:33.254Z
 Mutation approved: false
 
 ## Rule
@@ -199,6 +199,8 @@ npm run ariadne -- live-adapter-approval-review --project ariadne --target deplo
 - projects/ariadne/control/live-adapter-operator-evidence-audit.json
 - projects/ariadne/control/live-evidence-promotions/live-evidence-promotion-deployment-2026-05-17T23-37-04-509Z.json
 - projects/ariadne/control/live-evidence-promotions/live-evidence-promotion-deployment-2026-05-18T08-15-50-017Z.json
+- projects/ariadne/control/live-evidence-promotions/live-evidence-promotion-deployment-2026-05-18T08-28-02-295Z.json
+- projects/ariadne/control/live-evidence-promotions/live-evidence-promotion-deployment-2026-05-18T08-36-20-265Z.json
 
 ### hermes-cron
 

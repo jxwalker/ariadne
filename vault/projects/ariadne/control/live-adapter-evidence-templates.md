@@ -2,7 +2,7 @@
 
 Project: ariadne
 Status: awaiting_operator_evidence
-Generated: 2026-05-18T08:16:03.557Z
+Generated: 2026-05-18T08:36:33.247Z
 Mutation approved: false
 Review session: projects/ariadne/control/live-adapter-review-session.json
 

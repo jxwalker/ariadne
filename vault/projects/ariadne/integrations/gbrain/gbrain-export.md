@@ -2,8 +2,8 @@
 
 Project: ariadne
 Mode: read_only_export
-Generated: 2026-05-18T08:16:03.681Z
-Documents: 41
+Generated: 2026-05-18T08:36:33.386Z
+Documents: 43
 
 ## Instructions
 
@@ -41,18 +41,20 @@ Documents: 41
 | live-adapter/dossier/hermes-cron | live-adapter | 9 |
 | live-adapter/dossier/notebooklm | live-adapter | 9 |
 | live-adapter/dossier/openscorpion | live-adapter | 9 |
-| live-adapter/operator-assist/deployment | live-adapter | 15 |
+| live-adapter/operator-assist/deployment | live-adapter | 17 |
 | live-adapter/operator-assist/github | live-adapter | 13 |
 | live-adapter/operator-assist/gsd2 | live-adapter | 13 |
 | live-adapter/operator-assist/hermes-cron | live-adapter | 13 |
 | live-adapter/operator-assist/notebooklm | live-adapter | 13 |
 | live-adapter/operator-assist/openscorpion | live-adapter | 13 |
 | live-adapter/operator-assist/all/github | live-adapter | 13 |
-| live-adapter/operator-assist/all/deployment | live-adapter | 15 |
+| live-adapter/operator-assist/all/deployment | live-adapter | 17 |
 | live-adapter/operator-assist/all/hermes-cron | live-adapter | 13 |
 | live-adapter/operator-assist/all/openscorpion | live-adapter | 13 |
 | live-adapter/operator-assist/all/gsd2 | live-adapter | 13 |
 | live-adapter/operator-assist/all/notebooklm | live-adapter | 13 |
 | live-adapter/promoted-live-evidence/live-evidence-promotion-deployment-2026-05-17T23-37-04-509Z | live-adapter | 3 |
 | live-adapter/promoted-live-evidence/live-evidence-promotion-deployment-2026-05-18T08-15-50-017Z | live-adapter | 3 |
-| live-adapter/roadmap-completion | live-adapter | 20 |
+| live-adapter/promoted-live-evidence/live-evidence-promotion-deployment-2026-05-18T08-28-02-295Z | live-adapter | 2 |
+| live-adapter/promoted-live-evidence/live-evidence-promotion-deployment-2026-05-18T08-36-20-265Z | live-adapter | 3 |
+| live-adapter/roadmap-completion | live-adapter | 22 |

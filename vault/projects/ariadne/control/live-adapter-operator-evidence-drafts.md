@@ -1,7 +1,7 @@
 # Live Adapter Operator Evidence Draft Pack
 
 Project: ariadne
-Generated: 2026-05-18T08:16:01.385Z
+Generated: 2026-05-18T08:36:31.014Z
 Status: drafted_for_human_verification
 Mutation approved: false
 Approval granted: false
@@ -17,8 +17,8 @@ This pack creates non-authoritative drafts only. It does not import operator evi
 - Drafts: 6
 - Missing sections: 54
 - Candidate rows: 54
-- Existing evidence refs: 33
-- Promoted live evidence refs: 2
+- Existing evidence refs: 35
+- Promoted live evidence refs: 4
 - GBrain queries: 18
 
 ## Commands

@@ -9,6 +9,7 @@ import { generateLiveAdapterOperatorEvidenceQueue } from "./liveAdapterOperatorE
 import { generateLiveAdapterOperatorEvidenceWorkplan } from "./liveAdapterOperatorEvidenceWorkplan.js";
 import { generateLiveAdapterOperatorEvidenceWorkspace } from "./liveAdapterOperatorEvidenceWorkspace.js";
 import {
+  renderHumanVerificationFillOrder,
   renderHumanVerificationReferenceDetails,
   renderHumanVerificationWorksheetTable
 } from "./humanVerificationWorksheetMarkdown.js";
@@ -206,6 +207,10 @@ function renderPacket(packet: LiveAdapterOperatorEvidenceNextPacket): string {
     "## Human Verification Worksheet",
     "",
     ...renderHumanVerificationWorksheetTable(packet.verificationWorksheet),
+    "",
+    "## Human Verification Fill Order",
+    "",
+    ...renderHumanVerificationFillOrder(packet.verificationWorksheet),
     "",
     "## Human Verification Reference Details",
     "",

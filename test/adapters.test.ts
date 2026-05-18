@@ -32,6 +32,7 @@ import {
   HEALER_MUTATION_PLAN_TEMPLATE,
   quoteHealerShellArg
 } from "../src/healerProposals.js";
+import { renderHumanVerificationFillOrder } from "../src/humanVerificationWorksheetMarkdown.js";
 import { generateHermesCronProposal, importHermesCronSnapshot } from "../src/hermesCron.js";
 import { planHermesCronMutation } from "../src/hermesMutation.js";
 import { generateInfrastructureRegistry } from "../src/infrastructure.js";
@@ -100,6 +101,30 @@ async function preparedProject(): Promise<{ temp: string; vaultRoot: string }> {
 }
 
 describe("roadmap adapters", () => {
+  it("renders robust human verification fill-order fallback guidance", () => {
+    const fillOrder = renderHumanVerificationFillOrder([
+      {
+        missingSection: "Authentication or authorization boundary",
+        humanVerificationPrompt: "Verify auth boundary.",
+        existingEvidenceRefs: [],
+        promotedLiveEvidenceRefs: [],
+        gbrainQueries: [],
+        humanVerificationRequired: true
+      },
+      {
+        missingSection: "",
+        humanVerificationPrompt: "Verify unknown section.",
+        existingEvidenceRefs: [],
+        promotedLiveEvidenceRefs: [],
+        gbrainQueries: [],
+        humanVerificationRequired: true
+      }
+    ]).join("\n");
+
+    expect(fillOrder).toContain("auth-boundary.md, mutation-readiness audit, and target dossier");
+    expect(fillOrder).toContain("read-only-assist.md and the listed evidence refs");
+  });
+
   it("blocks likely secrets before vault promotion unless explicitly allowed", async () => {
     const temp = await fs.mkdtemp(path.join(os.tmpdir(), "ariadne-secret-"));
     const source = path.join(temp, "secret.md");
@@ -1532,6 +1557,8 @@ describe("roadmap adapters", () => {
     expect(githubAssistMarkdown).toContain("This file is generated from existing Ariadne artifacts.");
     expect(githubAssistMarkdown).toContain("GBrain Advisory Queries");
     expect(githubAssistMarkdown).toContain("Human Verification Worksheet");
+    expect(githubAssistMarkdown).toContain("Human Verification Fill Order");
+    expect(githubAssistMarkdown).toContain("packet-review.md, approval pack, and approval-review audit");
     expect(githubAssistMarkdown).toContain("Import Command After Human Verification");
     const preflightCommandBlock = markdownCodeBlockAfterHeading(githubAssistMarkdown, "Commands");
     const importCommandBlock = markdownCodeBlockAfterHeading(githubAssistMarkdown, "Import Command After Human Verification");
@@ -1652,6 +1679,7 @@ describe("roadmap adapters", () => {
     const nextOperatorPacketMarkdown = await fs.readFile(nextOperatorPacket.markdownPath, "utf8");
     expect(nextOperatorPacketMarkdown).toContain("does not import operator evidence");
     expect(nextOperatorPacketMarkdown).toContain("Human Verification Worksheet");
+    expect(nextOperatorPacketMarkdown).toContain("Human Verification Fill Order");
     expect(nextOperatorPacketMarkdown).toContain("Human Verification Reference Details");
     expect(nextOperatorPacketMarkdown).toContain("Existing refs:");
     expect(nextOperatorPacketMarkdown).toContain("Promoted live evidence refs:");
@@ -2802,6 +2830,7 @@ describe("roadmap adapters", () => {
     expect(deploymentAssistMarkdown).toContain("Promoted Live Evidence");
     expect(deploymentAssistMarkdown).toContain("Read-only deployment runtime evidence");
     expect(deploymentAssistMarkdown).toContain("| Missing section | Human verification prompt | Existing refs | Promoted live evidence | GBrain queries |");
+    expect(deploymentAssistMarkdown).toContain("| Step | Missing section | Start with | Record verified observation in | Preflight check |");
     expect(deploymentAssistMarkdown).toContain("Human Verification Reference Details");
     expect(deploymentAssistMarkdown).toContain("Promoted live evidence refs:");
     expect(deploymentAssistMarkdown).toContain("Common References");

@@ -1,7 +1,7 @@
 # Live Adapter Operator Evidence Next Packet: deployment
 
 Project: ariadne
-Generated: 2026-05-18T08:16:01.383Z
+Generated: 2026-05-18T08:36:31.012Z
 Target: deployment
 Selected by: explicit
 Status: operator_action_required
@@ -16,8 +16,8 @@ This packet runs only non-mutating preparation steps. It does not import operato
 ## Summary
 
 - Missing sections: 9
-- Existing evidence refs: 13
-- Promoted live evidence: 2
+- Existing evidence refs: 15
+- Promoted live evidence: 4
 - Support file refs: 6
 - Cutover blocked gates: 7
 - Verification worksheet rows: 9
@@ -69,15 +69,29 @@ npm run ariadne -- live-adapter-operator-evidence --project ariadne --target dep
 
 | Missing section | Human verification prompt | Existing refs | Promoted live evidence | GBrain queries |
 | --- | --- | ---: | ---: | ---: |
-| Operator identity and timestamp | Human operator must verify deployment Operator identity and timestamp from source systems or cited Ariadne refs before recording it in operator-evidence.md. | 13 | 2 | 3 |
-| Approval packet review | Human operator must verify deployment Approval packet review from source systems or cited Ariadne refs before recording it in operator-evidence.md. | 13 | 2 | 3 |
-| Authentication or authorization boundary | Human operator must verify deployment Authentication or authorization boundary from source systems or cited Ariadne refs before recording it in operator-evidence.md. | 13 | 2 | 3 |
-| Bounded action statement | Human operator must verify deployment Bounded action statement from source systems or cited Ariadne refs before recording it in operator-evidence.md. | 13 | 2 | 3 |
-| Rollback or disable path | Human operator must verify deployment Rollback or disable path from source systems or cited Ariadne refs before recording it in operator-evidence.md. | 13 | 2 | 3 |
-| Post-action verification command | Human operator must verify deployment Post-action verification command from source systems or cited Ariadne refs before recording it in operator-evidence.md. | 13 | 2 | 3 |
-| Dry-run command and safe output | Human operator must verify deployment Dry-run command and safe output from source systems or cited Ariadne refs before recording it in operator-evidence.md. | 13 | 2 | 3 |
-| Target-guarded execution wrapper | Human operator must verify deployment Target-guarded execution wrapper from source systems or cited Ariadne refs before recording it in operator-evidence.md. | 13 | 2 | 3 |
-| Exact confirm-plan proof | Human operator must verify deployment Exact confirm-plan proof from source systems or cited Ariadne refs before recording it in operator-evidence.md. | 13 | 2 | 3 |
+| Operator identity and timestamp | Human operator must verify deployment Operator identity and timestamp from source systems or cited Ariadne refs before recording it in operator-evidence.md. | 15 | 4 | 3 |
+| Approval packet review | Human operator must verify deployment Approval packet review from source systems or cited Ariadne refs before recording it in operator-evidence.md. | 15 | 4 | 3 |
+| Authentication or authorization boundary | Human operator must verify deployment Authentication or authorization boundary from source systems or cited Ariadne refs before recording it in operator-evidence.md. | 15 | 4 | 3 |
+| Bounded action statement | Human operator must verify deployment Bounded action statement from source systems or cited Ariadne refs before recording it in operator-evidence.md. | 15 | 4 | 3 |
+| Rollback or disable path | Human operator must verify deployment Rollback or disable path from source systems or cited Ariadne refs before recording it in operator-evidence.md. | 15 | 4 | 3 |
+| Post-action verification command | Human operator must verify deployment Post-action verification command from source systems or cited Ariadne refs before recording it in operator-evidence.md. | 15 | 4 | 3 |
+| Dry-run command and safe output | Human operator must verify deployment Dry-run command and safe output from source systems or cited Ariadne refs before recording it in operator-evidence.md. | 15 | 4 | 3 |
+| Target-guarded execution wrapper | Human operator must verify deployment Target-guarded execution wrapper from source systems or cited Ariadne refs before recording it in operator-evidence.md. | 15 | 4 | 3 |
+| Exact confirm-plan proof | Human operator must verify deployment Exact confirm-plan proof from source systems or cited Ariadne refs before recording it in operator-evidence.md. | 15 | 4 | 3 |
+
+## Human Verification Fill Order
+
+| Step | Missing section | Start with | Record verified observation in | Preflight check |
+| ---: | --- | --- | --- | --- |
+| 1 | Operator identity and timestamp | operator-evidence.md header plus current source-system timestamp | operator-evidence.md | Confirm the operator and timestamp fields are real values. |
+| 2 | Approval packet review | packet-review.md, approval pack, and approval-review audit | operator-evidence.md approval/confirm-plan sections | Confirm approval remains bounded and non-stale. |
+| 3 | Authentication or authorization boundary | auth-boundary.md, mutation-readiness audit, and target dossier | operator-evidence.md authentication boundary section | Confirm credentials, scope, and host/user boundary are explicit. |
+| 4 | Bounded action statement | target dossier, approval pack, and mutation-readiness repair plan | operator-evidence.md bounded action section | Confirm the exact target and allowed operation are narrow. |
+| 5 | Rollback or disable path | rollback-post-verify.md and cutover audit | operator-evidence.md rollback/post-action verification sections | Confirm rollback and verification commands are runnable before mutation. |
+| 6 | Post-action verification command | rollback-post-verify.md and cutover audit | operator-evidence.md rollback/post-action verification sections | Confirm rollback and verification commands are runnable before mutation. |
+| 7 | Dry-run command and safe output | dry-run-review.md, target dossier, and command wrapper evidence | operator-evidence.md dry-run/target-guarded wrapper sections | Confirm dry-run output is safe and the wrapper rejects wrong targets. |
+| 8 | Target-guarded execution wrapper | dry-run-review.md, target dossier, and command wrapper evidence | operator-evidence.md dry-run/target-guarded wrapper sections | Confirm dry-run output is safe and the wrapper rejects wrong targets. |
+| 9 | Exact confirm-plan proof | packet-review.md, approval pack, and approval-review audit | operator-evidence.md approval/confirm-plan sections | Confirm approval remains bounded and non-stale. |
 
 ## Human Verification Reference Details
 
@@ -97,10 +111,14 @@ Existing refs:
 - projects/ariadne/control/live-adapter-operator-evidence-audit.json
 - projects/ariadne/control/live-evidence-promotions/live-evidence-promotion-deployment-2026-05-17T23-37-04-509Z.json
 - projects/ariadne/control/live-evidence-promotions/live-evidence-promotion-deployment-2026-05-18T08-15-50-017Z.json
+- projects/ariadne/control/live-evidence-promotions/live-evidence-promotion-deployment-2026-05-18T08-28-02-295Z.json
+- projects/ariadne/control/live-evidence-promotions/live-evidence-promotion-deployment-2026-05-18T08-36-20-265Z.json
 
 Promoted live evidence refs:
 - projects/ariadne/control/live-evidence-promotions/live-evidence-promotion-deployment-2026-05-17T23-37-04-509Z.json
 - projects/ariadne/control/live-evidence-promotions/live-evidence-promotion-deployment-2026-05-18T08-15-50-017Z.json
+- projects/ariadne/control/live-evidence-promotions/live-evidence-promotion-deployment-2026-05-18T08-28-02-295Z.json
+- projects/ariadne/control/live-evidence-promotions/live-evidence-promotion-deployment-2026-05-18T08-36-20-265Z.json
 
 GBrain queries:
 - Find prior Ariadne decisions and evidence for the deployment live adapter.
@@ -162,6 +180,8 @@ Prompt: Human operator must verify deployment Exact confirm-plan proof from sour
 - projects/ariadne/control/live-adapter-operator-evidence-audit.json
 - projects/ariadne/control/live-evidence-promotions/live-evidence-promotion-deployment-2026-05-17T23-37-04-509Z.json
 - projects/ariadne/control/live-evidence-promotions/live-evidence-promotion-deployment-2026-05-18T08-15-50-017Z.json
+- projects/ariadne/control/live-evidence-promotions/live-evidence-promotion-deployment-2026-05-18T08-28-02-295Z.json
+- projects/ariadne/control/live-evidence-promotions/live-evidence-promotion-deployment-2026-05-18T08-36-20-265Z.json
 - projects/ariadne/control/operator-evidence/deployment/packet-review.md
 - projects/ariadne/control/operator-evidence/deployment/auth-boundary.md
 - projects/ariadne/control/operator-evidence/deployment/rollback-post-verify.md

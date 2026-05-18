@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "project": "ariadne",
-  "generatedAt": "2026-05-18T08:16:03.674Z",
+  "generatedAt": "2026-05-18T08:36:33.369Z",
   "status": "blocked",
   "summary": {
     "requirements": 9,
@@ -80,7 +80,7 @@
       "id": "operator-evidence",
       "title": "All live-adapter targets have complete operator evidence",
       "status": "blocked",
-      "detail": "0/6 targets complete; 6 missing evidence; 54 missing section(s). Workplan status is evidence_required with 6 check command(s) and 6 import command(s). Queue status is evidence_required with 0 target(s) ready for import and 0 unchecked target(s). Workspace status is awaiting_operator_input with 6 fillable file(s). Assist status is awaiting_operator_review with 2 promoted live-evidence item(s). Next target is deployment (needs_evidence, 9 missing section(s)). Next target assist has 13 existing ref(s), 2 promoted live-evidence item(s), and 6 support file(s).",
+      "detail": "0/6 targets complete; 6 missing evidence; 54 missing section(s). Workplan status is evidence_required with 6 check command(s) and 6 import command(s). Queue status is evidence_required with 0 target(s) ready for import and 0 unchecked target(s). Workspace status is awaiting_operator_input with 6 fillable file(s). Assist status is awaiting_operator_review with 4 promoted live-evidence item(s). Next target is deployment (needs_evidence, 9 missing section(s)). Next target assist has 15 existing ref(s), 4 promoted live-evidence item(s), and 6 support file(s).",
       "evidenceRefs": [
         "projects/ariadne/control/live-adapter-operator-evidence-audit.json",
         "projects/ariadne/control/live-adapter-operator-evidence-workplan.json",
@@ -90,7 +90,9 @@
         "projects/ariadne/control/operator-evidence/deployment/operator-evidence.md",
         "projects/ariadne/control/operator-evidence/deployment/read-only-assist.md",
         "projects/ariadne/control/live-evidence-promotions/live-evidence-promotion-deployment-2026-05-17T23-37-04-509Z.json",
-        "projects/ariadne/control/live-evidence-promotions/live-evidence-promotion-deployment-2026-05-18T08-15-50-017Z.json"
+        "projects/ariadne/control/live-evidence-promotions/live-evidence-promotion-deployment-2026-05-18T08-15-50-017Z.json",
+        "projects/ariadne/control/live-evidence-promotions/live-evidence-promotion-deployment-2026-05-18T08-28-02-295Z.json",
+        "projects/ariadne/control/live-evidence-promotions/live-evidence-promotion-deployment-2026-05-18T08-36-20-265Z.json"
       ],
       "nextCommands": [
         "npm run ariadne -- live-adapter-operator-evidence-next --project ariadne --target deployment",

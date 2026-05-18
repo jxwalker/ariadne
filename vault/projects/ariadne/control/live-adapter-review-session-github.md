@@ -3,7 +3,7 @@
 Project: ariadne
 Target: github
 Status: operator_review_required
-Generated: 2026-05-18T08:16:01.813Z
+Generated: 2026-05-18T08:36:31.513Z
 Mutation approved: false
 Operator decision required: true
 
@@ -67,7 +67,7 @@ Missing operator evidence sections:
 - Target-guarded execution wrapper
 - Exact confirm-plan proof
 
-Latest preflight: projects/ariadne/control/live-adapter-operator-evidence-checks/operator-evidence-check-github-2026-05-18T08-16-01-665Z.json
+Latest preflight: projects/ariadne/control/live-adapter-operator-evidence-checks/operator-evidence-check-github-2026-05-18T08-36-31-360Z.json
 
 Read-only assist: projects/ariadne/control/operator-evidence/github/read-only-assist.md
 

@@ -3,7 +3,7 @@
 Project: ariadne
 Target: all
 Status: awaiting_operator_review
-Generated: 2026-05-18T08:16:00.636Z
+Generated: 2026-05-18T08:36:30.191Z
 Mutation approved: false
 Approval granted: false
 Operator evidence record created: false
@@ -22,8 +22,8 @@ This assist packet gathers read-only Ariadne support refs for operator review. I
 
 - Targets: 6
 - Assist files: 6
-- Existing evidence refs: 68
-- Promoted live evidence: 2
+- Existing evidence refs: 70
+- Promoted live evidence: 4
 - Support file refs: 36
 - Missing sections: 54
 - Cutover blockers: 42
@@ -34,7 +34,7 @@ This assist packet gathers read-only Ariadne support refs for operator review. I
 | Target | Status | Assist file | Existing refs | Missing sections | Cutover blockers |
 | --- | --- | --- | ---: | ---: | ---: |
 | github | needs_evidence | projects/ariadne/control/operator-evidence/github/read-only-assist.md | 11 | 9 | 7 |
-| deployment | needs_evidence | projects/ariadne/control/operator-evidence/deployment/read-only-assist.md | 13 | 9 | 7 |
+| deployment | needs_evidence | projects/ariadne/control/operator-evidence/deployment/read-only-assist.md | 15 | 9 | 7 |
 | hermes-cron | needs_evidence | projects/ariadne/control/operator-evidence/hermes-cron/read-only-assist.md | 11 | 9 | 7 |
 | openscorpion | needs_evidence | projects/ariadne/control/operator-evidence/openscorpion/read-only-assist.md | 11 | 9 | 7 |
 | gsd2 | needs_evidence | projects/ariadne/control/operator-evidence/gsd2/read-only-assist.md | 11 | 9 | 7 |

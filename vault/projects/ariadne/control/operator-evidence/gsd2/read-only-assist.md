@@ -1,7 +1,7 @@
 # Read-Only Operator Evidence Assist: gsd2
 
 Project: ariadne
-Generated: 2026-05-18T08:16:02.922Z
+Generated: 2026-05-18T08:36:32.637Z
 Target: gsd2
 Status: needs_evidence
 Mutation approved: false
@@ -64,6 +64,20 @@ npm run ariadne -- live-adapter-operator-evidence --project ariadne --target gsd
 | Dry-run command and safe output | Human operator must verify gsd2 Dry-run command and safe output from source systems or cited Ariadne refs before recording it in operator-evidence.md. | 11 | 0 | 3 |
 | Target-guarded execution wrapper | Human operator must verify gsd2 Target-guarded execution wrapper from source systems or cited Ariadne refs before recording it in operator-evidence.md. | 11 | 0 | 3 |
 | Exact confirm-plan proof | Human operator must verify gsd2 Exact confirm-plan proof from source systems or cited Ariadne refs before recording it in operator-evidence.md. | 11 | 0 | 3 |
+
+## Human Verification Fill Order
+
+| Step | Missing section | Start with | Record verified observation in | Preflight check |
+| ---: | --- | --- | --- | --- |
+| 1 | Operator identity and timestamp | operator-evidence.md header plus current source-system timestamp | operator-evidence.md | Confirm the operator and timestamp fields are real values. |
+| 2 | Approval packet review | packet-review.md, approval pack, and approval-review audit | operator-evidence.md approval/confirm-plan sections | Confirm approval remains bounded and non-stale. |
+| 3 | Authentication or authorization boundary | auth-boundary.md, mutation-readiness audit, and target dossier | operator-evidence.md authentication boundary section | Confirm credentials, scope, and host/user boundary are explicit. |
+| 4 | Bounded action statement | target dossier, approval pack, and mutation-readiness repair plan | operator-evidence.md bounded action section | Confirm the exact target and allowed operation are narrow. |
+| 5 | Rollback or disable path | rollback-post-verify.md and cutover audit | operator-evidence.md rollback/post-action verification sections | Confirm rollback and verification commands are runnable before mutation. |
+| 6 | Post-action verification command | rollback-post-verify.md and cutover audit | operator-evidence.md rollback/post-action verification sections | Confirm rollback and verification commands are runnable before mutation. |
+| 7 | Dry-run command and safe output | dry-run-review.md, target dossier, and command wrapper evidence | operator-evidence.md dry-run/target-guarded wrapper sections | Confirm dry-run output is safe and the wrapper rejects wrong targets. |
+| 8 | Target-guarded execution wrapper | dry-run-review.md, target dossier, and command wrapper evidence | operator-evidence.md dry-run/target-guarded wrapper sections | Confirm dry-run output is safe and the wrapper rejects wrong targets. |
+| 9 | Exact confirm-plan proof | packet-review.md, approval pack, and approval-review audit | operator-evidence.md approval/confirm-plan sections | Confirm approval remains bounded and non-stale. |
 
 ## Human Verification Reference Details
 
