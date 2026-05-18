@@ -1,0 +1,90 @@
+{
+  "schemaVersion": 1,
+  "project": "ariadne",
+  "generatedAt": "2026-05-18T05:43:28.580Z",
+  "status": "drafted_for_human_verification",
+  "mutationApproved": false,
+  "approvalGranted": false,
+  "operatorEvidenceRecordCreated": false,
+  "summary": {
+    "targets": 6,
+    "drafts": 6,
+    "missingSections": 54,
+    "candidateRows": 54,
+    "existingEvidenceRefs": 32,
+    "promotedLiveEvidenceRefs": 1,
+    "gbrainQueries": 18
+  },
+  "drafts": [
+    {
+      "target": "github",
+      "status": "drafted_for_human_verification",
+      "draftRef": "projects/ariadne/control/live-adapter-operator-evidence-draft-github.json",
+      "draftMarkdownRef": "projects/ariadne/control/live-adapter-operator-evidence-draft-github.md",
+      "draftFileRef": "projects/ariadne/control/operator-evidence/github/operator-evidence-draft.md",
+      "sourcePacketRef": "projects/ariadne/control/live-adapter-operator-evidence-next-github.json",
+      "candidateRows": 9,
+      "missingSections": 9
+    },
+    {
+      "target": "deployment",
+      "status": "drafted_for_human_verification",
+      "draftRef": "projects/ariadne/control/live-adapter-operator-evidence-draft-deployment.json",
+      "draftMarkdownRef": "projects/ariadne/control/live-adapter-operator-evidence-draft-deployment.md",
+      "draftFileRef": "projects/ariadne/control/operator-evidence/deployment/operator-evidence-draft.md",
+      "sourcePacketRef": "projects/ariadne/control/live-adapter-operator-evidence-next-deployment.json",
+      "candidateRows": 9,
+      "missingSections": 9
+    },
+    {
+      "target": "hermes-cron",
+      "status": "drafted_for_human_verification",
+      "draftRef": "projects/ariadne/control/live-adapter-operator-evidence-draft-hermes-cron.json",
+      "draftMarkdownRef": "projects/ariadne/control/live-adapter-operator-evidence-draft-hermes-cron.md",
+      "draftFileRef": "projects/ariadne/control/operator-evidence/hermes-cron/operator-evidence-draft.md",
+      "sourcePacketRef": "projects/ariadne/control/live-adapter-operator-evidence-next-hermes-cron.json",
+      "candidateRows": 9,
+      "missingSections": 9
+    },
+    {
+      "target": "openscorpion",
+      "status": "drafted_for_human_verification",
+      "draftRef": "projects/ariadne/control/live-adapter-operator-evidence-draft-openscorpion.json",
+      "draftMarkdownRef": "projects/ariadne/control/live-adapter-operator-evidence-draft-openscorpion.md",
+      "draftFileRef": "projects/ariadne/control/operator-evidence/openscorpion/operator-evidence-draft.md",
+      "sourcePacketRef": "projects/ariadne/control/live-adapter-operator-evidence-next-openscorpion.json",
+      "candidateRows": 9,
+      "missingSections": 9
+    },
+    {
+      "target": "gsd2",
+      "status": "drafted_for_human_verification",
+      "draftRef": "projects/ariadne/control/live-adapter-operator-evidence-draft-gsd2.json",
+      "draftMarkdownRef": "projects/ariadne/control/live-adapter-operator-evidence-draft-gsd2.md",
+      "draftFileRef": "projects/ariadne/control/operator-evidence/gsd2/operator-evidence-draft.md",
+      "sourcePacketRef": "projects/ariadne/control/live-adapter-operator-evidence-next-gsd2.json",
+      "candidateRows": 9,
+      "missingSections": 9
+    },
+    {
+      "target": "notebooklm",
+      "status": "drafted_for_human_verification",
+      "draftRef": "projects/ariadne/control/live-adapter-operator-evidence-draft-notebooklm.json",
+      "draftMarkdownRef": "projects/ariadne/control/live-adapter-operator-evidence-draft-notebooklm.md",
+      "draftFileRef": "projects/ariadne/control/operator-evidence/notebooklm/operator-evidence-draft.md",
+      "sourcePacketRef": "projects/ariadne/control/live-adapter-operator-evidence-next-notebooklm.json",
+      "candidateRows": 9,
+      "missingSections": 9
+    }
+  ],
+  "commands": {
+    "checkAll": "npm run ariadne -- live-adapter-operator-evidence-check-all --project ariadne --source workspace",
+    "importReadyAfterHumanVerification": "npm run ariadne -- live-adapter-operator-evidence-import-ready --project ariadne --by <operator>"
+  },
+  "notes": [
+    "This pack is non-authoritative and must not be imported directly.",
+    "Each draft points to operator-evidence.md as the human-filled import source.",
+    "A human operator must verify each target draft before copying facts into the target operator-evidence.md file.",
+    "The pack does not approve mutation, grant live-adapter authority, or create operator evidence records."
+  ]
+}

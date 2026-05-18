@@ -2,7 +2,7 @@
 
 Project: ariadne
 Status: blocked
-Generated: 2026-05-18T05:22:24.586Z
+Generated: 2026-05-18T05:43:30.878Z
 Mutation approved: false
 Approval granted: false
 Operator evidence record created: false
@@ -15,7 +15,7 @@ Operator evidence record created: false
 - Operator evidence: blocked
 - Operator queue: evidence_required
 - Operator next target: deployment
-- GBrain documents: 35
+- GBrain documents: 40
 - Dossiers: 6
 
 ## Commands
@@ -25,6 +25,7 @@ Operator evidence record created: false
 - Refresh: `npm run ariadne -- roadmap-control-refresh --project ariadne`
 - Next operator packet: `npm run ariadne -- live-adapter-operator-evidence-next --project ariadne --target deployment`
 - Next operator draft: `npm run ariadne -- live-adapter-operator-evidence-draft --project ariadne --target deployment`
+- Operator draft pack: `npm run ariadne -- live-adapter-operator-evidence-drafts --project ariadne`
 
 ## Artifacts
 
@@ -45,6 +46,7 @@ Operator evidence record created: false
 | liveAdapterOperatorEvidenceQueue | projects/ariadne/control/live-adapter-operator-evidence-queue.json |
 | liveAdapterOperatorEvidenceNext | projects/ariadne/control/live-adapter-operator-evidence-next-deployment.json |
 | liveAdapterOperatorEvidenceDraft | projects/ariadne/control/live-adapter-operator-evidence-draft-deployment.json |
+| liveAdapterOperatorEvidenceDraftPack | projects/ariadne/control/live-adapter-operator-evidence-drafts.json |
 | liveAdapterReviewSession | projects/ariadne/control/live-adapter-review-session.json |
 | liveAdapterCutoverAudit | projects/ariadne/control/live-adapter-cutover-audit.json |
 | liveAdapterDossiers | projects/ariadne/control/live-adapter-dossiers/live-adapter-dossier-github.json |

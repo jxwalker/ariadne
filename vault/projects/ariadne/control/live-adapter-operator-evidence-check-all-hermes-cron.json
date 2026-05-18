@@ -1,0 +1,46 @@
+{
+  "schemaVersion": 1,
+  "project": "ariadne",
+  "checkedAt": "2026-05-18T05:43:29.336Z",
+  "target": "hermes-cron",
+  "status": "incomplete",
+  "mutationApproved": false,
+  "approvalGranted": false,
+  "source": "workspace",
+  "sourcePackRef": "projects/ariadne/control/live-adapter-operator-evidence-workspace-hermes-cron.json",
+  "workspaceRef": "projects/ariadne/control/live-adapter-operator-evidence-workspace-hermes-cron.json",
+  "queueRef": "projects/ariadne/control/live-adapter-operator-evidence-queue.json",
+  "summary": {
+    "targets": 1,
+    "checks": 1,
+    "completeChecks": 0,
+    "incompleteChecks": 1,
+    "failedChecks": 0,
+    "missingSources": 0,
+    "missingTemplates": 0,
+    "missingSections": 9
+  },
+  "targets": [
+    {
+      "target": "hermes-cron",
+      "status": "incomplete",
+      "sourceFileRef": "projects/ariadne/control/operator-evidence/hermes-cron/operator-evidence.md",
+      "evidenceFileRef": "projects/ariadne/control/operator-evidence/hermes-cron/operator-evidence.md",
+      "checkRef": "projects/ariadne/control/live-adapter-operator-evidence-checks/operator-evidence-check-hermes-cron-2026-05-18T05-43-29-335Z.json",
+      "checkMarkdownRef": "projects/ariadne/control/live-adapter-operator-evidence-checks/operator-evidence-check-hermes-cron-2026-05-18T05-43-29-335Z.md",
+      "missingSections": 9,
+      "missingSectionLabels": [
+        "Operator identity and timestamp",
+        "Approval packet review",
+        "Authentication or authorization boundary",
+        "Bounded action statement",
+        "Rollback or disable path",
+        "Post-action verification command",
+        "Dry-run command and safe output",
+        "Target-guarded execution wrapper",
+        "Exact confirm-plan proof"
+      ],
+      "sourceRef": "projects/ariadne/control/operator-evidence/hermes-cron/operator-evidence.md"
+    }
+  ]
+}

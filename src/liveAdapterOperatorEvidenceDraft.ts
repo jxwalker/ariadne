@@ -2,9 +2,13 @@ import fs from "node:fs/promises";
 import path from "node:path";
 import { ensureArtifactDir, writeJsonArtifact, writeTextArtifact } from "./artifacts.js";
 import { generateLiveAdapterOperatorEvidenceNextPacket } from "./liveAdapterOperatorEvidenceNextPacket.js";
-import type { LiveAdapterTarget } from "./liveAdapterTargets.js";
+import { LIVE_ADAPTER_TARGETS, type LiveAdapterTarget } from "./liveAdapterTargets.js";
 import { slugifyProject } from "./paths.js";
-import type { HumanVerificationWorksheetRow, LiveAdapterOperatorEvidenceDraft } from "./types.js";
+import type {
+  HumanVerificationWorksheetRow,
+  LiveAdapterOperatorEvidenceDraft,
+  LiveAdapterOperatorEvidenceDraftPack
+} from "./types.js";
 
 type DraftRow = LiveAdapterOperatorEvidenceDraft["rows"][number];
 type NextPacketLike = {
@@ -75,6 +79,78 @@ export async function generateLiveAdapterOperatorEvidenceDraft(input: {
   return { jsonPath, markdownPath, draftFilePath, draft };
 }
 
+export async function generateLiveAdapterOperatorEvidenceDraftPack(input: {
+  project: string;
+  vaultRoot: string;
+  nextPackets?: Partial<Record<LiveAdapterTarget, NextPacketLike>>;
+}): Promise<{ jsonPath: string; markdownPath: string; pack: LiveAdapterOperatorEvidenceDraftPack }> {
+  const project = slugifyProject(input.project);
+  const generatedAt = new Date().toISOString();
+  const draftResults = [];
+  for (const target of LIVE_ADAPTER_TARGETS) {
+    draftResults.push(
+      await generateLiveAdapterOperatorEvidenceDraft({
+        project,
+        vaultRoot: input.vaultRoot,
+        target,
+        nextPacket: input.nextPackets?.[target]
+      })
+    );
+  }
+
+  const drafts = draftResults.map((result) => ({
+    target: result.draft.target,
+    status: result.draft.status,
+    draftRef: path.relative(input.vaultRoot, result.jsonPath).split(path.sep).join("/"),
+    draftMarkdownRef: path.relative(input.vaultRoot, result.markdownPath).split(path.sep).join("/"),
+    draftFileRef: result.draft.draftFileRef,
+    sourcePacketRef: result.draft.sourcePacketRef,
+    candidateRows: result.draft.summary.candidateRows,
+    missingSections: result.draft.summary.missingSections
+  }));
+  const pack: LiveAdapterOperatorEvidenceDraftPack = {
+    schemaVersion: 1,
+    project,
+    generatedAt,
+    status: "drafted_for_human_verification",
+    mutationApproved: false,
+    approvalGranted: false,
+    operatorEvidenceRecordCreated: false,
+    summary: {
+      targets: LIVE_ADAPTER_TARGETS.length,
+      drafts: drafts.length,
+      missingSections: draftResults.reduce((count, result) => count + result.draft.summary.missingSections, 0),
+      candidateRows: draftResults.reduce((count, result) => count + result.draft.summary.candidateRows, 0),
+      existingEvidenceRefs: countUnique(draftResults.flatMap((result) => result.draft.rows.flatMap((row) => row.existingEvidenceRefs))),
+      promotedLiveEvidenceRefs: countUnique(
+        draftResults.flatMap((result) => result.draft.rows.flatMap((row) => row.promotedLiveEvidenceRefs))
+      ),
+      gbrainQueries: countUnique(draftResults.flatMap((result) => result.draft.rows.flatMap((row) => row.gbrainQueries)))
+    },
+    drafts,
+    commands: {
+      checkAll: `npm run ariadne -- live-adapter-operator-evidence-check-all --project ${project} --source workspace`,
+      importReadyAfterHumanVerification: `npm run ariadne -- live-adapter-operator-evidence-import-ready --project ${project} --by <operator>`
+    },
+    notes: [
+      "This pack is non-authoritative and must not be imported directly.",
+      "Each draft points to operator-evidence.md as the human-filled import source.",
+      "A human operator must verify each target draft before copying facts into the target operator-evidence.md file.",
+      "The pack does not approve mutation, grant live-adapter authority, or create operator evidence records."
+    ]
+  };
+
+  const jsonPath = await writeJsonArtifact(input.vaultRoot, project, "control", "live-adapter-operator-evidence-drafts.json", pack);
+  const markdownPath = await writeTextArtifact(
+    input.vaultRoot,
+    project,
+    "control",
+    "live-adapter-operator-evidence-drafts.md",
+    renderDraftPack(pack)
+  );
+  return { jsonPath, markdownPath, pack };
+}
+
 function validatePacketResult(packetResult: NextPacketLike, requestedTarget: LiveAdapterTarget | undefined): void {
   if (!packetResult.packet) {
     throw new Error("Operator evidence draft requires a generated next packet.");
@@ -91,6 +167,61 @@ function validatePacketResult(packetResult: NextPacketLike, requestedTarget: Liv
   if (!packetResult.packet.afterHumanVerificationCommands?.import) {
     throw new Error("Operator evidence draft requires a post-verification import command.");
   }
+}
+
+function renderDraftPack(pack: LiveAdapterOperatorEvidenceDraftPack): string {
+  return [
+    "# Live Adapter Operator Evidence Draft Pack",
+    "",
+    `Project: ${pack.project}`,
+    `Generated: ${pack.generatedAt}`,
+    `Status: ${pack.status}`,
+    `Mutation approved: ${pack.mutationApproved}`,
+    `Approval granted: ${pack.approvalGranted}`,
+    `Operator evidence record created: ${pack.operatorEvidenceRecordCreated}`,
+    "",
+    "## Rule",
+    "",
+    "This pack creates non-authoritative drafts only. It does not import operator evidence, approve mutation, or grant live-adapter authority.",
+    "",
+    "## Summary",
+    "",
+    `- Targets: ${pack.summary.targets}`,
+    `- Drafts: ${pack.summary.drafts}`,
+    `- Missing sections: ${pack.summary.missingSections}`,
+    `- Candidate rows: ${pack.summary.candidateRows}`,
+    `- Existing evidence refs: ${pack.summary.existingEvidenceRefs}`,
+    `- Promoted live evidence refs: ${pack.summary.promotedLiveEvidenceRefs}`,
+    `- GBrain queries: ${pack.summary.gbrainQueries}`,
+    "",
+    "## Commands",
+    "",
+    "### Check All Human-Filled Evidence",
+    "",
+    "```bash",
+    pack.commands.checkAll,
+    "```",
+    "",
+    "### Import Ready Evidence After Human Verification",
+    "",
+    "```bash",
+    pack.commands.importReadyAfterHumanVerification,
+    "```",
+    "",
+    "## Drafts",
+    "",
+    "| Target | Status | Missing sections | Candidate rows | Draft | Source packet |",
+    "| --- | --- | ---: | ---: | --- | --- |",
+    ...pack.drafts.map(
+      (draft) =>
+        `| ${draft.target} | ${draft.status} | ${draft.missingSections} | ${draft.candidateRows} | ${draft.draftRef} | ${draft.sourcePacketRef} |`
+    ),
+    "",
+    "## Notes",
+    "",
+    ...pack.notes.map((note) => `- ${note}`),
+    ""
+  ].join("\n");
 }
 
 function draftRow(target: LiveAdapterTarget, row: HumanVerificationWorksheetRow): DraftRow {

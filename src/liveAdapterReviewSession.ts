@@ -102,6 +102,7 @@ export async function generateLiveAdapterReviewSession(input: {
       evidenceRefs: reviewSessionEvidenceRefs(
         input.vaultRoot,
         project,
+        target.target,
         dossier,
         dossierResult.jsonPath,
         target.actions.flatMap((action) => action.evidenceRefs),
@@ -178,6 +179,7 @@ function selectedTargets(target: LiveAdapterTarget | undefined): readonly LiveAd
 function reviewSessionEvidenceRefs(
   vaultRoot: string,
   project: string,
+  target: LiveAdapterTarget,
   dossier: LiveAdapterTargetDossier,
   dossierPath: string,
   actionEvidenceRefs: string[],
@@ -186,16 +188,28 @@ function reviewSessionEvidenceRefs(
 ): string[] {
   return Array.from(
     new Set(
-      [
+      targetScopedReviewEvidenceRefs(project, target, [
         path.relative(vaultRoot, dossierPath),
         path.relative(vaultRoot, mutationRepairPlanPath),
         ...dossier.evidenceRefs,
         ...actionEvidenceRefs,
         ...repairEvidenceRefs,
         ...dossier.gbrainContext.reportRefs
-      ].map((ref) => canonicalEvidenceRef(project, ref))
+      ]).map((ref) => canonicalEvidenceRef(project, ref))
     )
   );
+}
+
+function targetScopedReviewEvidenceRefs(project: string, target: LiveAdapterTarget, refs: string[]): string[] {
+  return refs.map((ref) => {
+    const normalized = ref.split(path.sep).join("/");
+    const projectPrefix = `projects/${project}/`;
+    const projectRelative = normalized.startsWith(projectPrefix) ? normalized.slice(projectPrefix.length) : normalized;
+    if (projectRelative === "control/live-adapter-operator-evidence-workspace.json") {
+      return `control/live-adapter-operator-evidence-workspace-${target}.json`;
+    }
+    return ref;
+  });
 }
 
 async function readExistingOperatorEvidenceQueue(

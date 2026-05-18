@@ -1,0 +1,285 @@
+{
+  "schemaVersion": 1,
+  "project": "ariadne",
+  "generatedAt": "2026-05-18T05:43:29.900Z",
+  "target": "openscorpion",
+  "selectedBy": "explicit",
+  "status": "operator_action_required",
+  "mutationApproved": false,
+  "approvalGranted": false,
+  "operatorEvidenceRecordCreated": false,
+  "summary": {
+    "missingSections": 9,
+    "existingEvidenceRefs": 11,
+    "promotedLiveEvidence": 0,
+    "supportFileRefs": 6,
+    "cutoverBlockedGates": 7
+  },
+  "refs": {
+    "workplan": "projects/ariadne/control/live-adapter-operator-evidence-workplan.json",
+    "queue": "projects/ariadne/control/live-adapter-operator-evidence-queue.json",
+    "operatorEvidenceAudit": "projects/ariadne/control/live-adapter-operator-evidence-audit.json",
+    "workspace": "projects/ariadne/control/live-adapter-operator-evidence-workspace-openscorpion.json",
+    "assist": "projects/ariadne/control/live-adapter-operator-evidence-assist-openscorpion.json",
+    "checkBatch": "projects/ariadne/control/live-adapter-operator-evidence-check-all-openscorpion.json",
+    "reviewSession": "projects/ariadne/control/live-adapter-review-session-openscorpion.json",
+    "cutoverAudit": "projects/ariadne/control/live-adapter-cutover-audit-openscorpion.json"
+  },
+  "commands": {
+    "check": "npm run ariadne -- live-adapter-operator-evidence-check --project ariadne --target openscorpion --from vault/projects/ariadne/control/operator-evidence/openscorpion/operator-evidence.md",
+    "reviewSession": "npm run ariadne -- live-adapter-review-session --project ariadne --target openscorpion",
+    "cutoverAudit": "npm run ariadne -- live-adapter-cutover-audit --project ariadne --target openscorpion"
+  },
+  "afterHumanVerificationCommands": {
+    "import": "npm run ariadne -- live-adapter-operator-evidence --project ariadne --target openscorpion --from vault/projects/ariadne/control/operator-evidence/openscorpion/operator-evidence.md --by <operator>"
+  },
+  "nextAction": "Fill the missing sections in the operator evidence workspace file and rerun the preflight check.",
+  "missingSectionLabels": [
+    "Operator identity and timestamp",
+    "Approval packet review",
+    "Authentication or authorization boundary",
+    "Bounded action statement",
+    "Rollback or disable path",
+    "Post-action verification command",
+    "Dry-run command and safe output",
+    "Target-guarded execution wrapper",
+    "Exact confirm-plan proof"
+  ],
+  "verificationWorksheet": [
+    {
+      "missingSection": "Operator identity and timestamp",
+      "humanVerificationPrompt": "Human operator must verify openscorpion Operator identity and timestamp from source systems or cited Ariadne refs before recording it in operator-evidence.md.",
+      "existingEvidenceRefs": [
+        "projects/ariadne/control/live-adapter-evidence-templates/live-adapter-evidence-template-openscorpion.md",
+        "projects/ariadne/control/live-adapter-dossiers/live-adapter-dossier-openscorpion.json",
+        "projects/ariadne/control/mutation-readiness-repair-plan.json",
+        "projects/ariadne/control/live-adapter-readiness.json",
+        "projects/ariadne/control/live-adapter-next-actions.json",
+        "projects/ariadne/control/live-adapter-approval-pack.json",
+        "projects/ariadne/control/live-adapter-approval-review-audit.json",
+        "projects/ariadne/control/mutation-readiness-audit.json",
+        "projects/ariadne/control/live-adapter-operator-evidence-workspace-openscorpion.json",
+        "projects/ariadne/control/operator-evidence/openscorpion/operator-evidence.md",
+        "projects/ariadne/control/live-adapter-operator-evidence-audit.json"
+      ],
+      "promotedLiveEvidenceRefs": [],
+      "gbrainQueries": [
+        "Find prior Ariadne decisions and evidence for the openscorpion live adapter.",
+        "List risks, rollback requirements, and stale assumptions for openscorpion approval.",
+        "Summarize operator-review evidence still missing before openscorpion mutation readiness."
+      ],
+      "humanVerificationRequired": true
+    },
+    {
+      "missingSection": "Approval packet review",
+      "humanVerificationPrompt": "Human operator must verify openscorpion Approval packet review from source systems or cited Ariadne refs before recording it in operator-evidence.md.",
+      "existingEvidenceRefs": [
+        "projects/ariadne/control/live-adapter-evidence-templates/live-adapter-evidence-template-openscorpion.md",
+        "projects/ariadne/control/live-adapter-dossiers/live-adapter-dossier-openscorpion.json",
+        "projects/ariadne/control/mutation-readiness-repair-plan.json",
+        "projects/ariadne/control/live-adapter-readiness.json",
+        "projects/ariadne/control/live-adapter-next-actions.json",
+        "projects/ariadne/control/live-adapter-approval-pack.json",
+        "projects/ariadne/control/live-adapter-approval-review-audit.json",
+        "projects/ariadne/control/mutation-readiness-audit.json",
+        "projects/ariadne/control/live-adapter-operator-evidence-workspace-openscorpion.json",
+        "projects/ariadne/control/operator-evidence/openscorpion/operator-evidence.md",
+        "projects/ariadne/control/live-adapter-operator-evidence-audit.json"
+      ],
+      "promotedLiveEvidenceRefs": [],
+      "gbrainQueries": [
+        "Find prior Ariadne decisions and evidence for the openscorpion live adapter.",
+        "List risks, rollback requirements, and stale assumptions for openscorpion approval.",
+        "Summarize operator-review evidence still missing before openscorpion mutation readiness."
+      ],
+      "humanVerificationRequired": true
+    },
+    {
+      "missingSection": "Authentication or authorization boundary",
+      "humanVerificationPrompt": "Human operator must verify openscorpion Authentication or authorization boundary from source systems or cited Ariadne refs before recording it in operator-evidence.md.",
+      "existingEvidenceRefs": [
+        "projects/ariadne/control/live-adapter-evidence-templates/live-adapter-evidence-template-openscorpion.md",
+        "projects/ariadne/control/live-adapter-dossiers/live-adapter-dossier-openscorpion.json",
+        "projects/ariadne/control/mutation-readiness-repair-plan.json",
+        "projects/ariadne/control/live-adapter-readiness.json",
+        "projects/ariadne/control/live-adapter-next-actions.json",
+        "projects/ariadne/control/live-adapter-approval-pack.json",
+        "projects/ariadne/control/live-adapter-approval-review-audit.json",
+        "projects/ariadne/control/mutation-readiness-audit.json",
+        "projects/ariadne/control/live-adapter-operator-evidence-workspace-openscorpion.json",
+        "projects/ariadne/control/operator-evidence/openscorpion/operator-evidence.md",
+        "projects/ariadne/control/live-adapter-operator-evidence-audit.json"
+      ],
+      "promotedLiveEvidenceRefs": [],
+      "gbrainQueries": [
+        "Find prior Ariadne decisions and evidence for the openscorpion live adapter.",
+        "List risks, rollback requirements, and stale assumptions for openscorpion approval.",
+        "Summarize operator-review evidence still missing before openscorpion mutation readiness."
+      ],
+      "humanVerificationRequired": true
+    },
+    {
+      "missingSection": "Bounded action statement",
+      "humanVerificationPrompt": "Human operator must verify openscorpion Bounded action statement from source systems or cited Ariadne refs before recording it in operator-evidence.md.",
+      "existingEvidenceRefs": [
+        "projects/ariadne/control/live-adapter-evidence-templates/live-adapter-evidence-template-openscorpion.md",
+        "projects/ariadne/control/live-adapter-dossiers/live-adapter-dossier-openscorpion.json",
+        "projects/ariadne/control/mutation-readiness-repair-plan.json",
+        "projects/ariadne/control/live-adapter-readiness.json",
+        "projects/ariadne/control/live-adapter-next-actions.json",
+        "projects/ariadne/control/live-adapter-approval-pack.json",
+        "projects/ariadne/control/live-adapter-approval-review-audit.json",
+        "projects/ariadne/control/mutation-readiness-audit.json",
+        "projects/ariadne/control/live-adapter-operator-evidence-workspace-openscorpion.json",
+        "projects/ariadne/control/operator-evidence/openscorpion/operator-evidence.md",
+        "projects/ariadne/control/live-adapter-operator-evidence-audit.json"
+      ],
+      "promotedLiveEvidenceRefs": [],
+      "gbrainQueries": [
+        "Find prior Ariadne decisions and evidence for the openscorpion live adapter.",
+        "List risks, rollback requirements, and stale assumptions for openscorpion approval.",
+        "Summarize operator-review evidence still missing before openscorpion mutation readiness."
+      ],
+      "humanVerificationRequired": true
+    },
+    {
+      "missingSection": "Rollback or disable path",
+      "humanVerificationPrompt": "Human operator must verify openscorpion Rollback or disable path from source systems or cited Ariadne refs before recording it in operator-evidence.md.",
+      "existingEvidenceRefs": [
+        "projects/ariadne/control/live-adapter-evidence-templates/live-adapter-evidence-template-openscorpion.md",
+        "projects/ariadne/control/live-adapter-dossiers/live-adapter-dossier-openscorpion.json",
+        "projects/ariadne/control/mutation-readiness-repair-plan.json",
+        "projects/ariadne/control/live-adapter-readiness.json",
+        "projects/ariadne/control/live-adapter-next-actions.json",
+        "projects/ariadne/control/live-adapter-approval-pack.json",
+        "projects/ariadne/control/live-adapter-approval-review-audit.json",
+        "projects/ariadne/control/mutation-readiness-audit.json",
+        "projects/ariadne/control/live-adapter-operator-evidence-workspace-openscorpion.json",
+        "projects/ariadne/control/operator-evidence/openscorpion/operator-evidence.md",
+        "projects/ariadne/control/live-adapter-operator-evidence-audit.json"
+      ],
+      "promotedLiveEvidenceRefs": [],
+      "gbrainQueries": [
+        "Find prior Ariadne decisions and evidence for the openscorpion live adapter.",
+        "List risks, rollback requirements, and stale assumptions for openscorpion approval.",
+        "Summarize operator-review evidence still missing before openscorpion mutation readiness."
+      ],
+      "humanVerificationRequired": true
+    },
+    {
+      "missingSection": "Post-action verification command",
+      "humanVerificationPrompt": "Human operator must verify openscorpion Post-action verification command from source systems or cited Ariadne refs before recording it in operator-evidence.md.",
+      "existingEvidenceRefs": [
+        "projects/ariadne/control/live-adapter-evidence-templates/live-adapter-evidence-template-openscorpion.md",
+        "projects/ariadne/control/live-adapter-dossiers/live-adapter-dossier-openscorpion.json",
+        "projects/ariadne/control/mutation-readiness-repair-plan.json",
+        "projects/ariadne/control/live-adapter-readiness.json",
+        "projects/ariadne/control/live-adapter-next-actions.json",
+        "projects/ariadne/control/live-adapter-approval-pack.json",
+        "projects/ariadne/control/live-adapter-approval-review-audit.json",
+        "projects/ariadne/control/mutation-readiness-audit.json",
+        "projects/ariadne/control/live-adapter-operator-evidence-workspace-openscorpion.json",
+        "projects/ariadne/control/operator-evidence/openscorpion/operator-evidence.md",
+        "projects/ariadne/control/live-adapter-operator-evidence-audit.json"
+      ],
+      "promotedLiveEvidenceRefs": [],
+      "gbrainQueries": [
+        "Find prior Ariadne decisions and evidence for the openscorpion live adapter.",
+        "List risks, rollback requirements, and stale assumptions for openscorpion approval.",
+        "Summarize operator-review evidence still missing before openscorpion mutation readiness."
+      ],
+      "humanVerificationRequired": true
+    },
+    {
+      "missingSection": "Dry-run command and safe output",
+      "humanVerificationPrompt": "Human operator must verify openscorpion Dry-run command and safe output from source systems or cited Ariadne refs before recording it in operator-evidence.md.",
+      "existingEvidenceRefs": [
+        "projects/ariadne/control/live-adapter-evidence-templates/live-adapter-evidence-template-openscorpion.md",
+        "projects/ariadne/control/live-adapter-dossiers/live-adapter-dossier-openscorpion.json",
+        "projects/ariadne/control/mutation-readiness-repair-plan.json",
+        "projects/ariadne/control/live-adapter-readiness.json",
+        "projects/ariadne/control/live-adapter-next-actions.json",
+        "projects/ariadne/control/live-adapter-approval-pack.json",
+        "projects/ariadne/control/live-adapter-approval-review-audit.json",
+        "projects/ariadne/control/mutation-readiness-audit.json",
+        "projects/ariadne/control/live-adapter-operator-evidence-workspace-openscorpion.json",
+        "projects/ariadne/control/operator-evidence/openscorpion/operator-evidence.md",
+        "projects/ariadne/control/live-adapter-operator-evidence-audit.json"
+      ],
+      "promotedLiveEvidenceRefs": [],
+      "gbrainQueries": [
+        "Find prior Ariadne decisions and evidence for the openscorpion live adapter.",
+        "List risks, rollback requirements, and stale assumptions for openscorpion approval.",
+        "Summarize operator-review evidence still missing before openscorpion mutation readiness."
+      ],
+      "humanVerificationRequired": true
+    },
+    {
+      "missingSection": "Target-guarded execution wrapper",
+      "humanVerificationPrompt": "Human operator must verify openscorpion Target-guarded execution wrapper from source systems or cited Ariadne refs before recording it in operator-evidence.md.",
+      "existingEvidenceRefs": [
+        "projects/ariadne/control/live-adapter-evidence-templates/live-adapter-evidence-template-openscorpion.md",
+        "projects/ariadne/control/live-adapter-dossiers/live-adapter-dossier-openscorpion.json",
+        "projects/ariadne/control/mutation-readiness-repair-plan.json",
+        "projects/ariadne/control/live-adapter-readiness.json",
+        "projects/ariadne/control/live-adapter-next-actions.json",
+        "projects/ariadne/control/live-adapter-approval-pack.json",
+        "projects/ariadne/control/live-adapter-approval-review-audit.json",
+        "projects/ariadne/control/mutation-readiness-audit.json",
+        "projects/ariadne/control/live-adapter-operator-evidence-workspace-openscorpion.json",
+        "projects/ariadne/control/operator-evidence/openscorpion/operator-evidence.md",
+        "projects/ariadne/control/live-adapter-operator-evidence-audit.json"
+      ],
+      "promotedLiveEvidenceRefs": [],
+      "gbrainQueries": [
+        "Find prior Ariadne decisions and evidence for the openscorpion live adapter.",
+        "List risks, rollback requirements, and stale assumptions for openscorpion approval.",
+        "Summarize operator-review evidence still missing before openscorpion mutation readiness."
+      ],
+      "humanVerificationRequired": true
+    },
+    {
+      "missingSection": "Exact confirm-plan proof",
+      "humanVerificationPrompt": "Human operator must verify openscorpion Exact confirm-plan proof from source systems or cited Ariadne refs before recording it in operator-evidence.md.",
+      "existingEvidenceRefs": [
+        "projects/ariadne/control/live-adapter-evidence-templates/live-adapter-evidence-template-openscorpion.md",
+        "projects/ariadne/control/live-adapter-dossiers/live-adapter-dossier-openscorpion.json",
+        "projects/ariadne/control/mutation-readiness-repair-plan.json",
+        "projects/ariadne/control/live-adapter-readiness.json",
+        "projects/ariadne/control/live-adapter-next-actions.json",
+        "projects/ariadne/control/live-adapter-approval-pack.json",
+        "projects/ariadne/control/live-adapter-approval-review-audit.json",
+        "projects/ariadne/control/mutation-readiness-audit.json",
+        "projects/ariadne/control/live-adapter-operator-evidence-workspace-openscorpion.json",
+        "projects/ariadne/control/operator-evidence/openscorpion/operator-evidence.md",
+        "projects/ariadne/control/live-adapter-operator-evidence-audit.json"
+      ],
+      "promotedLiveEvidenceRefs": [],
+      "gbrainQueries": [
+        "Find prior Ariadne decisions and evidence for the openscorpion live adapter.",
+        "List risks, rollback requirements, and stale assumptions for openscorpion approval.",
+        "Summarize operator-review evidence still missing before openscorpion mutation readiness."
+      ],
+      "humanVerificationRequired": true
+    }
+  ],
+  "evidenceRefs": [
+    "projects/ariadne/control/operator-evidence/openscorpion/operator-evidence.md",
+    "projects/ariadne/control/operator-evidence/openscorpion/read-only-assist.md",
+    "projects/ariadne/control/live-adapter-evidence-templates/live-adapter-evidence-template-openscorpion.md",
+    "projects/ariadne/control/live-adapter-dossiers/live-adapter-dossier-openscorpion.json",
+    "projects/ariadne/control/mutation-readiness-repair-plan.json",
+    "projects/ariadne/control/live-adapter-readiness.json",
+    "projects/ariadne/control/live-adapter-next-actions.json",
+    "projects/ariadne/control/live-adapter-approval-pack.json",
+    "projects/ariadne/control/live-adapter-approval-review-audit.json",
+    "projects/ariadne/control/mutation-readiness-audit.json",
+    "projects/ariadne/control/live-adapter-operator-evidence-workspace-openscorpion.json",
+    "projects/ariadne/control/live-adapter-operator-evidence-audit.json",
+    "projects/ariadne/control/operator-evidence/openscorpion/packet-review.md",
+    "projects/ariadne/control/operator-evidence/openscorpion/auth-boundary.md",
+    "projects/ariadne/control/operator-evidence/openscorpion/rollback-post-verify.md",
+    "projects/ariadne/control/operator-evidence/openscorpion/dry-run-review.md",
+    "projects/ariadne/control/operator-evidence/openscorpion/gbrain-notes.md"
+  ]
+}
