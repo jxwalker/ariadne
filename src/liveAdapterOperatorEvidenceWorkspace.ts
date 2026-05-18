@@ -1,6 +1,7 @@
 import fs from "node:fs/promises";
 import path from "node:path";
 import { ensureArtifactDir, writeJsonArtifact, writeTextArtifact } from "./artifacts.js";
+import { guidanceForHumanVerificationSection, markdownCell } from "./humanVerificationWorksheetMarkdown.js";
 import { generateLiveAdapterOperatorEvidenceQueue } from "./liveAdapterOperatorEvidenceQueue.js";
 import { isLiveAdapterTarget, type LiveAdapterTarget } from "./liveAdapterTargets.js";
 import { projectDir, slugifyProject } from "./paths.js";
@@ -126,7 +127,8 @@ async function writeTargetWorkspace(
       checkCommand,
       importCommand,
       supportFileRefs
-    })
+    }),
+    { updateIfGenerated: true }
   );
   for (const fileName of SUPPORT_FILES) {
     await writeTextArtifactIfMissing(
@@ -158,14 +160,24 @@ async function writeTextArtifactIfMissing(
   project: string,
   subdir: string,
   fileName: string,
-  content: string
+  content: string,
+  options?: { updateIfGenerated?: boolean }
 ): Promise<string> {
   const dir = await ensureArtifactDir(vaultRoot, project, subdir);
   const filePath = path.join(dir, fileName);
+  const normalizedContent = content.endsWith("\n") ? content : `${content}\n`;
   try {
-    await fs.writeFile(filePath, content.endsWith("\n") ? content : `${content}\n`, { flag: "wx" });
+    await fs.writeFile(filePath, normalizedContent, { flag: "wx" });
   } catch (error) {
     if ((error as NodeJS.ErrnoException).code !== "EEXIST") throw error;
+    if (!options?.updateIfGenerated) return filePath;
+    const existing = await fs.readFile(filePath, "utf8");
+    if (canRefreshGeneratedOperatorEvidenceTemplate(existing)) {
+      // This only refreshes blank generated paperwork. If an operator edits the file
+      // between the read and write, the normal preflight still treats the final file
+      // as the source of truth and no evidence is imported automatically.
+      await fs.writeFile(filePath, normalizedContent);
+    }
   }
   return filePath;
 }
@@ -294,6 +306,9 @@ function renderTargetEvidenceFile(input: {
   supportFileRefs: string[];
 }): string {
   const targetLabel = displayTarget(input.queueTarget.target);
+  const missingSections = input.queueTarget.missingSections ?? [];
+  const currentSection = missingSections[0];
+  const currentGuidance = currentSection ? guidanceForHumanVerificationSection(currentSection) : undefined;
   return [
     `# Operator Evidence: ${targetLabel}`,
     "",
@@ -308,6 +323,7 @@ function renderTargetEvidenceFile(input: {
     "- Fill this file with real operator observations before importing it.",
     "- Leave unknown or unverified items unchecked.",
     "- Keep supporting notes in the sibling files listed below.",
+    "- Start with the Current Section Handoff and fill one section at a time.",
     "- Run the check command before running the import command.",
     "",
     "## Commands",
@@ -323,6 +339,17 @@ function renderTargetEvidenceFile(input: {
     "```bash",
     input.importCommand,
     "```",
+    "",
+    "## Current Section Handoff",
+    "",
+    currentSection ? `- Current section: ${currentSection}` : "- Current section: none",
+    currentGuidance ? `- Start with: ${currentGuidance.startWith}` : "- Start with: keep the current imported evidence under review",
+    currentGuidance ? `- Record verified observation in: ${currentGuidance.recordIn}` : "- Record verified observation in: operator-evidence.md",
+    currentGuidance ? `- Preflight expectation: ${currentGuidance.preflight}` : "- Preflight expectation: rerun the target check before cutover",
+    "",
+    "## Section Fill Order",
+    "",
+    ...renderSectionFillOrder(missingSections),
     "",
     "## Operator Observations",
     "",
@@ -343,7 +370,11 @@ function renderTargetEvidenceFile(input: {
     "",
     "## Current Missing Sections",
     "",
-    ...list(input.queueTarget.missingSections),
+    ...list(missingSections),
+    "",
+    "## Section Observation Notes",
+    "",
+    ...renderSectionObservationNotes(missingSections),
     "",
     "## Current Cutover Blockers",
     "",
@@ -422,6 +453,55 @@ function evidenceChecklist(requiredEvidence: string[]): string[] {
       ...requiredEvidence
     ])
   );
+}
+
+function renderSectionFillOrder(missingSections: string[]): string[] {
+  if (missingSections.length === 0) {
+    return [
+      "| Step | Missing section | Start with | Record verified observation in | Preflight expectation |",
+      "| ---: | --- | --- | --- | --- |",
+      "| 1 | none | No missing sections. | Keep the current imported evidence record under review. | Rerun the target check before cutover. |"
+    ];
+  }
+  return [
+    "| Step | Missing section | Start with | Record verified observation in | Preflight expectation |",
+    "| ---: | --- | --- | --- | --- |",
+    ...missingSections.map((section, index) => {
+      const guidance = guidanceForHumanVerificationSection(section);
+      return `| ${index + 1} | ${markdownCell(section)} | ${markdownCell(guidance.startWith)} | ${markdownCell(guidance.recordIn)} | ${markdownCell(guidance.preflight)} |`;
+    })
+  ];
+}
+
+function renderSectionObservationNotes(missingSections: string[]): string[] {
+  if (missingSections.length === 0) {
+    return ["- none"];
+  }
+  return missingSections.flatMap((section) => [
+    `### ${section}`,
+    "",
+    "- Verified observation:",
+    "- Source/system checked:",
+    "- Evidence refs:",
+    "- Decision:",
+    ""
+  ]);
+}
+
+function canRefreshGeneratedOperatorEvidenceTemplate(content: string): boolean {
+  if (!content.startsWith("# Operator Evidence:")) return false;
+  if (!content.includes("Mutation approved: false")) return false;
+  if (content.includes("Operator draft marker")) return false;
+  if (/^- \[[xX]\]/m.test(content)) return false;
+  if (
+    /^- (Operator|Review timestamp|Packet reviewed|Decision for packet completeness|Missing evidence|Notes|Query result refs|Stale assumptions found|Related Ariadne evidence refs):[^\S\r\n]+\S/m.test(
+      content
+    )
+  ) {
+    return false;
+  }
+  if (/^- (Verified observation|Source\/system checked|Evidence refs|Decision):[^\S\r\n]+\S/m.test(content)) return false;
+  return true;
 }
 
 function supportPurpose(fileName: (typeof SUPPORT_FILES)[number]): string {

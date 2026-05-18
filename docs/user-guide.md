@@ -87,10 +87,11 @@ For an operator evidence gate:
 
 1. Run `operator-next`.
 2. Open the evidence file it prints.
-3. Fill only facts you verified from the real system.
-4. Use generated assist files, GBrain notes, and promoted live evidence as review context only.
-5. Run the printed preflight command.
-6. Import the evidence only after preflight passes.
+3. Start with the file's **Current Section Handoff** and **Section Fill Order**.
+4. Fill only facts you verified from the real system.
+5. Use generated assist files, GBrain notes, and promoted live evidence as review context only.
+6. Run the printed preflight command.
+7. Import the evidence only after preflight passes.
 
 Generated notes are never proof by themselves.
 
