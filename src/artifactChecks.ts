@@ -421,6 +421,16 @@ const ARTIFACT_SPECS: ArtifactSpec[] = [
     minimumCount: 1
   },
   {
+    id: "live-adapter-operator-evidence-next",
+    label: "Live adapter next operator packet",
+    required: false,
+    kind: "matching-files",
+    relativePath: "control",
+    prefix: "live-adapter-operator-evidence-next-",
+    suffix: ".json",
+    minimumCount: 1
+  },
+  {
     id: "live-evidence-promotions",
     label: "Sanitized live evidence promotions",
     required: false,

@@ -138,6 +138,7 @@ Implemented:
 - live adapter operator-evidence ready-import batches that import only complete preflighted evidence files for all targets or one target without granting approval
 - live adapter operator-evidence workspaces that generate fillable per-target evidence files and supporting notes without granting approval, including target-scoped summary artifacts for one-adapter review sessions
 - live adapter review sessions and operator-evidence assist packets that gather current commands, cutover blockers, read-only support refs, and advisory memory without creating operator evidence, including target-scoped artifacts for one-adapter review sessions
+- live adapter next-target operator-evidence packets that select the current blocked target and refresh the workspace, read-only assist, workspace preflight, review session, and cutover audit without importing evidence or granting approval
 - sanitized live evidence promotion records that hash ignored local runtime, E2E, SSH, and deployment artifacts, redact private host or endpoint details, and make the resulting summaries citable during operator review without creating operator evidence or approvals
 - live adapter operator-evidence import and audit that hashes filled evidence files, identifies missing operator proof, and surfaces per-target blockers without granting mutation approval
 

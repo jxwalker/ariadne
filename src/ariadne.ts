@@ -61,6 +61,7 @@ import {
 } from "./liveAdapterOperatorEvidenceCheckAll.js";
 import { generateLiveAdapterOperatorEvidenceAssist } from "./liveAdapterOperatorEvidenceAssist.js";
 import { importReadyLiveAdapterOperatorEvidence } from "./liveAdapterOperatorEvidenceImportReady.js";
+import { generateLiveAdapterOperatorEvidenceNextPacket } from "./liveAdapterOperatorEvidenceNextPacket.js";
 import { generateLiveAdapterOperatorEvidenceWorkplan } from "./liveAdapterOperatorEvidenceWorkplan.js";
 import { generateLiveAdapterOperatorEvidenceQueue } from "./liveAdapterOperatorEvidenceQueue.js";
 import { generateLiveAdapterOperatorEvidenceWorkspace } from "./liveAdapterOperatorEvidenceWorkspace.js";
@@ -209,6 +210,7 @@ function usage(): string {
     "  ariadne live-adapter-operator-evidence-import-ready --project <project> --by <operator> [--target <github|deployment|hermes-cron|openscorpion|gsd2|notebooklm>] [--notes <text>]",
     "  ariadne live-adapter-operator-evidence --project <project> --target <github|deployment|hermes-cron|openscorpion|gsd2|notebooklm> --from <operator-evidence.md> --by <operator> [--notes <text>]",
     "  ariadne live-adapter-operator-evidence-audit --project <project>",
+    "  ariadne live-adapter-operator-evidence-next --project <project> [--target <github|deployment|hermes-cron|openscorpion|gsd2|notebooklm>]",
     "  ariadne live-adapter-operator-evidence-workplan --project <project>",
     "  ariadne live-adapter-operator-evidence-queue --project <project>",
     "  ariadne live-adapter-operator-evidence-workspace --project <project> [--target <github|deployment|hermes-cron|openscorpion|gsd2|notebooklm>]",
@@ -1397,6 +1399,22 @@ async function main(): Promise<void> {
     console.log(`Complete targets: ${result.audit.summary.completeTargets}`);
     console.log(`Missing targets: ${result.audit.summary.missingTargets}`);
     console.log(`Mutation approved: ${result.audit.mutationApproved}`);
+    return;
+  }
+
+  if (parsed.command === "live-adapter-operator-evidence-next") {
+    const result = await generateLiveAdapterOperatorEvidenceNextPacket({
+      project,
+      vaultRoot,
+      target: optionalLiveAdapterOperatorEvidenceTarget(parsed.options)
+    });
+    console.log(`Live adapter operator evidence next packet: ${result.markdownPath}`);
+    console.log(`Target: ${result.packet.target}`);
+    console.log(`Selected by: ${result.packet.selectedBy}`);
+    console.log(`Status: ${result.packet.status}`);
+    console.log(`Missing sections: ${result.packet.summary.missingSections}`);
+    console.log(`Cutover blocked gates: ${result.packet.summary.cutoverBlockedGates}`);
+    console.log(`Mutation approved: ${result.packet.mutationApproved}`);
     return;
   }
 

@@ -51,6 +51,7 @@ The system starts with source-grounded intake: drawings, white papers, dictated 
 - Scope batch preflight and ready-import to one adapter with `--target` when the operator wants to move a single target through evidence collection.
 - Generate fillable live-adapter operator evidence workspaces for every adapter or one target at a time, with support files for packet, auth, rollback, dry-run, GBrain notes, and read-only assist packets.
 - Generate read-only operator evidence assist packets for every adapter or one target at a time, gathering existing Ariadne support refs without counting generated text as operator proof.
+- Generate a next-target operator evidence packet that selects the current blocked adapter and refreshes the workspace, read-only assist, preflight, review session, and cutover audit in one non-mutating step.
 - Record file-backed sleep routines, memory proposals, agent mail, interagent leases, read-only Hermes cron snapshots/proposals, and read-only deployment snapshots.
 - Render evaluation trend charts in the static console and generate deterministic plus browser-backed console checks.
 - Guard worktree creation without mutating by default.
@@ -192,7 +193,8 @@ vault/projects/<project>/
 26. Use `live-adapter-operator-evidence-check-all --source workspace` to preflight every target workspace file and refresh the queue without recording evidence; add `--target <target>` to preflight one adapter from its target-scoped workspace when available.
 27. Use `live-adapter-operator-evidence-import-ready` when the queue contains ready targets and you want to import only files whose latest preflight checks are complete; add `--target <target>` to import one ready adapter without touching the rest of the queue.
 28. Use `live-adapter-operator-evidence` and `live-adapter-operator-evidence-audit` to record filled operator evidence and show which targets still have missing proof. These records keep `mutationApproved=false`.
-29. Use `roadmap-completion-audit` as the conservative completion gate for the whole roadmap; it stays blocked until artifact checks, behavior checks, evaluation trends, console visual/browser checks, coordination records, GBrain advisory context, operator-evidence audit, live-adapter cutover audit, and review-session state all prove completion.
+29. Use `live-adapter-operator-evidence-next` to refresh the current target workspace, assist, preflight, review session, and cutover packet before operator review.
+30. Use `roadmap-completion-audit` as the conservative completion gate for the whole roadmap; it stays blocked until artifact checks, behavior checks, evaluation trends, console visual/browser checks, coordination records, GBrain advisory context, operator-evidence audit, live-adapter cutover audit, and review-session state all prove completion.
 
 ## Adapter Commands
 
