@@ -3,6 +3,7 @@ import path from "node:path";
 import { writeJsonArtifact, writeTextArtifact } from "./artifacts.js";
 import {
   markdownCell,
+  renderHumanVerificationFillOrder,
   renderHumanVerificationReferenceDetails,
   renderHumanVerificationWorksheetTable
 } from "./humanVerificationWorksheetMarkdown.js";
@@ -387,6 +388,10 @@ function renderTargetAssist(project: string, generatedAt: string, target: Assist
     "## Human Verification Worksheet",
     "",
     ...renderHumanVerificationWorksheetTable(target.reviewChecklist),
+    "",
+    "## Human Verification Fill Order",
+    "",
+    ...renderHumanVerificationFillOrder(target.reviewChecklist),
     "",
     "## Human Verification Reference Details",
     "",

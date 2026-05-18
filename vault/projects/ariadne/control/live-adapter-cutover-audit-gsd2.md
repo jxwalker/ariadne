@@ -3,7 +3,7 @@
 Project: ariadne
 Target: gsd2
 Status: blocked
-Generated: 2026-05-18T08:16:03.155Z
+Generated: 2026-05-18T08:36:32.864Z
 Mutation allowed: false
 
 This audit does not enable or execute live adapters. It verifies whether a target has enough current evidence to replace placeholder commands with a target-specific live adapter implementation.

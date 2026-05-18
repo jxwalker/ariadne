@@ -3,7 +3,7 @@
 Project: ariadne
 Target: gsd2
 Status: operator_review_required
-Generated: 2026-05-18T08:16:03.151Z
+Generated: 2026-05-18T08:36:32.860Z
 Mutation approved: false
 Operator decision required: true
 
@@ -67,7 +67,7 @@ Missing operator evidence sections:
 - Target-guarded execution wrapper
 - Exact confirm-plan proof
 
-Latest preflight: projects/ariadne/control/live-adapter-operator-evidence-checks/operator-evidence-check-gsd2-2026-05-18T08-16-03-027Z.json
+Latest preflight: projects/ariadne/control/live-adapter-operator-evidence-checks/operator-evidence-check-gsd2-2026-05-18T08-36-32-732Z.json
 
 Read-only assist: projects/ariadne/control/operator-evidence/gsd2/read-only-assist.md
 

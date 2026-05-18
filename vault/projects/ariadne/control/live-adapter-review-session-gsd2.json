@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "project": "ariadne",
-  "generatedAt": "2026-05-18T08:16:03.151Z",
+  "generatedAt": "2026-05-18T08:36:32.860Z",
   "target": "gsd2",
   "status": "operator_review_required",
   "mutationApproved": false,
@@ -53,7 +53,7 @@
       "operatorEvidenceFileRef": "projects/ariadne/control/operator-evidence/gsd2/operator-evidence.md",
       "operatorEvidenceCheckCommand": "npm run ariadne -- live-adapter-operator-evidence-check --project ariadne --target gsd2 --from vault/projects/ariadne/control/operator-evidence/gsd2/operator-evidence.md",
       "operatorEvidenceImportCommand": "npm run ariadne -- live-adapter-operator-evidence --project ariadne --target gsd2 --from vault/projects/ariadne/control/operator-evidence/gsd2/operator-evidence.md --by <operator>",
-      "latestOperatorEvidenceCheckRef": "projects/ariadne/control/live-adapter-operator-evidence-checks/operator-evidence-check-gsd2-2026-05-18T08-16-03-027Z.json",
+      "latestOperatorEvidenceCheckRef": "projects/ariadne/control/live-adapter-operator-evidence-checks/operator-evidence-check-gsd2-2026-05-18T08-36-32-732Z.json",
       "operatorEvidenceAssistFileRef": "projects/ariadne/control/operator-evidence/gsd2/read-only-assist.md",
       "operatorEvidenceAssistNextSteps": [
         "Open read-only-assist.md and the listed support refs.",

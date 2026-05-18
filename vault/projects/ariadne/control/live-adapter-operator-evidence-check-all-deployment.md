@@ -3,7 +3,7 @@
 Project: ariadne
 Target: deployment
 Status: incomplete
-Checked: 2026-05-18T08:15:59.706Z
+Checked: 2026-05-18T08:30:56.508Z
 Mutation approved: false
 Approval granted: false
 Source: workspace
@@ -29,4 +29,4 @@ This batch is a preflight aid only. It does not create operator evidence records
 
 | Target | Status | Missing sections | Missing section labels | Source file | Check | Detail |
 | --- | --- | ---: | --- | --- | --- | --- |
-| deployment | incomplete | 9 | Operator identity and timestamp, Approval packet review, Authentication or authorization boundary, Bounded action statement, Rollback or disable path, Post-action verification command, Dry-run command and safe output, Target-guarded execution wrapper, Exact confirm-plan proof | projects/ariadne/control/operator-evidence/deployment/operator-evidence.md | projects/ariadne/control/live-adapter-operator-evidence-checks/operator-evidence-check-deployment-2026-05-18T08-15-59-706Z.json | Check markdown: projects/ariadne/control/live-adapter-operator-evidence-checks/operator-evidence-check-deployment-2026-05-18T08-15-59-706Z.md; Source: projects/ariadne/control/operator-evidence/deployment/operator-evidence.md |
+| deployment | incomplete | 9 | Operator identity and timestamp, Approval packet review, Authentication or authorization boundary, Bounded action statement, Rollback or disable path, Post-action verification command, Dry-run command and safe output, Target-guarded execution wrapper, Exact confirm-plan proof | projects/ariadne/control/operator-evidence/deployment/operator-evidence.md | projects/ariadne/control/live-adapter-operator-evidence-checks/operator-evidence-check-deployment-2026-05-18T08-30-56-506Z.json | Check markdown: projects/ariadne/control/live-adapter-operator-evidence-checks/operator-evidence-check-deployment-2026-05-18T08-30-56-506Z.md; Source: projects/ariadne/control/operator-evidence/deployment/operator-evidence.md |
