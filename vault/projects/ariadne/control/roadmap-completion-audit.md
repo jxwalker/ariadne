@@ -2,7 +2,7 @@
 
 Project: ariadne
 Status: blocked
-Generated: 2026-05-18T05:22:24.574Z
+Generated: 2026-05-18T06:57:22.456Z
 
 ## Summary
 
@@ -15,7 +15,7 @@ Generated: 2026-05-18T05:22:24.574Z
 
 | Requirement | Status | Detail | Next commands | Evidence |
 | --- | --- | --- | --- | --- |
-| Core pipeline artifacts are present | passed | 56 artifacts present; 0 required missing. | - | projects/ariadne/evaluation/artifact-checks.json |
+| Core pipeline artifacts are present | passed | 57 artifacts present; 0 required missing. | - | projects/ariadne/evaluation/artifact-checks.json |
 | Behavior confidence checks are passing | passed | 6/6 behavior checks passed; 0 failed. | - | projects/ariadne/evaluation/behavior-checks.json |
 | Evaluation harness has current trend evidence | passed | Evaluation trend status is stable; latest score is 86. | - | projects/ariadne/evaluation/evaluation-trends.json |
 | Orchestration console is rendered and browser-checked | passed | Visual checks: passed; browser checks: passed. | - | projects/ariadne/console/visual-checks.json<br>projects/ariadne/console/browser-checks.json |
