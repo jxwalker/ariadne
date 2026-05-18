@@ -2107,6 +2107,7 @@ export interface ConsoleWorkflow {
   schemaVersion: 1;
   stages: ConsoleWorkflowStage[];
   nextAction: ConsoleWorkflowAction;
+  operatorChecklist?: ConsoleOperatorChecklist;
   modes: ConsoleWorkflowMode[];
   surfaces: ConsoleWorkflowSurface[];
 }
@@ -2138,6 +2139,33 @@ export interface ConsoleWorkflowActionStep {
   kind: "read" | "fill" | "check" | "import" | "review" | "operate";
   artifactRef?: string;
   command?: string;
+}
+
+export interface ConsoleOperatorChecklist {
+  target: Exclude<MutationReadinessPlan["target"], "generic">;
+  status: ConsoleOperatorChecklistStatus;
+  evidenceFileRef: string;
+  assistFileRef: string;
+  checkCommand: string;
+  importCommand: string;
+  missingSections: number;
+  sections: ConsoleOperatorChecklistSection[];
+}
+
+export type ConsoleOperatorChecklistStatus =
+  | LiveAdapterOperatorEvidenceQueue["targets"][number]["status"]
+  | LiveAdapterOperatorEvidenceWorkplan["targets"][number]["status"]
+  | LiveAdapterOperatorEvidenceAudit["targets"][number]["status"];
+
+export interface ConsoleOperatorChecklistSection {
+  missingSection: string;
+  prompt: string;
+  startWith: string;
+  recordIn: string;
+  preflight: string;
+  existingEvidenceRefs: string[];
+  promotedLiveEvidenceRefs: string[];
+  gbrainQueries: string[];
 }
 
 export interface ConsoleWorkflowMode {

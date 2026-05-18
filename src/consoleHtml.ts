@@ -323,6 +323,7 @@ function workflowOverview(workflow: ConsoleData["workflow"]): string {
     ...(workflow.nextAction.command ? [commandDisclosure("Primary runner command", workflow.nextAction.command)] : []),
     actionSteps(workflow.nextAction.steps),
     "</div>",
+    operatorChecklist(workflow.operatorChecklist),
     '<div class="workflow-modes" data-visual-role="operator-modes">',
     '<div class="workflow-subhead"><span class="label">Operator modes</span><p>Choose the surface by user intent; Hermes is the runtime backplane, not the only front door.</p></div>',
     ...workflow.modes.map(
@@ -350,6 +351,26 @@ function actionSteps(steps: ConsoleData["workflow"]["nextAction"]["steps"] | und
         `<li><div><span>${escapeHtml(step.kind)}</span><strong>${escapeHtml(step.title)}</strong></div><p>${escapeHtml(step.detail)}</p>${step.artifactRef ? `<small>${escapeHtml(step.artifactRef)}</small>` : ""}${step.command ? commandDisclosure("Runner command", step.command) : ""}</li>`
     ),
     "</ol>"
+  ].join("");
+}
+
+function operatorChecklist(checklist: ConsoleData["workflow"]["operatorChecklist"] | undefined): string {
+  if (!checklist) return "";
+  return [
+    '<div class="operator-checklist" data-visual-role="operator-evidence-checklist">',
+    '<div class="workflow-subhead"><span class="label">Evidence checklist</span><p>Work one missing section at a time; GBrain is context, not proof.</p></div>',
+    `<div class="checklist-summary"><strong>${escapeHtml(checklist.target)}</strong><span class="checklist-status ${statusClass(checklist.status)}">${escapeHtml(checklist.status)}</span><small>${checklist.missingSections} missing section(s)</small></div>`,
+    '<ol class="checklist-sections">',
+    ...checklist.sections.map(
+      (section) =>
+        `<li><div><strong>${escapeHtml(section.missingSection)}</strong><span>${section.gbrainQueries.length} GBrain</span></div><p>${escapeHtml(section.prompt)}</p><dl><dt>Start with</dt><dd>${escapeHtml(section.startWith)}</dd><dt>Record in</dt><dd>${escapeHtml(section.recordIn)}</dd><dt>Preflight</dt><dd>${escapeHtml(section.preflight)}</dd></dl><small>${section.existingEvidenceRefs.length} existing ref(s), ${section.promotedLiveEvidenceRefs.length} promoted live ref(s)</small></li>`
+    ),
+    "</ol>",
+    `<small>Evidence: ${escapeHtml(checklist.evidenceFileRef)}</small>`,
+    `<small>Assist: ${escapeHtml(checklist.assistFileRef)}</small>`,
+    commandDisclosure("Preflight command", checklist.checkCommand),
+    commandDisclosure("Import command after human verification", checklist.importCommand),
+    "</div>"
   ].join("");
 }
 
@@ -1210,6 +1231,90 @@ h1 {
 .action-steps code {
   font-size: 11px;
 }
+.operator-checklist {
+  grid-column: 1 / -1;
+  min-width: 0;
+  border: 1px solid var(--line);
+  background: var(--panel);
+  padding: 16px;
+  display: grid;
+  gap: 14px;
+}
+.checklist-summary {
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+.checklist-summary strong {
+  font-family: var(--mono);
+  font-size: 16px;
+}
+.checklist-summary span {
+  color: var(--accent);
+  font-family: var(--mono);
+  font-size: 12px;
+}
+.checklist-sections {
+  list-style: decimal;
+  list-style-position: outside;
+  margin: 0;
+  padding-left: 20px;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+}
+.checklist-sections li {
+  min-width: 0;
+  border: 1px solid var(--line);
+  padding: 12px;
+  background: var(--bg);
+}
+.checklist-sections li > * + * {
+  margin-top: 8px;
+}
+.checklist-sections div {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  align-items: baseline;
+}
+.checklist-sections strong {
+  font-family: var(--mono);
+  font-size: 13px;
+  line-height: 1.25;
+}
+.checklist-sections span,
+.checklist-sections small {
+  color: var(--muted);
+  font-size: 11px;
+}
+.checklist-sections p {
+  margin: 0;
+  color: var(--ink);
+  font-size: 12px;
+  line-height: 1.4;
+  overflow-wrap: anywhere;
+}
+.checklist-sections dl {
+  margin: 0;
+  display: grid;
+  gap: 6px;
+}
+.checklist-sections dt {
+  color: var(--muted);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+}
+.checklist-sections dd {
+  margin: 0;
+  color: var(--ink);
+  font-size: 12px;
+  line-height: 1.35;
+  overflow-wrap: anywhere;
+}
 .workflow-modes,
 .workflow-surfaces {
   grid-column: 1 / -1;
@@ -1527,6 +1632,7 @@ meter {
   .workflow-stage:nth-child(2n) { border-right: 0; }
   .workflow-modes { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .workflow-surfaces { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .checklist-sections { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .workflow-subhead { display: grid; }
   .workflow-subhead p { text-align: left; }
   .metrics { grid-template-columns: repeat(2, minmax(0, 1fr)); }
@@ -1541,6 +1647,7 @@ meter {
   .workflow-stage { border-right: 0; border-bottom: 1px solid var(--line); }
   .workflow-stage:last-child { border-bottom: 0; }
   .workflow-modes, .workflow-surfaces { grid-template-columns: 1fr; }
+  .checklist-sections { grid-template-columns: 1fr; }
 }
 `;
 }
