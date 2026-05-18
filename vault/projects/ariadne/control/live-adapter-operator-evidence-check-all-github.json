@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "project": "ariadne",
-  "checkedAt": "2026-05-18T08:09:23.059Z",
+  "checkedAt": "2026-05-18T08:16:01.666Z",
   "target": "github",
   "status": "incomplete",
   "mutationApproved": false,
@@ -26,8 +26,8 @@
       "status": "incomplete",
       "sourceFileRef": "projects/ariadne/control/operator-evidence/github/operator-evidence.md",
       "evidenceFileRef": "projects/ariadne/control/operator-evidence/github/operator-evidence.md",
-      "checkRef": "projects/ariadne/control/live-adapter-operator-evidence-checks/operator-evidence-check-github-2026-05-18T08-09-23-059Z.json",
-      "checkMarkdownRef": "projects/ariadne/control/live-adapter-operator-evidence-checks/operator-evidence-check-github-2026-05-18T08-09-23-059Z.md",
+      "checkRef": "projects/ariadne/control/live-adapter-operator-evidence-checks/operator-evidence-check-github-2026-05-18T08-16-01-665Z.json",
+      "checkMarkdownRef": "projects/ariadne/control/live-adapter-operator-evidence-checks/operator-evidence-check-github-2026-05-18T08-16-01-665Z.md",
       "missingSections": 9,
       "missingSectionLabels": [
         "Operator identity and timestamp",

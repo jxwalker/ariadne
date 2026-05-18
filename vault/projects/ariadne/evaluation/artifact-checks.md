@@ -2,7 +2,7 @@
 
 Project: ariadne
 Status: passed
-Generated: 2026-05-18T08:09:25.008Z
+Generated: 2026-05-18T08:16:03.683Z
 
 ## Summary
 
@@ -58,7 +58,7 @@ Generated: 2026-05-18T08:09:25.008Z
 | live-adapter-cutover-audit | no | present | 7 | projects/ariadne/control/live-adapter-cutover-audit*.json |
 | live-adapter-review-session | no | present | 7 | projects/ariadne/control/live-adapter-review-session*.json |
 | live-adapter-evidence-templates | no | present | - | projects/ariadne/control/live-adapter-evidence-templates.json |
-| live-adapter-operator-evidence-checks | no | present | 43 | projects/ariadne/control/live-adapter-operator-evidence-checks/operator-evidence-check-*.json |
+| live-adapter-operator-evidence-checks | no | present | 55 | projects/ariadne/control/live-adapter-operator-evidence-checks/operator-evidence-check-*.json |
 | live-adapter-operator-evidence-check-all | no | present | 7 | projects/ariadne/control/live-adapter-operator-evidence-check-all*.json |
 | live-adapter-operator-evidence-import-ready | no | missing | 0 | projects/ariadne/control/live-adapter-operator-evidence-import-ready*.json |
 | live-adapter-operator-evidence | no | missing | 0 | projects/ariadne/control/live-adapter-operator-evidence/operator-evidence-*.json |
@@ -70,7 +70,7 @@ Generated: 2026-05-18T08:09:25.008Z
 | live-adapter-operator-evidence-next | no | present | 6 | projects/ariadne/control/live-adapter-operator-evidence-next-*.json |
 | live-adapter-operator-evidence-drafts | no | present | 6 | projects/ariadne/control/live-adapter-operator-evidence-draft-*.json |
 | live-adapter-operator-evidence-draft-pack | no | present | - | projects/ariadne/control/live-adapter-operator-evidence-drafts.json |
-| live-evidence-promotions | no | present | 1 | projects/ariadne/control/live-evidence-promotions/live-evidence-promotion-*.json |
+| live-evidence-promotions | no | present | 2 | projects/ariadne/control/live-evidence-promotions/live-evidence-promotion-*.json |
 | live-adapter-operator-evidence-workspace-files | no | present | 42 | projects/ariadne/control/operator-evidence/**/*.md |
 | roadmap-completion-audit | no | present | - | projects/ariadne/control/roadmap-completion-audit.json |
 | roadmap-control-refresh | no | present | - | projects/ariadne/control/roadmap-control-refresh.json |

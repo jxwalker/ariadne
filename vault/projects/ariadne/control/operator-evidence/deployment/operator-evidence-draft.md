@@ -1,7 +1,7 @@
 # Operator Evidence Draft: deployment
 
 Project: ariadne
-Generated: 2026-05-18T08:09:23.198Z
+Generated: 2026-05-18T08:16:01.821Z
 Status: non-authoritative draft
 Mutation approved: false
 Approval granted: false
@@ -52,10 +52,12 @@ Candidate action: Record the human operator name and current review timestamp on
 - projects/ariadne/control/operator-evidence/deployment/operator-evidence.md
 - projects/ariadne/control/live-adapter-operator-evidence-audit.json
 - projects/ariadne/control/live-evidence-promotions/live-evidence-promotion-deployment-2026-05-17T23-37-04-509Z.json
+- projects/ariadne/control/live-evidence-promotions/live-evidence-promotion-deployment-2026-05-18T08-15-50-017Z.json
 
 #### Promoted Live Evidence Refs
 
 - projects/ariadne/control/live-evidence-promotions/live-evidence-promotion-deployment-2026-05-17T23-37-04-509Z.json
+- projects/ariadne/control/live-evidence-promotions/live-evidence-promotion-deployment-2026-05-18T08-15-50-017Z.json
 
 #### GBrain Advisory Queries
 
@@ -85,10 +87,12 @@ Candidate action: Review the deployment approval packet, next packet, review ses
 - projects/ariadne/control/operator-evidence/deployment/operator-evidence.md
 - projects/ariadne/control/live-adapter-operator-evidence-audit.json
 - projects/ariadne/control/live-evidence-promotions/live-evidence-promotion-deployment-2026-05-17T23-37-04-509Z.json
+- projects/ariadne/control/live-evidence-promotions/live-evidence-promotion-deployment-2026-05-18T08-15-50-017Z.json
 
 #### Promoted Live Evidence Refs
 
 - projects/ariadne/control/live-evidence-promotions/live-evidence-promotion-deployment-2026-05-17T23-37-04-509Z.json
+- projects/ariadne/control/live-evidence-promotions/live-evidence-promotion-deployment-2026-05-18T08-15-50-017Z.json
 
 #### GBrain Advisory Queries
 
@@ -118,10 +122,12 @@ Candidate action: Verify the deployment account, token, SSH, browser, or schedul
 - projects/ariadne/control/operator-evidence/deployment/operator-evidence.md
 - projects/ariadne/control/live-adapter-operator-evidence-audit.json
 - projects/ariadne/control/live-evidence-promotions/live-evidence-promotion-deployment-2026-05-17T23-37-04-509Z.json
+- projects/ariadne/control/live-evidence-promotions/live-evidence-promotion-deployment-2026-05-18T08-15-50-017Z.json
 
 #### Promoted Live Evidence Refs
 
 - projects/ariadne/control/live-evidence-promotions/live-evidence-promotion-deployment-2026-05-17T23-37-04-509Z.json
+- projects/ariadne/control/live-evidence-promotions/live-evidence-promotion-deployment-2026-05-18T08-15-50-017Z.json
 
 #### GBrain Advisory Queries
 
@@ -151,10 +157,12 @@ Candidate action: State the exact deployment action that would be allowed after 
 - projects/ariadne/control/operator-evidence/deployment/operator-evidence.md
 - projects/ariadne/control/live-adapter-operator-evidence-audit.json
 - projects/ariadne/control/live-evidence-promotions/live-evidence-promotion-deployment-2026-05-17T23-37-04-509Z.json
+- projects/ariadne/control/live-evidence-promotions/live-evidence-promotion-deployment-2026-05-18T08-15-50-017Z.json
 
 #### Promoted Live Evidence Refs
 
 - projects/ariadne/control/live-evidence-promotions/live-evidence-promotion-deployment-2026-05-17T23-37-04-509Z.json
+- projects/ariadne/control/live-evidence-promotions/live-evidence-promotion-deployment-2026-05-18T08-15-50-017Z.json
 
 #### GBrain Advisory Queries
 
@@ -184,10 +192,12 @@ Candidate action: Verify the deployment rollback or disable path from source sys
 - projects/ariadne/control/operator-evidence/deployment/operator-evidence.md
 - projects/ariadne/control/live-adapter-operator-evidence-audit.json
 - projects/ariadne/control/live-evidence-promotions/live-evidence-promotion-deployment-2026-05-17T23-37-04-509Z.json
+- projects/ariadne/control/live-evidence-promotions/live-evidence-promotion-deployment-2026-05-18T08-15-50-017Z.json
 
 #### Promoted Live Evidence Refs
 
 - projects/ariadne/control/live-evidence-promotions/live-evidence-promotion-deployment-2026-05-17T23-37-04-509Z.json
+- projects/ariadne/control/live-evidence-promotions/live-evidence-promotion-deployment-2026-05-18T08-15-50-017Z.json
 
 #### GBrain Advisory Queries
 
@@ -217,10 +227,12 @@ Candidate action: Record the exact deployment post-action verification command o
 - projects/ariadne/control/operator-evidence/deployment/operator-evidence.md
 - projects/ariadne/control/live-adapter-operator-evidence-audit.json
 - projects/ariadne/control/live-evidence-promotions/live-evidence-promotion-deployment-2026-05-17T23-37-04-509Z.json
+- projects/ariadne/control/live-evidence-promotions/live-evidence-promotion-deployment-2026-05-18T08-15-50-017Z.json
 
 #### Promoted Live Evidence Refs
 
 - projects/ariadne/control/live-evidence-promotions/live-evidence-promotion-deployment-2026-05-17T23-37-04-509Z.json
+- projects/ariadne/control/live-evidence-promotions/live-evidence-promotion-deployment-2026-05-18T08-15-50-017Z.json
 
 #### GBrain Advisory Queries
 
@@ -250,10 +262,12 @@ Candidate action: Run or inspect the deployment dry-run command only where safe;
 - projects/ariadne/control/operator-evidence/deployment/operator-evidence.md
 - projects/ariadne/control/live-adapter-operator-evidence-audit.json
 - projects/ariadne/control/live-evidence-promotions/live-evidence-promotion-deployment-2026-05-17T23-37-04-509Z.json
+- projects/ariadne/control/live-evidence-promotions/live-evidence-promotion-deployment-2026-05-18T08-15-50-017Z.json
 
 #### Promoted Live Evidence Refs
 
 - projects/ariadne/control/live-evidence-promotions/live-evidence-promotion-deployment-2026-05-17T23-37-04-509Z.json
+- projects/ariadne/control/live-evidence-promotions/live-evidence-promotion-deployment-2026-05-18T08-15-50-017Z.json
 
 #### GBrain Advisory Queries
 
@@ -283,10 +297,12 @@ Candidate action: Verify that deployment execution would use the target-specific
 - projects/ariadne/control/operator-evidence/deployment/operator-evidence.md
 - projects/ariadne/control/live-adapter-operator-evidence-audit.json
 - projects/ariadne/control/live-evidence-promotions/live-evidence-promotion-deployment-2026-05-17T23-37-04-509Z.json
+- projects/ariadne/control/live-evidence-promotions/live-evidence-promotion-deployment-2026-05-18T08-15-50-017Z.json
 
 #### Promoted Live Evidence Refs
 
 - projects/ariadne/control/live-evidence-promotions/live-evidence-promotion-deployment-2026-05-17T23-37-04-509Z.json
+- projects/ariadne/control/live-evidence-promotions/live-evidence-promotion-deployment-2026-05-18T08-15-50-017Z.json
 
 #### GBrain Advisory Queries
 
@@ -316,10 +332,12 @@ Candidate action: Verify that live execution requires an exact --confirm-plan va
 - projects/ariadne/control/operator-evidence/deployment/operator-evidence.md
 - projects/ariadne/control/live-adapter-operator-evidence-audit.json
 - projects/ariadne/control/live-evidence-promotions/live-evidence-promotion-deployment-2026-05-17T23-37-04-509Z.json
+- projects/ariadne/control/live-evidence-promotions/live-evidence-promotion-deployment-2026-05-18T08-15-50-017Z.json
 
 #### Promoted Live Evidence Refs
 
 - projects/ariadne/control/live-evidence-promotions/live-evidence-promotion-deployment-2026-05-17T23-37-04-509Z.json
+- projects/ariadne/control/live-evidence-promotions/live-evidence-promotion-deployment-2026-05-18T08-15-50-017Z.json
 
 #### GBrain Advisory Queries
 

@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "project": "ariadne",
-  "generatedAt": "2026-05-18T08:09:25.006Z",
+  "generatedAt": "2026-05-18T08:16:03.681Z",
   "status": "blocked",
   "mutationApproved": false,
   "approvalGranted": false,
@@ -11,7 +11,7 @@
     "roadmapBlocked": 3,
     "artifactStatus": "passed",
     "artifactMissingRequired": 0,
-    "gbrainDocuments": 40,
+    "gbrainDocuments": 41,
     "liveAdapterStatus": "actions_required",
     "operatorEvidenceStatus": "blocked",
     "operatorQueueStatus": "evidence_required",

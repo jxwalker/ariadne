@@ -1,7 +1,7 @@
 # Live Adapter Operator Evidence Draft Report: notebooklm
 
 Project: ariadne
-Generated: 2026-05-18T08:09:24.941Z
+Generated: 2026-05-18T08:16:03.605Z
 Status: drafted_for_human_verification
 Mutation approved: false
 Approval granted: false
