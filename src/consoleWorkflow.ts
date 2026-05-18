@@ -8,6 +8,48 @@ export function buildConsoleWorkflow(data: ConsoleWorkflowInput): ConsoleWorkflo
     schemaVersion: 1,
     stages: projectWorkflowStages(data),
     nextAction: nextBestAction(data),
+    modes: [
+      {
+        id: "guided",
+        label: "Guided",
+        audience: "First-time coders and operators who want one clear next step.",
+        primarySurface: "ariadne-console",
+        supportSurfaces: ["notebooklm", "gbrain"],
+        interaction: "Open the console, follow the workflow lane, and use the Next Best Action packet.",
+        commandPolicy: "hidden-by-default",
+        nextStep: "Follow the visible next action; use generated packets rather than the command reference."
+      },
+      {
+        id: "developer",
+        label: "Developer",
+        audience: "Experienced builders working on a bounded implementation slice.",
+        primarySurface: "ariadne-console",
+        supportSurfaces: ["ariadne-runner", "hermes", "gbrain"],
+        interaction: "Use the console for state and the runner for refresh, test, evidence import, and review loops.",
+        commandPolicy: "shown-as-needed",
+        nextStep: "Refresh the artifact that backs the blocked stage, then rerun checks and browser evidence."
+      },
+      {
+        id: "operator",
+        label: "Operator",
+        audience: "Humans reviewing evidence before Ariadne can touch external systems.",
+        primarySurface: "ariadne-console",
+        supportSurfaces: ["ariadne-runner", "hermes"],
+        interaction: "Fill target evidence workspaces from real systems, preflight them, then record review decisions.",
+        commandPolicy: "expert",
+        nextStep: "Work one target packet at a time; approval, dry-run, rollback, and verification remain separate gates."
+      },
+      {
+        id: "automation",
+        label: "Automation",
+        audience: "Background routines, sleep reviews, memory proposals, mail, and scheduled refreshes.",
+        primarySurface: "hermes",
+        supportSurfaces: ["ariadne-runner", "ariadne-console"],
+        interaction: "Hermes runs reviewed routines and feeds Ariadne evidence; Ariadne remains the audit and gate surface.",
+        commandPolicy: "background-only",
+        nextStep: "Schedule only proposal or refresh jobs until the relevant mutation-readiness gates are approved."
+      }
+    ],
     surfaces: [
       {
         id: "ariadne-console",

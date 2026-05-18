@@ -16,6 +16,19 @@ GBrain is advisory semantic memory. Ariadne can export evidence for indexing and
 
 The `ariadne` runner is the expert and automation surface. Guided users should normally start from the console and follow the next action. Experienced developers can use the runner directly when they already know which artifact they need to refresh.
 
+## Operator Interaction Modes
+
+The console exposes the interaction model as `workflow.modes` so a UI can route users without showing every command at once.
+
+| Mode | Primary surface | Who it is for | Command exposure |
+| --- | --- | --- | --- |
+| Guided | Ariadne Console | first-time coders and anyone who wants one safe next step | hidden by default |
+| Developer | Ariadne Console plus `ariadne` runner | experienced builders working a bounded slice | shown as needed |
+| Operator | Ariadne Console plus evidence packets | humans reviewing external-system evidence | expert |
+| Automation | Hermes | sleep, memory, mail, scheduled refreshes, and background coordination | background only |
+
+The important rule is simple: Hermes runs routines, but Ariadne remains the evidence cockpit and approval gate. NotebookLM and GBrain provide research and memory context; they do not approve work, verify behavior, or grant mutation authority.
+
 ## User Modes
 
 ### Guided Developer
@@ -121,6 +134,7 @@ When adding a new command, also decide which workflow stage it supports and whet
 
 - `workflow.stages`: the ordered Capture, Shape, Build, Verify, Review, Operate lane with status, detail, and proof refs.
 - `workflow.nextAction`: the selected human next action, its source, artifact ref, and optional runner command.
+- `workflow.modes`: guided, developer, operator, and automation interaction modes with primary surface, support surfaces, command policy, and next-step guidance.
 - `workflow.surfaces`: the responsibility split for Ariadne Console, Hermes, NotebookLM, GBrain, and the `ariadne` runner.
 
 Hermes dashboards, a future live Ariadne UI, and other operator displays should read that object as the canonical workflow projection.

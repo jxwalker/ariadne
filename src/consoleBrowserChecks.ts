@@ -35,6 +35,8 @@ export async function generateConsoleBrowserCheckReport(input: {
     checks.push(await visibleCheck(page, "brand", "Ariadne brand", "text=Ariadne Console"));
     checks.push(await visibleCheck(page, "workflow", "Workflow overview", "text=Capture"));
     checks.push(await visibleCheck(page, "next-best-action", "Next best action", "text=Next best action"));
+    checks.push(await visibleCheck(page, "operator-modes", "Operator modes", "text=Operator modes"));
+    checks.push(await visibleCheck(page, "workflow-surfaces", "Workflow surfaces", "text=Surface split"));
     checks.push(await visibleCheck(page, "gate-matrix", "Gate matrix section", "text=Gate Matrix"));
     checks.push(await visibleCheck(page, "evaluation-trends", "Evaluation trends section", "text=Evaluation Trends"));
     checks.push(await visibleCheck(page, "recovery", "Recovery section", "text=Recovery"));
@@ -124,15 +126,19 @@ async function embeddedWorkflowDataCheck(page: Page): Promise<ConsoleBrowserChec
             schemaVersion?: number;
             stages?: Array<{ id?: string }>;
             nextAction?: { artifactRef?: string };
+            modes?: Array<{ id?: string; primarySurface?: string }>;
             surfaces?: Array<{ id?: string }>;
           };
         };
         const stageIds = data.workflow?.stages?.map((stage) => stage.id).join(",");
+        const modes = data.workflow?.modes ?? [];
         const surfaceIds = new Set(data.workflow?.surfaces?.map((surface) => surface.id));
         return (
           data.workflow?.schemaVersion === 1 &&
           stageIds === "capture,shape,build,verify,review,operate" &&
           Boolean(data.workflow.nextAction?.artifactRef) &&
+          modes.some((mode) => mode.id === "guided" && mode.primarySurface === "ariadne-console") &&
+          modes.some((mode) => mode.id === "automation" && mode.primarySurface === "hermes") &&
           surfaceIds.has("hermes") &&
           surfaceIds.has("gbrain")
         );

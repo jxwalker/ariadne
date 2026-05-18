@@ -322,6 +322,20 @@ function workflowOverview(workflow: ConsoleData["workflow"]): string {
     `<small>${escapeHtml(workflow.nextAction.artifactRef)}</small>`,
     ...(workflow.nextAction.command ? [`<code>${escapeHtml(workflow.nextAction.command)}</code>`] : []),
     "</div>",
+    '<div class="workflow-modes" data-visual-role="operator-modes">',
+    '<div class="workflow-subhead"><span class="label">Operator modes</span><p>Choose the surface by user intent; Hermes is the runtime backplane, not the only front door.</p></div>',
+    ...workflow.modes.map(
+      (mode) =>
+        `<article class="mode-tile"><div><strong>${escapeHtml(mode.label)}</strong><span>${escapeHtml(mode.commandPolicy)}</span></div><p>${escapeHtml(mode.audience)}</p><small>${escapeHtml(mode.interaction)}</small><em>${escapeHtml(mode.nextStep)}</em></article>`
+    ),
+    "</div>",
+    '<div class="workflow-surfaces" data-visual-role="workflow-surfaces">',
+    '<div class="workflow-subhead"><span class="label">Surface split</span><p>Every surface has a bounded role and explicit mutation authority.</p></div>',
+    ...workflow.surfaces.map(
+      (surface) =>
+        `<div class="surface-row"><strong>${escapeHtml(surface.label)}</strong><span>${escapeHtml(surface.mutationAuthority)}</span><p>${escapeHtml(surface.role)}</p></div>`
+    ),
+    "</div>",
     "</section>"
   ].join("");
 }
@@ -1125,6 +1139,91 @@ h1 {
   font-size: 12px;
   line-height: 1.4;
 }
+.workflow-modes,
+.workflow-surfaces {
+  grid-column: 1 / -1;
+  min-width: 0;
+  border: 1px solid var(--line);
+  background: var(--panel);
+  padding: 16px;
+}
+.workflow-modes {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 14px;
+}
+.workflow-surfaces {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 12px;
+}
+.workflow-subhead {
+  grid-column: 1 / -1;
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 18px;
+  border-bottom: 1px solid var(--line);
+  padding-bottom: 12px;
+}
+.workflow-subhead p {
+  margin: 0;
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.45;
+  text-align: right;
+  overflow-wrap: anywhere;
+}
+.mode-tile,
+.surface-row {
+  min-width: 0;
+  display: grid;
+  gap: 10px;
+  align-content: start;
+}
+.mode-tile {
+  padding-right: 0;
+}
+.mode-tile div,
+.surface-row {
+  display: grid;
+  gap: 6px;
+}
+.mode-tile div {
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: baseline;
+}
+.mode-tile strong,
+.surface-row strong {
+  color: var(--ink);
+  font-family: var(--mono);
+  font-size: 15px;
+  line-height: 1.2;
+  overflow-wrap: anywhere;
+}
+.mode-tile span,
+.surface-row span {
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  overflow-wrap: anywhere;
+}
+.mode-tile p,
+.mode-tile small,
+.mode-tile em,
+.surface-row p {
+  margin: 0;
+  color: var(--muted);
+  font-size: 12px;
+  font-style: normal;
+  line-height: 1.45;
+  overflow-wrap: anywhere;
+}
+.mode-tile em {
+  color: var(--ink);
+}
 .metrics {
   display: grid;
   grid-template-columns: repeat(6, minmax(0, 1fr));
@@ -1355,6 +1454,10 @@ meter {
   .hero, .layout, .workflow { grid-template-columns: 1fr; }
   .workflow-lanes { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .workflow-stage:nth-child(2n) { border-right: 0; }
+  .workflow-modes { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .workflow-surfaces { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .workflow-subhead { display: grid; }
+  .workflow-subhead p { text-align: left; }
   .metrics { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .metric:nth-child(2n) { border-right: 0; }
   .gate-grid { grid-template-columns: 1fr; }
@@ -1366,6 +1469,7 @@ meter {
   .workflow-lanes { grid-template-columns: 1fr; }
   .workflow-stage { border-right: 0; border-bottom: 1px solid var(--line); }
   .workflow-stage:last-child { border-bottom: 0; }
+  .workflow-modes, .workflow-surfaces { grid-template-columns: 1fr; }
 }
 `;
 }
