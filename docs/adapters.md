@@ -244,7 +244,9 @@ Target-specific execute wrappers hard-code that guard for the live adapters: `gi
 
 `live-adapter-operator-evidence-next` selects the current operator-evidence target from the queue, unless `--target` is provided, and refreshes the target workspace, read-only assist, workspace preflight, review session, and cutover audit in one packet. It writes `control/live-adapter-operator-evidence-next-<target>.json` and `.md` with generated refs, missing section labels, support refs, a human verification worksheet, concrete per-section reference details, non-mutating check/review/cutover commands, and a separate import command under an after-human-verification heading. It is preparation only: it does not import evidence, approve mutation, or grant live-adapter authority.
 
-`operator-next` is the short human-facing wrapper for that packet. It refreshes the current packet and console, then prints the console path, packet path, exact `operator-evidence.md` file to fill, the preflight command, and the import command that remains gated until after human verification.
+`operator-next` is the short human-facing wrapper for that packet. It refreshes the current packet and console, then prints the console path, packet path, exact `operator-evidence.md` file to fill, current missing section, one-section guide command, the preflight command, and the import command that remains gated until after human verification.
+
+`operator-section` is the focused one-section handoff for a human who is filling `operator-evidence.md`. It writes `control/live-adapter-operator-evidence-section-<target>.json` and `.md` for the current missing section or an explicit `--section`, including start refs, record location, GBrain advisory queries, promoted live-evidence refs, and the same preflight/import commands. It does not import evidence, approve mutation, or grant live-adapter authority.
 
 `live-evidence-promote` turns local-only live artifacts into sanitized evidence summaries that can be cited during operator review. It accepts ignored runtime probes, E2E smoke reports, live SSH inventory, deployment snapshots, or other JSON/text files with `--from`, but source paths must resolve inside the selected project vault and each source must fit the small live-evidence size cap. It hashes every source, extracts known Ariadne summaries, redacts private URLs, source paths, SSH targets, email-like values, and private IP strings, then writes `control/live-evidence-promotions/live-evidence-promotion-<target>-<timestamp>.json` and `.md`. This is still not operator evidence or approval: it keeps `operatorEvidenceRecordCreated=false`, `mutationApproved=false`, and `approvalGranted=false`.
 
@@ -337,6 +339,9 @@ Artifacts:
 - `control/live-adapter-operator-evidence-workspace-<target>.md`
 - `control/live-adapter-operator-evidence-next-<target>.json`
 - `control/live-adapter-operator-evidence-next-<target>.md`
+- `control/live-adapter-operator-evidence-section-<target>.json`
+- `control/live-adapter-operator-evidence-section-<target>.md`
+- section handoff artifacts contain the current missing-section prompt, start refs, GBrain advisory queries, evidence file, and preflight/import commands for `operator-section`
 - `control/live-evidence-promotions/live-evidence-promotion-<target>-<timestamp>.json`
 - `control/live-evidence-promotions/live-evidence-promotion-<target>-<timestamp>.md`
 - `control/operator-evidence/<target>/operator-evidence.md`

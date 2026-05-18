@@ -1700,12 +1700,27 @@ describe("roadmap adapters", () => {
       { cwd: process.cwd(), encoding: "utf8" }
     );
     expect(operatorNextOutput).toContain("Ariadne operator next:");
+    expect(operatorNextOutput).toContain("Current section:");
     expect(operatorNextOutput).toContain("Console:");
     expect(operatorNextOutput).toContain("Packet:");
     expect(operatorNextOutput).toContain("Fill:");
+    expect(operatorNextOutput).toContain("Section guide:");
     expect(operatorNextOutput).toContain("Preflight:");
     expect(operatorNextOutput).toContain("Import after human verification:");
     expect(operatorNextOutput).toContain("Rule: do not import until");
+    const operatorSectionOutput = execFileSync(
+      tsx,
+      ["src/ariadne.ts", "operator-section", "--project", "ariadne", "--vault", vaultRoot],
+      { cwd: process.cwd(), encoding: "utf8" }
+    );
+    expect(operatorSectionOutput).toContain("Ariadne operator section:");
+    expect(operatorSectionOutput).toContain("Step:");
+    expect(operatorSectionOutput).toContain("Section:");
+    expect(operatorSectionOutput).toContain("Start with:");
+    expect(operatorSectionOutput).toContain("Record in:");
+    expect(operatorSectionOutput).toContain("Section guide:");
+    expect(operatorSectionOutput).toContain("Preflight:");
+    expect(operatorSectionOutput).toContain("Rule: do not import until");
     const reusedPreflightPacket = await generateLiveAdapterOperatorEvidenceNextPacket({
       project: "ariadne",
       vaultRoot,
@@ -2122,6 +2137,9 @@ describe("roadmap adapters", () => {
     const operatorEvidenceNextCheck = artifactChecks.report.checks.find(
       (check) => check.id === "live-adapter-operator-evidence-next"
     );
+    const operatorEvidenceSectionCheck = artifactChecks.report.checks.find(
+      (check) => check.id === "live-adapter-operator-evidence-section"
+    );
     const operatorEvidenceWorkspaceFilesCheck = artifactChecks.report.checks.find(
       (check) => check.id === "live-adapter-operator-evidence-workspace-files"
     );
@@ -2157,6 +2175,7 @@ describe("roadmap adapters", () => {
     expect(operatorEvidenceWorkspaceCheck?.status).toBe("present");
     expect(operatorEvidenceAssistCheck?.status).toBe("present");
     expect(operatorEvidenceNextCheck?.status).toBe("present");
+    expect(operatorEvidenceSectionCheck?.status).toBe("present");
     expect(operatorEvidenceWorkspaceFilesCheck?.count).toBe(42);
     expect(operatorEvidenceCheck?.count).toBe(4);
     expect(operatorEvidenceAuditCheck?.status).toBe("present");
@@ -2175,12 +2194,14 @@ describe("roadmap adapters", () => {
     expect(controlRefresh.report.summary.consoleRefreshed).toBe(true);
     expect(controlRefresh.report.summary.operatorNextTarget).toBeTruthy();
     expect(controlRefresh.report.commands.nextOperatorPacket).toContain("live-adapter-operator-evidence-next");
+    expect(controlRefresh.report.commands.nextOperatorSection).toContain("operator-section");
     expect(controlRefresh.report.artifacts.liveAdapterNextActions).toContain("control/live-adapter-next-actions.json");
     expect(controlRefresh.report.artifacts.roadmapCompletionAudit).toContain("control/roadmap-completion-audit.json");
     expect(controlRefresh.report.artifacts.gbrainExport).toContain("integrations/gbrain/gbrain-export.json");
     expect(controlRefresh.report.artifacts.consoleData).toContain("console/console-data.json");
     expect(controlRefresh.report.artifacts.consoleHtml).toContain("console/index.html");
     expect(controlRefresh.report.artifacts.liveAdapterOperatorEvidenceNext).toBeTruthy();
+    expect(controlRefresh.report.artifacts.liveAdapterOperatorEvidenceSection).toContain("live-adapter-operator-evidence-section-");
     await expect(fs.stat(path.join(vaultRoot, controlRefresh.report.artifacts.consoleData ?? ""))).resolves.toBeTruthy();
     await expect(fs.stat(path.join(vaultRoot, controlRefresh.report.artifacts.consoleHtml ?? ""))).resolves.toBeTruthy();
     const refreshedStatus = await projectStatus(vaultRoot, "ariadne");

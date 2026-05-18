@@ -26,6 +26,7 @@ import { generateLiveAdapterTargetDossier } from "./liveAdapterTargetDossier.js"
 import { LIVE_ADAPTER_TARGETS, type LiveAdapterTarget } from "./liveAdapterTargets.js";
 import { generateMutationReadinessAudit } from "./mutationReadinessAudit.js";
 import { generateMutationReadinessRepairPlan } from "./mutationReadinessRepairPlan.js";
+import { generateOperatorSectionHandoff } from "./operatorSectionHandoff.js";
 import { slugifyProject } from "./paths.js";
 import { generateRoadmapCompletionAudit } from "./roadmapCompletionAudit.js";
 
@@ -69,6 +70,7 @@ export interface RoadmapControlRefreshReport {
     liveAdapterOperatorEvidenceBatchCheck: string;
     liveAdapterOperatorEvidenceQueue: string;
     liveAdapterOperatorEvidenceNext?: string;
+    liveAdapterOperatorEvidenceSection?: string;
     liveAdapterOperatorEvidenceDraft?: string;
     liveAdapterOperatorEvidenceDraftPack?: string;
     liveAdapterReviewSession: string;
@@ -85,6 +87,7 @@ export interface RoadmapControlRefreshReport {
     e2eSmoke: string;
     roadmapControlRefresh: string;
     nextOperatorPacket?: string;
+    nextOperatorSection?: string;
     nextOperatorDraft?: string;
     operatorDraftPack: string;
   };
@@ -127,6 +130,14 @@ export async function refreshRoadmapControlArtifacts(input: {
         vaultRoot: input.vaultRoot,
         target: selected.target,
         preflightBatch: batchCheck
+      })
+    : undefined;
+  const nextSection = nextPacket
+    ? await generateOperatorSectionHandoff({
+        project,
+        vaultRoot: input.vaultRoot,
+        target: nextPacket.packet.target,
+        nextPacket
       })
     : undefined;
   const nextDraft = nextPacket
@@ -185,6 +196,7 @@ export async function refreshRoadmapControlArtifacts(input: {
       liveAdapterOperatorEvidenceBatchCheck: ref(input.vaultRoot, batchCheck.jsonPath),
       liveAdapterOperatorEvidenceQueue: ref(input.vaultRoot, queue.jsonPath),
       liveAdapterOperatorEvidenceNext: nextPacket ? ref(input.vaultRoot, nextPacket.jsonPath) : undefined,
+      liveAdapterOperatorEvidenceSection: nextSection ? ref(input.vaultRoot, nextSection.jsonPath) : undefined,
       liveAdapterOperatorEvidenceDraft: nextDraft ? ref(input.vaultRoot, nextDraft.jsonPath) : undefined,
       liveAdapterOperatorEvidenceDraftPack: ref(input.vaultRoot, draftPack.jsonPath),
       liveAdapterReviewSession: ref(input.vaultRoot, reviewSession.jsonPath),
@@ -200,6 +212,9 @@ export async function refreshRoadmapControlArtifacts(input: {
       roadmapControlRefresh: `npm run ariadne -- roadmap-control-refresh --project ${project}`,
       nextOperatorPacket: selected
         ? `npm run ariadne -- live-adapter-operator-evidence-next --project ${project} --target ${selected.target}`
+        : undefined,
+      nextOperatorSection: selected
+        ? `npm run ariadne -- operator-section --project ${project} --target ${selected.target}`
         : undefined,
       nextOperatorDraft: selected
         ? `npm run ariadne -- live-adapter-operator-evidence-draft --project ${project} --target ${selected.target}`
@@ -271,6 +286,7 @@ function renderReport(report: RoadmapControlRefreshReport): string {
     `- E2E smoke: \`${report.commands.e2eSmoke}\``,
     `- Refresh: \`${report.commands.roadmapControlRefresh}\``,
     ...(report.commands.nextOperatorPacket ? [`- Next operator packet: \`${report.commands.nextOperatorPacket}\``] : []),
+    ...(report.commands.nextOperatorSection ? [`- Next operator section: \`${report.commands.nextOperatorSection}\``] : []),
     ...(report.commands.nextOperatorDraft ? [`- Next operator draft: \`${report.commands.nextOperatorDraft}\``] : []),
     `- Operator draft pack: \`${report.commands.operatorDraftPack}\``,
     "",

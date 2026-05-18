@@ -431,6 +431,16 @@ const ARTIFACT_SPECS: ArtifactSpec[] = [
     minimumCount: 1
   },
   {
+    id: "live-adapter-operator-evidence-section",
+    label: "Live adapter operator section handoff",
+    required: false,
+    kind: "matching-files",
+    relativePath: "control",
+    prefix: "live-adapter-operator-evidence-section-",
+    suffix: ".json",
+    minimumCount: 1
+  },
+  {
     id: "live-adapter-operator-evidence-drafts",
     label: "Live adapter operator evidence drafts",
     required: false,

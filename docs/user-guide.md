@@ -70,6 +70,12 @@ To prepare the current operator packet and print only the file to fill plus the 
 npm run ariadne -- operator-next --project ariadne
 ```
 
+To focus on just the current missing section:
+
+```bash
+npm run ariadne -- operator-section --project ariadne
+```
+
 ## The Four Routes
 
 | Route | Use it when | Main surface |
@@ -95,6 +101,7 @@ Then follow the generated packet and the console **Evidence checklist**:
 
 - Start with the current section.
 - Use the listed assist and evidence refs as context.
+- Use `operator-section` when you want a one-section handoff with the exact start refs, GBrain advisory queries, and preflight command.
 - Record only verified observations in `operator-evidence.md`.
 - Run the preflight command.
 - Import only after the preflight is complete.
