@@ -110,8 +110,9 @@ Use this when the state feels stale:
 
 ```bash
 npm run ariadne -- roadmap-control-refresh --project ariadne
-npm run ariadne -- console-html --project ariadne --refresh-data
 ```
+
+The command refreshes the control artifacts, GBrain export, console data, and console HTML in one pass.
 
 ## Verify The MVP
 

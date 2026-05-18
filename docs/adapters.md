@@ -365,7 +365,7 @@ Artifacts:
 
 `roadmap-completion-audit` is a conservative completion sensor for the full Ariadne roadmap. It reads the current artifact checks, behavior checks, evaluation trends, console visual/browser checks, coordination records, GBrain advisory context, operator-evidence audit, live-adapter cutover audit, and review-session state. The audit is blocked until those current artifacts prove completion; it does not infer readiness from intent or from partial roadmap progress.
 
-`roadmap-control-refresh` is the non-mutating refresh pass to run before judging a long-lived checkout or generated vault. It regenerates live-adapter readiness, next actions, approval review state, dossiers, operator evidence workplan/workspace/assist/checks/queue, the next operator packet, review session, cutover audit, roadmap completion audit, GBrain export, and artifact checks. The report itself records `mutationApproved=false`, `approvalGranted=false`, and `operatorEvidenceRecordCreated=false`.
+`roadmap-control-refresh` is the non-mutating refresh pass to run before judging a long-lived checkout or generated vault. It regenerates live-adapter readiness, next actions, approval review state, dossiers, operator evidence workplan/workspace/assist/checks/queue, the next operator packet, review session, cutover audit, roadmap completion audit, GBrain export, artifact checks, console data, and console HTML. The report itself records `mutationApproved=false`, `approvalGranted=false`, and `operatorEvidenceRecordCreated=false`.
 
 `benchmark-pack` materialises repeatable source packs for smoke, realistic, and stress evaluations. The packs are local files only; they do not ingest sources or call live services by themselves.
 

@@ -2153,18 +2153,25 @@ describe("roadmap adapters", () => {
     expect(mutationDryRunCheck?.status).toBe("present");
     expect(mutationExecutionCheck?.status).toBe("present");
 
-    const controlRefresh = await refreshRoadmapControlArtifacts({ project: "ariadne", vaultRoot });
+    const controlRefresh = await refreshRoadmapControlArtifacts({ project: "ariadne", vaultRoot, refreshConsole: true });
     expect(controlRefresh.report.status).toBe("blocked");
     expect(controlRefresh.report.mutationApproved).toBe(false);
     expect(controlRefresh.report.approvalGranted).toBe(false);
     expect(controlRefresh.report.operatorEvidenceRecordCreated).toBe(false);
     expect(controlRefresh.report.summary.gbrainDocuments).toBeGreaterThan(0);
+    expect(controlRefresh.report.summary.consoleRefreshed).toBe(true);
     expect(controlRefresh.report.summary.operatorNextTarget).toBeTruthy();
     expect(controlRefresh.report.commands.nextOperatorPacket).toContain("live-adapter-operator-evidence-next");
     expect(controlRefresh.report.artifacts.liveAdapterNextActions).toContain("control/live-adapter-next-actions.json");
     expect(controlRefresh.report.artifacts.roadmapCompletionAudit).toContain("control/roadmap-completion-audit.json");
     expect(controlRefresh.report.artifacts.gbrainExport).toContain("integrations/gbrain/gbrain-export.json");
+    expect(controlRefresh.report.artifacts.consoleData).toContain("console/console-data.json");
+    expect(controlRefresh.report.artifacts.consoleHtml).toContain("console/index.html");
     expect(controlRefresh.report.artifacts.liveAdapterOperatorEvidenceNext).toBeTruthy();
+    await expect(fs.stat(path.join(vaultRoot, controlRefresh.report.artifacts.consoleData ?? ""))).resolves.toBeTruthy();
+    await expect(fs.stat(path.join(vaultRoot, controlRefresh.report.artifacts.consoleHtml ?? ""))).resolves.toBeTruthy();
+    const refreshedStatus = await projectStatus(vaultRoot, "ariadne");
+    expect(refreshedStatus.roadmapCompletionStale).toBe(false);
     const refreshedNextPacket = JSON.parse(
       await fs.readFile(path.join(vaultRoot, controlRefresh.report.artifacts.liveAdapterOperatorEvidenceNext ?? ""), "utf8")
     ) as {
