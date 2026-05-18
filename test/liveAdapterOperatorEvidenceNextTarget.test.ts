@@ -121,6 +121,7 @@ describe("live adapter operator evidence next target", () => {
 
   it("builds the target-scoped operator command sequence", () => {
     expect(nextOperatorEvidenceCommands("ariadne", "hermes-cron")).toEqual([
+      "npm run ariadne -- live-adapter-operator-evidence-next --project ariadne --target hermes-cron",
       "npm run ariadne -- live-adapter-operator-evidence-workspace --project ariadne --target hermes-cron",
       "npm run ariadne -- live-adapter-operator-evidence-assist --project ariadne --target hermes-cron",
       "npm run ariadne -- live-adapter-operator-evidence-check-all --project ariadne --source workspace --target hermes-cron",

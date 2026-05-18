@@ -1596,6 +1596,9 @@ describe("roadmap adapters", () => {
     );
     expect(operatorEvidenceRequirement?.evidenceRefs.some((ref) => ref.includes("live-evidence-promotions"))).toBe(false);
     expect(operatorEvidenceRequirement?.nextCommands.length).toBeGreaterThan(0);
+    expect(operatorEvidenceRequirement?.nextCommands).toContain(
+      `npm run ariadne -- live-adapter-operator-evidence-next --project ariadne --target ${nextTarget}`
+    );
     expect(operatorEvidenceRequirement?.nextCommands).toContain("npm run ariadne -- live-adapter-operator-evidence-workplan --project ariadne");
     expect(operatorEvidenceRequirement?.nextCommands).toContain("npm run ariadne -- live-adapter-operator-evidence-queue --project ariadne");
     expect(
