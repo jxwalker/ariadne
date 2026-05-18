@@ -3026,7 +3026,84 @@ describe("roadmap adapters", () => {
       "background-only"
     ]);
     expect(console.data.workflow.nextAction.artifactRef).toBeTruthy();
+    expect(console.data.workflow.nextAction.steps.length).toBeGreaterThan(0);
+    for (const step of console.data.workflow.nextAction.steps) {
+      expect(step.id).toBeTruthy();
+      expect(step.title).toBeTruthy();
+      expect(step.detail).toBeTruthy();
+      expect(step.surface).toBeTruthy();
+      expect(step.kind).toBeTruthy();
+    }
+    if (console.data.workflow.nextAction.source === "operator-evidence-queue") {
+      expect(console.data.workflow.nextAction.steps.map((step) => step.id)).toEqual([
+        "open-next-packet",
+        "fill-operator-evidence",
+        "review-assist-and-gbrain",
+        "preflight-evidence",
+        "import-after-human-verification",
+        "review-cutover-state",
+        "audit-cutover"
+      ]);
+      expect(console.data.workflow.nextAction.steps.find((step) => step.id === "review-assist-and-gbrain")?.surface).toBe(
+        "gbrain"
+      );
+    }
     const { workflow: _workflow, ...consoleWorkflowInput } = console.data;
+    const withoutOperatorEvidence = {
+      ...consoleWorkflowInput,
+      liveAdapterOperatorEvidenceQueue: undefined,
+      liveAdapterOperatorEvidenceWorkplan: undefined,
+      liveAdapterOperatorEvidenceAudit: undefined
+    };
+    const roadmapBlockedWorkflow = buildConsoleWorkflow({
+      ...withoutOperatorEvidence,
+      roadmapCompletionAudit: {
+        schemaVersion: 1,
+        project: "ariadne",
+        generatedAt: new Date().toISOString(),
+        status: "blocked",
+        summary: { requirements: 1, passed: 0, blocked: 1, advisory: 0 },
+        requirements: [
+          {
+            id: "operator-evidence",
+            title: "Operator evidence",
+            status: "blocked",
+            detail: "Operator evidence remains incomplete.",
+            evidenceRefs: ["projects/ariadne/control/roadmap-completion-audit.json"],
+            nextCommands: []
+          }
+        ]
+      }
+    });
+    expect(roadmapBlockedWorkflow.nextAction.source).toBe("roadmap-completion-audit");
+    expect(roadmapBlockedWorkflow.nextAction.steps.map((step) => step.id)).toEqual(["open-roadmap-audit"]);
+
+    const mergeReadinessWorkflow = buildConsoleWorkflow({
+      ...withoutOperatorEvidence,
+      roadmapCompletionAudit: undefined,
+      readiness: {
+        schemaVersion: 1,
+        project: "ariadne",
+        generatedAt: new Date().toISOString(),
+        status: "blocked",
+        evidence: [],
+        missing: ["Missing review evidence."],
+        mergeGates: []
+      },
+      summary: { ...withoutOperatorEvidence.summary, readinessStatus: "blocked" }
+    });
+    expect(mergeReadinessWorkflow.nextAction.source).toBe("merge-readiness");
+    expect(mergeReadinessWorkflow.nextAction.steps.map((step) => step.id)).toEqual(["open-readiness-report"]);
+
+    const fallbackWorkflow = buildConsoleWorkflow({
+      ...withoutOperatorEvidence,
+      roadmapCompletionAudit: undefined,
+      readiness: undefined,
+      summary: { ...withoutOperatorEvidence.summary, readinessStatus: undefined }
+    });
+    expect(fallbackWorkflow.nextAction.source).toBe("workflow-fallback");
+    expect(fallbackWorkflow.nextAction.steps.map((step) => step.id)).toEqual(["choose-next-slice"]);
+
     const failedBrowserWorkflow = buildConsoleWorkflow({
       ...consoleWorkflowInput,
       consoleBrowserChecks: {

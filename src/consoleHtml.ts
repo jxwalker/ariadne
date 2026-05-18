@@ -321,6 +321,7 @@ function workflowOverview(workflow: ConsoleData["workflow"]): string {
     `<p>${escapeHtml(workflow.nextAction.detail)}</p>`,
     `<small>${escapeHtml(workflow.nextAction.artifactRef)}</small>`,
     ...(workflow.nextAction.command ? [`<code>${escapeHtml(workflow.nextAction.command)}</code>`] : []),
+    actionSteps(workflow.nextAction.steps),
     "</div>",
     '<div class="workflow-modes" data-visual-role="operator-modes">',
     '<div class="workflow-subhead"><span class="label">Operator modes</span><p>Choose the surface by user intent; Hermes is the runtime backplane, not the only front door.</p></div>',
@@ -337,6 +338,18 @@ function workflowOverview(workflow: ConsoleData["workflow"]): string {
     ),
     "</div>",
     "</section>"
+  ].join("");
+}
+
+function actionSteps(steps: ConsoleData["workflow"]["nextAction"]["steps"] | undefined): string {
+  if (!steps || steps.length === 0) return "";
+  return [
+    '<ol class="action-steps" data-visual-role="next-action-steps">',
+    ...steps.map(
+      (step) =>
+        `<li><div><span>${escapeHtml(step.kind)}</span><strong>${escapeHtml(step.title)}</strong></div><p>${escapeHtml(step.detail)}</p>${step.artifactRef ? `<small>${escapeHtml(step.artifactRef)}</small>` : ""}${step.command ? `<code>${escapeHtml(step.command)}</code>` : ""}</li>`
+    ),
+    "</ol>"
   ].join("");
 }
 
@@ -1138,6 +1151,50 @@ h1 {
   font-family: var(--mono);
   font-size: 12px;
   line-height: 1.4;
+}
+.action-steps {
+  list-style: decimal;
+  list-style-position: outside;
+  margin: 0;
+  padding-left: 20px;
+  display: grid;
+  gap: 10px;
+}
+.action-steps li {
+  min-width: 0;
+  border-top: 1px solid var(--line);
+  padding-top: 10px;
+}
+.action-steps div {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  align-items: baseline;
+}
+.action-steps li > * + * {
+  margin-top: 8px;
+}
+.action-steps span {
+  color: var(--muted);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+}
+.action-steps strong {
+  font-family: var(--mono);
+  font-size: 13px;
+  line-height: 1.25;
+}
+.action-steps p {
+  margin: 0;
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.4;
+  overflow-wrap: anywhere;
+}
+.action-steps code {
+  font-size: 11px;
 }
 .workflow-modes,
 .workflow-surfaces {

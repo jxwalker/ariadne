@@ -164,6 +164,7 @@ function nextBestAction(data: ConsoleWorkflowInput): ConsoleWorkflow["nextAction
         data.artifacts.liveAdapterOperatorEvidenceQueue ??
         "control/live-adapter-operator-evidence-queue.json",
       command: `npm run ariadne -- live-adapter-operator-evidence-next --project ${data.project} --target ${selectedTarget.target}`,
+      steps: operatorEvidenceActionSteps(data.project, selectedTarget.target),
       source: "operator-evidence-queue"
     };
   }
@@ -176,6 +177,16 @@ function nextBestAction(data: ConsoleWorkflowInput): ConsoleWorkflow["nextAction
       status: blockedRequirement.status,
       detail: blockedRequirement.detail,
       artifactRef: data.artifacts.roadmapCompletionAudit ?? "control/roadmap-completion-audit.md",
+      steps: [
+        {
+          id: "open-roadmap-audit",
+          title: "Open roadmap audit",
+          detail: "Read the blocked requirement and follow its next commands.",
+          surface: "ariadne-console",
+          kind: "read",
+          artifactRef: data.artifacts.roadmapCompletionAudit ?? "control/roadmap-completion-audit.md"
+        }
+      ],
       source: "roadmap-completion-audit"
     };
   }
@@ -187,6 +198,17 @@ function nextBestAction(data: ConsoleWorkflowInput): ConsoleWorkflow["nextAction
       status: data.summary.readinessStatus ?? "blocked",
       detail: data.readiness?.missing[0] ?? "A merge-readiness gate is missing.",
       artifactRef: data.artifacts.control ?? "control/merge-readiness.md",
+      steps: [
+        {
+          id: "open-readiness-report",
+          title: "Open readiness report",
+          detail: "Resolve the first missing merge-readiness gate, then regenerate control artifacts.",
+          surface: "ariadne-runner",
+          kind: "check",
+          artifactRef: data.artifacts.control ?? "control/merge-readiness.md",
+          command: `npm run ariadne -- control --project ${data.project}`
+        }
+      ],
       source: "merge-readiness"
     };
   }
@@ -197,6 +219,85 @@ function nextBestAction(data: ConsoleWorkflowInput): ConsoleWorkflow["nextAction
     status: "ready",
     detail: "Current artifacts do not expose a blocking action.",
     artifactRef: data.artifacts.hotIndex ?? "HOT_INDEX.md",
+    steps: [
+      {
+        id: "choose-next-slice",
+        title: "Choose next bounded slice",
+        detail: "Use the roadmap and console state to pick the next reviewable implementation slice.",
+        surface: "ariadne-console",
+        kind: "read",
+        artifactRef: data.artifacts.hotIndex ?? "HOT_INDEX.md"
+      }
+    ],
     source: "workflow-fallback"
   };
+}
+
+function operatorEvidenceActionSteps(project: string, target: string): ConsoleWorkflow["nextAction"]["steps"] {
+  const operatorEvidenceRef = `projects/${project}/control/operator-evidence/${target}/operator-evidence.md`;
+  return [
+    {
+      id: "open-next-packet",
+      title: "Open the target packet",
+      detail: "Read the selected target packet before changing evidence files.",
+      surface: "ariadne-console",
+      kind: "read",
+      artifactRef: `projects/${project}/control/live-adapter-operator-evidence-next-${target}.md`,
+      command: `npm run ariadne -- live-adapter-operator-evidence-next --project ${project} --target ${target}`
+    },
+    {
+      id: "fill-operator-evidence",
+      title: "Fill verified observations",
+      detail: "Record only real operator observations in the target operator-evidence.md file.",
+      surface: "ariadne-console",
+      kind: "fill",
+      artifactRef: operatorEvidenceRef,
+      command: `npm run ariadne -- live-adapter-operator-evidence-workspace --project ${project} --target ${target}`
+    },
+    {
+      id: "review-assist-and-gbrain",
+      title: "Review assist and GBrain context",
+      detail: "Use read-only assist refs and advisory GBrain queries as context; do not treat them as proof.",
+      surface: "gbrain",
+      kind: "review",
+      artifactRef: `projects/${project}/control/live-adapter-operator-evidence-assist-${target}.md`,
+      command: `npm run ariadne -- live-adapter-operator-evidence-assist --project ${project} --target ${target}`
+    },
+    {
+      id: "preflight-evidence",
+      title: "Run preflight",
+      detail: "Check the filled workspace without importing evidence or approving mutation.",
+      surface: "ariadne-runner",
+      kind: "check",
+      artifactRef: `projects/${project}/control/live-adapter-operator-evidence-check-all-${target}.md`,
+      command: `npm run ariadne -- live-adapter-operator-evidence-check-all --project ${project} --source workspace --target ${target}`
+    },
+    {
+      id: "import-after-human-verification",
+      title: "Import only if complete",
+      detail: "Import ready evidence only after the human-filled file passes preflight.",
+      surface: "ariadne-runner",
+      kind: "import",
+      artifactRef: operatorEvidenceRef,
+      command: `npm run ariadne -- live-adapter-operator-evidence-import-ready --project ${project} --by <operator> --target ${target}`
+    },
+    {
+      id: "review-cutover-state",
+      title: "Review cutover state",
+      detail: "Refresh the target review session and cutover audit after evidence import.",
+      surface: "ariadne-console",
+      kind: "review",
+      artifactRef: `projects/${project}/control/live-adapter-review-session-${target}.md`,
+      command: `npm run ariadne -- live-adapter-review-session --project ${project} --target ${target}`
+    },
+    {
+      id: "audit-cutover",
+      title: "Audit live-adapter cutover",
+      detail: "Confirm cutover remains blocked or ready before any implementation replaces placeholders.",
+      surface: "ariadne-runner",
+      kind: "check",
+      artifactRef: `projects/${project}/control/live-adapter-cutover-audit-${target}.md`,
+      command: `npm run ariadne -- live-adapter-cutover-audit --project ${project} --target ${target}`
+    }
+  ];
 }
