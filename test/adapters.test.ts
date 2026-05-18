@@ -2,7 +2,7 @@ import { execFileSync } from "node:child_process";
 import fs from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 import { decideApproval, requestApproval } from "../src/approvals.js";
 import { generateArtifactCheckReport } from "../src/artifactChecks.js";
 import { runBenchmarkPack } from "../src/benchmarkRun.js";
@@ -2205,6 +2205,65 @@ describe("roadmap adapters", () => {
     expect(promotionArtifactChecks.report.checks.find((check) => check.id === "live-evidence-promotions")?.status).toBe(
       "present"
     );
+    const promotionRef = path.relative(vaultRoot, promotedLiveEvidence.jsonPath).split(path.sep).join("/");
+    const promotionDir = path.dirname(promotedLiveEvidence.jsonPath);
+    const invalidPromotionPath = path.join(promotionDir, "live-evidence-promotion-deployment-invalid.json");
+    const mutationApprovedPromotionPath = path.join(promotionDir, "live-evidence-promotion-deployment-mutating.json");
+    const approvalGrantedPromotionPath = path.join(promotionDir, "live-evidence-promotion-deployment-approved.json");
+    const operatorEvidenceCreatedPromotionPath = path.join(
+      promotionDir,
+      "live-evidence-promotion-deployment-evidence-created.json"
+    );
+    await fs.writeFile(invalidPromotionPath, "{");
+    await fs.writeFile(
+      mutationApprovedPromotionPath,
+      JSON.stringify({
+        ...promotedLiveEvidence.promotion,
+        id: "live-evidence-promotion-deployment-mutating",
+        mutationApproved: true
+      })
+    );
+    await fs.writeFile(
+      approvalGrantedPromotionPath,
+      JSON.stringify({
+        ...promotedLiveEvidence.promotion,
+        id: "live-evidence-promotion-deployment-approved",
+        approvalGranted: true
+      })
+    );
+    await fs.writeFile(
+      operatorEvidenceCreatedPromotionPath,
+      JSON.stringify({
+        ...promotedLiveEvidence.promotion,
+        id: "live-evidence-promotion-deployment-evidence-created",
+        operatorEvidenceRecordCreated: true
+      })
+    );
+    const mutationApprovedPromotionRef = path.relative(vaultRoot, mutationApprovedPromotionPath).split(path.sep).join("/");
+    const approvalGrantedPromotionRef = path.relative(vaultRoot, approvalGrantedPromotionPath).split(path.sep).join("/");
+    const operatorEvidenceCreatedPromotionRef = path
+      .relative(vaultRoot, operatorEvidenceCreatedPromotionPath)
+      .split(path.sep)
+      .join("/");
+    const warnSpy = vi.spyOn(globalThis.console, "warn").mockImplementation(() => undefined);
+    try {
+      const workplanWithPromotion = await generateLiveAdapterOperatorEvidenceWorkplan({ project: "ariadne", vaultRoot });
+      const deploymentEvidenceRefs =
+        workplanWithPromotion.workplan.targets.find((target) => target.target === "deployment")?.evidenceRefs ?? [];
+      expect(deploymentEvidenceRefs).toContain(promotionRef);
+      expect(deploymentEvidenceRefs).not.toContain(mutationApprovedPromotionRef);
+      expect(deploymentEvidenceRefs).not.toContain(approvalGrantedPromotionRef);
+      expect(deploymentEvidenceRefs).not.toContain(operatorEvidenceCreatedPromotionRef);
+      expect(warnSpy).toHaveBeenCalledWith(expect.stringContaining("live-evidence-promotion-deployment-invalid.json"));
+    } finally {
+      warnSpy.mockRestore();
+      await Promise.all([
+        fs.rm(invalidPromotionPath, { force: true }),
+        fs.rm(mutationApprovedPromotionPath, { force: true }),
+        fs.rm(approvalGrantedPromotionPath, { force: true }),
+        fs.rm(operatorEvidenceCreatedPromotionPath, { force: true })
+      ]);
+    }
     const falseJson = path.join(vaultRoot, "projects", "ariadne", "deployment", "false.json");
     await fs.writeFile(falseJson, "false");
     const promotedFalsyJson = await promoteLiveEvidence({
