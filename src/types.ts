@@ -1009,6 +1009,15 @@ export interface PromotedLiveEvidenceSummary {
   summaryBullets: string[];
 }
 
+export interface HumanVerificationWorksheetRow {
+  missingSection: string;
+  humanVerificationPrompt: string;
+  existingEvidenceRefs: string[];
+  promotedLiveEvidenceRefs: string[];
+  gbrainQueries: string[];
+  humanVerificationRequired: true;
+}
+
 export interface LiveAdapterOperatorEvidenceAssist {
   schemaVersion: 1;
   project: string;
@@ -1041,14 +1050,7 @@ export interface LiveAdapterOperatorEvidenceAssist {
     importCommand: string;
     existingEvidenceRefs: string[];
     promotedLiveEvidence: PromotedLiveEvidenceSummary[];
-    reviewChecklist: Array<{
-      missingSection: string;
-      humanVerificationPrompt: string;
-      existingEvidenceRefs: string[];
-      promotedLiveEvidenceRefs: string[];
-      gbrainQueries: string[];
-      humanVerificationRequired: true;
-    }>;
+    reviewChecklist: HumanVerificationWorksheetRow[];
     supportFileRefs: string[];
     missingSections: string[];
     requiredEvidence: string[];
@@ -1090,8 +1092,12 @@ export interface LiveAdapterOperatorEvidenceNextPacket {
     reviewSession: string;
     cutoverAudit: string;
   };
+  afterHumanVerificationCommands: {
+    import: string;
+  };
   nextAction?: string;
   missingSectionLabels: string[];
+  verificationWorksheet: HumanVerificationWorksheetRow[];
   evidenceRefs: string[];
 }
 
