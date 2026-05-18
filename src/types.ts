@@ -1046,6 +1046,44 @@ export interface LiveAdapterOperatorEvidenceAssist {
   }>;
 }
 
+export interface LiveAdapterOperatorEvidenceNextPacket {
+  schemaVersion: 1;
+  project: string;
+  generatedAt: string;
+  target: Exclude<MutationReadinessPlan["target"], "generic">;
+  selectedBy: "explicit" | "queue";
+  status: "operator_action_required" | "ready_for_import" | "complete";
+  mutationApproved: false;
+  approvalGranted: false;
+  operatorEvidenceRecordCreated: false;
+  summary: {
+    missingSections: number;
+    existingEvidenceRefs: number;
+    promotedLiveEvidence: number;
+    supportFileRefs: number;
+    cutoverBlockedGates: number;
+  };
+  refs: {
+    workplan: string;
+    queue: string;
+    operatorEvidenceAudit: string;
+    workspace: string;
+    assist: string;
+    checkBatch: string;
+    reviewSession: string;
+    cutoverAudit: string;
+  };
+  commands: {
+    check: string;
+    import: string;
+    reviewSession: string;
+    cutoverAudit: string;
+  };
+  nextAction?: string;
+  missingSectionLabels: string[];
+  evidenceRefs: string[];
+}
+
 export interface LiveEvidencePromotion {
   schemaVersion: 1;
   id: string;

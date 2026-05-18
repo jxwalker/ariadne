@@ -46,6 +46,7 @@ import {
 import { checkAllLiveAdapterOperatorEvidence } from "../src/liveAdapterOperatorEvidenceCheckAll.js";
 import { generateLiveAdapterOperatorEvidenceAssist } from "../src/liveAdapterOperatorEvidenceAssist.js";
 import { importReadyLiveAdapterOperatorEvidence } from "../src/liveAdapterOperatorEvidenceImportReady.js";
+import { generateLiveAdapterOperatorEvidenceNextPacket } from "../src/liveAdapterOperatorEvidenceNextPacket.js";
 import { generateLiveAdapterOperatorEvidenceWorkplan } from "../src/liveAdapterOperatorEvidenceWorkplan.js";
 import { generateLiveAdapterOperatorEvidenceQueue } from "../src/liveAdapterOperatorEvidenceQueue.js";
 import { generateLiveAdapterOperatorEvidenceWorkspace } from "../src/liveAdapterOperatorEvidenceWorkspace.js";
@@ -1509,6 +1510,26 @@ describe("roadmap adapters", () => {
     expect(regeneratedHermesPreflight.batch.targets.map((target) => target.target)).toEqual(["hermes-cron"]);
     const regeneratedQueue = JSON.parse(await fs.readFile(operatorEvidenceQueue.jsonPath, "utf8")) as typeof operatorEvidenceQueue.queue;
     expect(regeneratedQueue.targets.some((target) => target.target === "hermes-cron")).toBe(true);
+    const nextOperatorPacket = await generateLiveAdapterOperatorEvidenceNextPacket({ project: "ariadne", vaultRoot });
+    expect(nextOperatorPacket.jsonPath).toContain("live-adapter-operator-evidence-next-");
+    expect(nextOperatorPacket.packet.selectedBy).toBe("queue");
+    expect(nextOperatorPacket.packet.mutationApproved).toBe(false);
+    expect(nextOperatorPacket.packet.operatorEvidenceRecordCreated).toBe(false);
+    expect(nextOperatorPacket.packet.refs.workspace).toContain("live-adapter-operator-evidence-workspace-");
+    expect(nextOperatorPacket.packet.refs.assist).toContain("live-adapter-operator-evidence-assist-");
+    expect(nextOperatorPacket.packet.refs.checkBatch).toContain("live-adapter-operator-evidence-check-all-");
+    expect(nextOperatorPacket.packet.commands.import).toContain("--by <operator>");
+    const nextOperatorPacketMarkdown = await fs.readFile(nextOperatorPacket.markdownPath, "utf8");
+    expect(nextOperatorPacketMarkdown).toContain("does not import operator evidence");
+    const explicitHermesPacket = await generateLiveAdapterOperatorEvidenceNextPacket({
+      project: "ariadne",
+      vaultRoot,
+      target: "hermes-cron"
+    });
+    expect(explicitHermesPacket.packet.target).toBe("hermes-cron");
+    expect(explicitHermesPacket.packet.selectedBy).toBe("explicit");
+    expect(explicitHermesPacket.packet.refs.reviewSession).toContain("live-adapter-review-session-hermes-cron.json");
+    expect(explicitHermesPacket.packet.refs.cutoverAudit).toContain("live-adapter-cutover-audit-hermes-cron.json");
     const gsd2Workspace = operatorEvidenceWorkspace.workspace.targets.find((target) => target.target === "gsd2");
     expect(gsd2Workspace?.evidenceFileRef).toContain("control/operator-evidence/gsd2/operator-evidence.md");
     const gsd2WorkspaceFile = path.join(vaultRoot, gsd2Workspace?.evidenceFileRef ?? "");
@@ -1668,7 +1689,7 @@ describe("roadmap adapters", () => {
     expect(console.data.summary.liveAdapterOperatorEvidenceAssistRefs).toBeGreaterThan(0);
     expect(console.data.liveAdapterOperatorEvidenceAssist?.operatorEvidenceRecordCreated).toBe(false);
     expect(console.data.liveAdapterOperatorEvidenceAssist?.targets.some((target) => target.target === "hermes-cron")).toBe(true);
-    expect(console.data.summary.liveAdapterOperatorEvidenceChecks).toBe(16);
+    expect(console.data.summary.liveAdapterOperatorEvidenceChecks).toBe(18);
     expect(console.data.liveAdapterOperatorEvidenceAudit?.mutationApproved).toBe(false);
     expect(console.data.liveAdapterOperatorEvidenceChecks[0]?.recorded).toBe(false);
     expect(console.data.liveAdapterOperatorEvidence.some((record) => record.target === "deployment")).toBe(true);
@@ -1820,6 +1841,9 @@ describe("roadmap adapters", () => {
     const operatorEvidenceAssistCheck = artifactChecks.report.checks.find(
       (check) => check.id === "live-adapter-operator-evidence-assist"
     );
+    const operatorEvidenceNextCheck = artifactChecks.report.checks.find(
+      (check) => check.id === "live-adapter-operator-evidence-next"
+    );
     const operatorEvidenceWorkspaceFilesCheck = artifactChecks.report.checks.find(
       (check) => check.id === "live-adapter-operator-evidence-workspace-files"
     );
@@ -1848,12 +1872,13 @@ describe("roadmap adapters", () => {
     expect(cutoverAuditCheck?.status).toBe("present");
     expect(reviewSessionCheck?.status).toBe("present");
     expect(evidenceTemplatesCheck?.status).toBe("present");
-    expect(operatorEvidencePreflightCheck?.count).toBe(16);
+    expect(operatorEvidencePreflightCheck?.count).toBe(18);
     expect(operatorEvidenceBatchCheck?.status).toBe("present");
     expect(operatorEvidenceImportReadyCheck?.status).toBe("present");
     expect(operatorEvidenceQueueCheck?.status).toBe("present");
     expect(operatorEvidenceWorkspaceCheck?.status).toBe("present");
     expect(operatorEvidenceAssistCheck?.status).toBe("present");
+    expect(operatorEvidenceNextCheck?.status).toBe("present");
     expect(operatorEvidenceWorkspaceFilesCheck?.count).toBe(42);
     expect(operatorEvidenceCheck?.count).toBe(4);
     expect(operatorEvidenceAuditCheck?.status).toBe("present");
