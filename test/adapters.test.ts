@@ -2230,6 +2230,52 @@ describe("roadmap adapters", () => {
     }
   });
 
+  it("preserves loopback runtime URLs and redacts private non-loopback URLs", async () => {
+    const { vaultRoot } = await preparedProject();
+    const runtimeProbe = await collectLocalRuntimeProbe(
+      {
+        project: "ariadne",
+        vaultRoot,
+        hermesDashboardUrl: "http://localhost:9119",
+        ollamaUrl: "http://127.0.0.2:11434",
+        ds4Url: "http://[::1]:8000/v1",
+        lmStudioUrl: "http://127.0.0.1:1234/v1",
+        atlasUrl: "http://10.0.0.5:8888/v1",
+        timeoutMs: 100
+      },
+      {
+        runCommand: async () => ({ exitCode: 0, stdout: "ok", stderr: "" }),
+        fetchJson: async (url) => {
+          if (url === "http://localhost:9119") return { ok: true, status: 200, text: "<html></html>" };
+          if (url.endsWith("/api/tags")) {
+            return { ok: true, status: 200, text: "{}", json: { models: [{ name: "qwen-local" }] } };
+          }
+          if (url.endsWith("/models")) {
+            return { ok: true, status: 200, text: "{}", json: { data: [{ id: "local-model" }] } };
+          }
+          return { ok: false, status: 0, text: "", error: "connection refused" };
+        }
+      }
+    );
+
+    expect(runtimeProbe.probe.hermes.dashboard.url).toBe("http://localhost:9119");
+    expect(runtimeProbe.probe.modelEndpoints.find((endpoint) => endpoint.id === "ollama")?.url).toBe(
+      "http://127.0.0.2:11434"
+    );
+    expect(runtimeProbe.probe.modelEndpoints.find((endpoint) => endpoint.id === "ds4-openai")?.url).toBe(
+      "http://[::1]:8000/v1"
+    );
+    expect(runtimeProbe.probe.modelEndpoints.find((endpoint) => endpoint.id === "lmstudio")?.url).toBe(
+      "http://127.0.0.1:1234/v1"
+    );
+    expect(runtimeProbe.probe.modelEndpoints.find((endpoint) => endpoint.id === "atlas")?.url).toBe(
+      "<redacted-runtime-url>"
+    );
+    const runtimeProbeJson = await fs.readFile(runtimeProbe.jsonPath, "utf8");
+    expect(runtimeProbeJson).toContain("http://127.0.0.2:11434");
+    expect(runtimeProbeJson).not.toContain("http://10.0.0.5:8888/v1");
+  });
+
   it("records CI, CodeRabbit, Playwright, infra, OpenScorpion, and guarded worktree evidence", async () => {
     const { temp, vaultRoot } = await preparedProject();
     const repo = path.join(temp, "repo");

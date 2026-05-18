@@ -504,7 +504,11 @@ function redactRuntimeUrl(value: string): string {
 
 function isLocalhost(hostname: string): boolean {
   const normalized = hostname.toLowerCase();
-  return normalized === "localhost" || normalized === "127.0.0.1" || normalized === "::1" || normalized === "[::1]";
+  if (normalized === "localhost" || normalized === "::1" || normalized === "[::1]") return true;
+  const ipv4Parts = normalized.split(".");
+  if (ipv4Parts.length !== 4) return false;
+  const octets = ipv4Parts.map((part) => Number(part));
+  return octets.every((octet) => Number.isInteger(octet) && octet >= 0 && octet <= 255) && octets[0] === 127;
 }
 
 function objectValue(value: unknown): Record<string, unknown> | undefined {
