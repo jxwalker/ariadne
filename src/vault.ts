@@ -358,6 +358,16 @@ export async function projectStatus(vaultRoot: string, project: string): Promise
     operatorEvidenceWorkplan,
     operatorEvidenceAudit
   );
+  const staleRoadmapSources = roadmapCompletion
+    ? staleSources(roadmapCompletion.generatedAt, {
+        "mutation-readiness-repair-plan": repairPlan?.generatedAt,
+        "operator-evidence-audit": operatorEvidenceAudit?.generatedAt,
+        "operator-evidence-workplan": operatorEvidenceWorkplan?.generatedAt,
+        "operator-evidence-queue": operatorEvidenceQueue?.generatedAt,
+        "live-adapter-cutover-audit": cutoverAudit?.generatedAt,
+        "live-adapter-review-session": reviewSession?.generatedAt
+      })
+    : [];
 
   return {
     project: projectSlug,
@@ -368,6 +378,11 @@ export async function projectStatus(vaultRoot: string, project: string): Promise
     readinessStatus: readiness?.status,
     roadmapCompletionStatus: roadmapCompletion?.status,
     roadmapCompletionBlocked: roadmapCompletion?.summary.blocked,
+    roadmapCompletionGeneratedAt: roadmapCompletion?.generatedAt,
+    roadmapCompletionStale: staleRoadmapSources.length > 0,
+    roadmapCompletionStaleSources: staleRoadmapSources.length > 0 ? staleRoadmapSources : undefined,
+    roadmapCompletionRefreshCommand:
+      staleRoadmapSources.length > 0 ? `npm run ariadne -- roadmap-control-refresh --project ${projectSlug}` : undefined,
     mutationReadinessRepairStatus: repairPlan?.status,
     mutationReadinessRepairMissingPlans: repairPlan?.summary.missingPlans,
     mutationReadinessRepairOperatorActionRequired: repairPlan?.summary.operatorActionRequired,
@@ -397,6 +412,23 @@ export async function projectStatus(vaultRoot: string, project: string): Promise
     liveAdapterReviewSessionActionItems: reviewSession?.summary.actionItems,
     latestE2eSmoke: e2eSmoke
   };
+}
+
+function staleSources(baseline: string | undefined, sources: Record<string, string | undefined>): string[] {
+  const baselineTime = parseTimestamp(baseline);
+  if (baselineTime === undefined) return [];
+  return Object.entries(sources)
+    .filter(([, generatedAt]) => {
+      const sourceTime = parseTimestamp(generatedAt);
+      return sourceTime !== undefined && sourceTime > baselineTime;
+    })
+    .map(([source]) => source);
+}
+
+function parseTimestamp(value: string | undefined): number | undefined {
+  if (!value) return undefined;
+  const time = Date.parse(value);
+  return Number.isNaN(time) ? undefined : time;
 }
 
 async function readJson<T>(filePath: string): Promise<T | undefined> {

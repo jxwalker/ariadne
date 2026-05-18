@@ -437,6 +437,8 @@ These reports do not execute anything. Readiness compares accepted approval-pack
 
 `roadmap-completion-audit` is the final conservative status check. It writes `control/roadmap-completion-audit.json` and `.md`, then reports whether the whole roadmap is proven complete or still blocked by missing artifact checks, behavior checks, evaluation trends, console verification, coordination records, GBrain advisory context, operator evidence, cutover gates, or review-session readiness.
 
+`status` warns when that roadmap audit is older than newer control artifacts and prints `npm run ariadne -- roadmap-control-refresh --project <project>`. Run that refresh before making a completion decision from a long-lived checkout.
+
 For live adapters, prefer the target-specific wrappers so the expected target is fixed by the command name:
 
 ```bash

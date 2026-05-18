@@ -1664,6 +1664,17 @@ async function main(): Promise<void> {
     }
     if (status.roadmapCompletionStatus) {
       console.log(`Roadmap completion: ${status.roadmapCompletionStatus} (${status.roadmapCompletionBlocked ?? 0} blocked)`);
+      if (status.roadmapCompletionGeneratedAt) {
+        console.log(`Roadmap completion generated: ${status.roadmapCompletionGeneratedAt}`);
+      }
+      if (status.roadmapCompletionStale) {
+        console.log(
+          `Roadmap completion audit is stale relative to: ${(status.roadmapCompletionStaleSources ?? []).join(", ")}`
+        );
+        if (status.roadmapCompletionRefreshCommand) {
+          console.log(`Roadmap refresh command: ${status.roadmapCompletionRefreshCommand}`);
+        }
+      }
     }
     if (status.mutationReadinessRepairStatus) {
       console.log(
