@@ -147,7 +147,14 @@ vault/projects/<project>/control/live-adapter-operator-evidence-draft-<target>.m
 vault/projects/<project>/control/operator-evidence/<target>/operator-evidence-draft.md
 ```
 
-The draft is intentionally separate from `operator-evidence.md`. It gathers candidate actions, existing refs, promoted live evidence refs, and GBrain advisory queries, but it must not be imported directly. A human operator still has to verify the facts, update `operator-evidence.md`, run the preflight check, and only then run the import command.
+`live-adapter-operator-evidence-drafts` generates that same non-authoritative draft for every live-adapter target and writes a pack summary:
+
+```text
+vault/projects/<project>/control/live-adapter-operator-evidence-drafts.json
+vault/projects/<project>/control/live-adapter-operator-evidence-drafts.md
+```
+
+The drafts are intentionally separate from `operator-evidence.md`. They gather candidate actions, existing refs, promoted live evidence refs, and GBrain advisory queries, but they must not be imported directly. A human operator still has to verify the facts, update each target's `operator-evidence.md`, run the preflight check, and only then run the import command.
 
 `live-adapter-operator-evidence` and `live-adapter-operator-evidence-audit` evaluate those filled operator files. The importer hashes the source, checks required evidence sections, keeps GBrain notes advisory, and writes `mutationApproved=false` plus `approvalGranted=false`.
 

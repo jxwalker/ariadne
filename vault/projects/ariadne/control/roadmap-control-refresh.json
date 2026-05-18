@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "project": "ariadne",
-  "generatedAt": "2026-05-18T05:22:24.586Z",
+  "generatedAt": "2026-05-18T05:43:30.878Z",
   "status": "blocked",
   "mutationApproved": false,
   "approvalGranted": false,
@@ -11,7 +11,7 @@
     "roadmapBlocked": 3,
     "artifactStatus": "passed",
     "artifactMissingRequired": 0,
-    "gbrainDocuments": 35,
+    "gbrainDocuments": 40,
     "liveAdapterStatus": "actions_required",
     "operatorEvidenceStatus": "blocked",
     "operatorQueueStatus": "evidence_required",
@@ -36,6 +36,7 @@
     "liveAdapterOperatorEvidenceQueue": "projects/ariadne/control/live-adapter-operator-evidence-queue.json",
     "liveAdapterOperatorEvidenceNext": "projects/ariadne/control/live-adapter-operator-evidence-next-deployment.json",
     "liveAdapterOperatorEvidenceDraft": "projects/ariadne/control/live-adapter-operator-evidence-draft-deployment.json",
+    "liveAdapterOperatorEvidenceDraftPack": "projects/ariadne/control/live-adapter-operator-evidence-drafts.json",
     "liveAdapterReviewSession": "projects/ariadne/control/live-adapter-review-session.json",
     "liveAdapterCutoverAudit": "projects/ariadne/control/live-adapter-cutover-audit.json",
     "liveAdapterDossiers": [
@@ -55,7 +56,8 @@
     "e2eSmoke": "npm run ariadne -- e2e-smoke --project ariadne",
     "roadmapControlRefresh": "npm run ariadne -- roadmap-control-refresh --project ariadne",
     "nextOperatorPacket": "npm run ariadne -- live-adapter-operator-evidence-next --project ariadne --target deployment",
-    "nextOperatorDraft": "npm run ariadne -- live-adapter-operator-evidence-draft --project ariadne --target deployment"
+    "nextOperatorDraft": "npm run ariadne -- live-adapter-operator-evidence-draft --project ariadne --target deployment",
+    "operatorDraftPack": "npm run ariadne -- live-adapter-operator-evidence-drafts --project ariadne"
   },
   "notes": [
     "This refresh is non-mutating: it does not approve mutations, grant live-adapter authority, or import operator evidence.",

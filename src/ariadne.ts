@@ -61,7 +61,10 @@ import {
   liveAdapterOperatorEvidenceCheckAllSourceOption
 } from "./liveAdapterOperatorEvidenceCheckAll.js";
 import { generateLiveAdapterOperatorEvidenceAssist } from "./liveAdapterOperatorEvidenceAssist.js";
-import { generateLiveAdapterOperatorEvidenceDraft } from "./liveAdapterOperatorEvidenceDraft.js";
+import {
+  generateLiveAdapterOperatorEvidenceDraft,
+  generateLiveAdapterOperatorEvidenceDraftPack
+} from "./liveAdapterOperatorEvidenceDraft.js";
 import { importReadyLiveAdapterOperatorEvidence } from "./liveAdapterOperatorEvidenceImportReady.js";
 import { generateLiveAdapterOperatorEvidenceNextPacket } from "./liveAdapterOperatorEvidenceNextPacket.js";
 import { generateLiveAdapterOperatorEvidenceWorkplan } from "./liveAdapterOperatorEvidenceWorkplan.js";
@@ -211,6 +214,7 @@ function usage(): string {
     "  ariadne live-adapter-operator-evidence-check-all --project <project> [--target <github|deployment|hermes-cron|openscorpion|gsd2|notebooklm>] [--source auto|workspace|templates] [--notes <text>]",
     "  ariadne live-adapter-operator-evidence-assist --project <project> [--target <github|deployment|hermes-cron|openscorpion|gsd2|notebooklm>]",
     "  ariadne live-adapter-operator-evidence-draft --project <project> [--target <github|deployment|hermes-cron|openscorpion|gsd2|notebooklm>]",
+    "  ariadne live-adapter-operator-evidence-drafts --project <project>",
     "  ariadne live-adapter-operator-evidence-import-ready --project <project> --by <operator> [--target <github|deployment|hermes-cron|openscorpion|gsd2|notebooklm>] [--notes <text>]",
     "  ariadne live-adapter-operator-evidence --project <project> --target <github|deployment|hermes-cron|openscorpion|gsd2|notebooklm> --from <operator-evidence.md> --by <operator> [--notes <text>]",
     "  ariadne live-adapter-operator-evidence-audit --project <project>",
@@ -1394,6 +1398,17 @@ async function main(): Promise<void> {
     return;
   }
 
+  if (parsed.command === "live-adapter-operator-evidence-drafts") {
+    const result = await generateLiveAdapterOperatorEvidenceDraftPack({ project, vaultRoot });
+    console.log(`Live adapter operator evidence draft pack: ${result.markdownPath}`);
+    console.log(`Status: ${result.pack.status}`);
+    console.log(`Targets: ${result.pack.summary.targets}`);
+    console.log(`Drafts: ${result.pack.summary.drafts}`);
+    console.log(`Candidate rows: ${result.pack.summary.candidateRows}`);
+    console.log(`Mutation approved: ${result.pack.mutationApproved}`);
+    return;
+  }
+
   if (parsed.command === "live-adapter-operator-evidence-import-ready") {
     const result = await importReadyLiveAdapterOperatorEvidence({
       project,
@@ -1496,6 +1511,9 @@ async function main(): Promise<void> {
     }
     if (result.report.commands.nextOperatorDraft) {
       console.log(`Next operator draft: ${result.report.commands.nextOperatorDraft}`);
+    }
+    if (result.report.commands.operatorDraftPack) {
+      console.log(`Operator draft pack: ${result.report.commands.operatorDraftPack}`);
     }
     return;
   }

@@ -441,6 +441,13 @@ const ARTIFACT_SPECS: ArtifactSpec[] = [
     minimumCount: 1
   },
   {
+    id: "live-adapter-operator-evidence-draft-pack",
+    label: "Live adapter operator evidence draft pack",
+    required: false,
+    kind: "file",
+    relativePath: "control/live-adapter-operator-evidence-drafts.json"
+  },
+  {
     id: "live-evidence-promotions",
     label: "Sanitized live evidence promotions",
     required: false,

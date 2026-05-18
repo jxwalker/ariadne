@@ -1,0 +1,256 @@
+{
+  "schemaVersion": 1,
+  "project": "ariadne",
+  "generatedAt": "2026-05-18T05:43:29.466Z",
+  "target": "hermes-cron",
+  "status": "drafted_for_human_verification",
+  "mutationApproved": false,
+  "approvalGranted": false,
+  "operatorEvidenceRecordCreated": false,
+  "sourcePacketRef": "projects/ariadne/control/live-adapter-operator-evidence-next-hermes-cron.json",
+  "draftFileRef": "projects/ariadne/control/operator-evidence/hermes-cron/operator-evidence-draft.md",
+  "summary": {
+    "missingSections": 9,
+    "candidateRows": 9,
+    "existingEvidenceRefs": 11,
+    "promotedLiveEvidenceRefs": 0,
+    "gbrainQueries": 3
+  },
+  "commands": {
+    "check": "npm run ariadne -- live-adapter-operator-evidence-check --project ariadne --target hermes-cron --from vault/projects/ariadne/control/operator-evidence/hermes-cron/operator-evidence.md",
+    "importAfterHumanVerification": "npm run ariadne -- live-adapter-operator-evidence --project ariadne --target hermes-cron --from vault/projects/ariadne/control/operator-evidence/hermes-cron/operator-evidence.md --by <operator>"
+  },
+  "rows": [
+    {
+      "missingSection": "Operator identity and timestamp",
+      "humanVerificationPrompt": "Human operator must verify hermes-cron Operator identity and timestamp from source systems or cited Ariadne refs before recording it in operator-evidence.md.",
+      "candidateAction": "Record the human operator name and current review timestamp only after the operator has personally completed this review.",
+      "existingEvidenceRefs": [
+        "projects/ariadne/control/live-adapter-evidence-templates/live-adapter-evidence-template-hermes-cron.md",
+        "projects/ariadne/control/live-adapter-dossiers/live-adapter-dossier-hermes-cron.json",
+        "projects/ariadne/control/mutation-readiness-repair-plan.json",
+        "projects/ariadne/control/live-adapter-readiness.json",
+        "projects/ariadne/control/live-adapter-next-actions.json",
+        "projects/ariadne/control/live-adapter-approval-pack.json",
+        "projects/ariadne/control/live-adapter-approval-review-audit.json",
+        "projects/ariadne/control/mutation-readiness-audit.json",
+        "projects/ariadne/control/live-adapter-operator-evidence-workspace-hermes-cron.json",
+        "projects/ariadne/control/operator-evidence/hermes-cron/operator-evidence.md",
+        "projects/ariadne/control/live-adapter-operator-evidence-audit.json"
+      ],
+      "promotedLiveEvidenceRefs": [],
+      "gbrainQueries": [
+        "Find prior Ariadne decisions and evidence for the hermes-cron live adapter.",
+        "List risks, rollback requirements, and stale assumptions for hermes-cron approval.",
+        "Summarize operator-review evidence still missing before hermes-cron mutation readiness."
+      ],
+      "humanVerificationRequired": true
+    },
+    {
+      "missingSection": "Approval packet review",
+      "humanVerificationPrompt": "Human operator must verify hermes-cron Approval packet review from source systems or cited Ariadne refs before recording it in operator-evidence.md.",
+      "candidateAction": "Review the hermes-cron approval packet, next packet, review session, and cutover audit refs; record whether the packet is complete or what remains missing.",
+      "existingEvidenceRefs": [
+        "projects/ariadne/control/live-adapter-evidence-templates/live-adapter-evidence-template-hermes-cron.md",
+        "projects/ariadne/control/live-adapter-dossiers/live-adapter-dossier-hermes-cron.json",
+        "projects/ariadne/control/mutation-readiness-repair-plan.json",
+        "projects/ariadne/control/live-adapter-readiness.json",
+        "projects/ariadne/control/live-adapter-next-actions.json",
+        "projects/ariadne/control/live-adapter-approval-pack.json",
+        "projects/ariadne/control/live-adapter-approval-review-audit.json",
+        "projects/ariadne/control/mutation-readiness-audit.json",
+        "projects/ariadne/control/live-adapter-operator-evidence-workspace-hermes-cron.json",
+        "projects/ariadne/control/operator-evidence/hermes-cron/operator-evidence.md",
+        "projects/ariadne/control/live-adapter-operator-evidence-audit.json"
+      ],
+      "promotedLiveEvidenceRefs": [],
+      "gbrainQueries": [
+        "Find prior Ariadne decisions and evidence for the hermes-cron live adapter.",
+        "List risks, rollback requirements, and stale assumptions for hermes-cron approval.",
+        "Summarize operator-review evidence still missing before hermes-cron mutation readiness."
+      ],
+      "humanVerificationRequired": true
+    },
+    {
+      "missingSection": "Authentication or authorization boundary",
+      "humanVerificationPrompt": "Human operator must verify hermes-cron Authentication or authorization boundary from source systems or cited Ariadne refs before recording it in operator-evidence.md.",
+      "candidateAction": "Verify the hermes-cron account, token, SSH, browser, or scheduler boundary from source systems and cite the relevant Ariadne refs.",
+      "existingEvidenceRefs": [
+        "projects/ariadne/control/live-adapter-evidence-templates/live-adapter-evidence-template-hermes-cron.md",
+        "projects/ariadne/control/live-adapter-dossiers/live-adapter-dossier-hermes-cron.json",
+        "projects/ariadne/control/mutation-readiness-repair-plan.json",
+        "projects/ariadne/control/live-adapter-readiness.json",
+        "projects/ariadne/control/live-adapter-next-actions.json",
+        "projects/ariadne/control/live-adapter-approval-pack.json",
+        "projects/ariadne/control/live-adapter-approval-review-audit.json",
+        "projects/ariadne/control/mutation-readiness-audit.json",
+        "projects/ariadne/control/live-adapter-operator-evidence-workspace-hermes-cron.json",
+        "projects/ariadne/control/operator-evidence/hermes-cron/operator-evidence.md",
+        "projects/ariadne/control/live-adapter-operator-evidence-audit.json"
+      ],
+      "promotedLiveEvidenceRefs": [],
+      "gbrainQueries": [
+        "Find prior Ariadne decisions and evidence for the hermes-cron live adapter.",
+        "List risks, rollback requirements, and stale assumptions for hermes-cron approval.",
+        "Summarize operator-review evidence still missing before hermes-cron mutation readiness."
+      ],
+      "humanVerificationRequired": true
+    },
+    {
+      "missingSection": "Bounded action statement",
+      "humanVerificationPrompt": "Human operator must verify hermes-cron Bounded action statement from source systems or cited Ariadne refs before recording it in operator-evidence.md.",
+      "candidateAction": "State the exact hermes-cron action that would be allowed after approval and explicitly list non-goals that remain out of scope.",
+      "existingEvidenceRefs": [
+        "projects/ariadne/control/live-adapter-evidence-templates/live-adapter-evidence-template-hermes-cron.md",
+        "projects/ariadne/control/live-adapter-dossiers/live-adapter-dossier-hermes-cron.json",
+        "projects/ariadne/control/mutation-readiness-repair-plan.json",
+        "projects/ariadne/control/live-adapter-readiness.json",
+        "projects/ariadne/control/live-adapter-next-actions.json",
+        "projects/ariadne/control/live-adapter-approval-pack.json",
+        "projects/ariadne/control/live-adapter-approval-review-audit.json",
+        "projects/ariadne/control/mutation-readiness-audit.json",
+        "projects/ariadne/control/live-adapter-operator-evidence-workspace-hermes-cron.json",
+        "projects/ariadne/control/operator-evidence/hermes-cron/operator-evidence.md",
+        "projects/ariadne/control/live-adapter-operator-evidence-audit.json"
+      ],
+      "promotedLiveEvidenceRefs": [],
+      "gbrainQueries": [
+        "Find prior Ariadne decisions and evidence for the hermes-cron live adapter.",
+        "List risks, rollback requirements, and stale assumptions for hermes-cron approval.",
+        "Summarize operator-review evidence still missing before hermes-cron mutation readiness."
+      ],
+      "humanVerificationRequired": true
+    },
+    {
+      "missingSection": "Rollback or disable path",
+      "humanVerificationPrompt": "Human operator must verify hermes-cron Rollback or disable path from source systems or cited Ariadne refs before recording it in operator-evidence.md.",
+      "candidateAction": "Verify the hermes-cron rollback or disable path from source systems and record the exact command, UI path, or operational procedure.",
+      "existingEvidenceRefs": [
+        "projects/ariadne/control/live-adapter-evidence-templates/live-adapter-evidence-template-hermes-cron.md",
+        "projects/ariadne/control/live-adapter-dossiers/live-adapter-dossier-hermes-cron.json",
+        "projects/ariadne/control/mutation-readiness-repair-plan.json",
+        "projects/ariadne/control/live-adapter-readiness.json",
+        "projects/ariadne/control/live-adapter-next-actions.json",
+        "projects/ariadne/control/live-adapter-approval-pack.json",
+        "projects/ariadne/control/live-adapter-approval-review-audit.json",
+        "projects/ariadne/control/mutation-readiness-audit.json",
+        "projects/ariadne/control/live-adapter-operator-evidence-workspace-hermes-cron.json",
+        "projects/ariadne/control/operator-evidence/hermes-cron/operator-evidence.md",
+        "projects/ariadne/control/live-adapter-operator-evidence-audit.json"
+      ],
+      "promotedLiveEvidenceRefs": [],
+      "gbrainQueries": [
+        "Find prior Ariadne decisions and evidence for the hermes-cron live adapter.",
+        "List risks, rollback requirements, and stale assumptions for hermes-cron approval.",
+        "Summarize operator-review evidence still missing before hermes-cron mutation readiness."
+      ],
+      "humanVerificationRequired": true
+    },
+    {
+      "missingSection": "Post-action verification command",
+      "humanVerificationPrompt": "Human operator must verify hermes-cron Post-action verification command from source systems or cited Ariadne refs before recording it in operator-evidence.md.",
+      "candidateAction": "Record the exact hermes-cron post-action verification command or check that proves the live action behaved as intended.",
+      "existingEvidenceRefs": [
+        "projects/ariadne/control/live-adapter-evidence-templates/live-adapter-evidence-template-hermes-cron.md",
+        "projects/ariadne/control/live-adapter-dossiers/live-adapter-dossier-hermes-cron.json",
+        "projects/ariadne/control/mutation-readiness-repair-plan.json",
+        "projects/ariadne/control/live-adapter-readiness.json",
+        "projects/ariadne/control/live-adapter-next-actions.json",
+        "projects/ariadne/control/live-adapter-approval-pack.json",
+        "projects/ariadne/control/live-adapter-approval-review-audit.json",
+        "projects/ariadne/control/mutation-readiness-audit.json",
+        "projects/ariadne/control/live-adapter-operator-evidence-workspace-hermes-cron.json",
+        "projects/ariadne/control/operator-evidence/hermes-cron/operator-evidence.md",
+        "projects/ariadne/control/live-adapter-operator-evidence-audit.json"
+      ],
+      "promotedLiveEvidenceRefs": [],
+      "gbrainQueries": [
+        "Find prior Ariadne decisions and evidence for the hermes-cron live adapter.",
+        "List risks, rollback requirements, and stale assumptions for hermes-cron approval.",
+        "Summarize operator-review evidence still missing before hermes-cron mutation readiness."
+      ],
+      "humanVerificationRequired": true
+    },
+    {
+      "missingSection": "Dry-run command and safe output",
+      "humanVerificationPrompt": "Human operator must verify hermes-cron Dry-run command and safe output from source systems or cited Ariadne refs before recording it in operator-evidence.md.",
+      "candidateAction": "Run or inspect the hermes-cron dry-run command only where safe; record the expected non-mutating output shape and evidence ref.",
+      "existingEvidenceRefs": [
+        "projects/ariadne/control/live-adapter-evidence-templates/live-adapter-evidence-template-hermes-cron.md",
+        "projects/ariadne/control/live-adapter-dossiers/live-adapter-dossier-hermes-cron.json",
+        "projects/ariadne/control/mutation-readiness-repair-plan.json",
+        "projects/ariadne/control/live-adapter-readiness.json",
+        "projects/ariadne/control/live-adapter-next-actions.json",
+        "projects/ariadne/control/live-adapter-approval-pack.json",
+        "projects/ariadne/control/live-adapter-approval-review-audit.json",
+        "projects/ariadne/control/mutation-readiness-audit.json",
+        "projects/ariadne/control/live-adapter-operator-evidence-workspace-hermes-cron.json",
+        "projects/ariadne/control/operator-evidence/hermes-cron/operator-evidence.md",
+        "projects/ariadne/control/live-adapter-operator-evidence-audit.json"
+      ],
+      "promotedLiveEvidenceRefs": [],
+      "gbrainQueries": [
+        "Find prior Ariadne decisions and evidence for the hermes-cron live adapter.",
+        "List risks, rollback requirements, and stale assumptions for hermes-cron approval.",
+        "Summarize operator-review evidence still missing before hermes-cron mutation readiness."
+      ],
+      "humanVerificationRequired": true
+    },
+    {
+      "missingSection": "Target-guarded execution wrapper",
+      "humanVerificationPrompt": "Human operator must verify hermes-cron Target-guarded execution wrapper from source systems or cited Ariadne refs before recording it in operator-evidence.md.",
+      "candidateAction": "Verify that hermes-cron execution would use the target-specific wrapper or guarded mutation executor rather than an ad hoc command.",
+      "existingEvidenceRefs": [
+        "projects/ariadne/control/live-adapter-evidence-templates/live-adapter-evidence-template-hermes-cron.md",
+        "projects/ariadne/control/live-adapter-dossiers/live-adapter-dossier-hermes-cron.json",
+        "projects/ariadne/control/mutation-readiness-repair-plan.json",
+        "projects/ariadne/control/live-adapter-readiness.json",
+        "projects/ariadne/control/live-adapter-next-actions.json",
+        "projects/ariadne/control/live-adapter-approval-pack.json",
+        "projects/ariadne/control/live-adapter-approval-review-audit.json",
+        "projects/ariadne/control/mutation-readiness-audit.json",
+        "projects/ariadne/control/live-adapter-operator-evidence-workspace-hermes-cron.json",
+        "projects/ariadne/control/operator-evidence/hermes-cron/operator-evidence.md",
+        "projects/ariadne/control/live-adapter-operator-evidence-audit.json"
+      ],
+      "promotedLiveEvidenceRefs": [],
+      "gbrainQueries": [
+        "Find prior Ariadne decisions and evidence for the hermes-cron live adapter.",
+        "List risks, rollback requirements, and stale assumptions for hermes-cron approval.",
+        "Summarize operator-review evidence still missing before hermes-cron mutation readiness."
+      ],
+      "humanVerificationRequired": true
+    },
+    {
+      "missingSection": "Exact confirm-plan proof",
+      "humanVerificationPrompt": "Human operator must verify hermes-cron Exact confirm-plan proof from source systems or cited Ariadne refs before recording it in operator-evidence.md.",
+      "candidateAction": "Verify that live execution requires an exact --confirm-plan value matching the reviewed mutation-readiness plan.",
+      "existingEvidenceRefs": [
+        "projects/ariadne/control/live-adapter-evidence-templates/live-adapter-evidence-template-hermes-cron.md",
+        "projects/ariadne/control/live-adapter-dossiers/live-adapter-dossier-hermes-cron.json",
+        "projects/ariadne/control/mutation-readiness-repair-plan.json",
+        "projects/ariadne/control/live-adapter-readiness.json",
+        "projects/ariadne/control/live-adapter-next-actions.json",
+        "projects/ariadne/control/live-adapter-approval-pack.json",
+        "projects/ariadne/control/live-adapter-approval-review-audit.json",
+        "projects/ariadne/control/mutation-readiness-audit.json",
+        "projects/ariadne/control/live-adapter-operator-evidence-workspace-hermes-cron.json",
+        "projects/ariadne/control/operator-evidence/hermes-cron/operator-evidence.md",
+        "projects/ariadne/control/live-adapter-operator-evidence-audit.json"
+      ],
+      "promotedLiveEvidenceRefs": [],
+      "gbrainQueries": [
+        "Find prior Ariadne decisions and evidence for the hermes-cron live adapter.",
+        "List risks, rollback requirements, and stale assumptions for hermes-cron approval.",
+        "Summarize operator-review evidence still missing before hermes-cron mutation readiness."
+      ],
+      "humanVerificationRequired": true
+    }
+  ],
+  "notes": [
+    "This draft is non-authoritative and must not be imported directly.",
+    "A human operator must verify every row against source systems or cited Ariadne refs before copying facts into operator-evidence.md.",
+    "The draft does not approve mutation, grant live-adapter authority, or create an operator evidence record.",
+    "GBrain context remains advisory; Ariadne evidence refs and source-system observations carry the gates."
+  ]
+}

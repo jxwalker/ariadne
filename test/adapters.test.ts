@@ -32,7 +32,7 @@ import { planHermesCronMutation } from "../src/hermesMutation.js";
 import { generateInfrastructureRegistry } from "../src/infrastructure.js";
 import { draftOpenScorpionActivity, importInfraSnapshot } from "../src/infraSnapshot.js";
 import { collectLocalInfraSnapshot, collectSshInfraSnapshot, parseSshInventory } from "../src/liveInventory.js";
-import type { LiveAdapterTarget } from "../src/liveAdapterTargets.js";
+import { LIVE_ADAPTER_TARGETS, type LiveAdapterTarget } from "../src/liveAdapterTargets.js";
 import { generateLiveAdapterApprovalPack } from "../src/liveAdapterApprovalPack.js";
 import { recordLiveAdapterApprovalReview } from "../src/liveAdapterApprovalReview.js";
 import { generateLiveAdapterApprovalReviewAudit } from "../src/liveAdapterApprovalReviewAudit.js";
@@ -45,7 +45,10 @@ import {
 } from "../src/liveAdapterOperatorEvidence.js";
 import { checkAllLiveAdapterOperatorEvidence } from "../src/liveAdapterOperatorEvidenceCheckAll.js";
 import { generateLiveAdapterOperatorEvidenceAssist } from "../src/liveAdapterOperatorEvidenceAssist.js";
-import { generateLiveAdapterOperatorEvidenceDraft } from "../src/liveAdapterOperatorEvidenceDraft.js";
+import {
+  generateLiveAdapterOperatorEvidenceDraft,
+  generateLiveAdapterOperatorEvidenceDraftPack
+} from "../src/liveAdapterOperatorEvidenceDraft.js";
 import { importReadyLiveAdapterOperatorEvidence } from "../src/liveAdapterOperatorEvidenceImportReady.js";
 import { generateLiveAdapterOperatorEvidenceNextPacket } from "../src/liveAdapterOperatorEvidenceNextPacket.js";
 import { generateLiveAdapterOperatorEvidenceWorkplan } from "../src/liveAdapterOperatorEvidenceWorkplan.js";
@@ -119,6 +122,59 @@ describe("roadmap adapters", () => {
       status: string;
     };
     expect(emptyHygiene.status).toBe("clean");
+  });
+
+  it("generates non-authoritative operator evidence draft packs for every target", async () => {
+    const temp = await fs.mkdtemp(path.join(os.tmpdir(), "ariadne-draft-pack-"));
+    const vaultRoot = path.join(temp, "vault");
+    type DraftPackInput = Parameters<typeof generateLiveAdapterOperatorEvidenceDraftPack>[0];
+    const nextPackets = Object.fromEntries(
+      LIVE_ADAPTER_TARGETS.map((target) => [
+        target,
+        {
+          jsonPath: path.join(vaultRoot, "projects", "ariadne", "control", `live-adapter-operator-evidence-next-${target}.json`),
+          packet: {
+            target,
+            summary: { missingSections: 1 },
+            commands: {
+              check: `npm run ariadne -- live-adapter-operator-evidence-check --project ariadne --target ${target} --from vault/projects/ariadne/control/operator-evidence/${target}/operator-evidence.md`
+            },
+            afterHumanVerificationCommands: {
+              import: `npm run ariadne -- live-adapter-operator-evidence --project ariadne --target ${target} --from vault/projects/ariadne/control/operator-evidence/${target}/operator-evidence.md --by <operator>`
+            },
+            verificationWorksheet: [
+              {
+                missingSection: "Operator identity and timestamp",
+                humanVerificationPrompt: `Human operator must verify ${target} identity before recording it.`,
+                existingEvidenceRefs: [`projects/ariadne/control/live-adapter-dossiers/live-adapter-dossier-${target}.json`],
+                promotedLiveEvidenceRefs: [],
+                gbrainQueries: [`Find prior Ariadne decisions for ${target}.`],
+                humanVerificationRequired: true
+              }
+            ]
+          }
+        }
+      ])
+    ) as NonNullable<DraftPackInput["nextPackets"]>;
+
+    const pack = await generateLiveAdapterOperatorEvidenceDraftPack({ project: "ariadne", vaultRoot, nextPackets });
+
+    expect(pack.pack.status).toBe("drafted_for_human_verification");
+    expect(pack.pack.summary.targets).toBe(LIVE_ADAPTER_TARGETS.length);
+    expect(pack.pack.summary.drafts).toBe(LIVE_ADAPTER_TARGETS.length);
+    expect(pack.pack.summary.candidateRows).toBe(LIVE_ADAPTER_TARGETS.length);
+    expect(pack.pack.operatorEvidenceRecordCreated).toBe(false);
+    expect(pack.pack.mutationApproved).toBe(false);
+    expect(pack.pack.commands.checkAll).toContain("live-adapter-operator-evidence-check-all");
+    expect(pack.pack.commands.importReadyAfterHumanVerification).toContain("live-adapter-operator-evidence-import-ready");
+    expect(pack.pack.drafts.map((draft) => draft.target).sort()).toEqual([...LIVE_ADAPTER_TARGETS].sort());
+    const markdown = await fs.readFile(pack.markdownPath, "utf8");
+    expect(markdown).toContain("non-authoritative drafts only");
+    const deploymentDraft = await fs.readFile(
+      path.join(vaultRoot, "projects", "ariadne", "control", "operator-evidence", "deployment", "operator-evidence-draft.md"),
+      "utf8"
+    );
+    expect(deploymentDraft).toContain("Do not import this file directly");
   });
 
   it("normalises NotebookLM exports and round-trips a GSD2 bundle", async () => {
@@ -1466,6 +1522,12 @@ describe("roadmap adapters", () => {
     );
     expect(scopedHermesReviewSession.session.targets.map((target) => target.target)).toEqual(["hermes-cron"]);
     expect(scopedHermesReviewSession.session.summary.targets).toBe(1);
+    expect(scopedHermesReviewSession.session.targets[0]?.evidenceRefs).toContain(
+      "projects/ariadne/control/live-adapter-operator-evidence-workspace-hermes-cron.json"
+    );
+    expect(scopedHermesReviewSession.session.targets[0]?.evidenceRefs).not.toContain(
+      "projects/ariadne/control/live-adapter-operator-evidence-workspace.json"
+    );
     const assistedReviewSession = await generateLiveAdapterReviewSession({ project: "ariadne", vaultRoot });
     const assistedGithubSession = assistedReviewSession.session.targets.find((target) => target.target === "github");
     expect(assistedReviewSession.session.operatorEvidenceQueueRef).toBe(

@@ -3,7 +3,7 @@
 Project: ariadne
 Target: deployment
 Status: operator_review_required
-Generated: 2026-05-18T05:22:24.509Z
+Generated: 2026-05-18T06:16:28.645Z
 Mutation approved: false
 Operator decision required: true
 
@@ -167,5 +167,5 @@ Queries:
 - projects/ariadne/control/live-adapter-approval-pack.json
 - projects/ariadne/control/live-adapter-approval-review-audit.json
 - projects/ariadne/control/mutation-readiness-audit.json
-- projects/ariadne/control/live-adapter-operator-evidence-workspace.json
+- projects/ariadne/control/live-adapter-operator-evidence-workspace-deployment.json
 - projects/ariadne/control/operator-evidence/deployment/operator-evidence.md

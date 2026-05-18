@@ -1,0 +1,285 @@
+{
+  "schemaVersion": 1,
+  "project": "ariadne",
+  "generatedAt": "2026-05-18T05:43:30.811Z",
+  "target": "notebooklm",
+  "selectedBy": "explicit",
+  "status": "operator_action_required",
+  "mutationApproved": false,
+  "approvalGranted": false,
+  "operatorEvidenceRecordCreated": false,
+  "summary": {
+    "missingSections": 9,
+    "existingEvidenceRefs": 11,
+    "promotedLiveEvidence": 0,
+    "supportFileRefs": 6,
+    "cutoverBlockedGates": 7
+  },
+  "refs": {
+    "workplan": "projects/ariadne/control/live-adapter-operator-evidence-workplan.json",
+    "queue": "projects/ariadne/control/live-adapter-operator-evidence-queue.json",
+    "operatorEvidenceAudit": "projects/ariadne/control/live-adapter-operator-evidence-audit.json",
+    "workspace": "projects/ariadne/control/live-adapter-operator-evidence-workspace-notebooklm.json",
+    "assist": "projects/ariadne/control/live-adapter-operator-evidence-assist-notebooklm.json",
+    "checkBatch": "projects/ariadne/control/live-adapter-operator-evidence-check-all-notebooklm.json",
+    "reviewSession": "projects/ariadne/control/live-adapter-review-session-notebooklm.json",
+    "cutoverAudit": "projects/ariadne/control/live-adapter-cutover-audit-notebooklm.json"
+  },
+  "commands": {
+    "check": "npm run ariadne -- live-adapter-operator-evidence-check --project ariadne --target notebooklm --from vault/projects/ariadne/control/operator-evidence/notebooklm/operator-evidence.md",
+    "reviewSession": "npm run ariadne -- live-adapter-review-session --project ariadne --target notebooklm",
+    "cutoverAudit": "npm run ariadne -- live-adapter-cutover-audit --project ariadne --target notebooklm"
+  },
+  "afterHumanVerificationCommands": {
+    "import": "npm run ariadne -- live-adapter-operator-evidence --project ariadne --target notebooklm --from vault/projects/ariadne/control/operator-evidence/notebooklm/operator-evidence.md --by <operator>"
+  },
+  "nextAction": "Fill the missing sections in the operator evidence workspace file and rerun the preflight check.",
+  "missingSectionLabels": [
+    "Operator identity and timestamp",
+    "Approval packet review",
+    "Authentication or authorization boundary",
+    "Bounded action statement",
+    "Rollback or disable path",
+    "Post-action verification command",
+    "Dry-run command and safe output",
+    "Target-guarded execution wrapper",
+    "Exact confirm-plan proof"
+  ],
+  "verificationWorksheet": [
+    {
+      "missingSection": "Operator identity and timestamp",
+      "humanVerificationPrompt": "Human operator must verify notebooklm Operator identity and timestamp from source systems or cited Ariadne refs before recording it in operator-evidence.md.",
+      "existingEvidenceRefs": [
+        "projects/ariadne/control/live-adapter-evidence-templates/live-adapter-evidence-template-notebooklm.md",
+        "projects/ariadne/control/live-adapter-dossiers/live-adapter-dossier-notebooklm.json",
+        "projects/ariadne/control/mutation-readiness-repair-plan.json",
+        "projects/ariadne/control/live-adapter-readiness.json",
+        "projects/ariadne/control/live-adapter-next-actions.json",
+        "projects/ariadne/control/live-adapter-approval-pack.json",
+        "projects/ariadne/control/live-adapter-approval-review-audit.json",
+        "projects/ariadne/control/mutation-readiness-audit.json",
+        "projects/ariadne/control/live-adapter-operator-evidence-workspace-notebooklm.json",
+        "projects/ariadne/control/operator-evidence/notebooklm/operator-evidence.md",
+        "projects/ariadne/control/live-adapter-operator-evidence-audit.json"
+      ],
+      "promotedLiveEvidenceRefs": [],
+      "gbrainQueries": [
+        "Find prior Ariadne decisions and evidence for the notebooklm live adapter.",
+        "List risks, rollback requirements, and stale assumptions for notebooklm approval.",
+        "Summarize operator-review evidence still missing before notebooklm mutation readiness."
+      ],
+      "humanVerificationRequired": true
+    },
+    {
+      "missingSection": "Approval packet review",
+      "humanVerificationPrompt": "Human operator must verify notebooklm Approval packet review from source systems or cited Ariadne refs before recording it in operator-evidence.md.",
+      "existingEvidenceRefs": [
+        "projects/ariadne/control/live-adapter-evidence-templates/live-adapter-evidence-template-notebooklm.md",
+        "projects/ariadne/control/live-adapter-dossiers/live-adapter-dossier-notebooklm.json",
+        "projects/ariadne/control/mutation-readiness-repair-plan.json",
+        "projects/ariadne/control/live-adapter-readiness.json",
+        "projects/ariadne/control/live-adapter-next-actions.json",
+        "projects/ariadne/control/live-adapter-approval-pack.json",
+        "projects/ariadne/control/live-adapter-approval-review-audit.json",
+        "projects/ariadne/control/mutation-readiness-audit.json",
+        "projects/ariadne/control/live-adapter-operator-evidence-workspace-notebooklm.json",
+        "projects/ariadne/control/operator-evidence/notebooklm/operator-evidence.md",
+        "projects/ariadne/control/live-adapter-operator-evidence-audit.json"
+      ],
+      "promotedLiveEvidenceRefs": [],
+      "gbrainQueries": [
+        "Find prior Ariadne decisions and evidence for the notebooklm live adapter.",
+        "List risks, rollback requirements, and stale assumptions for notebooklm approval.",
+        "Summarize operator-review evidence still missing before notebooklm mutation readiness."
+      ],
+      "humanVerificationRequired": true
+    },
+    {
+      "missingSection": "Authentication or authorization boundary",
+      "humanVerificationPrompt": "Human operator must verify notebooklm Authentication or authorization boundary from source systems or cited Ariadne refs before recording it in operator-evidence.md.",
+      "existingEvidenceRefs": [
+        "projects/ariadne/control/live-adapter-evidence-templates/live-adapter-evidence-template-notebooklm.md",
+        "projects/ariadne/control/live-adapter-dossiers/live-adapter-dossier-notebooklm.json",
+        "projects/ariadne/control/mutation-readiness-repair-plan.json",
+        "projects/ariadne/control/live-adapter-readiness.json",
+        "projects/ariadne/control/live-adapter-next-actions.json",
+        "projects/ariadne/control/live-adapter-approval-pack.json",
+        "projects/ariadne/control/live-adapter-approval-review-audit.json",
+        "projects/ariadne/control/mutation-readiness-audit.json",
+        "projects/ariadne/control/live-adapter-operator-evidence-workspace-notebooklm.json",
+        "projects/ariadne/control/operator-evidence/notebooklm/operator-evidence.md",
+        "projects/ariadne/control/live-adapter-operator-evidence-audit.json"
+      ],
+      "promotedLiveEvidenceRefs": [],
+      "gbrainQueries": [
+        "Find prior Ariadne decisions and evidence for the notebooklm live adapter.",
+        "List risks, rollback requirements, and stale assumptions for notebooklm approval.",
+        "Summarize operator-review evidence still missing before notebooklm mutation readiness."
+      ],
+      "humanVerificationRequired": true
+    },
+    {
+      "missingSection": "Bounded action statement",
+      "humanVerificationPrompt": "Human operator must verify notebooklm Bounded action statement from source systems or cited Ariadne refs before recording it in operator-evidence.md.",
+      "existingEvidenceRefs": [
+        "projects/ariadne/control/live-adapter-evidence-templates/live-adapter-evidence-template-notebooklm.md",
+        "projects/ariadne/control/live-adapter-dossiers/live-adapter-dossier-notebooklm.json",
+        "projects/ariadne/control/mutation-readiness-repair-plan.json",
+        "projects/ariadne/control/live-adapter-readiness.json",
+        "projects/ariadne/control/live-adapter-next-actions.json",
+        "projects/ariadne/control/live-adapter-approval-pack.json",
+        "projects/ariadne/control/live-adapter-approval-review-audit.json",
+        "projects/ariadne/control/mutation-readiness-audit.json",
+        "projects/ariadne/control/live-adapter-operator-evidence-workspace-notebooklm.json",
+        "projects/ariadne/control/operator-evidence/notebooklm/operator-evidence.md",
+        "projects/ariadne/control/live-adapter-operator-evidence-audit.json"
+      ],
+      "promotedLiveEvidenceRefs": [],
+      "gbrainQueries": [
+        "Find prior Ariadne decisions and evidence for the notebooklm live adapter.",
+        "List risks, rollback requirements, and stale assumptions for notebooklm approval.",
+        "Summarize operator-review evidence still missing before notebooklm mutation readiness."
+      ],
+      "humanVerificationRequired": true
+    },
+    {
+      "missingSection": "Rollback or disable path",
+      "humanVerificationPrompt": "Human operator must verify notebooklm Rollback or disable path from source systems or cited Ariadne refs before recording it in operator-evidence.md.",
+      "existingEvidenceRefs": [
+        "projects/ariadne/control/live-adapter-evidence-templates/live-adapter-evidence-template-notebooklm.md",
+        "projects/ariadne/control/live-adapter-dossiers/live-adapter-dossier-notebooklm.json",
+        "projects/ariadne/control/mutation-readiness-repair-plan.json",
+        "projects/ariadne/control/live-adapter-readiness.json",
+        "projects/ariadne/control/live-adapter-next-actions.json",
+        "projects/ariadne/control/live-adapter-approval-pack.json",
+        "projects/ariadne/control/live-adapter-approval-review-audit.json",
+        "projects/ariadne/control/mutation-readiness-audit.json",
+        "projects/ariadne/control/live-adapter-operator-evidence-workspace-notebooklm.json",
+        "projects/ariadne/control/operator-evidence/notebooklm/operator-evidence.md",
+        "projects/ariadne/control/live-adapter-operator-evidence-audit.json"
+      ],
+      "promotedLiveEvidenceRefs": [],
+      "gbrainQueries": [
+        "Find prior Ariadne decisions and evidence for the notebooklm live adapter.",
+        "List risks, rollback requirements, and stale assumptions for notebooklm approval.",
+        "Summarize operator-review evidence still missing before notebooklm mutation readiness."
+      ],
+      "humanVerificationRequired": true
+    },
+    {
+      "missingSection": "Post-action verification command",
+      "humanVerificationPrompt": "Human operator must verify notebooklm Post-action verification command from source systems or cited Ariadne refs before recording it in operator-evidence.md.",
+      "existingEvidenceRefs": [
+        "projects/ariadne/control/live-adapter-evidence-templates/live-adapter-evidence-template-notebooklm.md",
+        "projects/ariadne/control/live-adapter-dossiers/live-adapter-dossier-notebooklm.json",
+        "projects/ariadne/control/mutation-readiness-repair-plan.json",
+        "projects/ariadne/control/live-adapter-readiness.json",
+        "projects/ariadne/control/live-adapter-next-actions.json",
+        "projects/ariadne/control/live-adapter-approval-pack.json",
+        "projects/ariadne/control/live-adapter-approval-review-audit.json",
+        "projects/ariadne/control/mutation-readiness-audit.json",
+        "projects/ariadne/control/live-adapter-operator-evidence-workspace-notebooklm.json",
+        "projects/ariadne/control/operator-evidence/notebooklm/operator-evidence.md",
+        "projects/ariadne/control/live-adapter-operator-evidence-audit.json"
+      ],
+      "promotedLiveEvidenceRefs": [],
+      "gbrainQueries": [
+        "Find prior Ariadne decisions and evidence for the notebooklm live adapter.",
+        "List risks, rollback requirements, and stale assumptions for notebooklm approval.",
+        "Summarize operator-review evidence still missing before notebooklm mutation readiness."
+      ],
+      "humanVerificationRequired": true
+    },
+    {
+      "missingSection": "Dry-run command and safe output",
+      "humanVerificationPrompt": "Human operator must verify notebooklm Dry-run command and safe output from source systems or cited Ariadne refs before recording it in operator-evidence.md.",
+      "existingEvidenceRefs": [
+        "projects/ariadne/control/live-adapter-evidence-templates/live-adapter-evidence-template-notebooklm.md",
+        "projects/ariadne/control/live-adapter-dossiers/live-adapter-dossier-notebooklm.json",
+        "projects/ariadne/control/mutation-readiness-repair-plan.json",
+        "projects/ariadne/control/live-adapter-readiness.json",
+        "projects/ariadne/control/live-adapter-next-actions.json",
+        "projects/ariadne/control/live-adapter-approval-pack.json",
+        "projects/ariadne/control/live-adapter-approval-review-audit.json",
+        "projects/ariadne/control/mutation-readiness-audit.json",
+        "projects/ariadne/control/live-adapter-operator-evidence-workspace-notebooklm.json",
+        "projects/ariadne/control/operator-evidence/notebooklm/operator-evidence.md",
+        "projects/ariadne/control/live-adapter-operator-evidence-audit.json"
+      ],
+      "promotedLiveEvidenceRefs": [],
+      "gbrainQueries": [
+        "Find prior Ariadne decisions and evidence for the notebooklm live adapter.",
+        "List risks, rollback requirements, and stale assumptions for notebooklm approval.",
+        "Summarize operator-review evidence still missing before notebooklm mutation readiness."
+      ],
+      "humanVerificationRequired": true
+    },
+    {
+      "missingSection": "Target-guarded execution wrapper",
+      "humanVerificationPrompt": "Human operator must verify notebooklm Target-guarded execution wrapper from source systems or cited Ariadne refs before recording it in operator-evidence.md.",
+      "existingEvidenceRefs": [
+        "projects/ariadne/control/live-adapter-evidence-templates/live-adapter-evidence-template-notebooklm.md",
+        "projects/ariadne/control/live-adapter-dossiers/live-adapter-dossier-notebooklm.json",
+        "projects/ariadne/control/mutation-readiness-repair-plan.json",
+        "projects/ariadne/control/live-adapter-readiness.json",
+        "projects/ariadne/control/live-adapter-next-actions.json",
+        "projects/ariadne/control/live-adapter-approval-pack.json",
+        "projects/ariadne/control/live-adapter-approval-review-audit.json",
+        "projects/ariadne/control/mutation-readiness-audit.json",
+        "projects/ariadne/control/live-adapter-operator-evidence-workspace-notebooklm.json",
+        "projects/ariadne/control/operator-evidence/notebooklm/operator-evidence.md",
+        "projects/ariadne/control/live-adapter-operator-evidence-audit.json"
+      ],
+      "promotedLiveEvidenceRefs": [],
+      "gbrainQueries": [
+        "Find prior Ariadne decisions and evidence for the notebooklm live adapter.",
+        "List risks, rollback requirements, and stale assumptions for notebooklm approval.",
+        "Summarize operator-review evidence still missing before notebooklm mutation readiness."
+      ],
+      "humanVerificationRequired": true
+    },
+    {
+      "missingSection": "Exact confirm-plan proof",
+      "humanVerificationPrompt": "Human operator must verify notebooklm Exact confirm-plan proof from source systems or cited Ariadne refs before recording it in operator-evidence.md.",
+      "existingEvidenceRefs": [
+        "projects/ariadne/control/live-adapter-evidence-templates/live-adapter-evidence-template-notebooklm.md",
+        "projects/ariadne/control/live-adapter-dossiers/live-adapter-dossier-notebooklm.json",
+        "projects/ariadne/control/mutation-readiness-repair-plan.json",
+        "projects/ariadne/control/live-adapter-readiness.json",
+        "projects/ariadne/control/live-adapter-next-actions.json",
+        "projects/ariadne/control/live-adapter-approval-pack.json",
+        "projects/ariadne/control/live-adapter-approval-review-audit.json",
+        "projects/ariadne/control/mutation-readiness-audit.json",
+        "projects/ariadne/control/live-adapter-operator-evidence-workspace-notebooklm.json",
+        "projects/ariadne/control/operator-evidence/notebooklm/operator-evidence.md",
+        "projects/ariadne/control/live-adapter-operator-evidence-audit.json"
+      ],
+      "promotedLiveEvidenceRefs": [],
+      "gbrainQueries": [
+        "Find prior Ariadne decisions and evidence for the notebooklm live adapter.",
+        "List risks, rollback requirements, and stale assumptions for notebooklm approval.",
+        "Summarize operator-review evidence still missing before notebooklm mutation readiness."
+      ],
+      "humanVerificationRequired": true
+    }
+  ],
+  "evidenceRefs": [
+    "projects/ariadne/control/operator-evidence/notebooklm/operator-evidence.md",
+    "projects/ariadne/control/operator-evidence/notebooklm/read-only-assist.md",
+    "projects/ariadne/control/live-adapter-evidence-templates/live-adapter-evidence-template-notebooklm.md",
+    "projects/ariadne/control/live-adapter-dossiers/live-adapter-dossier-notebooklm.json",
+    "projects/ariadne/control/mutation-readiness-repair-plan.json",
+    "projects/ariadne/control/live-adapter-readiness.json",
+    "projects/ariadne/control/live-adapter-next-actions.json",
+    "projects/ariadne/control/live-adapter-approval-pack.json",
+    "projects/ariadne/control/live-adapter-approval-review-audit.json",
+    "projects/ariadne/control/mutation-readiness-audit.json",
+    "projects/ariadne/control/live-adapter-operator-evidence-workspace-notebooklm.json",
+    "projects/ariadne/control/live-adapter-operator-evidence-audit.json",
+    "projects/ariadne/control/operator-evidence/notebooklm/packet-review.md",
+    "projects/ariadne/control/operator-evidence/notebooklm/auth-boundary.md",
+    "projects/ariadne/control/operator-evidence/notebooklm/rollback-post-verify.md",
+    "projects/ariadne/control/operator-evidence/notebooklm/dry-run-review.md",
+    "projects/ariadne/control/operator-evidence/notebooklm/gbrain-notes.md"
+  ]
+}

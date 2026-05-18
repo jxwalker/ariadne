@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "project": "ariadne",
-  "generatedAt": "2026-05-18T05:22:24.509Z",
+  "generatedAt": "2026-05-18T06:16:28.645Z",
   "target": "deployment",
   "status": "operator_review_required",
   "mutationApproved": false,
@@ -115,7 +115,7 @@
         "projects/ariadne/control/live-adapter-approval-pack.json",
         "projects/ariadne/control/live-adapter-approval-review-audit.json",
         "projects/ariadne/control/mutation-readiness-audit.json",
-        "projects/ariadne/control/live-adapter-operator-evidence-workspace.json",
+        "projects/ariadne/control/live-adapter-operator-evidence-workspace-deployment.json",
         "projects/ariadne/control/operator-evidence/deployment/operator-evidence.md"
       ]
     }

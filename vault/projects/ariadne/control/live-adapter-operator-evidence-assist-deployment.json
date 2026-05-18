@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "project": "ariadne",
-  "generatedAt": "2026-05-18T05:22:24.280Z",
+  "generatedAt": "2026-05-18T05:43:28.321Z",
   "target": "deployment",
   "status": "awaiting_operator_review",
   "mutationApproved": false,
