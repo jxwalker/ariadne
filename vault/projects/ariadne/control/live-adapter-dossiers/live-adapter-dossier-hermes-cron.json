@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "project": "ariadne",
-  "generatedAt": "2026-05-18T03:38:00.174Z",
+  "generatedAt": "2026-05-18T04:58:56.279Z",
   "target": "hermes-cron",
   "status": "ready_for_operator_review",
   "readinessRef": "projects/ariadne/control/live-adapter-readiness.json",

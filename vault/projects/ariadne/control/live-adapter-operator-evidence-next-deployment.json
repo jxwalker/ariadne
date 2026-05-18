@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "project": "ariadne",
-  "generatedAt": "2026-05-18T03:38:00.134Z",
+  "generatedAt": "2026-05-18T04:58:56.244Z",
   "target": "deployment",
   "selectedBy": "explicit",
   "status": "operator_action_required",
@@ -21,7 +21,7 @@
     "operatorEvidenceAudit": "projects/ariadne/control/live-adapter-operator-evidence-audit.json",
     "workspace": "projects/ariadne/control/live-adapter-operator-evidence-workspace-deployment.json",
     "assist": "projects/ariadne/control/live-adapter-operator-evidence-assist-deployment.json",
-    "checkBatch": "projects/ariadne/control/live-adapter-operator-evidence-check-all-deployment.json",
+    "checkBatch": "projects/ariadne/control/live-adapter-operator-evidence-check-all.json",
     "reviewSession": "projects/ariadne/control/live-adapter-review-session-deployment.json",
     "cutoverAudit": "projects/ariadne/control/live-adapter-cutover-audit-deployment.json"
   },
@@ -29,6 +29,9 @@
     "check": "npm run ariadne -- live-adapter-operator-evidence-check --project ariadne --target deployment --from vault/projects/ariadne/control/operator-evidence/deployment/operator-evidence.md",
     "reviewSession": "npm run ariadne -- live-adapter-review-session --project ariadne --target deployment",
     "cutoverAudit": "npm run ariadne -- live-adapter-cutover-audit --project ariadne --target deployment"
+  },
+  "afterHumanVerificationCommands": {
+    "import": "npm run ariadne -- live-adapter-operator-evidence --project ariadne --target deployment --from vault/projects/ariadne/control/operator-evidence/deployment/operator-evidence.md --by <operator>"
   },
   "nextAction": "Fill the missing sections in the operator evidence workspace file and rerun the preflight check.",
   "missingSectionLabels": [
@@ -42,6 +45,251 @@
     "Target-guarded execution wrapper",
     "Exact confirm-plan proof"
   ],
+  "verificationWorksheet": [
+    {
+      "missingSection": "Operator identity and timestamp",
+      "humanVerificationPrompt": "Human operator must verify deployment Operator identity and timestamp from source systems or cited Ariadne refs before recording it in operator-evidence.md.",
+      "existingEvidenceRefs": [
+        "projects/ariadne/control/live-adapter-evidence-templates/live-adapter-evidence-template-deployment.md",
+        "projects/ariadne/control/live-adapter-dossiers/live-adapter-dossier-deployment.json",
+        "projects/ariadne/control/mutation-readiness-repair-plan.json",
+        "projects/ariadne/control/live-adapter-readiness.json",
+        "projects/ariadne/control/live-adapter-next-actions.json",
+        "projects/ariadne/control/live-adapter-approval-pack.json",
+        "projects/ariadne/control/live-adapter-approval-review-audit.json",
+        "projects/ariadne/control/mutation-readiness-audit.json",
+        "projects/ariadne/control/live-adapter-operator-evidence-workspace-deployment.json",
+        "projects/ariadne/control/operator-evidence/deployment/operator-evidence.md",
+        "projects/ariadne/control/live-adapter-operator-evidence-audit.json",
+        "projects/ariadne/control/live-evidence-promotions/live-evidence-promotion-deployment-2026-05-17T23-37-04-509Z.json"
+      ],
+      "promotedLiveEvidenceRefs": [
+        "projects/ariadne/control/live-evidence-promotions/live-evidence-promotion-deployment-2026-05-17T23-37-04-509Z.json"
+      ],
+      "gbrainQueries": [
+        "Find prior Ariadne decisions and evidence for the deployment live adapter.",
+        "List risks, rollback requirements, and stale assumptions for deployment approval.",
+        "Summarize operator-review evidence still missing before deployment mutation readiness."
+      ],
+      "humanVerificationRequired": true
+    },
+    {
+      "missingSection": "Approval packet review",
+      "humanVerificationPrompt": "Human operator must verify deployment Approval packet review from source systems or cited Ariadne refs before recording it in operator-evidence.md.",
+      "existingEvidenceRefs": [
+        "projects/ariadne/control/live-adapter-evidence-templates/live-adapter-evidence-template-deployment.md",
+        "projects/ariadne/control/live-adapter-dossiers/live-adapter-dossier-deployment.json",
+        "projects/ariadne/control/mutation-readiness-repair-plan.json",
+        "projects/ariadne/control/live-adapter-readiness.json",
+        "projects/ariadne/control/live-adapter-next-actions.json",
+        "projects/ariadne/control/live-adapter-approval-pack.json",
+        "projects/ariadne/control/live-adapter-approval-review-audit.json",
+        "projects/ariadne/control/mutation-readiness-audit.json",
+        "projects/ariadne/control/live-adapter-operator-evidence-workspace-deployment.json",
+        "projects/ariadne/control/operator-evidence/deployment/operator-evidence.md",
+        "projects/ariadne/control/live-adapter-operator-evidence-audit.json",
+        "projects/ariadne/control/live-evidence-promotions/live-evidence-promotion-deployment-2026-05-17T23-37-04-509Z.json"
+      ],
+      "promotedLiveEvidenceRefs": [
+        "projects/ariadne/control/live-evidence-promotions/live-evidence-promotion-deployment-2026-05-17T23-37-04-509Z.json"
+      ],
+      "gbrainQueries": [
+        "Find prior Ariadne decisions and evidence for the deployment live adapter.",
+        "List risks, rollback requirements, and stale assumptions for deployment approval.",
+        "Summarize operator-review evidence still missing before deployment mutation readiness."
+      ],
+      "humanVerificationRequired": true
+    },
+    {
+      "missingSection": "Authentication or authorization boundary",
+      "humanVerificationPrompt": "Human operator must verify deployment Authentication or authorization boundary from source systems or cited Ariadne refs before recording it in operator-evidence.md.",
+      "existingEvidenceRefs": [
+        "projects/ariadne/control/live-adapter-evidence-templates/live-adapter-evidence-template-deployment.md",
+        "projects/ariadne/control/live-adapter-dossiers/live-adapter-dossier-deployment.json",
+        "projects/ariadne/control/mutation-readiness-repair-plan.json",
+        "projects/ariadne/control/live-adapter-readiness.json",
+        "projects/ariadne/control/live-adapter-next-actions.json",
+        "projects/ariadne/control/live-adapter-approval-pack.json",
+        "projects/ariadne/control/live-adapter-approval-review-audit.json",
+        "projects/ariadne/control/mutation-readiness-audit.json",
+        "projects/ariadne/control/live-adapter-operator-evidence-workspace-deployment.json",
+        "projects/ariadne/control/operator-evidence/deployment/operator-evidence.md",
+        "projects/ariadne/control/live-adapter-operator-evidence-audit.json",
+        "projects/ariadne/control/live-evidence-promotions/live-evidence-promotion-deployment-2026-05-17T23-37-04-509Z.json"
+      ],
+      "promotedLiveEvidenceRefs": [
+        "projects/ariadne/control/live-evidence-promotions/live-evidence-promotion-deployment-2026-05-17T23-37-04-509Z.json"
+      ],
+      "gbrainQueries": [
+        "Find prior Ariadne decisions and evidence for the deployment live adapter.",
+        "List risks, rollback requirements, and stale assumptions for deployment approval.",
+        "Summarize operator-review evidence still missing before deployment mutation readiness."
+      ],
+      "humanVerificationRequired": true
+    },
+    {
+      "missingSection": "Bounded action statement",
+      "humanVerificationPrompt": "Human operator must verify deployment Bounded action statement from source systems or cited Ariadne refs before recording it in operator-evidence.md.",
+      "existingEvidenceRefs": [
+        "projects/ariadne/control/live-adapter-evidence-templates/live-adapter-evidence-template-deployment.md",
+        "projects/ariadne/control/live-adapter-dossiers/live-adapter-dossier-deployment.json",
+        "projects/ariadne/control/mutation-readiness-repair-plan.json",
+        "projects/ariadne/control/live-adapter-readiness.json",
+        "projects/ariadne/control/live-adapter-next-actions.json",
+        "projects/ariadne/control/live-adapter-approval-pack.json",
+        "projects/ariadne/control/live-adapter-approval-review-audit.json",
+        "projects/ariadne/control/mutation-readiness-audit.json",
+        "projects/ariadne/control/live-adapter-operator-evidence-workspace-deployment.json",
+        "projects/ariadne/control/operator-evidence/deployment/operator-evidence.md",
+        "projects/ariadne/control/live-adapter-operator-evidence-audit.json",
+        "projects/ariadne/control/live-evidence-promotions/live-evidence-promotion-deployment-2026-05-17T23-37-04-509Z.json"
+      ],
+      "promotedLiveEvidenceRefs": [
+        "projects/ariadne/control/live-evidence-promotions/live-evidence-promotion-deployment-2026-05-17T23-37-04-509Z.json"
+      ],
+      "gbrainQueries": [
+        "Find prior Ariadne decisions and evidence for the deployment live adapter.",
+        "List risks, rollback requirements, and stale assumptions for deployment approval.",
+        "Summarize operator-review evidence still missing before deployment mutation readiness."
+      ],
+      "humanVerificationRequired": true
+    },
+    {
+      "missingSection": "Rollback or disable path",
+      "humanVerificationPrompt": "Human operator must verify deployment Rollback or disable path from source systems or cited Ariadne refs before recording it in operator-evidence.md.",
+      "existingEvidenceRefs": [
+        "projects/ariadne/control/live-adapter-evidence-templates/live-adapter-evidence-template-deployment.md",
+        "projects/ariadne/control/live-adapter-dossiers/live-adapter-dossier-deployment.json",
+        "projects/ariadne/control/mutation-readiness-repair-plan.json",
+        "projects/ariadne/control/live-adapter-readiness.json",
+        "projects/ariadne/control/live-adapter-next-actions.json",
+        "projects/ariadne/control/live-adapter-approval-pack.json",
+        "projects/ariadne/control/live-adapter-approval-review-audit.json",
+        "projects/ariadne/control/mutation-readiness-audit.json",
+        "projects/ariadne/control/live-adapter-operator-evidence-workspace-deployment.json",
+        "projects/ariadne/control/operator-evidence/deployment/operator-evidence.md",
+        "projects/ariadne/control/live-adapter-operator-evidence-audit.json",
+        "projects/ariadne/control/live-evidence-promotions/live-evidence-promotion-deployment-2026-05-17T23-37-04-509Z.json"
+      ],
+      "promotedLiveEvidenceRefs": [
+        "projects/ariadne/control/live-evidence-promotions/live-evidence-promotion-deployment-2026-05-17T23-37-04-509Z.json"
+      ],
+      "gbrainQueries": [
+        "Find prior Ariadne decisions and evidence for the deployment live adapter.",
+        "List risks, rollback requirements, and stale assumptions for deployment approval.",
+        "Summarize operator-review evidence still missing before deployment mutation readiness."
+      ],
+      "humanVerificationRequired": true
+    },
+    {
+      "missingSection": "Post-action verification command",
+      "humanVerificationPrompt": "Human operator must verify deployment Post-action verification command from source systems or cited Ariadne refs before recording it in operator-evidence.md.",
+      "existingEvidenceRefs": [
+        "projects/ariadne/control/live-adapter-evidence-templates/live-adapter-evidence-template-deployment.md",
+        "projects/ariadne/control/live-adapter-dossiers/live-adapter-dossier-deployment.json",
+        "projects/ariadne/control/mutation-readiness-repair-plan.json",
+        "projects/ariadne/control/live-adapter-readiness.json",
+        "projects/ariadne/control/live-adapter-next-actions.json",
+        "projects/ariadne/control/live-adapter-approval-pack.json",
+        "projects/ariadne/control/live-adapter-approval-review-audit.json",
+        "projects/ariadne/control/mutation-readiness-audit.json",
+        "projects/ariadne/control/live-adapter-operator-evidence-workspace-deployment.json",
+        "projects/ariadne/control/operator-evidence/deployment/operator-evidence.md",
+        "projects/ariadne/control/live-adapter-operator-evidence-audit.json",
+        "projects/ariadne/control/live-evidence-promotions/live-evidence-promotion-deployment-2026-05-17T23-37-04-509Z.json"
+      ],
+      "promotedLiveEvidenceRefs": [
+        "projects/ariadne/control/live-evidence-promotions/live-evidence-promotion-deployment-2026-05-17T23-37-04-509Z.json"
+      ],
+      "gbrainQueries": [
+        "Find prior Ariadne decisions and evidence for the deployment live adapter.",
+        "List risks, rollback requirements, and stale assumptions for deployment approval.",
+        "Summarize operator-review evidence still missing before deployment mutation readiness."
+      ],
+      "humanVerificationRequired": true
+    },
+    {
+      "missingSection": "Dry-run command and safe output",
+      "humanVerificationPrompt": "Human operator must verify deployment Dry-run command and safe output from source systems or cited Ariadne refs before recording it in operator-evidence.md.",
+      "existingEvidenceRefs": [
+        "projects/ariadne/control/live-adapter-evidence-templates/live-adapter-evidence-template-deployment.md",
+        "projects/ariadne/control/live-adapter-dossiers/live-adapter-dossier-deployment.json",
+        "projects/ariadne/control/mutation-readiness-repair-plan.json",
+        "projects/ariadne/control/live-adapter-readiness.json",
+        "projects/ariadne/control/live-adapter-next-actions.json",
+        "projects/ariadne/control/live-adapter-approval-pack.json",
+        "projects/ariadne/control/live-adapter-approval-review-audit.json",
+        "projects/ariadne/control/mutation-readiness-audit.json",
+        "projects/ariadne/control/live-adapter-operator-evidence-workspace-deployment.json",
+        "projects/ariadne/control/operator-evidence/deployment/operator-evidence.md",
+        "projects/ariadne/control/live-adapter-operator-evidence-audit.json",
+        "projects/ariadne/control/live-evidence-promotions/live-evidence-promotion-deployment-2026-05-17T23-37-04-509Z.json"
+      ],
+      "promotedLiveEvidenceRefs": [
+        "projects/ariadne/control/live-evidence-promotions/live-evidence-promotion-deployment-2026-05-17T23-37-04-509Z.json"
+      ],
+      "gbrainQueries": [
+        "Find prior Ariadne decisions and evidence for the deployment live adapter.",
+        "List risks, rollback requirements, and stale assumptions for deployment approval.",
+        "Summarize operator-review evidence still missing before deployment mutation readiness."
+      ],
+      "humanVerificationRequired": true
+    },
+    {
+      "missingSection": "Target-guarded execution wrapper",
+      "humanVerificationPrompt": "Human operator must verify deployment Target-guarded execution wrapper from source systems or cited Ariadne refs before recording it in operator-evidence.md.",
+      "existingEvidenceRefs": [
+        "projects/ariadne/control/live-adapter-evidence-templates/live-adapter-evidence-template-deployment.md",
+        "projects/ariadne/control/live-adapter-dossiers/live-adapter-dossier-deployment.json",
+        "projects/ariadne/control/mutation-readiness-repair-plan.json",
+        "projects/ariadne/control/live-adapter-readiness.json",
+        "projects/ariadne/control/live-adapter-next-actions.json",
+        "projects/ariadne/control/live-adapter-approval-pack.json",
+        "projects/ariadne/control/live-adapter-approval-review-audit.json",
+        "projects/ariadne/control/mutation-readiness-audit.json",
+        "projects/ariadne/control/live-adapter-operator-evidence-workspace-deployment.json",
+        "projects/ariadne/control/operator-evidence/deployment/operator-evidence.md",
+        "projects/ariadne/control/live-adapter-operator-evidence-audit.json",
+        "projects/ariadne/control/live-evidence-promotions/live-evidence-promotion-deployment-2026-05-17T23-37-04-509Z.json"
+      ],
+      "promotedLiveEvidenceRefs": [
+        "projects/ariadne/control/live-evidence-promotions/live-evidence-promotion-deployment-2026-05-17T23-37-04-509Z.json"
+      ],
+      "gbrainQueries": [
+        "Find prior Ariadne decisions and evidence for the deployment live adapter.",
+        "List risks, rollback requirements, and stale assumptions for deployment approval.",
+        "Summarize operator-review evidence still missing before deployment mutation readiness."
+      ],
+      "humanVerificationRequired": true
+    },
+    {
+      "missingSection": "Exact confirm-plan proof",
+      "humanVerificationPrompt": "Human operator must verify deployment Exact confirm-plan proof from source systems or cited Ariadne refs before recording it in operator-evidence.md.",
+      "existingEvidenceRefs": [
+        "projects/ariadne/control/live-adapter-evidence-templates/live-adapter-evidence-template-deployment.md",
+        "projects/ariadne/control/live-adapter-dossiers/live-adapter-dossier-deployment.json",
+        "projects/ariadne/control/mutation-readiness-repair-plan.json",
+        "projects/ariadne/control/live-adapter-readiness.json",
+        "projects/ariadne/control/live-adapter-next-actions.json",
+        "projects/ariadne/control/live-adapter-approval-pack.json",
+        "projects/ariadne/control/live-adapter-approval-review-audit.json",
+        "projects/ariadne/control/mutation-readiness-audit.json",
+        "projects/ariadne/control/live-adapter-operator-evidence-workspace-deployment.json",
+        "projects/ariadne/control/operator-evidence/deployment/operator-evidence.md",
+        "projects/ariadne/control/live-adapter-operator-evidence-audit.json",
+        "projects/ariadne/control/live-evidence-promotions/live-evidence-promotion-deployment-2026-05-17T23-37-04-509Z.json"
+      ],
+      "promotedLiveEvidenceRefs": [
+        "projects/ariadne/control/live-evidence-promotions/live-evidence-promotion-deployment-2026-05-17T23-37-04-509Z.json"
+      ],
+      "gbrainQueries": [
+        "Find prior Ariadne decisions and evidence for the deployment live adapter.",
+        "List risks, rollback requirements, and stale assumptions for deployment approval.",
+        "Summarize operator-review evidence still missing before deployment mutation readiness."
+      ],
+      "humanVerificationRequired": true
+    }
+  ],
   "evidenceRefs": [
     "projects/ariadne/control/operator-evidence/deployment/operator-evidence.md",
     "projects/ariadne/control/operator-evidence/deployment/read-only-assist.md",
@@ -53,7 +301,7 @@
     "projects/ariadne/control/live-adapter-approval-pack.json",
     "projects/ariadne/control/live-adapter-approval-review-audit.json",
     "projects/ariadne/control/mutation-readiness-audit.json",
-    "projects/ariadne/control/live-adapter-operator-evidence-workspace.json",
+    "projects/ariadne/control/live-adapter-operator-evidence-workspace-deployment.json",
     "projects/ariadne/control/live-adapter-operator-evidence-audit.json",
     "projects/ariadne/control/live-evidence-promotions/live-evidence-promotion-deployment-2026-05-17T23-37-04-509Z.json",
     "projects/ariadne/control/operator-evidence/deployment/packet-review.md",

@@ -109,7 +109,12 @@ export async function refreshRoadmapControlArtifacts(input: {
   const queue = await generateLiveAdapterOperatorEvidenceQueue({ project, vaultRoot: input.vaultRoot });
   const selected = selectNextOperatorEvidenceTarget(queue.queue, workplan.workplan, operatorAudit.audit);
   const nextPacket = selected
-    ? await generateLiveAdapterOperatorEvidenceNextPacket({ project, vaultRoot: input.vaultRoot, target: selected.target })
+    ? await generateLiveAdapterOperatorEvidenceNextPacket({
+        project,
+        vaultRoot: input.vaultRoot,
+        target: selected.target,
+        preflightBatch: batchCheck
+      })
     : undefined;
   const reviewSession = await generateLiveAdapterReviewSession({ project, vaultRoot: input.vaultRoot });
   const cutoverAudit = await generateLiveAdapterCutoverAudit({ project, vaultRoot: input.vaultRoot });

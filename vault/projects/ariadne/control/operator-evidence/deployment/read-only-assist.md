@@ -1,7 +1,7 @@
 # Read-Only Operator Evidence Assist: deployment
 
 Project: ariadne
-Generated: 2026-05-18T03:37:59.887Z
+Generated: 2026-05-18T04:58:55.998Z
 Target: deployment
 Status: needs_evidence
 Mutation approved: false
@@ -19,8 +19,17 @@ This file is generated from existing Ariadne artifacts. It is not operator evide
 
 ## Commands
 
+These commands are safe to run during assist review because they only validate the current workspace file.
+
 ```bash
 npm run ariadne -- live-adapter-operator-evidence-check --project ariadne --target deployment --from vault/projects/ariadne/control/operator-evidence/deployment/operator-evidence.md
+```
+
+## Import Command After Human Verification
+
+Run this only after a human operator has filled operator-evidence.md with verified observations and the check command reports complete evidence.
+
+```bash
 npm run ariadne -- live-adapter-operator-evidence --project ariadne --target deployment --from vault/projects/ariadne/control/operator-evidence/deployment/operator-evidence.md --by <operator>
 ```
 
@@ -34,7 +43,7 @@ npm run ariadne -- live-adapter-operator-evidence --project ariadne --target dep
 - projects/ariadne/control/live-adapter-approval-pack.json
 - projects/ariadne/control/live-adapter-approval-review-audit.json
 - projects/ariadne/control/mutation-readiness-audit.json
-- projects/ariadne/control/live-adapter-operator-evidence-workspace.json
+- projects/ariadne/control/live-adapter-operator-evidence-workspace-deployment.json
 - projects/ariadne/control/operator-evidence/deployment/operator-evidence.md
 - projects/ariadne/control/live-adapter-operator-evidence-audit.json
 - projects/ariadne/control/live-evidence-promotions/live-evidence-promotion-deployment-2026-05-17T23-37-04-509Z.json
@@ -50,6 +59,20 @@ npm run ariadne -- live-adapter-operator-evidence --project ariadne --target dep
 - local-runtime-probe; 8/8 services reachable; 13 models; atlas canary passed qwen3.6-35b-a3b-nvfp4-atlas; 1 redaction(s)
 - e2e-smoke; 11 passed, 1 blocked, 0 failed; 1 redaction(s)
 
+
+## Human Verification Worksheet
+
+| Missing section | Human verification prompt | Existing refs | Promoted live evidence | GBrain queries |
+| --- | --- | ---: | ---: | ---: |
+| Operator identity and timestamp | Human operator must verify deployment Operator identity and timestamp from source systems or cited Ariadne refs before recording it in operator-evidence.md. | 12 | 1 | 3 |
+| Approval packet review | Human operator must verify deployment Approval packet review from source systems or cited Ariadne refs before recording it in operator-evidence.md. | 12 | 1 | 3 |
+| Authentication or authorization boundary | Human operator must verify deployment Authentication or authorization boundary from source systems or cited Ariadne refs before recording it in operator-evidence.md. | 12 | 1 | 3 |
+| Bounded action statement | Human operator must verify deployment Bounded action statement from source systems or cited Ariadne refs before recording it in operator-evidence.md. | 12 | 1 | 3 |
+| Rollback or disable path | Human operator must verify deployment Rollback or disable path from source systems or cited Ariadne refs before recording it in operator-evidence.md. | 12 | 1 | 3 |
+| Post-action verification command | Human operator must verify deployment Post-action verification command from source systems or cited Ariadne refs before recording it in operator-evidence.md. | 12 | 1 | 3 |
+| Dry-run command and safe output | Human operator must verify deployment Dry-run command and safe output from source systems or cited Ariadne refs before recording it in operator-evidence.md. | 12 | 1 | 3 |
+| Target-guarded execution wrapper | Human operator must verify deployment Target-guarded execution wrapper from source systems or cited Ariadne refs before recording it in operator-evidence.md. | 12 | 1 | 3 |
+| Exact confirm-plan proof | Human operator must verify deployment Exact confirm-plan proof from source systems or cited Ariadne refs before recording it in operator-evidence.md. | 12 | 1 | 3 |
 
 ## Support File Refs
 
@@ -112,4 +135,4 @@ npm run ariadne -- live-adapter-operator-evidence --project ariadne --target dep
 - Open read-only-assist.md and the listed support refs.
 - Verify each relevant fact manually before copying it into operator-evidence.md.
 - Fill the Operator and Review timestamp fields with real operator values.
-- Run the check command, then import only when the check is complete.
+- Run the check command, then import only after the check is complete and the operator evidence file contains verified human observations.

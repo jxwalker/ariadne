@@ -2,7 +2,7 @@
 
 Project: ariadne
 Status: actions_required
-Generated: 2026-05-18T03:38:00.166Z
+Generated: 2026-05-18T04:58:56.273Z
 Readiness: projects/ariadne/control/live-adapter-readiness.json
 Operator evidence audit: projects/ariadne/control/live-adapter-operator-evidence-audit.json
 

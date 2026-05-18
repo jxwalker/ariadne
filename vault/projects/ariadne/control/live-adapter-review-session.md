@@ -3,7 +3,7 @@
 Project: ariadne
 Target: all
 Status: operator_review_required
-Generated: 2026-05-18T03:38:00.182Z
+Generated: 2026-05-18T04:58:56.289Z
 Mutation approved: false
 Operator decision required: true
 
@@ -67,7 +67,7 @@ Missing operator evidence sections:
 - Target-guarded execution wrapper
 - Exact confirm-plan proof
 
-Latest preflight: projects/ariadne/control/live-adapter-operator-evidence-checks/operator-evidence-check-github-2026-05-18T03-37-59-420Z.json
+Latest preflight: projects/ariadne/control/live-adapter-operator-evidence-checks/operator-evidence-check-github-2026-05-18T04-58-55-489Z.json
 
 Read-only assist: projects/ariadne/control/operator-evidence/github/read-only-assist.md
 
@@ -75,7 +75,7 @@ Assist next steps:
 - Open read-only-assist.md and the listed support refs.
 - Verify each relevant fact manually before copying it into operator-evidence.md.
 - Fill the Operator and Review timestamp fields with real operator values.
-- Run the check command, then import only when the check is complete.
+- Run the check command, then import only after the check is complete and the operator evidence file contains verified human observations.
 
 #### Review Command
 
@@ -198,7 +198,7 @@ Missing operator evidence sections:
 - Target-guarded execution wrapper
 - Exact confirm-plan proof
 
-Latest preflight: projects/ariadne/control/live-adapter-operator-evidence-checks/operator-evidence-check-deployment-2026-05-18T03-37-59-992Z.json
+Latest preflight: projects/ariadne/control/live-adapter-operator-evidence-checks/operator-evidence-check-deployment-2026-05-18T04-58-55-490Z.json
 
 Read-only assist: projects/ariadne/control/operator-evidence/deployment/read-only-assist.md
 
@@ -206,7 +206,7 @@ Assist next steps:
 - Open read-only-assist.md and the listed support refs.
 - Verify each relevant fact manually before copying it into operator-evidence.md.
 - Fill the Operator and Review timestamp fields with real operator values.
-- Run the check command, then import only when the check is complete.
+- Run the check command, then import only after the check is complete and the operator evidence file contains verified human observations.
 
 #### Review Command
 
@@ -332,7 +332,7 @@ Missing operator evidence sections:
 - Target-guarded execution wrapper
 - Exact confirm-plan proof
 
-Latest preflight: projects/ariadne/control/live-adapter-operator-evidence-checks/operator-evidence-check-hermes-cron-2026-05-18T03-37-59-423Z.json
+Latest preflight: projects/ariadne/control/live-adapter-operator-evidence-checks/operator-evidence-check-hermes-cron-2026-05-18T04-58-55-491Z.json
 
 Read-only assist: projects/ariadne/control/operator-evidence/hermes-cron/read-only-assist.md
 
@@ -340,7 +340,7 @@ Assist next steps:
 - Open read-only-assist.md and the listed support refs.
 - Verify each relevant fact manually before copying it into operator-evidence.md.
 - Fill the Operator and Review timestamp fields with real operator values.
-- Run the check command, then import only when the check is complete.
+- Run the check command, then import only after the check is complete and the operator evidence file contains verified human observations.
 
 #### Review Command
 
@@ -466,7 +466,7 @@ Missing operator evidence sections:
 - Target-guarded execution wrapper
 - Exact confirm-plan proof
 
-Latest preflight: projects/ariadne/control/live-adapter-operator-evidence-checks/operator-evidence-check-openscorpion-2026-05-18T03-37-59-424Z.json
+Latest preflight: projects/ariadne/control/live-adapter-operator-evidence-checks/operator-evidence-check-openscorpion-2026-05-18T04-58-55-491Z.json
 
 Read-only assist: projects/ariadne/control/operator-evidence/openscorpion/read-only-assist.md
 
@@ -474,7 +474,7 @@ Assist next steps:
 - Open read-only-assist.md and the listed support refs.
 - Verify each relevant fact manually before copying it into operator-evidence.md.
 - Fill the Operator and Review timestamp fields with real operator values.
-- Run the check command, then import only when the check is complete.
+- Run the check command, then import only after the check is complete and the operator evidence file contains verified human observations.
 
 #### Review Command
 
@@ -600,7 +600,7 @@ Missing operator evidence sections:
 - Target-guarded execution wrapper
 - Exact confirm-plan proof
 
-Latest preflight: projects/ariadne/control/live-adapter-operator-evidence-checks/operator-evidence-check-gsd2-2026-05-18T03-37-59-425Z.json
+Latest preflight: projects/ariadne/control/live-adapter-operator-evidence-checks/operator-evidence-check-gsd2-2026-05-18T04-58-55-492Z.json
 
 Read-only assist: projects/ariadne/control/operator-evidence/gsd2/read-only-assist.md
 
@@ -608,7 +608,7 @@ Assist next steps:
 - Open read-only-assist.md and the listed support refs.
 - Verify each relevant fact manually before copying it into operator-evidence.md.
 - Fill the Operator and Review timestamp fields with real operator values.
-- Run the check command, then import only when the check is complete.
+- Run the check command, then import only after the check is complete and the operator evidence file contains verified human observations.
 
 #### Review Command
 
@@ -734,7 +734,7 @@ Missing operator evidence sections:
 - Target-guarded execution wrapper
 - Exact confirm-plan proof
 
-Latest preflight: projects/ariadne/control/live-adapter-operator-evidence-checks/operator-evidence-check-notebooklm-2026-05-18T03-37-59-425Z.json
+Latest preflight: projects/ariadne/control/live-adapter-operator-evidence-checks/operator-evidence-check-notebooklm-2026-05-18T04-58-55-493Z.json
 
 Read-only assist: projects/ariadne/control/operator-evidence/notebooklm/read-only-assist.md
 
@@ -742,7 +742,7 @@ Assist next steps:
 - Open read-only-assist.md and the listed support refs.
 - Verify each relevant fact manually before copying it into operator-evidence.md.
 - Fill the Operator and Review timestamp fields with real operator values.
-- Run the check command, then import only when the check is complete.
+- Run the check command, then import only after the check is complete and the operator evidence file contains verified human observations.
 
 #### Review Command
 
