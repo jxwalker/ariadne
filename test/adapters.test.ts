@@ -32,6 +32,7 @@ import { planHermesCronMutation } from "../src/hermesMutation.js";
 import { generateInfrastructureRegistry } from "../src/infrastructure.js";
 import { draftOpenScorpionActivity, importInfraSnapshot } from "../src/infraSnapshot.js";
 import { collectLocalInfraSnapshot, collectSshInfraSnapshot, parseSshInventory } from "../src/liveInventory.js";
+import type { LiveAdapterTarget } from "../src/liveAdapterTargets.js";
 import { generateLiveAdapterApprovalPack } from "../src/liveAdapterApprovalPack.js";
 import { recordLiveAdapterApprovalReview } from "../src/liveAdapterApprovalReview.js";
 import { generateLiveAdapterApprovalReviewAudit } from "../src/liveAdapterApprovalReviewAudit.js";
@@ -1459,8 +1460,22 @@ describe("roadmap adapters", () => {
     expect(operatorEvidenceRequirement?.status).toBe("blocked");
     expect(operatorEvidenceRequirement?.detail).toContain("missing section");
     expect(operatorEvidenceRequirement?.detail).toContain("Next target is");
-    const nextTarget = operatorEvidenceRequirement?.detail.match(/Next target is ([a-z0-9-]+)/)?.[1];
+    expect(operatorEvidenceRequirement?.detail).toContain("Assist status is");
+    expect(operatorEvidenceRequirement?.detail).toContain("promoted live-evidence item");
+    const nextTarget = operatorEvidenceRequirement?.detail.match(/Next target is ([a-z0-9-]+)/)?.[1] as
+      | LiveAdapterTarget
+      | undefined;
     expect(nextTarget).toBeTruthy();
+    if (!nextTarget) throw new Error("Expected roadmap completion audit to identify a next operator evidence target.");
+    await generateLiveAdapterOperatorEvidenceAssist({ project: "ariadne", vaultRoot, target: nextTarget });
+    const roadmapCompletionWithScopedAssist = await generateRoadmapCompletionAudit({ project: "ariadne", vaultRoot });
+    const scopedOperatorEvidenceRequirement = roadmapCompletionWithScopedAssist.audit.requirements.find(
+      (item) => item.id === "operator-evidence"
+    );
+    expect(scopedOperatorEvidenceRequirement?.evidenceRefs).toContain(
+      `projects/ariadne/control/live-adapter-operator-evidence-assist-${nextTarget}.json`
+    );
+    expect(operatorEvidenceRequirement?.evidenceRefs.some((ref) => ref.includes("live-evidence-promotions"))).toBe(false);
     expect(operatorEvidenceRequirement?.nextCommands.length).toBeGreaterThan(0);
     expect(operatorEvidenceRequirement?.nextCommands).toContain("npm run ariadne -- live-adapter-operator-evidence-workplan --project ariadne");
     expect(operatorEvidenceRequirement?.nextCommands).toContain("npm run ariadne -- live-adapter-operator-evidence-queue --project ariadne");
@@ -2296,6 +2311,15 @@ describe("roadmap adapters", () => {
     const deploymentAssistMarkdown = await fs.readFile(path.join(vaultRoot, assistWithPromotion.assist.targets[0]?.assistFileRef ?? ""), "utf8");
     expect(deploymentAssistMarkdown).toContain("Promoted Live Evidence");
     expect(deploymentAssistMarkdown).toContain("Read-only deployment runtime evidence");
+    const roadmapWithPromotion = await generateRoadmapCompletionAudit({ project: "ariadne", vaultRoot });
+    const operatorRequirementWithPromotion = roadmapWithPromotion.audit.requirements.find(
+      (requirement) => requirement.id === "operator-evidence"
+    );
+    expect(operatorRequirementWithPromotion?.detail).toContain("1 promoted live-evidence item");
+    expect(operatorRequirementWithPromotion?.evidenceRefs).toContain(
+      "projects/ariadne/control/live-adapter-operator-evidence-assist-deployment.json"
+    );
+    expect(operatorRequirementWithPromotion?.evidenceRefs).toContain(promotionRef);
     expect(await fs.readFile(staleDeploymentEvidencePath, "utf8")).toContain("Operator draft marker: keep deployment draft");
     const falseJson = path.join(vaultRoot, "projects", "ariadne", "deployment", "false.json");
     await fs.writeFile(falseJson, "false");
