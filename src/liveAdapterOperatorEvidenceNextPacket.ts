@@ -8,6 +8,10 @@ import { generateLiveAdapterOperatorEvidenceAssist } from "./liveAdapterOperator
 import { generateLiveAdapterOperatorEvidenceQueue } from "./liveAdapterOperatorEvidenceQueue.js";
 import { generateLiveAdapterOperatorEvidenceWorkplan } from "./liveAdapterOperatorEvidenceWorkplan.js";
 import { generateLiveAdapterOperatorEvidenceWorkspace } from "./liveAdapterOperatorEvidenceWorkspace.js";
+import {
+  renderHumanVerificationReferenceDetails,
+  renderHumanVerificationWorksheetTable
+} from "./humanVerificationWorksheetMarkdown.js";
 import { type LiveAdapterTarget } from "./liveAdapterTargets.js";
 import { generateLiveAdapterReviewSession } from "./liveAdapterReviewSession.js";
 import { slugifyProject } from "./paths.js";
@@ -201,7 +205,11 @@ function renderPacket(packet: LiveAdapterOperatorEvidenceNextPacket): string {
     "",
     "## Human Verification Worksheet",
     "",
-    ...verificationWorksheetLines(packet.verificationWorksheet),
+    ...renderHumanVerificationWorksheetTable(packet.verificationWorksheet),
+    "",
+    "## Human Verification Reference Details",
+    "",
+    ...renderHumanVerificationReferenceDetails(packet.verificationWorksheet),
     "",
     "## Evidence Refs",
     "",
@@ -231,23 +239,4 @@ function preflightBatchForTarget(batch: CheckBatchResult | undefined, target: Li
 
 function list(items: string[]): string[] {
   return items.length === 0 ? ["- none"] : items.map((item) => `- ${item}`);
-}
-
-function verificationWorksheetLines(items: LiveAdapterOperatorEvidenceNextPacket["verificationWorksheet"]): string[] {
-  return [
-    "| Missing section | Human verification prompt | Existing refs | Promoted live evidence | GBrain queries |",
-    "| --- | --- | ---: | ---: | ---: |",
-    ...(items.length === 0
-      ? [
-          "| none | No missing sections. Confirm the imported operator record remains current before relying on it. | 0 | 0 | 0 |"
-        ]
-      : items.map(
-          (item) =>
-            `| ${cell(item.missingSection)} | ${cell(item.humanVerificationPrompt)} | ${item.existingEvidenceRefs.length} | ${item.promotedLiveEvidenceRefs.length} | ${item.gbrainQueries.length} |`
-        ))
-  ];
-}
-
-function cell(value: string): string {
-  return value.replace(/\|/g, "\\|").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/\n/g, " ");
 }

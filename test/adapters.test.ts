@@ -1619,6 +1619,12 @@ describe("roadmap adapters", () => {
     const nextOperatorPacketMarkdown = await fs.readFile(nextOperatorPacket.markdownPath, "utf8");
     expect(nextOperatorPacketMarkdown).toContain("does not import operator evidence");
     expect(nextOperatorPacketMarkdown).toContain("Human Verification Worksheet");
+    expect(nextOperatorPacketMarkdown).toContain("Human Verification Reference Details");
+    expect(nextOperatorPacketMarkdown).toContain("Existing refs:");
+    expect(nextOperatorPacketMarkdown).toContain("Promoted live evidence refs:");
+    expect(nextOperatorPacketMarkdown).toContain("GBrain queries:");
+    expect(nextOperatorPacketMarkdown).toContain("Common References");
+    expect(nextOperatorPacketMarkdown).toContain("Section-Specific Prompts");
     expect(nextOperatorPacketMarkdown).toContain("Import Command After Human Verification");
     const nextPacketOperatorCommands = markdownCodeBlockAfterHeading(nextOperatorPacketMarkdown, "Operator Commands");
     const nextPacketImportCommand = markdownCodeBlockAfterHeading(nextOperatorPacketMarkdown, "Import Command After Human Verification");
@@ -1650,6 +1656,9 @@ describe("roadmap adapters", () => {
     expect(explicitHermesPacket.packet.verificationWorksheet[0]?.existingEvidenceRefs).not.toContain(
       "projects/ariadne/control/live-adapter-operator-evidence-workspace.json"
     );
+    const explicitHermesPacketMarkdown = await fs.readFile(explicitHermesPacket.markdownPath, "utf8");
+    expect(explicitHermesPacketMarkdown).toContain("projects/ariadne/control/live-adapter-operator-evidence-workspace-hermes-cron.json");
+    expect(explicitHermesPacketMarkdown).toContain("Find prior Ariadne decisions and evidence for the hermes-cron live adapter.");
     await expect(
       generateLiveAdapterOperatorEvidenceDraft({
         project: "ariadne",
@@ -2760,6 +2769,11 @@ describe("roadmap adapters", () => {
     expect(deploymentAssistMarkdown).toContain("Promoted Live Evidence");
     expect(deploymentAssistMarkdown).toContain("Read-only deployment runtime evidence");
     expect(deploymentAssistMarkdown).toContain("| Missing section | Human verification prompt | Existing refs | Promoted live evidence | GBrain queries |");
+    expect(deploymentAssistMarkdown).toContain("Human Verification Reference Details");
+    expect(deploymentAssistMarkdown).toContain("Promoted live evidence refs:");
+    expect(deploymentAssistMarkdown).toContain("Common References");
+    expect(deploymentAssistMarkdown).toContain("Section-Specific Prompts");
+    expect(deploymentAssistMarkdown).toContain(promotionRef);
     const roadmapWithPromotion = await generateRoadmapCompletionAudit({ project: "ariadne", vaultRoot });
     const operatorRequirementWithPromotion = roadmapWithPromotion.audit.requirements.find(
       (requirement) => requirement.id === "operator-evidence"
