@@ -63,6 +63,7 @@ export function selectNextOperatorEvidenceTarget(
 
 export function nextOperatorEvidenceCommands(project: string, target: OperatorEvidenceTarget): string[] {
   return [
+    `npm run ariadne -- live-adapter-operator-evidence-next --project ${project} --target ${target}`,
     `npm run ariadne -- live-adapter-operator-evidence-workspace --project ${project} --target ${target}`,
     `npm run ariadne -- live-adapter-operator-evidence-assist --project ${project} --target ${target}`,
     `npm run ariadne -- live-adapter-operator-evidence-check-all --project ${project} --source workspace --target ${target}`,
