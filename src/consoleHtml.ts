@@ -383,7 +383,7 @@ function operatorChecklist(checklist: ConsoleData["workflow"]["operatorChecklist
     '<ol class="checklist-sections">',
     ...checklist.sections.map(
       (section) =>
-        `<li class="${section.current ? "checklist-current" : ""}"><div><strong>${escapeHtml(section.missingSection)}</strong><span class="${statusClass(section.status)}">${escapeHtml(section.current ? "current" : section.status)}</span></div><p>${escapeHtml(section.prompt)}</p><dl><dt>Start with</dt><dd>${escapeHtml(section.startWith)}</dd><dt>Record in</dt><dd>${escapeHtml(section.recordIn)}</dd><dt>Preflight</dt><dd>${escapeHtml(section.preflight)}</dd></dl><small>${section.existingEvidenceRefs.length} existing ref(s), ${section.promotedLiveEvidenceRefs.length} promoted live ref(s), ${section.gbrainQueries.length} GBrain quer${section.gbrainQueries.length === 1 ? "y" : "ies"}</small></li>`
+        `<li class="${section.current ? "checklist-current" : ""}"><div><strong>${escapeHtml(section.missingSection)}</strong><span class="${statusClass(section.status)}">${escapeHtml(`${section.status}${section.current ? " (current)" : ""}`)}</span></div><p>${escapeHtml(section.prompt)}</p><dl><dt>Start with</dt><dd>${escapeHtml(section.startWith)}</dd><dt>Record in</dt><dd>${escapeHtml(section.recordIn)}</dd><dt>Preflight</dt><dd>${escapeHtml(section.preflight)}</dd></dl><small>${section.existingEvidenceRefs.length} existing ref(s), ${section.promotedLiveEvidenceRefs.length} promoted live ref(s), ${section.gbrainQueries.length} GBrain quer${section.gbrainQueries.length === 1 ? "y" : "ies"}</small></li>`
     ),
     "</ol>",
     `<small>Evidence: ${escapeHtml(checklist.evidenceFileRef)}</small>`,
@@ -976,6 +976,7 @@ function statusClass(value: string | undefined): string {
     value === "ready_for_import" ||
     value === "ready_for_adapter" ||
     value === "audit_passed" ||
+    value === "ready_for_human_fill" ||
     value === "info"
   ) {
     return "ok";
@@ -999,7 +1000,9 @@ function statusClass(value: string | undefined): string {
     value === "operator_action_required" ||
     value === "needs_evidence" ||
     value === "needs_rework" ||
-    value === "unchecked"
+    value === "unchecked" ||
+    value === "context_available" ||
+    value === "missing_context"
   ) {
     return "warn";
   }
@@ -1311,8 +1314,8 @@ h1 {
   padding: 12px;
   background: var(--bg);
 }
-.checklist-current {
-  border-color: var(--accent) !important;
+.checklist-sections li.checklist-current {
+  border-color: var(--accent);
   box-shadow: inset 0 3px 0 var(--accent);
 }
 .checklist-sections li > * + * {

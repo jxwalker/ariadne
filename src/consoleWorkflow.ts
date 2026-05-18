@@ -328,8 +328,10 @@ function checklistSectionStatus(row: {
   promotedLiveEvidenceRefs: string[];
   gbrainQueries: string[];
 }): ConsoleOperatorChecklistSection["status"] {
-  if (row.existingEvidenceRefs.length > 0 && row.gbrainQueries.length > 0) return "ready_for_human_fill";
-  if (row.existingEvidenceRefs.length > 0 || row.gbrainQueries.length > 0) return "context_available";
+  const hasEvidence = row.existingEvidenceRefs.length > 0 || row.promotedLiveEvidenceRefs.length > 0;
+  const hasGbrain = row.gbrainQueries.length > 0;
+  if (hasEvidence && hasGbrain) return "ready_for_human_fill";
+  if (hasEvidence || hasGbrain) return "context_available";
   return "missing_context";
 }
 
