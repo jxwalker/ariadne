@@ -1307,6 +1307,20 @@ describe("roadmap adapters", () => {
     expect(scopedHermesWorkspace.workspace.targets.map((target) => target.target)).toEqual(["hermes-cron"]);
     expect(scopedHermesWorkspace.workspace.workplanRef).toBe(operatorEvidenceQueue.queue.workplanRef);
     expect(scopedHermesWorkspace.workspace.targets[0]?.missingSections).toEqual(hermesQueue?.missingSections);
+    const scopedHermesEvidencePath = path.join(
+      vaultRoot,
+      scopedHermesWorkspace.workspace.targets[0]?.evidenceFileRef ?? ""
+    );
+    expect(await fs.readFile(scopedHermesEvidencePath, "utf8")).toContain("# Operator Evidence: hermes-cron");
+    await fs.appendFile(scopedHermesEvidencePath, "\nOperator draft marker: preserve scoped workspace\n");
+    await generateLiveAdapterOperatorEvidenceWorkspace({
+      project: "ariadne",
+      vaultRoot,
+      target: "hermes-cron"
+    });
+    expect(await fs.readFile(scopedHermesEvidencePath, "utf8")).toContain(
+      "Operator draft marker: preserve scoped workspace"
+    );
     await expect(fs.readFile(operatorEvidenceQueue.jsonPath, "utf8")).resolves.toBe(queueJsonBeforeScopedWorkspace);
     await expect(fs.readFile(operatorEvidenceWorkplan.jsonPath, "utf8")).resolves.toBe(workplanJsonBeforeScopedWorkspace);
     const operatorEvidenceAssist = await generateLiveAdapterOperatorEvidenceAssist({ project: "ariadne", vaultRoot });
