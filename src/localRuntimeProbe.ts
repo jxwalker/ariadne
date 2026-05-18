@@ -404,11 +404,11 @@ function renderProbe(probe: LocalRuntimeProbe): string {
     "",
     "## Model Endpoints",
     "",
-    "| Id | Kind | Status | Models | Canary |",
-    "| --- | --- | --- | --- | --- |",
+    "| Id | Kind | URL | Status | Models | Canary |",
+    "| --- | --- | --- | --- | --- | --- |",
     ...probe.modelEndpoints.map(
       (endpoint) =>
-        `| ${endpoint.id} | ${endpoint.kind} | ${endpoint.status} | ${endpoint.models.length} | ${endpoint.canary?.status ?? "not-run"} |`
+        `| ${endpoint.id} | ${endpoint.kind} | ${endpoint.url} | ${endpoint.status} | ${endpoint.models.length} | ${endpoint.canary?.status ?? "not-run"} |`
     ),
     "",
     "## Warnings",

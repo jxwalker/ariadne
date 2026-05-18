@@ -2215,6 +2215,7 @@ describe("roadmap adapters", () => {
       expect(runtimeProbeJson).not.toContain("http://runtime.env");
       expect(runtimeProbeJson).toContain("<redacted-runtime-url>");
       expect(runtimeProbeMarkdown).not.toContain("http://runtime.env");
+      expect(runtimeProbeMarkdown).toContain("<redacted-runtime-url>");
       expect(canaryRequests).toEqual([
         {
           url: "http://runtime.env/atlas/v1/chat/completions",
@@ -2272,8 +2273,12 @@ describe("roadmap adapters", () => {
       "<redacted-runtime-url>"
     );
     const runtimeProbeJson = await fs.readFile(runtimeProbe.jsonPath, "utf8");
+    const runtimeProbeMarkdown = await fs.readFile(runtimeProbe.markdownPath, "utf8");
     expect(runtimeProbeJson).toContain("http://127.0.0.2:11434");
     expect(runtimeProbeJson).not.toContain("http://10.0.0.5:8888/v1");
+    expect(runtimeProbeMarkdown).toContain("http://127.0.0.2:11434");
+    expect(runtimeProbeMarkdown).not.toContain("http://10.0.0.5:8888/v1");
+    expect(runtimeProbeMarkdown).toContain("<redacted-runtime-url>");
   });
 
   it("records CI, CodeRabbit, Playwright, infra, OpenScorpion, and guarded worktree evidence", async () => {
