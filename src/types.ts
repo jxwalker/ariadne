@@ -1520,7 +1520,7 @@ export interface GbrainExportBundle {
   documents: Array<{
     slug: string;
     title: string;
-    kind: "source" | "requirement" | "task" | "decision" | "evaluation" | "infrastructure";
+    kind: "source" | "requirement" | "task" | "decision" | "evaluation" | "infrastructure" | "live-adapter";
     content: string;
     evidenceRefs: string[];
     tags: string[];

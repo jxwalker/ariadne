@@ -506,11 +506,97 @@ describe("roadmap adapters", () => {
     const { temp, vaultRoot } = await preparedProject();
     await exportGsd2Bundle({ project: "ariadne", vaultRoot });
     await generateInfrastructureRegistry({ project: "ariadne", vaultRoot });
+    await generateLiveAdapterApprovalPack({ project: "ariadne", vaultRoot });
+    const dossierDir = path.join(vaultRoot, "projects", "ariadne", "control", "live-adapter-dossiers");
+    await fs.rm(dossierDir, { recursive: true, force: true });
+    const exportWithoutDossiers = await exportGbrainBundle({ project: "ariadne", vaultRoot });
+    expect(exportWithoutDossiers.bundle.documents.some((document) => document.slug.startsWith("live-adapter/dossier/"))).toBe(
+      false
+    );
+    const dossier = await generateLiveAdapterTargetDossier({ project: "ariadne", vaultRoot, target: "github" });
+    await generateLiveAdapterOperatorEvidenceAssist({ project: "ariadne", vaultRoot, target: "github" });
+    const malformedDossierPath = path.join(dossierDir, "live-adapter-dossier-malformed.json");
+    const emptyAssistPath = path.join(
+      vaultRoot,
+      "projects",
+      "ariadne",
+      "control",
+      "live-adapter-operator-evidence-assist-empty.json"
+    );
+    const malformedRoadmapCompletionPath = path.join(
+      vaultRoot,
+      "projects",
+      "ariadne",
+      "control",
+      "roadmap-completion-audit.json"
+    );
+    await fs.writeFile(malformedDossierPath, "{bad json\n");
+    await fs.writeFile(malformedRoadmapCompletionPath, "{bad json\n");
+    await fs.writeFile(
+      emptyAssistPath,
+      JSON.stringify({
+        schemaVersion: 1,
+        project: "ariadne",
+        generatedAt: new Date(0).toISOString(),
+        status: "no_targets",
+        mutationApproved: false,
+        approvalGranted: false,
+        operatorEvidenceRecordCreated: false,
+        workspaceRef: "projects/ariadne/control/live-adapter-operator-evidence-workspace.json",
+        queueRef: "projects/ariadne/control/live-adapter-operator-evidence-queue.json",
+        workplanRef: "projects/ariadne/control/live-adapter-operator-evidence-workplan.json",
+        summary: {
+          targets: 0,
+          assistFiles: 0,
+          existingEvidenceRefs: 0,
+          promotedLiveEvidence: 0,
+          supportFileRefs: 0,
+          missingSections: 0,
+          cutoverBlockers: 0,
+          gbrainQueries: 0
+        },
+        targets: []
+      })
+    );
 
-    const exported = await exportGbrainBundle({ project: "ariadne", vaultRoot });
+    const warnSpy = vi.spyOn(globalThis.console, "warn").mockImplementation(() => undefined);
+    let exported: Awaited<ReturnType<typeof exportGbrainBundle>>;
+    try {
+      exported = await exportGbrainBundle({ project: "ariadne", vaultRoot });
+      expect(warnSpy).toHaveBeenCalledWith(expect.stringContaining("live-adapter-dossier-malformed.json"));
+      expect(warnSpy).toHaveBeenCalledWith(expect.stringContaining("roadmap-completion-audit.json"));
+    } finally {
+      warnSpy.mockRestore();
+    }
     expect(exported.bundle.mode).toBe("read_only_export");
     expect(exported.bundle.documents.some((document) => document.kind === "source")).toBe(true);
     expect(exported.bundle.documents.some((document) => document.kind === "task")).toBe(true);
+    const githubDossierDocument = exported.bundle.documents.find((document) => document.slug === "live-adapter/dossier/github");
+    const githubAssistDocument = exported.bundle.documents.find((document) => document.slug === "live-adapter/operator-assist/github");
+    expect(githubDossierDocument?.kind).toBe("live-adapter");
+    expect(githubAssistDocument?.kind).toBe("live-adapter");
+    expect(githubAssistDocument?.content).toContain("GBrain advisory queries");
+    expect(githubDossierDocument?.evidenceRefs).toEqual(
+      expect.arrayContaining(["control/live-adapter-dossiers/live-adapter-dossier-github.json", ...dossier.dossier.evidenceRefs])
+    );
+    expect(exported.bundle.documents.some((document) => document.slug === "live-adapter/roadmap-completion")).toBe(false);
+    await fs.writeFile(
+      malformedRoadmapCompletionPath,
+      JSON.stringify({
+        schemaVersion: 1,
+        status: "blocked",
+        summary: { passed: 0, blocked: 1 },
+        requirements: [{ status: "blocked", title: "stale requirement without detail" }]
+      })
+    );
+    const schemaWarnSpy = vi.spyOn(globalThis.console, "warn").mockImplementation(() => undefined);
+    try {
+      const exportWithStaleRoadmap = await exportGbrainBundle({ project: "ariadne", vaultRoot });
+      expect(schemaWarnSpy).toHaveBeenCalledWith(expect.stringContaining("roadmap-completion-audit.json"));
+      expect(exportWithStaleRoadmap.bundle.documents.some((document) => document.slug === "live-adapter/roadmap-completion")).toBe(false);
+    } finally {
+      schemaWarnSpy.mockRestore();
+    }
 
     const reportPath = path.join(temp, "gbrain-report.json");
     await fs.writeFile(
@@ -527,8 +613,6 @@ describe("roadmap adapters", () => {
     expect(imported.report.resultCount).toBe(1);
     expect(imported.report.metrics.latencyMs).toBe(42);
 
-    await generateLiveAdapterApprovalPack({ project: "ariadne", vaultRoot });
-    const dossier = await generateLiveAdapterTargetDossier({ project: "ariadne", vaultRoot, target: "github" });
     expect(dossier.dossier.target).toBe("github");
     expect(dossier.dossier.gbrainContext.exportRef).toContain("integrations/gbrain/gbrain-export.json");
     expect(dossier.dossier.gbrainContext.suggestedQueries.some((query) => query.includes("github"))).toBe(true);
@@ -2334,6 +2418,16 @@ describe("roadmap adapters", () => {
       "projects/ariadne/control/live-adapter-operator-evidence-assist-deployment.json"
     );
     expect(operatorRequirementWithPromotion?.evidenceRefs).toContain(promotionRef);
+    const gbrainWithPromotion = await exportGbrainBundle({ project: "ariadne", vaultRoot });
+    const promotedEvidenceDocument = gbrainWithPromotion.bundle.documents.find(
+      (document) => document.slug === `live-adapter/promoted-live-evidence/${promotedLiveEvidence.promotion.id}`
+    );
+    const deploymentAssistDocument = gbrainWithPromotion.bundle.documents.find(
+      (document) => document.slug === "live-adapter/operator-assist/deployment"
+    );
+    expect(promotedEvidenceDocument?.content).toContain("local-runtime-probe");
+    expect(promotedEvidenceDocument?.evidenceRefs).toContain(promotionRef.replace(`projects/ariadne/`, ""));
+    expect(deploymentAssistDocument?.content).toContain("qwen3.6-35b-a3b-nvfp4-atlas");
     expect(await fs.readFile(staleDeploymentEvidencePath, "utf8")).toContain("Operator draft marker: keep deployment draft");
     const falseJson = path.join(vaultRoot, "projects", "ariadne", "deployment", "false.json");
     await fs.writeFile(falseJson, "false");

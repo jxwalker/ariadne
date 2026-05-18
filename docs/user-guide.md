@@ -216,7 +216,7 @@ Ariadne can export a derived bundle for GBrain:
 npm run ariadne -- gbrain-export --project ariadne
 ```
 
-Import the generated JSON or Markdown into GBrain if you want hybrid search over Ariadne evidence. Keep Ariadne as the source of truth. If GBrain produces query or eval output, import that report back:
+Import the generated JSON or Markdown into GBrain if you want hybrid search over Ariadne evidence, including live-adapter dossiers, operator assist summaries, promoted live evidence, and roadmap blockers. Keep Ariadne as the source of truth. If GBrain produces query or eval output, import that report back:
 
 ```bash
 npm run ariadne -- gbrain-report-import --project ariadne --from gbrain-report.json
