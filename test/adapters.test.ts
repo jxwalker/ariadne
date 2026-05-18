@@ -1537,9 +1537,28 @@ describe("roadmap adapters", () => {
     expect(nextOperatorPacket.packet.refs.assist).toContain("live-adapter-operator-evidence-assist-");
     expect(nextOperatorPacket.packet.refs.checkBatch).toContain("live-adapter-operator-evidence-check-all-");
     expect("import" in nextOperatorPacket.packet.commands).toBe(false);
+    expect(nextOperatorPacket.packet.afterHumanVerificationCommands.import).toContain("live-adapter-operator-evidence");
+    expect(nextOperatorPacket.packet.verificationWorksheet.length).toBeGreaterThan(0);
+    expect(nextOperatorPacket.packet.verificationWorksheet[0]?.humanVerificationRequired).toBe(true);
+    expect(nextOperatorPacket.packet.verificationWorksheet[0]).toEqual(
+      expect.objectContaining({
+        missingSection: expect.any(String),
+        humanVerificationPrompt: expect.any(String),
+        existingEvidenceRefs: expect.any(Array),
+        promotedLiveEvidenceRefs: expect.any(Array),
+        gbrainQueries: expect.any(Array),
+        humanVerificationRequired: true
+      })
+    );
     const nextOperatorPacketMarkdown = await fs.readFile(nextOperatorPacket.markdownPath, "utf8");
     expect(nextOperatorPacketMarkdown).toContain("does not import operator evidence");
-    expect(nextOperatorPacketMarkdown).not.toContain("live-adapter-operator-evidence --project");
+    expect(nextOperatorPacketMarkdown).toContain("Human Verification Worksheet");
+    expect(nextOperatorPacketMarkdown).toContain("Import Command After Human Verification");
+    const nextPacketOperatorCommands = markdownCodeBlockAfterHeading(nextOperatorPacketMarkdown, "Operator Commands");
+    const nextPacketImportCommand = markdownCodeBlockAfterHeading(nextOperatorPacketMarkdown, "Import Command After Human Verification");
+    expect(nextPacketOperatorCommands).toContain("live-adapter-operator-evidence-check");
+    expect(nextPacketOperatorCommands).not.toContain("live-adapter-operator-evidence --project");
+    expect(nextPacketImportCommand).toContain("live-adapter-operator-evidence");
     const explicitHermesPacket = await generateLiveAdapterOperatorEvidenceNextPacket({
       project: "ariadne",
       vaultRoot,

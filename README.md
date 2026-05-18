@@ -196,7 +196,7 @@ vault/projects/<project>/
 26. Use `live-adapter-operator-evidence-check-all --source workspace` to preflight every target workspace file and refresh the queue without recording evidence; add `--target <target>` to preflight one adapter from its target-scoped workspace when available.
 27. Use `live-adapter-operator-evidence-import-ready` when the queue contains ready targets and you want to import only files whose latest preflight checks are complete; add `--target <target>` to import one ready adapter without touching the rest of the queue.
 28. Use `live-adapter-operator-evidence` and `live-adapter-operator-evidence-audit` to record filled operator evidence and show which targets still have missing proof. These records keep `mutationApproved=false`.
-29. Use `live-adapter-operator-evidence-next` to refresh the current target workspace, assist, preflight, review session, and cutover packet before operator review.
+29. Use `live-adapter-operator-evidence-next` to refresh the current target workspace, assist, preflight, review session, cutover packet, and human verification worksheet before operator review.
 30. Use `roadmap-control-refresh` before judging roadmap state after a long run; it refreshes live-adapter control artifacts, operator-evidence queue, next packet, roadmap audit, GBrain export, and artifact checks without importing evidence or approving mutation.
 31. Use `roadmap-completion-audit` as the conservative completion gate for the whole roadmap; it stays blocked until artifact checks, behavior checks, evaluation trends, console visual/browser checks, coordination records, GBrain advisory context, operator-evidence audit, live-adapter cutover audit, and review-session state all prove completion.
 

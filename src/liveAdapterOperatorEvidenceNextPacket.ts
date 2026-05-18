@@ -118,8 +118,12 @@ export async function generateLiveAdapterOperatorEvidenceNextPacket(input: {
       reviewSession: `npm run ariadne -- live-adapter-review-session --project ${project} --target ${selected.target}`,
       cutoverAudit: `npm run ariadne -- live-adapter-cutover-audit --project ${project} --target ${selected.target}`
     },
+    afterHumanVerificationCommands: {
+      import: assistTarget.importCommand
+    },
     nextAction: refreshedQueueTarget?.nextAction ?? selected.nextAction,
     missingSectionLabels: checkTarget.missingSectionLabels,
+    verificationWorksheet: assistTarget.reviewChecklist ?? [],
     evidenceRefs: Array.from(
       new Set([
         workspaceTarget.evidenceFileRef,
@@ -162,6 +166,7 @@ function renderPacket(packet: LiveAdapterOperatorEvidenceNextPacket): string {
     `- Promoted live evidence: ${packet.summary.promotedLiveEvidence}`,
     `- Support file refs: ${packet.summary.supportFileRefs}`,
     `- Cutover blocked gates: ${packet.summary.cutoverBlockedGates}`,
+    `- Verification worksheet rows: ${packet.verificationWorksheet.length}`,
     "",
     "## Generated Refs",
     "",
@@ -175,6 +180,14 @@ function renderPacket(packet: LiveAdapterOperatorEvidenceNextPacket): string {
     packet.commands.cutoverAudit,
     "```",
     "",
+    "## Import Command After Human Verification",
+    "",
+    "Run this only after a human operator has filled operator-evidence.md with verified observations and the check command reports complete evidence.",
+    "",
+    "```bash",
+    packet.afterHumanVerificationCommands.import,
+    "```",
+    "",
     "## Next Action",
     "",
     `- ${packet.nextAction ?? "Fill the operator evidence workspace and rerun the check command."}`,
@@ -182,6 +195,10 @@ function renderPacket(packet: LiveAdapterOperatorEvidenceNextPacket): string {
     "## Missing Section Labels",
     "",
     ...list(packet.missingSectionLabels),
+    "",
+    "## Human Verification Worksheet",
+    "",
+    ...verificationWorksheetLines(packet.verificationWorksheet),
     "",
     "## Evidence Refs",
     "",
@@ -207,4 +224,23 @@ function required<T>(value: T | undefined, message: string): T {
 
 function list(items: string[]): string[] {
   return items.length === 0 ? ["- none"] : items.map((item) => `- ${item}`);
+}
+
+function verificationWorksheetLines(items: LiveAdapterOperatorEvidenceNextPacket["verificationWorksheet"]): string[] {
+  return [
+    "| Missing section | Human verification prompt | Existing refs | Promoted live evidence | GBrain queries |",
+    "| --- | --- | ---: | ---: | ---: |",
+    ...(items.length === 0
+      ? [
+          "| none | No missing sections. Confirm the imported operator record remains current before relying on it. | 0 | 0 | 0 |"
+        ]
+      : items.map(
+          (item) =>
+            `| ${cell(item.missingSection)} | ${cell(item.humanVerificationPrompt)} | ${item.existingEvidenceRefs.length} | ${item.promotedLiveEvidenceRefs.length} | ${item.gbrainQueries.length} |`
+        ))
+  ];
+}
+
+function cell(value: string): string {
+  return value.replace(/\|/g, "\\|").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/\n/g, " ");
 }
