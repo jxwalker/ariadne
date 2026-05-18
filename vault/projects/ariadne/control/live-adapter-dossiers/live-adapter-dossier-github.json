@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "project": "ariadne",
-  "generatedAt": "2026-05-17T09:47:18.476Z",
+  "generatedAt": "2026-05-18T03:38:00.173Z",
   "target": "github",
   "status": "ready_for_operator_review",
   "readinessRef": "projects/ariadne/control/live-adapter-readiness.json",
@@ -43,9 +43,9 @@
     {
       "id": "github-operator-evidence",
       "status": "pending",
-      "title": "Fill and import operator evidence",
-      "rationale": "The target has no imported operator evidence record. Fill the generated workspace file with real observations before packet review or cutover.",
-      "command": "npm run ariadne -- live-adapter-operator-evidence --project <project> --target github --from vault/projects/<project>/control/operator-evidence/github/operator-evidence.md --by <operator>",
+      "title": "Prepare, fill, and import operator evidence",
+      "rationale": "The target has no imported operator evidence record. Refresh the target packet, fill the generated workspace file with real observations, and import it before packet review or cutover.",
+      "command": "npm run ariadne -- live-adapter-operator-evidence-next --project <project> --target github",
       "evidenceRefs": [
         "control/live-adapter-operator-evidence-workspace.json",
         "control/operator-evidence/github/operator-evidence.md"
@@ -119,7 +119,7 @@
       "no passed target-guarded execution evidence exists"
     ],
     "nextActions": [
-      "pending: Fill and import operator evidence",
+      "pending: Prepare, fill, and import operator evidence",
       "pending: Record operator review of the approval packet",
       "pending: Resolve existing readiness plan blockers",
       "pending: Run the reviewed dry-run command",

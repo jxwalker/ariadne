@@ -2,7 +2,7 @@
 
 Project: ariadne
 Status: ready_for_operator_review
-Generated: 2026-05-17T09:47:18.475Z
+Generated: 2026-05-18T03:38:00.174Z
 
 ## Summary
 
@@ -25,7 +25,7 @@ Generated: 2026-05-17T09:47:18.475Z
 
 ## Next Actions
 
-- pending: Fill and import operator evidence - npm run ariadne -- live-adapter-operator-evidence --project <project> --target gsd2 --from vault/projects/<project>/control/operator-evidence/gsd2/operator-evidence.md --by <operator>
+- pending: Prepare, fill, and import operator evidence - npm run ariadne -- live-adapter-operator-evidence-next --project <project> --target gsd2
 - pending: Record operator review of the approval packet - npm run ariadne -- live-adapter-approval-review --project <project> --target gsd2 --by <operator> --status accepted --packet control/live-adapter-approval-pack.json --evidence <operator-review-evidence>
 - pending: Record an operator approval request - npm run ariadne -- approval-request --project <project> --by <operator> --target gsd2 --action "<bounded action>" --risk <low|medium|high> --reason "<why this target should mutate>" --rollback "<operator rollback path>" --evidence <auth-or-policy-evidence>
 - blocked: Create a target-specific mutation-readiness plan - npm run ariadne -- gsd2-mutation-plan --project <project> --task <id> --mode <headless|auto|worktree> --scope <scope> --auth-evidence <paths> --dry-run <cmd> --live-command <cmd> --post-verify <cmd> --rollback <text> --approval <approval-id>

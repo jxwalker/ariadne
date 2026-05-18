@@ -1,8 +1,9 @@
 # Live Adapter Operator Evidence Workspace
 
 Project: ariadne
+Target: all
 Status: awaiting_operator_input
-Generated: 2026-05-17T08:33:54.763Z
+Generated: 2026-05-18T03:37:59.302Z
 Mutation approved: false
 Approval granted: false
 
@@ -19,7 +20,7 @@ This workspace is fillable operator paperwork. It does not create evidence recor
 
 - Targets: 6
 - Workspace files: 6
-- Support files: 30
+- Support files: 36
 - Targets needing evidence: 6
 - Targets ready for import: 0
 - GBrain query items: 18
@@ -63,6 +64,7 @@ npm run ariadne -- live-adapter-operator-evidence --project ariadne --target git
 - projects/ariadne/control/operator-evidence/github/rollback-post-verify.md
 - projects/ariadne/control/operator-evidence/github/dry-run-review.md
 - projects/ariadne/control/operator-evidence/github/gbrain-notes.md
+- projects/ariadne/control/operator-evidence/github/read-only-assist.md
 
 ### deployment
 
@@ -101,6 +103,7 @@ npm run ariadne -- live-adapter-operator-evidence --project ariadne --target dep
 - projects/ariadne/control/operator-evidence/deployment/rollback-post-verify.md
 - projects/ariadne/control/operator-evidence/deployment/dry-run-review.md
 - projects/ariadne/control/operator-evidence/deployment/gbrain-notes.md
+- projects/ariadne/control/operator-evidence/deployment/read-only-assist.md
 
 ### hermes-cron
 
@@ -139,6 +142,7 @@ npm run ariadne -- live-adapter-operator-evidence --project ariadne --target her
 - projects/ariadne/control/operator-evidence/hermes-cron/rollback-post-verify.md
 - projects/ariadne/control/operator-evidence/hermes-cron/dry-run-review.md
 - projects/ariadne/control/operator-evidence/hermes-cron/gbrain-notes.md
+- projects/ariadne/control/operator-evidence/hermes-cron/read-only-assist.md
 
 ### openscorpion
 
@@ -177,6 +181,7 @@ npm run ariadne -- live-adapter-operator-evidence --project ariadne --target ope
 - projects/ariadne/control/operator-evidence/openscorpion/rollback-post-verify.md
 - projects/ariadne/control/operator-evidence/openscorpion/dry-run-review.md
 - projects/ariadne/control/operator-evidence/openscorpion/gbrain-notes.md
+- projects/ariadne/control/operator-evidence/openscorpion/read-only-assist.md
 
 ### gsd2
 
@@ -215,6 +220,7 @@ npm run ariadne -- live-adapter-operator-evidence --project ariadne --target gsd
 - projects/ariadne/control/operator-evidence/gsd2/rollback-post-verify.md
 - projects/ariadne/control/operator-evidence/gsd2/dry-run-review.md
 - projects/ariadne/control/operator-evidence/gsd2/gbrain-notes.md
+- projects/ariadne/control/operator-evidence/gsd2/read-only-assist.md
 
 ### notebooklm
 
@@ -253,3 +259,4 @@ npm run ariadne -- live-adapter-operator-evidence --project ariadne --target not
 - projects/ariadne/control/operator-evidence/notebooklm/rollback-post-verify.md
 - projects/ariadne/control/operator-evidence/notebooklm/dry-run-review.md
 - projects/ariadne/control/operator-evidence/notebooklm/gbrain-notes.md
+- projects/ariadne/control/operator-evidence/notebooklm/read-only-assist.md

@@ -2,7 +2,7 @@
 
 Project: ariadne
 Status: ready_for_operator_review
-Generated: 2026-05-17T09:47:18.476Z
+Generated: 2026-05-18T03:38:00.173Z
 
 ## Summary
 
@@ -25,7 +25,7 @@ Generated: 2026-05-17T09:47:18.476Z
 
 ## Next Actions
 
-- pending: Fill and import operator evidence - npm run ariadne -- live-adapter-operator-evidence --project <project> --target github --from vault/projects/<project>/control/operator-evidence/github/operator-evidence.md --by <operator>
+- pending: Prepare, fill, and import operator evidence - npm run ariadne -- live-adapter-operator-evidence-next --project <project> --target github
 - pending: Record operator review of the approval packet - npm run ariadne -- live-adapter-approval-review --project <project> --target github --by <operator> --status accepted --packet control/live-adapter-approval-pack.json --evidence <operator-review-evidence>
 - pending: Resolve existing readiness plan blockers - Review mutation-readiness-github-2026-05-16T16-50-54-241Z; after operator approval, record approval-decision, ensure --post-verify is present, then rerun npm run ariadne -- mutation-readiness-audit --project <project>
 - pending: Run the reviewed dry-run command - After mutation-readiness-github-2026-05-16T16-50-54-241Z passes audit, run npm run ariadne -- mutation-dry-run --project <project> --plan mutation-readiness-github-2026-05-16T16-50-54-241Z

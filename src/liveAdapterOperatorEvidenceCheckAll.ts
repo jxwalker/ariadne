@@ -311,10 +311,23 @@ function renderBatch(batch: LiveAdapterOperatorEvidenceCheckBatch): string {
     "| --- | --- | ---: | --- | --- | --- | --- |",
     ...batch.targets.map(
       (target) =>
-        `| ${tableCell(target.target)} | ${tableCell(target.status)} | ${tableCell(String(target.missingSections))} | ${tableCell(target.missingSectionLabels.join(", ") || "none")} | ${tableCell(target.sourceFileRef ?? "missing")} | ${tableCell(target.checkRef ?? "not run")} | ${tableCell(target.errorDetail ?? "")} |`
+        `| ${tableCell(target.target)} | ${tableCell(target.status)} | ${tableCell(String(target.missingSections))} | ${tableCell(target.missingSectionLabels.join(", ") || "none")} | ${tableCell(target.sourceFileRef ?? "missing")} | ${tableCell(target.checkRef ?? "not run")} | ${tableCell(targetDetail(target))} |`
     ),
     ""
   ].join("\n");
+}
+
+function targetDetail(target: BatchTarget): string {
+  if (target.errorDetail) return target.errorDetail;
+  const refs = [
+    target.checkMarkdownRef ? `Check markdown: ${target.checkMarkdownRef}` : undefined,
+    target.sourceRef ? `Source: ${target.sourceRef}` : undefined
+  ].filter(isString);
+  return refs.length > 0 ? refs.join("; ") : "not run";
+}
+
+function isString(value: string | undefined): value is string {
+  return typeof value === "string";
 }
 
 function tableCell(value: string): string {

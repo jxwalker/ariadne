@@ -1,0 +1,522 @@
+{
+  "schemaVersion": 1,
+  "project": "ariadne",
+  "generatedAt": "2026-05-18T03:37:59.305Z",
+  "status": "awaiting_operator_review",
+  "mutationApproved": false,
+  "approvalGranted": false,
+  "operatorEvidenceRecordCreated": false,
+  "workspaceRef": "projects/ariadne/control/live-adapter-operator-evidence-workspace.json",
+  "queueRef": "projects/ariadne/control/live-adapter-operator-evidence-queue.json",
+  "workplanRef": "projects/ariadne/control/live-adapter-operator-evidence-workplan.json",
+  "summary": {
+    "targets": 6,
+    "assistFiles": 6,
+    "existingEvidenceRefs": 67,
+    "promotedLiveEvidence": 1,
+    "supportFileRefs": 36,
+    "missingSections": 54,
+    "cutoverBlockers": 42,
+    "gbrainQueries": 18
+  },
+  "targets": [
+    {
+      "target": "github",
+      "status": "needs_evidence",
+      "assistFileRef": "projects/ariadne/control/operator-evidence/github/read-only-assist.md",
+      "workspaceDirRef": "projects/ariadne/control/operator-evidence/github",
+      "evidenceFileRef": "projects/ariadne/control/operator-evidence/github/operator-evidence.md",
+      "checkCommand": "npm run ariadne -- live-adapter-operator-evidence-check --project ariadne --target github --from vault/projects/ariadne/control/operator-evidence/github/operator-evidence.md",
+      "importCommand": "npm run ariadne -- live-adapter-operator-evidence --project ariadne --target github --from vault/projects/ariadne/control/operator-evidence/github/operator-evidence.md --by <operator>",
+      "existingEvidenceRefs": [
+        "projects/ariadne/control/live-adapter-evidence-templates/live-adapter-evidence-template-github.md",
+        "projects/ariadne/control/live-adapter-dossiers/live-adapter-dossier-github.json",
+        "projects/ariadne/control/mutation-readiness-repair-plan.json",
+        "projects/ariadne/control/live-adapter-readiness.json",
+        "projects/ariadne/control/live-adapter-next-actions.json",
+        "projects/ariadne/control/live-adapter-approval-pack.json",
+        "projects/ariadne/control/live-adapter-approval-review-audit.json",
+        "projects/ariadne/control/mutation-readiness-audit.json",
+        "projects/ariadne/control/live-adapter-operator-evidence-workspace.json",
+        "projects/ariadne/control/operator-evidence/github/operator-evidence.md",
+        "projects/ariadne/control/live-adapter-operator-evidence-audit.json"
+      ],
+      "promotedLiveEvidence": [],
+      "supportFileRefs": [
+        "projects/ariadne/control/operator-evidence/github/packet-review.md",
+        "projects/ariadne/control/operator-evidence/github/auth-boundary.md",
+        "projects/ariadne/control/operator-evidence/github/rollback-post-verify.md",
+        "projects/ariadne/control/operator-evidence/github/dry-run-review.md",
+        "projects/ariadne/control/operator-evidence/github/gbrain-notes.md",
+        "projects/ariadne/control/operator-evidence/github/read-only-assist.md"
+      ],
+      "missingSections": [
+        "Operator identity and timestamp",
+        "Approval packet review",
+        "Authentication or authorization boundary",
+        "Bounded action statement",
+        "Rollback or disable path",
+        "Post-action verification command",
+        "Dry-run command and safe output",
+        "Target-guarded execution wrapper",
+        "Exact confirm-plan proof"
+      ],
+      "requiredEvidence": [
+        "operator identity and review timestamp",
+        "reviewed approval packet path and generation timestamp",
+        "authentication or authorization boundary observed for this target",
+        "bounded action statement and explicit non-goals",
+        "rollback or disable path checked by the operator",
+        "post-action verification command checked by the operator",
+        "dry-run command and expected safe output shape",
+        "target-guarded execution command and expected post-verification output shape",
+        "proof that execution used mutation-execute or a target-specific wrapper with an exact --confirm-plan match",
+        "operator approval request record",
+        "authentication or authorization evidence",
+        "bounded scope statement",
+        "dry-run command output evidence",
+        "post-action verification command",
+        "rollback or disable path",
+        "repository, PR, branch policy, and check-rollup evidence"
+      ],
+      "cutoverBlockers": [
+        "Operator evidence complete: No operator evidence record exists for github.; Missing operator evidence section: Operator identity and timestamp; Missing operator evidence section: Approval packet review; Missing operator evidence section: Authentication or authorization boundary; Missing operator evidence section: Bounded action statement; Missing operator evidence section: Rollback or disable path; Missing operator evidence section: Post-action verification command; Missing operator evidence section: Dry-run command and safe output; Missing operator evidence section: Target-guarded execution wrapper; Missing operator evidence section: Exact confirm-plan proof",
+        "Current accepted operator packet review: no accepted operator review exists",
+        "Mutation-readiness audit passed: No target-specific mutation-readiness plan passes audit.",
+        "Credential and auth-boundary evidence accepted: No passing readiness audit is available to prove auth evidence.",
+        "Rollback and post-verification contract accepted: A passing readiness audit is required to prove rollback and post-verification.",
+        "Dry-run evidence passed: No passed dry-run evidence exists for an audit-passed plan.",
+        "Target-guarded execution evidence passed: No passed target-guarded execution evidence exists."
+      ],
+      "gbrainQueries": [
+        "Find prior Ariadne decisions and evidence for the github live adapter.",
+        "List risks, rollback requirements, and stale assumptions for github approval.",
+        "Summarize operator-review evidence still missing before github mutation readiness."
+      ],
+      "nextSteps": [
+        "Open read-only-assist.md and the listed support refs.",
+        "Verify each relevant fact manually before copying it into operator-evidence.md.",
+        "Fill the Operator and Review timestamp fields with real operator values.",
+        "Run the check command, then import only when the check is complete."
+      ]
+    },
+    {
+      "target": "deployment",
+      "status": "needs_evidence",
+      "assistFileRef": "projects/ariadne/control/operator-evidence/deployment/read-only-assist.md",
+      "workspaceDirRef": "projects/ariadne/control/operator-evidence/deployment",
+      "evidenceFileRef": "projects/ariadne/control/operator-evidence/deployment/operator-evidence.md",
+      "checkCommand": "npm run ariadne -- live-adapter-operator-evidence-check --project ariadne --target deployment --from vault/projects/ariadne/control/operator-evidence/deployment/operator-evidence.md",
+      "importCommand": "npm run ariadne -- live-adapter-operator-evidence --project ariadne --target deployment --from vault/projects/ariadne/control/operator-evidence/deployment/operator-evidence.md --by <operator>",
+      "existingEvidenceRefs": [
+        "projects/ariadne/control/live-adapter-evidence-templates/live-adapter-evidence-template-deployment.md",
+        "projects/ariadne/control/live-adapter-dossiers/live-adapter-dossier-deployment.json",
+        "projects/ariadne/control/mutation-readiness-repair-plan.json",
+        "projects/ariadne/control/live-adapter-readiness.json",
+        "projects/ariadne/control/live-adapter-next-actions.json",
+        "projects/ariadne/control/live-adapter-approval-pack.json",
+        "projects/ariadne/control/live-adapter-approval-review-audit.json",
+        "projects/ariadne/control/mutation-readiness-audit.json",
+        "projects/ariadne/control/live-adapter-operator-evidence-workspace.json",
+        "projects/ariadne/control/operator-evidence/deployment/operator-evidence.md",
+        "projects/ariadne/control/live-adapter-operator-evidence-audit.json",
+        "projects/ariadne/control/live-evidence-promotions/live-evidence-promotion-deployment-2026-05-17T23-37-04-509Z.json"
+      ],
+      "promotedLiveEvidence": [
+        {
+          "ref": "projects/ariadne/control/live-evidence-promotions/live-evidence-promotion-deployment-2026-05-17T23-37-04-509Z.json",
+          "title": "Atlas Qwen runtime canary evidence",
+          "generatedAt": "2026-05-17T23:37:04.509Z",
+          "sources": 2,
+          "parsedSources": 2,
+          "redactedValues": 2,
+          "sourceKinds": [
+            "local-runtime-probe",
+            "e2e-smoke"
+          ],
+          "summaryBullets": [
+            "local-runtime-probe; 8/8 services reachable; 13 models; atlas canary passed qwen3.6-35b-a3b-nvfp4-atlas; 1 redaction(s)",
+            "e2e-smoke; 11 passed, 1 blocked, 0 failed; 1 redaction(s)"
+          ]
+        }
+      ],
+      "supportFileRefs": [
+        "projects/ariadne/control/operator-evidence/deployment/packet-review.md",
+        "projects/ariadne/control/operator-evidence/deployment/auth-boundary.md",
+        "projects/ariadne/control/operator-evidence/deployment/rollback-post-verify.md",
+        "projects/ariadne/control/operator-evidence/deployment/dry-run-review.md",
+        "projects/ariadne/control/operator-evidence/deployment/gbrain-notes.md",
+        "projects/ariadne/control/operator-evidence/deployment/read-only-assist.md"
+      ],
+      "missingSections": [
+        "Operator identity and timestamp",
+        "Approval packet review",
+        "Authentication or authorization boundary",
+        "Bounded action statement",
+        "Rollback or disable path",
+        "Post-action verification command",
+        "Dry-run command and safe output",
+        "Target-guarded execution wrapper",
+        "Exact confirm-plan proof"
+      ],
+      "requiredEvidence": [
+        "operator identity and review timestamp",
+        "reviewed approval packet path and generation timestamp",
+        "authentication or authorization boundary observed for this target",
+        "bounded action statement and explicit non-goals",
+        "rollback or disable path checked by the operator",
+        "post-action verification command checked by the operator",
+        "dry-run command and expected safe output shape",
+        "target-guarded execution command and expected post-verification output shape",
+        "proof that execution used mutation-execute or a target-specific wrapper with an exact --confirm-plan match",
+        "operator approval request record",
+        "authentication or authorization evidence",
+        "bounded scope statement",
+        "dry-run command output evidence",
+        "post-action verification command",
+        "rollback or disable path",
+        "host identity, service state, sudo boundary, and rollback host evidence"
+      ],
+      "cutoverBlockers": [
+        "Operator evidence complete: No operator evidence record exists for deployment.; Missing operator evidence section: Operator identity and timestamp; Missing operator evidence section: Approval packet review; Missing operator evidence section: Authentication or authorization boundary; Missing operator evidence section: Bounded action statement; Missing operator evidence section: Rollback or disable path; Missing operator evidence section: Post-action verification command; Missing operator evidence section: Dry-run command and safe output; Missing operator evidence section: Target-guarded execution wrapper; Missing operator evidence section: Exact confirm-plan proof",
+        "Current accepted operator packet review: no accepted operator review exists",
+        "Mutation-readiness audit passed: No target-specific mutation-readiness plan passes audit.",
+        "Credential and auth-boundary evidence accepted: No passing readiness audit is available to prove auth evidence.",
+        "Rollback and post-verification contract accepted: A passing readiness audit is required to prove rollback and post-verification.",
+        "Dry-run evidence passed: No passed dry-run evidence exists for an audit-passed plan.",
+        "Target-guarded execution evidence passed: No passed target-guarded execution evidence exists."
+      ],
+      "gbrainQueries": [
+        "Find prior Ariadne decisions and evidence for the deployment live adapter.",
+        "List risks, rollback requirements, and stale assumptions for deployment approval.",
+        "Summarize operator-review evidence still missing before deployment mutation readiness."
+      ],
+      "nextSteps": [
+        "Open read-only-assist.md and the listed support refs.",
+        "Verify each relevant fact manually before copying it into operator-evidence.md.",
+        "Fill the Operator and Review timestamp fields with real operator values.",
+        "Run the check command, then import only when the check is complete."
+      ]
+    },
+    {
+      "target": "hermes-cron",
+      "status": "needs_evidence",
+      "assistFileRef": "projects/ariadne/control/operator-evidence/hermes-cron/read-only-assist.md",
+      "workspaceDirRef": "projects/ariadne/control/operator-evidence/hermes-cron",
+      "evidenceFileRef": "projects/ariadne/control/operator-evidence/hermes-cron/operator-evidence.md",
+      "checkCommand": "npm run ariadne -- live-adapter-operator-evidence-check --project ariadne --target hermes-cron --from vault/projects/ariadne/control/operator-evidence/hermes-cron/operator-evidence.md",
+      "importCommand": "npm run ariadne -- live-adapter-operator-evidence --project ariadne --target hermes-cron --from vault/projects/ariadne/control/operator-evidence/hermes-cron/operator-evidence.md --by <operator>",
+      "existingEvidenceRefs": [
+        "projects/ariadne/control/live-adapter-evidence-templates/live-adapter-evidence-template-hermes-cron.md",
+        "projects/ariadne/control/live-adapter-dossiers/live-adapter-dossier-hermes-cron.json",
+        "projects/ariadne/control/mutation-readiness-repair-plan.json",
+        "projects/ariadne/control/live-adapter-readiness.json",
+        "projects/ariadne/control/live-adapter-next-actions.json",
+        "projects/ariadne/control/live-adapter-approval-pack.json",
+        "projects/ariadne/control/live-adapter-approval-review-audit.json",
+        "projects/ariadne/control/mutation-readiness-audit.json",
+        "projects/ariadne/control/live-adapter-operator-evidence-workspace.json",
+        "projects/ariadne/control/operator-evidence/hermes-cron/operator-evidence.md",
+        "projects/ariadne/control/live-adapter-operator-evidence-audit.json"
+      ],
+      "promotedLiveEvidence": [],
+      "supportFileRefs": [
+        "projects/ariadne/control/operator-evidence/hermes-cron/packet-review.md",
+        "projects/ariadne/control/operator-evidence/hermes-cron/auth-boundary.md",
+        "projects/ariadne/control/operator-evidence/hermes-cron/rollback-post-verify.md",
+        "projects/ariadne/control/operator-evidence/hermes-cron/dry-run-review.md",
+        "projects/ariadne/control/operator-evidence/hermes-cron/gbrain-notes.md",
+        "projects/ariadne/control/operator-evidence/hermes-cron/read-only-assist.md"
+      ],
+      "missingSections": [
+        "Operator identity and timestamp",
+        "Approval packet review",
+        "Authentication or authorization boundary",
+        "Bounded action statement",
+        "Rollback or disable path",
+        "Post-action verification command",
+        "Dry-run command and safe output",
+        "Target-guarded execution wrapper",
+        "Exact confirm-plan proof"
+      ],
+      "requiredEvidence": [
+        "operator identity and review timestamp",
+        "reviewed approval packet path and generation timestamp",
+        "authentication or authorization boundary observed for this target",
+        "bounded action statement and explicit non-goals",
+        "rollback or disable path checked by the operator",
+        "post-action verification command checked by the operator",
+        "dry-run command and expected safe output shape",
+        "target-guarded execution command and expected post-verification output shape",
+        "proof that execution used mutation-execute or a target-specific wrapper with an exact --confirm-plan match",
+        "operator approval request record",
+        "authentication or authorization evidence",
+        "bounded scope statement",
+        "dry-run command output evidence",
+        "post-action verification command",
+        "rollback or disable path",
+        "scheduler auth, existing job snapshot, next-run, and disable-path evidence"
+      ],
+      "cutoverBlockers": [
+        "Operator evidence complete: No operator evidence record exists for hermes-cron.; Missing operator evidence section: Operator identity and timestamp; Missing operator evidence section: Approval packet review; Missing operator evidence section: Authentication or authorization boundary; Missing operator evidence section: Bounded action statement; Missing operator evidence section: Rollback or disable path; Missing operator evidence section: Post-action verification command; Missing operator evidence section: Dry-run command and safe output; Missing operator evidence section: Target-guarded execution wrapper; Missing operator evidence section: Exact confirm-plan proof",
+        "Current accepted operator packet review: no accepted operator review exists",
+        "Mutation-readiness audit passed: No target-specific mutation-readiness plan passes audit.",
+        "Credential and auth-boundary evidence accepted: No passing readiness audit is available to prove auth evidence.",
+        "Rollback and post-verification contract accepted: A passing readiness audit is required to prove rollback and post-verification.",
+        "Dry-run evidence passed: No passed dry-run evidence exists for an audit-passed plan.",
+        "Target-guarded execution evidence passed: No passed target-guarded execution evidence exists."
+      ],
+      "gbrainQueries": [
+        "Find prior Ariadne decisions and evidence for the hermes-cron live adapter.",
+        "List risks, rollback requirements, and stale assumptions for hermes-cron approval.",
+        "Summarize operator-review evidence still missing before hermes-cron mutation readiness."
+      ],
+      "nextSteps": [
+        "Open read-only-assist.md and the listed support refs.",
+        "Verify each relevant fact manually before copying it into operator-evidence.md.",
+        "Fill the Operator and Review timestamp fields with real operator values.",
+        "Run the check command, then import only when the check is complete."
+      ]
+    },
+    {
+      "target": "openscorpion",
+      "status": "needs_evidence",
+      "assistFileRef": "projects/ariadne/control/operator-evidence/openscorpion/read-only-assist.md",
+      "workspaceDirRef": "projects/ariadne/control/operator-evidence/openscorpion",
+      "evidenceFileRef": "projects/ariadne/control/operator-evidence/openscorpion/operator-evidence.md",
+      "checkCommand": "npm run ariadne -- live-adapter-operator-evidence-check --project ariadne --target openscorpion --from vault/projects/ariadne/control/operator-evidence/openscorpion/operator-evidence.md",
+      "importCommand": "npm run ariadne -- live-adapter-operator-evidence --project ariadne --target openscorpion --from vault/projects/ariadne/control/operator-evidence/openscorpion/operator-evidence.md --by <operator>",
+      "existingEvidenceRefs": [
+        "projects/ariadne/control/live-adapter-evidence-templates/live-adapter-evidence-template-openscorpion.md",
+        "projects/ariadne/control/live-adapter-dossiers/live-adapter-dossier-openscorpion.json",
+        "projects/ariadne/control/mutation-readiness-repair-plan.json",
+        "projects/ariadne/control/live-adapter-readiness.json",
+        "projects/ariadne/control/live-adapter-next-actions.json",
+        "projects/ariadne/control/live-adapter-approval-pack.json",
+        "projects/ariadne/control/live-adapter-approval-review-audit.json",
+        "projects/ariadne/control/mutation-readiness-audit.json",
+        "projects/ariadne/control/live-adapter-operator-evidence-workspace.json",
+        "projects/ariadne/control/operator-evidence/openscorpion/operator-evidence.md",
+        "projects/ariadne/control/live-adapter-operator-evidence-audit.json"
+      ],
+      "promotedLiveEvidence": [],
+      "supportFileRefs": [
+        "projects/ariadne/control/operator-evidence/openscorpion/packet-review.md",
+        "projects/ariadne/control/operator-evidence/openscorpion/auth-boundary.md",
+        "projects/ariadne/control/operator-evidence/openscorpion/rollback-post-verify.md",
+        "projects/ariadne/control/operator-evidence/openscorpion/dry-run-review.md",
+        "projects/ariadne/control/operator-evidence/openscorpion/gbrain-notes.md",
+        "projects/ariadne/control/operator-evidence/openscorpion/read-only-assist.md"
+      ],
+      "missingSections": [
+        "Operator identity and timestamp",
+        "Approval packet review",
+        "Authentication or authorization boundary",
+        "Bounded action statement",
+        "Rollback or disable path",
+        "Post-action verification command",
+        "Dry-run command and safe output",
+        "Target-guarded execution wrapper",
+        "Exact confirm-plan proof"
+      ],
+      "requiredEvidence": [
+        "operator identity and review timestamp",
+        "reviewed approval packet path and generation timestamp",
+        "authentication or authorization boundary observed for this target",
+        "bounded action statement and explicit non-goals",
+        "rollback or disable path checked by the operator",
+        "post-action verification command checked by the operator",
+        "dry-run command and expected safe output shape",
+        "target-guarded execution command and expected post-verification output shape",
+        "proof that execution used mutation-execute or a target-specific wrapper with an exact --confirm-plan match",
+        "operator approval request record",
+        "authentication or authorization evidence",
+        "bounded scope statement",
+        "dry-run command output evidence",
+        "post-action verification command",
+        "rollback or disable path",
+        "governed route, payload sensitivity, and activity status evidence"
+      ],
+      "cutoverBlockers": [
+        "Operator evidence complete: No operator evidence record exists for openscorpion.; Missing operator evidence section: Operator identity and timestamp; Missing operator evidence section: Approval packet review; Missing operator evidence section: Authentication or authorization boundary; Missing operator evidence section: Bounded action statement; Missing operator evidence section: Rollback or disable path; Missing operator evidence section: Post-action verification command; Missing operator evidence section: Dry-run command and safe output; Missing operator evidence section: Target-guarded execution wrapper; Missing operator evidence section: Exact confirm-plan proof",
+        "Current accepted operator packet review: no accepted operator review exists",
+        "Mutation-readiness audit passed: No target-specific mutation-readiness plan passes audit.",
+        "Credential and auth-boundary evidence accepted: No passing readiness audit is available to prove auth evidence.",
+        "Rollback and post-verification contract accepted: A passing readiness audit is required to prove rollback and post-verification.",
+        "Dry-run evidence passed: No passed dry-run evidence exists for an audit-passed plan.",
+        "Target-guarded execution evidence passed: No passed target-guarded execution evidence exists."
+      ],
+      "gbrainQueries": [
+        "Find prior Ariadne decisions and evidence for the openscorpion live adapter.",
+        "List risks, rollback requirements, and stale assumptions for openscorpion approval.",
+        "Summarize operator-review evidence still missing before openscorpion mutation readiness."
+      ],
+      "nextSteps": [
+        "Open read-only-assist.md and the listed support refs.",
+        "Verify each relevant fact manually before copying it into operator-evidence.md.",
+        "Fill the Operator and Review timestamp fields with real operator values.",
+        "Run the check command, then import only when the check is complete."
+      ]
+    },
+    {
+      "target": "gsd2",
+      "status": "needs_evidence",
+      "assistFileRef": "projects/ariadne/control/operator-evidence/gsd2/read-only-assist.md",
+      "workspaceDirRef": "projects/ariadne/control/operator-evidence/gsd2",
+      "evidenceFileRef": "projects/ariadne/control/operator-evidence/gsd2/operator-evidence.md",
+      "checkCommand": "npm run ariadne -- live-adapter-operator-evidence-check --project ariadne --target gsd2 --from vault/projects/ariadne/control/operator-evidence/gsd2/operator-evidence.md",
+      "importCommand": "npm run ariadne -- live-adapter-operator-evidence --project ariadne --target gsd2 --from vault/projects/ariadne/control/operator-evidence/gsd2/operator-evidence.md --by <operator>",
+      "existingEvidenceRefs": [
+        "projects/ariadne/control/live-adapter-evidence-templates/live-adapter-evidence-template-gsd2.md",
+        "projects/ariadne/control/live-adapter-dossiers/live-adapter-dossier-gsd2.json",
+        "projects/ariadne/control/mutation-readiness-repair-plan.json",
+        "projects/ariadne/control/live-adapter-readiness.json",
+        "projects/ariadne/control/live-adapter-next-actions.json",
+        "projects/ariadne/control/live-adapter-approval-pack.json",
+        "projects/ariadne/control/live-adapter-approval-review-audit.json",
+        "projects/ariadne/control/mutation-readiness-audit.json",
+        "projects/ariadne/control/live-adapter-operator-evidence-workspace.json",
+        "projects/ariadne/control/operator-evidence/gsd2/operator-evidence.md",
+        "projects/ariadne/control/live-adapter-operator-evidence-audit.json"
+      ],
+      "promotedLiveEvidence": [],
+      "supportFileRefs": [
+        "projects/ariadne/control/operator-evidence/gsd2/packet-review.md",
+        "projects/ariadne/control/operator-evidence/gsd2/auth-boundary.md",
+        "projects/ariadne/control/operator-evidence/gsd2/rollback-post-verify.md",
+        "projects/ariadne/control/operator-evidence/gsd2/dry-run-review.md",
+        "projects/ariadne/control/operator-evidence/gsd2/gbrain-notes.md",
+        "projects/ariadne/control/operator-evidence/gsd2/read-only-assist.md"
+      ],
+      "missingSections": [
+        "Operator identity and timestamp",
+        "Approval packet review",
+        "Authentication or authorization boundary",
+        "Bounded action statement",
+        "Rollback or disable path",
+        "Post-action verification command",
+        "Dry-run command and safe output",
+        "Target-guarded execution wrapper",
+        "Exact confirm-plan proof"
+      ],
+      "requiredEvidence": [
+        "operator identity and review timestamp",
+        "reviewed approval packet path and generation timestamp",
+        "authentication or authorization boundary observed for this target",
+        "bounded action statement and explicit non-goals",
+        "rollback or disable path checked by the operator",
+        "post-action verification command checked by the operator",
+        "dry-run command and expected safe output shape",
+        "target-guarded execution command and expected post-verification output shape",
+        "proof that execution used mutation-execute or a target-specific wrapper with an exact --confirm-plan match",
+        "operator approval request record",
+        "authentication or authorization evidence",
+        "bounded scope statement",
+        "dry-run command output evidence",
+        "post-action verification command",
+        "rollback or disable path",
+        "local GSD2 binary/process snapshot and package/task identity evidence"
+      ],
+      "cutoverBlockers": [
+        "Operator evidence complete: No operator evidence record exists for gsd2.; Missing operator evidence section: Operator identity and timestamp; Missing operator evidence section: Approval packet review; Missing operator evidence section: Authentication or authorization boundary; Missing operator evidence section: Bounded action statement; Missing operator evidence section: Rollback or disable path; Missing operator evidence section: Post-action verification command; Missing operator evidence section: Dry-run command and safe output; Missing operator evidence section: Target-guarded execution wrapper; Missing operator evidence section: Exact confirm-plan proof",
+        "Current accepted operator packet review: no accepted operator review exists",
+        "Mutation-readiness audit passed: No target-specific mutation-readiness plan passes audit.",
+        "Credential and auth-boundary evidence accepted: No passing readiness audit is available to prove auth evidence.",
+        "Rollback and post-verification contract accepted: A passing readiness audit is required to prove rollback and post-verification.",
+        "Dry-run evidence passed: No passed dry-run evidence exists for an audit-passed plan.",
+        "Target-guarded execution evidence passed: No passed target-guarded execution evidence exists."
+      ],
+      "gbrainQueries": [
+        "Find prior Ariadne decisions and evidence for the gsd2 live adapter.",
+        "List risks, rollback requirements, and stale assumptions for gsd2 approval.",
+        "Summarize operator-review evidence still missing before gsd2 mutation readiness."
+      ],
+      "nextSteps": [
+        "Open read-only-assist.md and the listed support refs.",
+        "Verify each relevant fact manually before copying it into operator-evidence.md.",
+        "Fill the Operator and Review timestamp fields with real operator values.",
+        "Run the check command, then import only when the check is complete."
+      ]
+    },
+    {
+      "target": "notebooklm",
+      "status": "needs_evidence",
+      "assistFileRef": "projects/ariadne/control/operator-evidence/notebooklm/read-only-assist.md",
+      "workspaceDirRef": "projects/ariadne/control/operator-evidence/notebooklm",
+      "evidenceFileRef": "projects/ariadne/control/operator-evidence/notebooklm/operator-evidence.md",
+      "checkCommand": "npm run ariadne -- live-adapter-operator-evidence-check --project ariadne --target notebooklm --from vault/projects/ariadne/control/operator-evidence/notebooklm/operator-evidence.md",
+      "importCommand": "npm run ariadne -- live-adapter-operator-evidence --project ariadne --target notebooklm --from vault/projects/ariadne/control/operator-evidence/notebooklm/operator-evidence.md --by <operator>",
+      "existingEvidenceRefs": [
+        "projects/ariadne/control/live-adapter-evidence-templates/live-adapter-evidence-template-notebooklm.md",
+        "projects/ariadne/control/live-adapter-dossiers/live-adapter-dossier-notebooklm.json",
+        "projects/ariadne/control/mutation-readiness-repair-plan.json",
+        "projects/ariadne/control/live-adapter-readiness.json",
+        "projects/ariadne/control/live-adapter-next-actions.json",
+        "projects/ariadne/control/live-adapter-approval-pack.json",
+        "projects/ariadne/control/live-adapter-approval-review-audit.json",
+        "projects/ariadne/control/mutation-readiness-audit.json",
+        "projects/ariadne/control/live-adapter-operator-evidence-workspace.json",
+        "projects/ariadne/control/operator-evidence/notebooklm/operator-evidence.md",
+        "projects/ariadne/control/live-adapter-operator-evidence-audit.json"
+      ],
+      "promotedLiveEvidence": [],
+      "supportFileRefs": [
+        "projects/ariadne/control/operator-evidence/notebooklm/packet-review.md",
+        "projects/ariadne/control/operator-evidence/notebooklm/auth-boundary.md",
+        "projects/ariadne/control/operator-evidence/notebooklm/rollback-post-verify.md",
+        "projects/ariadne/control/operator-evidence/notebooklm/dry-run-review.md",
+        "projects/ariadne/control/operator-evidence/notebooklm/gbrain-notes.md",
+        "projects/ariadne/control/operator-evidence/notebooklm/read-only-assist.md"
+      ],
+      "missingSections": [
+        "Operator identity and timestamp",
+        "Approval packet review",
+        "Authentication or authorization boundary",
+        "Bounded action statement",
+        "Rollback or disable path",
+        "Post-action verification command",
+        "Dry-run command and safe output",
+        "Target-guarded execution wrapper",
+        "Exact confirm-plan proof"
+      ],
+      "requiredEvidence": [
+        "operator identity and review timestamp",
+        "reviewed approval packet path and generation timestamp",
+        "authentication or authorization boundary observed for this target",
+        "bounded action statement and explicit non-goals",
+        "rollback or disable path checked by the operator",
+        "post-action verification command checked by the operator",
+        "dry-run command and expected safe output shape",
+        "target-guarded execution command and expected post-verification output shape",
+        "proof that execution used mutation-execute or a target-specific wrapper with an exact --confirm-plan match",
+        "operator approval request record",
+        "authentication or authorization evidence",
+        "bounded scope statement",
+        "dry-run command output evidence",
+        "post-action verification command",
+        "rollback or disable path",
+        "NotebookLM auth, terms, source/export stability, and notebook identity evidence"
+      ],
+      "cutoverBlockers": [
+        "Operator evidence complete: No operator evidence record exists for notebooklm.; Missing operator evidence section: Operator identity and timestamp; Missing operator evidence section: Approval packet review; Missing operator evidence section: Authentication or authorization boundary; Missing operator evidence section: Bounded action statement; Missing operator evidence section: Rollback or disable path; Missing operator evidence section: Post-action verification command; Missing operator evidence section: Dry-run command and safe output; Missing operator evidence section: Target-guarded execution wrapper; Missing operator evidence section: Exact confirm-plan proof",
+        "Current accepted operator packet review: no accepted operator review exists",
+        "Mutation-readiness audit passed: No target-specific mutation-readiness plan passes audit.",
+        "Credential and auth-boundary evidence accepted: No passing readiness audit is available to prove auth evidence.",
+        "Rollback and post-verification contract accepted: A passing readiness audit is required to prove rollback and post-verification.",
+        "Dry-run evidence passed: No passed dry-run evidence exists for an audit-passed plan.",
+        "Target-guarded execution evidence passed: No passed target-guarded execution evidence exists."
+      ],
+      "gbrainQueries": [
+        "Find prior Ariadne decisions and evidence for the notebooklm live adapter.",
+        "List risks, rollback requirements, and stale assumptions for notebooklm approval.",
+        "Summarize operator-review evidence still missing before notebooklm mutation readiness."
+      ],
+      "nextSteps": [
+        "Open read-only-assist.md and the listed support refs.",
+        "Verify each relevant fact manually before copying it into operator-evidence.md.",
+        "Fill the Operator and Review timestamp fields with real operator values.",
+        "Run the check command, then import only when the check is complete."
+      ]
+    }
+  ]
+}

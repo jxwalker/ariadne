@@ -1,7 +1,7 @@
 # Live Adapter Operator Evidence Template: gsd2
 
 Project: ariadne
-Generated: 2026-05-17T09:47:18.483Z
+Generated: 2026-05-18T03:38:00.091Z
 Status: awaiting_operator_evidence
 Mutation approved: false
 
@@ -69,6 +69,15 @@ npm run ariadne -- gsd2-mutation-plan --project <project> --task <id> --mode <he
 ## Current Cutover Blockers
 
 - Operator evidence complete: No operator evidence record exists for gsd2.
+  - Missing: Operator identity and timestamp
+  - Missing: Approval packet review
+  - Missing: Authentication or authorization boundary
+  - Missing: Bounded action statement
+  - Missing: Rollback or disable path
+  - Missing: Post-action verification command
+  - Missing: Dry-run command and safe output
+  - Missing: Target-guarded execution wrapper
+  - Missing: Exact confirm-plan proof
 - Current accepted operator packet review: no accepted operator review exists
 - Mutation-readiness audit passed: No target-specific mutation-readiness plan passes audit.
 - Credential and auth-boundary evidence accepted: No passing readiness audit is available to prove auth evidence.

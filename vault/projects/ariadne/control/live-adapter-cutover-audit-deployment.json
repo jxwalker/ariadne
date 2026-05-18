@@ -1,0 +1,125 @@
+{
+  "schemaVersion": 1,
+  "project": "ariadne",
+  "generatedAt": "2026-05-18T03:38:00.133Z",
+  "target": "deployment",
+  "status": "blocked",
+  "mutationAllowed": false,
+  "readinessRef": "control/live-adapter-readiness.json",
+  "approvalReviewAuditRef": "control/live-adapter-approval-review-audit.json",
+  "mutationReadinessAuditRef": "control/mutation-readiness-audit.json",
+  "operatorEvidenceAuditRef": "control/live-adapter-operator-evidence-audit.json",
+  "dossierDirRef": "control/live-adapter-dossiers",
+  "summary": {
+    "targets": 1,
+    "ready": 0,
+    "blocked": 1,
+    "passedGates": 2,
+    "blockedGates": 7,
+    "advisoryGates": 1
+  },
+  "targets": [
+    {
+      "target": "deployment",
+      "status": "blocked",
+      "executeCommand": "deployment-mutation-execute",
+      "gates": [
+        {
+          "id": "operator-evidence-complete",
+          "label": "Operator evidence complete",
+          "status": "blocked",
+          "detail": "No operator evidence record exists for deployment.; Missing operator evidence section: Operator identity and timestamp; Missing operator evidence section: Approval packet review; Missing operator evidence section: Authentication or authorization boundary; Missing operator evidence section: Bounded action statement; Missing operator evidence section: Rollback or disable path; Missing operator evidence section: Post-action verification command; Missing operator evidence section: Dry-run command and safe output; Missing operator evidence section: Target-guarded execution wrapper; Missing operator evidence section: Exact confirm-plan proof",
+          "evidenceRefs": []
+        },
+        {
+          "id": "operator-review-current",
+          "label": "Current accepted operator packet review",
+          "status": "blocked",
+          "detail": "no accepted operator review exists",
+          "evidenceRefs": []
+        },
+        {
+          "id": "mutation-readiness-passed",
+          "label": "Mutation-readiness audit passed",
+          "status": "blocked",
+          "detail": "No target-specific mutation-readiness plan passes audit.",
+          "evidenceRefs": []
+        },
+        {
+          "id": "auth-evidence-present",
+          "label": "Credential and auth-boundary evidence accepted",
+          "status": "blocked",
+          "detail": "No passing readiness audit is available to prove auth evidence.",
+          "evidenceRefs": []
+        },
+        {
+          "id": "rollback-post-verify",
+          "label": "Rollback and post-verification contract accepted",
+          "status": "blocked",
+          "detail": "A passing readiness audit is required to prove rollback and post-verification.",
+          "evidenceRefs": []
+        },
+        {
+          "id": "dry-run-passed",
+          "label": "Dry-run evidence passed",
+          "status": "blocked",
+          "detail": "No passed dry-run evidence exists for an audit-passed plan.",
+          "evidenceRefs": []
+        },
+        {
+          "id": "target-guarded-execution-passed",
+          "label": "Target-guarded execution evidence passed",
+          "status": "blocked",
+          "detail": "No passed target-guarded execution evidence exists.",
+          "evidenceRefs": []
+        },
+        {
+          "id": "target-wrapper-known",
+          "label": "Target execute wrapper is known",
+          "status": "passed",
+          "detail": "Use deployment-mutation-execute for target-guarded execution.",
+          "evidenceRefs": []
+        },
+        {
+          "id": "operator-dossier-present",
+          "label": "Operator dossier present",
+          "status": "passed",
+          "detail": "Dossier status is ready_for_operator_review.",
+          "evidenceRefs": [
+            "control/live-adapter-dossiers/live-adapter-dossier-deployment.json"
+          ]
+        },
+        {
+          "id": "gbrain-context-advisory",
+          "label": "GBrain memory context available",
+          "status": "advisory",
+          "detail": "GBrain context is available as advisory memory, not source-of-truth approval evidence.",
+          "evidenceRefs": [
+            "projects/ariadne/integrations/gbrain/gbrain-export.json"
+          ]
+        }
+      ],
+      "blockers": [
+        "Operator evidence complete: No operator evidence record exists for deployment.; Missing operator evidence section: Operator identity and timestamp; Missing operator evidence section: Approval packet review; Missing operator evidence section: Authentication or authorization boundary; Missing operator evidence section: Bounded action statement; Missing operator evidence section: Rollback or disable path; Missing operator evidence section: Post-action verification command; Missing operator evidence section: Dry-run command and safe output; Missing operator evidence section: Target-guarded execution wrapper; Missing operator evidence section: Exact confirm-plan proof",
+        "Current accepted operator packet review: no accepted operator review exists",
+        "Mutation-readiness audit passed: No target-specific mutation-readiness plan passes audit.",
+        "Credential and auth-boundary evidence accepted: No passing readiness audit is available to prove auth evidence.",
+        "Rollback and post-verification contract accepted: A passing readiness audit is required to prove rollback and post-verification.",
+        "Dry-run evidence passed: No passed dry-run evidence exists for an audit-passed plan.",
+        "Target-guarded execution evidence passed: No passed target-guarded execution evidence exists."
+      ],
+      "gbrainQueries": [
+        "Find prior Ariadne decisions and evidence for the deployment live adapter.",
+        "List risks, rollback requirements, and stale assumptions for deployment approval.",
+        "Summarize operator-review evidence still missing before deployment mutation readiness."
+      ],
+      "evidenceRefs": [
+        "control/live-adapter-readiness.json",
+        "control/live-adapter-approval-review-audit.json",
+        "control/mutation-readiness-audit.json",
+        "control/live-adapter-operator-evidence-audit.json",
+        "control/live-adapter-dossiers/live-adapter-dossier-deployment.json"
+      ]
+    }
+  ]
+}

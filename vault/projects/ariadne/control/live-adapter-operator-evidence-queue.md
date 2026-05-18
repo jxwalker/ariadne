@@ -2,7 +2,7 @@
 
 Project: ariadne
 Status: evidence_required
-Generated: 2026-05-17T09:47:18.499Z
+Generated: 2026-05-18T03:38:00.102Z
 Mutation approved: false
 Operator evidence audit: projects/ariadne/control/live-adapter-operator-evidence-audit.json
 Workplan: projects/ariadne/control/live-adapter-operator-evidence-workplan.json
@@ -23,14 +23,14 @@ This queue is an operator aid only. It does not record operator evidence, approv
 
 ## Targets
 
-| Target | Status | Latest check | Missing | Next action |
-| --- | --- | --- | --- | --- |
-| github | needs_evidence | operator-evidence-check-github-2026-05-17T09-47-18-388Z | 9 | Fill the missing sections in the operator evidence workspace file and rerun the preflight check. |
-| deployment | needs_evidence | operator-evidence-check-deployment-2026-05-17T09-47-18-390Z | 9 | Fill the missing sections in the operator evidence workspace file and rerun the preflight check. |
-| hermes-cron | needs_evidence | operator-evidence-check-hermes-cron-2026-05-17T09-47-18-391Z | 9 | Fill the missing sections in the operator evidence workspace file and rerun the preflight check. |
-| openscorpion | needs_evidence | operator-evidence-check-openscorpion-2026-05-17T09-47-18-393Z | 9 | Fill the missing sections in the operator evidence workspace file and rerun the preflight check. |
-| gsd2 | needs_evidence | operator-evidence-check-gsd2-2026-05-17T09-47-18-394Z | 9 | Fill the missing sections in the operator evidence workspace file and rerun the preflight check. |
-| notebooklm | needs_evidence | operator-evidence-check-notebooklm-2026-05-17T09-47-18-395Z | 9 | Fill the missing sections in the operator evidence workspace file and rerun the preflight check. |
+| Target | Status | Latest check | Missing | Missing section labels | Next action |
+| --- | --- | --- | ---: | --- | --- |
+| github | needs_evidence | operator-evidence-check-github-2026-05-18T03-37-59-420Z | 9 | Operator identity and timestamp, Approval packet review, Authentication or authorization boundary, Bounded action statement, Rollback or disable path, Post-action verification command, Dry-run command and safe output, Target-guarded execution wrapper, Exact confirm-plan proof | Fill the missing sections in the operator evidence workspace file and rerun the preflight check. |
+| deployment | needs_evidence | operator-evidence-check-deployment-2026-05-18T03-37-59-992Z | 9 | Operator identity and timestamp, Approval packet review, Authentication or authorization boundary, Bounded action statement, Rollback or disable path, Post-action verification command, Dry-run command and safe output, Target-guarded execution wrapper, Exact confirm-plan proof | Fill the missing sections in the operator evidence workspace file and rerun the preflight check. |
+| hermes-cron | needs_evidence | operator-evidence-check-hermes-cron-2026-05-18T03-37-59-423Z | 9 | Operator identity and timestamp, Approval packet review, Authentication or authorization boundary, Bounded action statement, Rollback or disable path, Post-action verification command, Dry-run command and safe output, Target-guarded execution wrapper, Exact confirm-plan proof | Fill the missing sections in the operator evidence workspace file and rerun the preflight check. |
+| openscorpion | needs_evidence | operator-evidence-check-openscorpion-2026-05-18T03-37-59-424Z | 9 | Operator identity and timestamp, Approval packet review, Authentication or authorization boundary, Bounded action statement, Rollback or disable path, Post-action verification command, Dry-run command and safe output, Target-guarded execution wrapper, Exact confirm-plan proof | Fill the missing sections in the operator evidence workspace file and rerun the preflight check. |
+| gsd2 | needs_evidence | operator-evidence-check-gsd2-2026-05-18T03-37-59-425Z | 9 | Operator identity and timestamp, Approval packet review, Authentication or authorization boundary, Bounded action statement, Rollback or disable path, Post-action verification command, Dry-run command and safe output, Target-guarded execution wrapper, Exact confirm-plan proof | Fill the missing sections in the operator evidence workspace file and rerun the preflight check. |
+| notebooklm | needs_evidence | operator-evidence-check-notebooklm-2026-05-18T03-37-59-425Z | 9 | Operator identity and timestamp, Approval packet review, Authentication or authorization boundary, Bounded action statement, Rollback or disable path, Post-action verification command, Dry-run command and safe output, Target-guarded execution wrapper, Exact confirm-plan proof | Fill the missing sections in the operator evidence workspace file and rerun the preflight check. |
 
 ## Commands
 

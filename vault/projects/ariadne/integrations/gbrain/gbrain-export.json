@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "project": "ariadne",
-  "generatedAt": "2026-05-16T11:39:09.248Z",
+  "generatedAt": "2026-05-18T03:38:00.200Z",
   "source": "ariadne",
   "mode": "read_only_export",
   "instructions": [
@@ -243,7 +243,7 @@
       "kind": "task",
       "content": "Milestone: Control Spine\nSlice: core\n\nSuccess criteria:\n- Raw artifacts are copied into the durable vault.\n- Each artifact has a digest, source path, kind, and timestamp.\n- Extracted text remains linked to the raw evidence.\n\nVerification:\n- npm run check\n- npm test",
       "evidenceRefs": [
-        "REQ-001"
+        "requirement/req-001"
       ],
       "tags": [
         "ariadne",
@@ -257,7 +257,7 @@
       "kind": "task",
       "content": "Milestone: Control Spine\nSlice: core\n\nSuccess criteria:\n- PRD records source references for every major claim.\n- Ambiguities are separated from accepted requirements.\n- Manual exports work before automation is attempted.\n\nVerification:\n- npm run check\n- npm test",
       "evidenceRefs": [
-        "REQ-002"
+        "requirement/req-002"
       ],
       "tags": [
         "ariadne",
@@ -271,7 +271,7 @@
       "kind": "task",
       "content": "Milestone: Control Spine\nSlice: core\n\nSuccess criteria:\n- Tasks are independently inspectable as JSON and Markdown.\n- Each task names expected write areas and verification commands.\n- Tasks preserve requirement traceability.\n\nVerification:\n- npm run check\n- npm test",
       "evidenceRefs": [
-        "REQ-003"
+        "requirement/req-003"
       ],
       "tags": [
         "ariadne",
@@ -285,7 +285,7 @@
       "kind": "task",
       "content": "Milestone: Control Spine\nSlice: core\n\nSuccess criteria:\n- Execution runs are recorded before work begins.\n- The system can identify planned worktrees and gates.\n- External mutations remain blocked unless a later approved adapter is enabled.\n\nVerification:\n- npm run check\n- npm test",
       "evidenceRefs": [
-        "REQ-004"
+        "requirement/req-004"
       ],
       "tags": [
         "ariadne",
@@ -299,7 +299,7 @@
       "kind": "task",
       "content": "Milestone: Control Spine\nSlice: core\n\nSuccess criteria:\n- Merge readiness lists satisfied and missing gates.\n- CI and review records are imported without being treated as hidden authority.\n- Blocked states are explicit.\n\nVerification:\n- npm run check\n- npm test",
       "evidenceRefs": [
-        "REQ-006"
+        "requirement/req-006"
       ],
       "tags": [
         "ariadne",
@@ -313,7 +313,7 @@
       "kind": "task",
       "content": "Milestone: Control Spine\nSlice: core\n\nSuccess criteria:\n- Infrastructure records are readable without model calls.\n- Runner trust boundaries are explicit.\n- Mutation plans require approval and remain non-executing in this slice.\n\nVerification:\n- npm run check\n- npm test",
       "evidenceRefs": [
-        "REQ-007"
+        "requirement/req-007"
       ],
       "tags": [
         "ariadne",
@@ -327,7 +327,7 @@
       "kind": "task",
       "content": "Milestone: Verification Surface\nSlice: verification\n\nSuccess criteria:\n- Generated tests use role-oriented locators where possible.\n- Scenario records link back to requirement ids.\n- Evidence paths are recorded separately from claims.\n\nVerification:\n- npm run check\n- npm test\n- npx playwright test --reporter=list",
       "evidenceRefs": [
-        "REQ-005"
+        "requirement/req-005"
       ],
       "tags": [
         "ariadne",
@@ -351,6 +351,22 @@
       ]
     },
     {
+      "slug": "evaluation/evaluation-2026-05-16T12-00-29-610Z",
+      "title": "Evaluation 86",
+      "kind": "evaluation",
+      "content": "Target: mac-local\nOperator: codex\nOverall score: 86\n\n- D1: 88 (manual evaluation score)\n- D2: 86 (manual evaluation score)\n- D3: 84 (manual evaluation score)\n- D4: 86 (manual evaluation score)\n- D5: 82 (manual evaluation score)",
+      "evidenceRefs": [
+        "vault/projects/ariadne/control/merge-readiness.md",
+        "vault/projects/ariadne/evaluation/artifact-checks.md",
+        "vault/projects/ariadne/console/visual-checks.md"
+      ],
+      "tags": [
+        "ariadne",
+        "evaluation",
+        "mac-local"
+      ]
+    },
+    {
       "slug": "infrastructure/registry",
       "title": "Infrastructure Registry",
       "kind": "infrastructure",
@@ -361,6 +377,398 @@
       "tags": [
         "ariadne",
         "infrastructure"
+      ]
+    },
+    {
+      "slug": "live-adapter/dossier/deployment",
+      "title": "Live Adapter Dossier: deployment",
+      "kind": "live-adapter",
+      "content": "Target: deployment\nStatus: ready_for_operator_review\nReadiness: blocked\nBlockers: 5\nGBrain export: projects/ariadne/integrations/gbrain/gbrain-export.json\n\nNext actions:\n- pending: Prepare, fill, and import operator evidence - npm run ariadne -- live-adapter-operator-evidence-next --project <project> --target deployment\n- pending: Record operator review of the approval packet - npm run ariadne -- live-adapter-approval-review --project <project> --target deployment --by <operator> --status accepted --packet control/live-adapter-approval-pack.json --evidence <operator-review-evidence>\n- pending: Record an operator approval request - npm run ariadne -- approval-request --project <project> --by <operator> --target deployment --action \"<bounded action>\" --risk <low|medium|high> --reason \"<why this target should mutate>\" --rollback \"<operator rollback path>\" --evidence <auth-or-policy-evidence>\n- blocked: Create a target-specific mutation-readiness plan - npm run ariadne -- deployment-mutation-plan --project <project> --system <proxmox|truenas|dgx-spark|mac> --host <host> --scope <scope> --auth-evidence <paths> --dry-run <cmd> --live-command <cmd> --post-verify <cmd> --rollback <text> --approval <approval-id>\n- pending: Fix readiness audit blockers - npm run ariadne -- mutation-readiness-audit --project <project>\n- blocked: Run the reviewed dry-run command - Create and audit-pass a target-specific readiness plan first.\n- blocked: Capture target-guarded execution evidence - Run a passed dry-run for an audit-passed plan first.\n\nGBrain advisory queries:\n- Find prior Ariadne decisions and evidence for the deployment live adapter.\n- List risks, rollback requirements, and stale assumptions for deployment approval.\n- Summarize operator-review evidence still missing before deployment mutation readiness.",
+      "evidenceRefs": [
+        "control/live-adapter-dossiers/live-adapter-dossier-deployment.json",
+        "projects/ariadne/control/live-adapter-readiness.json",
+        "projects/ariadne/control/live-adapter-next-actions.json",
+        "projects/ariadne/control/live-adapter-approval-pack.json",
+        "projects/ariadne/control/live-adapter-approval-review-audit.json",
+        "projects/ariadne/control/mutation-readiness-audit.json",
+        "projects/ariadne/control/live-adapter-operator-evidence-workspace.json",
+        "projects/ariadne/control/operator-evidence/deployment/operator-evidence.md",
+        "projects/ariadne/integrations/gbrain/gbrain-export.json"
+      ],
+      "tags": [
+        "ariadne",
+        "live-adapter",
+        "dossier",
+        "deployment",
+        "ready_for_operator_review"
+      ]
+    },
+    {
+      "slug": "live-adapter/dossier/github",
+      "title": "Live Adapter Dossier: github",
+      "kind": "live-adapter",
+      "content": "Target: github\nStatus: ready_for_operator_review\nReadiness: blocked\nBlockers: 4\nGBrain export: projects/ariadne/integrations/gbrain/gbrain-export.json\n\nNext actions:\n- pending: Prepare, fill, and import operator evidence - npm run ariadne -- live-adapter-operator-evidence-next --project <project> --target github\n- pending: Record operator review of the approval packet - npm run ariadne -- live-adapter-approval-review --project <project> --target github --by <operator> --status accepted --packet control/live-adapter-approval-pack.json --evidence <operator-review-evidence>\n- pending: Resolve existing readiness plan blockers - Review mutation-readiness-github-2026-05-16T16-50-54-241Z; after operator approval, record approval-decision, ensure --post-verify is present, then rerun npm run ariadne -- mutation-readiness-audit --project <project>\n- pending: Run the reviewed dry-run command - After mutation-readiness-github-2026-05-16T16-50-54-241Z passes audit, run npm run ariadne -- mutation-dry-run --project <project> --plan mutation-readiness-github-2026-05-16T16-50-54-241Z\n- blocked: Capture target-guarded execution evidence - Run a passed dry-run for an audit-passed plan first.\n\nGBrain advisory queries:\n- Find prior Ariadne decisions and evidence for the github live adapter.\n- List risks, rollback requirements, and stale assumptions for github approval.\n- Summarize operator-review evidence still missing before github mutation readiness.",
+      "evidenceRefs": [
+        "control/live-adapter-dossiers/live-adapter-dossier-github.json",
+        "projects/ariadne/control/live-adapter-readiness.json",
+        "projects/ariadne/control/live-adapter-next-actions.json",
+        "projects/ariadne/control/live-adapter-approval-pack.json",
+        "projects/ariadne/control/live-adapter-approval-review-audit.json",
+        "projects/ariadne/control/mutation-readiness-audit.json",
+        "projects/ariadne/control/live-adapter-operator-evidence-workspace.json",
+        "projects/ariadne/control/operator-evidence/github/operator-evidence.md",
+        "projects/ariadne/integrations/gbrain/gbrain-export.json"
+      ],
+      "tags": [
+        "ariadne",
+        "live-adapter",
+        "dossier",
+        "github",
+        "ready_for_operator_review"
+      ]
+    },
+    {
+      "slug": "live-adapter/dossier/gsd2",
+      "title": "Live Adapter Dossier: gsd2",
+      "kind": "live-adapter",
+      "content": "Target: gsd2\nStatus: ready_for_operator_review\nReadiness: blocked\nBlockers: 5\nGBrain export: projects/ariadne/integrations/gbrain/gbrain-export.json\n\nNext actions:\n- pending: Prepare, fill, and import operator evidence - npm run ariadne -- live-adapter-operator-evidence-next --project <project> --target gsd2\n- pending: Record operator review of the approval packet - npm run ariadne -- live-adapter-approval-review --project <project> --target gsd2 --by <operator> --status accepted --packet control/live-adapter-approval-pack.json --evidence <operator-review-evidence>\n- pending: Record an operator approval request - npm run ariadne -- approval-request --project <project> --by <operator> --target gsd2 --action \"<bounded action>\" --risk <low|medium|high> --reason \"<why this target should mutate>\" --rollback \"<operator rollback path>\" --evidence <auth-or-policy-evidence>\n- blocked: Create a target-specific mutation-readiness plan - npm run ariadne -- gsd2-mutation-plan --project <project> --task <id> --mode <headless|auto|worktree> --scope <scope> --auth-evidence <paths> --dry-run <cmd> --live-command <cmd> --post-verify <cmd> --rollback <text> --approval <approval-id>\n- pending: Fix readiness audit blockers - npm run ariadne -- mutation-readiness-audit --project <project>\n- blocked: Run the reviewed dry-run command - Create and audit-pass a target-specific readiness plan first.\n- blocked: Capture target-guarded execution evidence - Run a passed dry-run for an audit-passed plan first.\n\nGBrain advisory queries:\n- Find prior Ariadne decisions and evidence for the gsd2 live adapter.\n- List risks, rollback requirements, and stale assumptions for gsd2 approval.\n- Summarize operator-review evidence still missing before gsd2 mutation readiness.",
+      "evidenceRefs": [
+        "control/live-adapter-dossiers/live-adapter-dossier-gsd2.json",
+        "projects/ariadne/control/live-adapter-readiness.json",
+        "projects/ariadne/control/live-adapter-next-actions.json",
+        "projects/ariadne/control/live-adapter-approval-pack.json",
+        "projects/ariadne/control/live-adapter-approval-review-audit.json",
+        "projects/ariadne/control/mutation-readiness-audit.json",
+        "projects/ariadne/control/live-adapter-operator-evidence-workspace.json",
+        "projects/ariadne/control/operator-evidence/gsd2/operator-evidence.md",
+        "projects/ariadne/integrations/gbrain/gbrain-export.json"
+      ],
+      "tags": [
+        "ariadne",
+        "live-adapter",
+        "dossier",
+        "gsd2",
+        "ready_for_operator_review"
+      ]
+    },
+    {
+      "slug": "live-adapter/dossier/hermes-cron",
+      "title": "Live Adapter Dossier: hermes-cron",
+      "kind": "live-adapter",
+      "content": "Target: hermes-cron\nStatus: ready_for_operator_review\nReadiness: blocked\nBlockers: 5\nGBrain export: projects/ariadne/integrations/gbrain/gbrain-export.json\n\nNext actions:\n- pending: Prepare, fill, and import operator evidence - npm run ariadne -- live-adapter-operator-evidence-next --project <project> --target hermes-cron\n- pending: Record operator review of the approval packet - npm run ariadne -- live-adapter-approval-review --project <project> --target hermes-cron --by <operator> --status accepted --packet control/live-adapter-approval-pack.json --evidence <operator-review-evidence>\n- pending: Record an operator approval request - npm run ariadne -- approval-request --project <project> --by <operator> --target hermes-cron --action \"<bounded action>\" --risk <low|medium|high> --reason \"<why this target should mutate>\" --rollback \"<operator rollback path>\" --evidence <auth-or-policy-evidence>\n- blocked: Create a target-specific mutation-readiness plan - npm run ariadne -- hermes-cron-mutation-plan --project <project> --action <create|update|enable|disable|delete> --job <id> --scope <scope> --auth-evidence <paths> --dry-run <cmd> --live-command <cmd> --post-verify <cmd> --rollback <text> --approval <approval-id>\n- pending: Fix readiness audit blockers - npm run ariadne -- mutation-readiness-audit --project <project>\n- blocked: Run the reviewed dry-run command - Create and audit-pass a target-specific readiness plan first.\n- blocked: Capture target-guarded execution evidence - Run a passed dry-run for an audit-passed plan first.\n\nGBrain advisory queries:\n- Find prior Ariadne decisions and evidence for the hermes-cron live adapter.\n- List risks, rollback requirements, and stale assumptions for hermes-cron approval.\n- Summarize operator-review evidence still missing before hermes-cron mutation readiness.",
+      "evidenceRefs": [
+        "control/live-adapter-dossiers/live-adapter-dossier-hermes-cron.json",
+        "projects/ariadne/control/live-adapter-readiness.json",
+        "projects/ariadne/control/live-adapter-next-actions.json",
+        "projects/ariadne/control/live-adapter-approval-pack.json",
+        "projects/ariadne/control/live-adapter-approval-review-audit.json",
+        "projects/ariadne/control/mutation-readiness-audit.json",
+        "projects/ariadne/control/live-adapter-operator-evidence-workspace.json",
+        "projects/ariadne/control/operator-evidence/hermes-cron/operator-evidence.md",
+        "projects/ariadne/integrations/gbrain/gbrain-export.json"
+      ],
+      "tags": [
+        "ariadne",
+        "live-adapter",
+        "dossier",
+        "hermes-cron",
+        "ready_for_operator_review"
+      ]
+    },
+    {
+      "slug": "live-adapter/dossier/notebooklm",
+      "title": "Live Adapter Dossier: notebooklm",
+      "kind": "live-adapter",
+      "content": "Target: notebooklm\nStatus: ready_for_operator_review\nReadiness: blocked\nBlockers: 5\nGBrain export: projects/ariadne/integrations/gbrain/gbrain-export.json\n\nNext actions:\n- pending: Prepare, fill, and import operator evidence - npm run ariadne -- live-adapter-operator-evidence-next --project <project> --target notebooklm\n- pending: Record operator review of the approval packet - npm run ariadne -- live-adapter-approval-review --project <project> --target notebooklm --by <operator> --status accepted --packet control/live-adapter-approval-pack.json --evidence <operator-review-evidence>\n- pending: Record an operator approval request - npm run ariadne -- approval-request --project <project> --by <operator> --target notebooklm --action \"<bounded action>\" --risk <low|medium|high> --reason \"<why this target should mutate>\" --rollback \"<operator rollback path>\" --evidence <auth-or-policy-evidence>\n- blocked: Create a target-specific mutation-readiness plan - npm run ariadne -- notebooklm-mutation-plan --project <project> --notebook <id> --action <create-source|refresh-source|generate-summary|export-notes> --scope <scope> --auth-evidence <paths> --dry-run <cmd> --live-command <cmd> --post-verify <cmd> --rollback <text> --approval <approval-id>\n- pending: Fix readiness audit blockers - npm run ariadne -- mutation-readiness-audit --project <project>\n- blocked: Run the reviewed dry-run command - Create and audit-pass a target-specific readiness plan first.\n- blocked: Capture target-guarded execution evidence - Run a passed dry-run for an audit-passed plan first.\n\nGBrain advisory queries:\n- Find prior Ariadne decisions and evidence for the notebooklm live adapter.\n- List risks, rollback requirements, and stale assumptions for notebooklm approval.\n- Summarize operator-review evidence still missing before notebooklm mutation readiness.",
+      "evidenceRefs": [
+        "control/live-adapter-dossiers/live-adapter-dossier-notebooklm.json",
+        "projects/ariadne/control/live-adapter-readiness.json",
+        "projects/ariadne/control/live-adapter-next-actions.json",
+        "projects/ariadne/control/live-adapter-approval-pack.json",
+        "projects/ariadne/control/live-adapter-approval-review-audit.json",
+        "projects/ariadne/control/mutation-readiness-audit.json",
+        "projects/ariadne/control/live-adapter-operator-evidence-workspace.json",
+        "projects/ariadne/control/operator-evidence/notebooklm/operator-evidence.md",
+        "projects/ariadne/integrations/gbrain/gbrain-export.json"
+      ],
+      "tags": [
+        "ariadne",
+        "live-adapter",
+        "dossier",
+        "notebooklm",
+        "ready_for_operator_review"
+      ]
+    },
+    {
+      "slug": "live-adapter/dossier/openscorpion",
+      "title": "Live Adapter Dossier: openscorpion",
+      "kind": "live-adapter",
+      "content": "Target: openscorpion\nStatus: ready_for_operator_review\nReadiness: blocked\nBlockers: 5\nGBrain export: projects/ariadne/integrations/gbrain/gbrain-export.json\n\nNext actions:\n- pending: Prepare, fill, and import operator evidence - npm run ariadne -- live-adapter-operator-evidence-next --project <project> --target openscorpion\n- pending: Record operator review of the approval packet - npm run ariadne -- live-adapter-approval-review --project <project> --target openscorpion --by <operator> --status accepted --packet control/live-adapter-approval-pack.json --evidence <operator-review-evidence>\n- pending: Record an operator approval request - npm run ariadne -- approval-request --project <project> --by <operator> --target openscorpion --action \"<bounded action>\" --risk <low|medium|high> --reason \"<why this target should mutate>\" --rollback \"<operator rollback path>\" --evidence <auth-or-policy-evidence>\n- blocked: Create a target-specific mutation-readiness plan - npm run ariadne -- openscorpion-mutation-plan --project <project> --activity <id> --type <type> --action <submit-activity|update-activity|withdraw-activity> --route <governed|staging> --scope <scope> --auth-evidence <paths> --dry-run <cmd> --live-command <cmd> --post-verify <cmd> --rollback <text> --approval <approval-id>\n- pending: Fix readiness audit blockers - npm run ariadne -- mutation-readiness-audit --project <project>\n- blocked: Run the reviewed dry-run command - Create and audit-pass a target-specific readiness plan first.\n- blocked: Capture target-guarded execution evidence - Run a passed dry-run for an audit-passed plan first.\n\nGBrain advisory queries:\n- Find prior Ariadne decisions and evidence for the openscorpion live adapter.\n- List risks, rollback requirements, and stale assumptions for openscorpion approval.\n- Summarize operator-review evidence still missing before openscorpion mutation readiness.",
+      "evidenceRefs": [
+        "control/live-adapter-dossiers/live-adapter-dossier-openscorpion.json",
+        "projects/ariadne/control/live-adapter-readiness.json",
+        "projects/ariadne/control/live-adapter-next-actions.json",
+        "projects/ariadne/control/live-adapter-approval-pack.json",
+        "projects/ariadne/control/live-adapter-approval-review-audit.json",
+        "projects/ariadne/control/mutation-readiness-audit.json",
+        "projects/ariadne/control/live-adapter-operator-evidence-workspace.json",
+        "projects/ariadne/control/operator-evidence/openscorpion/operator-evidence.md",
+        "projects/ariadne/integrations/gbrain/gbrain-export.json"
+      ],
+      "tags": [
+        "ariadne",
+        "live-adapter",
+        "dossier",
+        "openscorpion",
+        "ready_for_operator_review"
+      ]
+    },
+    {
+      "slug": "live-adapter/operator-assist/deployment",
+      "title": "Operator Evidence Assist: deployment",
+      "kind": "live-adapter",
+      "content": "Target: deployment\nStatus: needs_evidence\nExisting refs: 12\nSupport files: 6\nPromoted live evidence: 1\n\nMissing sections:\n- Operator identity and timestamp\n- Approval packet review\n- Authentication or authorization boundary\n- Bounded action statement\n- Rollback or disable path\n- Post-action verification command\n- Dry-run command and safe output\n- Target-guarded execution wrapper\n- Exact confirm-plan proof\n\nPromoted live evidence summaries:\n- Atlas Qwen runtime canary evidence (projects/ariadne/control/live-evidence-promotions/live-evidence-promotion-deployment-2026-05-17T23-37-04-509Z.json)\n  - local-runtime-probe; 8/8 services reachable; 13 models; atlas canary passed qwen3.6-35b-a3b-nvfp4-atlas; 1 redaction(s)\n  - e2e-smoke; 11 passed, 1 blocked, 0 failed; 1 redaction(s)\n\nGBrain advisory queries:\n- Find prior Ariadne decisions and evidence for the deployment live adapter.\n- List risks, rollback requirements, and stale assumptions for deployment approval.\n- Summarize operator-review evidence still missing before deployment mutation readiness.",
+      "evidenceRefs": [
+        "control/live-adapter-operator-evidence-assist-deployment.json",
+        "projects/ariadne/control/operator-evidence/deployment/read-only-assist.md",
+        "projects/ariadne/control/live-adapter-evidence-templates/live-adapter-evidence-template-deployment.md",
+        "projects/ariadne/control/live-adapter-dossiers/live-adapter-dossier-deployment.json",
+        "projects/ariadne/control/mutation-readiness-repair-plan.json",
+        "projects/ariadne/control/live-adapter-readiness.json",
+        "projects/ariadne/control/live-adapter-next-actions.json",
+        "projects/ariadne/control/live-adapter-approval-pack.json",
+        "projects/ariadne/control/live-adapter-approval-review-audit.json",
+        "projects/ariadne/control/mutation-readiness-audit.json",
+        "projects/ariadne/control/live-adapter-operator-evidence-workspace.json",
+        "projects/ariadne/control/operator-evidence/deployment/operator-evidence.md",
+        "projects/ariadne/control/live-adapter-operator-evidence-audit.json",
+        "projects/ariadne/control/live-evidence-promotions/live-evidence-promotion-deployment-2026-05-17T23-37-04-509Z.json"
+      ],
+      "tags": [
+        "ariadne",
+        "live-adapter",
+        "operator-assist",
+        "deployment",
+        "needs_evidence"
+      ]
+    },
+    {
+      "slug": "live-adapter/operator-assist/all/github",
+      "title": "Operator Evidence Assist: github (aggregate)",
+      "kind": "live-adapter",
+      "content": "Target: github\nStatus: needs_evidence\nExisting refs: 11\nSupport files: 6\nPromoted live evidence: 0\n\nMissing sections:\n- Operator identity and timestamp\n- Approval packet review\n- Authentication or authorization boundary\n- Bounded action statement\n- Rollback or disable path\n- Post-action verification command\n- Dry-run command and safe output\n- Target-guarded execution wrapper\n- Exact confirm-plan proof\n\nPromoted live evidence summaries:\n\nGBrain advisory queries:\n- Find prior Ariadne decisions and evidence for the github live adapter.\n- List risks, rollback requirements, and stale assumptions for github approval.\n- Summarize operator-review evidence still missing before github mutation readiness.",
+      "evidenceRefs": [
+        "control/live-adapter-operator-evidence-assist.json",
+        "projects/ariadne/control/operator-evidence/github/read-only-assist.md",
+        "projects/ariadne/control/live-adapter-evidence-templates/live-adapter-evidence-template-github.md",
+        "projects/ariadne/control/live-adapter-dossiers/live-adapter-dossier-github.json",
+        "projects/ariadne/control/mutation-readiness-repair-plan.json",
+        "projects/ariadne/control/live-adapter-readiness.json",
+        "projects/ariadne/control/live-adapter-next-actions.json",
+        "projects/ariadne/control/live-adapter-approval-pack.json",
+        "projects/ariadne/control/live-adapter-approval-review-audit.json",
+        "projects/ariadne/control/mutation-readiness-audit.json",
+        "projects/ariadne/control/live-adapter-operator-evidence-workspace.json",
+        "projects/ariadne/control/operator-evidence/github/operator-evidence.md",
+        "projects/ariadne/control/live-adapter-operator-evidence-audit.json"
+      ],
+      "tags": [
+        "ariadne",
+        "live-adapter",
+        "operator-assist",
+        "github",
+        "needs_evidence"
+      ]
+    },
+    {
+      "slug": "live-adapter/operator-assist/all/deployment",
+      "title": "Operator Evidence Assist: deployment (aggregate)",
+      "kind": "live-adapter",
+      "content": "Target: deployment\nStatus: needs_evidence\nExisting refs: 12\nSupport files: 6\nPromoted live evidence: 1\n\nMissing sections:\n- Operator identity and timestamp\n- Approval packet review\n- Authentication or authorization boundary\n- Bounded action statement\n- Rollback or disable path\n- Post-action verification command\n- Dry-run command and safe output\n- Target-guarded execution wrapper\n- Exact confirm-plan proof\n\nPromoted live evidence summaries:\n- Atlas Qwen runtime canary evidence (projects/ariadne/control/live-evidence-promotions/live-evidence-promotion-deployment-2026-05-17T23-37-04-509Z.json)\n  - local-runtime-probe; 8/8 services reachable; 13 models; atlas canary passed qwen3.6-35b-a3b-nvfp4-atlas; 1 redaction(s)\n  - e2e-smoke; 11 passed, 1 blocked, 0 failed; 1 redaction(s)\n\nGBrain advisory queries:\n- Find prior Ariadne decisions and evidence for the deployment live adapter.\n- List risks, rollback requirements, and stale assumptions for deployment approval.\n- Summarize operator-review evidence still missing before deployment mutation readiness.",
+      "evidenceRefs": [
+        "control/live-adapter-operator-evidence-assist.json",
+        "projects/ariadne/control/operator-evidence/deployment/read-only-assist.md",
+        "projects/ariadne/control/live-adapter-evidence-templates/live-adapter-evidence-template-deployment.md",
+        "projects/ariadne/control/live-adapter-dossiers/live-adapter-dossier-deployment.json",
+        "projects/ariadne/control/mutation-readiness-repair-plan.json",
+        "projects/ariadne/control/live-adapter-readiness.json",
+        "projects/ariadne/control/live-adapter-next-actions.json",
+        "projects/ariadne/control/live-adapter-approval-pack.json",
+        "projects/ariadne/control/live-adapter-approval-review-audit.json",
+        "projects/ariadne/control/mutation-readiness-audit.json",
+        "projects/ariadne/control/live-adapter-operator-evidence-workspace.json",
+        "projects/ariadne/control/operator-evidence/deployment/operator-evidence.md",
+        "projects/ariadne/control/live-adapter-operator-evidence-audit.json",
+        "projects/ariadne/control/live-evidence-promotions/live-evidence-promotion-deployment-2026-05-17T23-37-04-509Z.json"
+      ],
+      "tags": [
+        "ariadne",
+        "live-adapter",
+        "operator-assist",
+        "deployment",
+        "needs_evidence"
+      ]
+    },
+    {
+      "slug": "live-adapter/operator-assist/all/hermes-cron",
+      "title": "Operator Evidence Assist: hermes-cron (aggregate)",
+      "kind": "live-adapter",
+      "content": "Target: hermes-cron\nStatus: needs_evidence\nExisting refs: 11\nSupport files: 6\nPromoted live evidence: 0\n\nMissing sections:\n- Operator identity and timestamp\n- Approval packet review\n- Authentication or authorization boundary\n- Bounded action statement\n- Rollback or disable path\n- Post-action verification command\n- Dry-run command and safe output\n- Target-guarded execution wrapper\n- Exact confirm-plan proof\n\nPromoted live evidence summaries:\n\nGBrain advisory queries:\n- Find prior Ariadne decisions and evidence for the hermes-cron live adapter.\n- List risks, rollback requirements, and stale assumptions for hermes-cron approval.\n- Summarize operator-review evidence still missing before hermes-cron mutation readiness.",
+      "evidenceRefs": [
+        "control/live-adapter-operator-evidence-assist.json",
+        "projects/ariadne/control/operator-evidence/hermes-cron/read-only-assist.md",
+        "projects/ariadne/control/live-adapter-evidence-templates/live-adapter-evidence-template-hermes-cron.md",
+        "projects/ariadne/control/live-adapter-dossiers/live-adapter-dossier-hermes-cron.json",
+        "projects/ariadne/control/mutation-readiness-repair-plan.json",
+        "projects/ariadne/control/live-adapter-readiness.json",
+        "projects/ariadne/control/live-adapter-next-actions.json",
+        "projects/ariadne/control/live-adapter-approval-pack.json",
+        "projects/ariadne/control/live-adapter-approval-review-audit.json",
+        "projects/ariadne/control/mutation-readiness-audit.json",
+        "projects/ariadne/control/live-adapter-operator-evidence-workspace.json",
+        "projects/ariadne/control/operator-evidence/hermes-cron/operator-evidence.md",
+        "projects/ariadne/control/live-adapter-operator-evidence-audit.json"
+      ],
+      "tags": [
+        "ariadne",
+        "live-adapter",
+        "operator-assist",
+        "hermes-cron",
+        "needs_evidence"
+      ]
+    },
+    {
+      "slug": "live-adapter/operator-assist/all/openscorpion",
+      "title": "Operator Evidence Assist: openscorpion (aggregate)",
+      "kind": "live-adapter",
+      "content": "Target: openscorpion\nStatus: needs_evidence\nExisting refs: 11\nSupport files: 6\nPromoted live evidence: 0\n\nMissing sections:\n- Operator identity and timestamp\n- Approval packet review\n- Authentication or authorization boundary\n- Bounded action statement\n- Rollback or disable path\n- Post-action verification command\n- Dry-run command and safe output\n- Target-guarded execution wrapper\n- Exact confirm-plan proof\n\nPromoted live evidence summaries:\n\nGBrain advisory queries:\n- Find prior Ariadne decisions and evidence for the openscorpion live adapter.\n- List risks, rollback requirements, and stale assumptions for openscorpion approval.\n- Summarize operator-review evidence still missing before openscorpion mutation readiness.",
+      "evidenceRefs": [
+        "control/live-adapter-operator-evidence-assist.json",
+        "projects/ariadne/control/operator-evidence/openscorpion/read-only-assist.md",
+        "projects/ariadne/control/live-adapter-evidence-templates/live-adapter-evidence-template-openscorpion.md",
+        "projects/ariadne/control/live-adapter-dossiers/live-adapter-dossier-openscorpion.json",
+        "projects/ariadne/control/mutation-readiness-repair-plan.json",
+        "projects/ariadne/control/live-adapter-readiness.json",
+        "projects/ariadne/control/live-adapter-next-actions.json",
+        "projects/ariadne/control/live-adapter-approval-pack.json",
+        "projects/ariadne/control/live-adapter-approval-review-audit.json",
+        "projects/ariadne/control/mutation-readiness-audit.json",
+        "projects/ariadne/control/live-adapter-operator-evidence-workspace.json",
+        "projects/ariadne/control/operator-evidence/openscorpion/operator-evidence.md",
+        "projects/ariadne/control/live-adapter-operator-evidence-audit.json"
+      ],
+      "tags": [
+        "ariadne",
+        "live-adapter",
+        "operator-assist",
+        "openscorpion",
+        "needs_evidence"
+      ]
+    },
+    {
+      "slug": "live-adapter/operator-assist/all/gsd2",
+      "title": "Operator Evidence Assist: gsd2 (aggregate)",
+      "kind": "live-adapter",
+      "content": "Target: gsd2\nStatus: needs_evidence\nExisting refs: 11\nSupport files: 6\nPromoted live evidence: 0\n\nMissing sections:\n- Operator identity and timestamp\n- Approval packet review\n- Authentication or authorization boundary\n- Bounded action statement\n- Rollback or disable path\n- Post-action verification command\n- Dry-run command and safe output\n- Target-guarded execution wrapper\n- Exact confirm-plan proof\n\nPromoted live evidence summaries:\n\nGBrain advisory queries:\n- Find prior Ariadne decisions and evidence for the gsd2 live adapter.\n- List risks, rollback requirements, and stale assumptions for gsd2 approval.\n- Summarize operator-review evidence still missing before gsd2 mutation readiness.",
+      "evidenceRefs": [
+        "control/live-adapter-operator-evidence-assist.json",
+        "projects/ariadne/control/operator-evidence/gsd2/read-only-assist.md",
+        "projects/ariadne/control/live-adapter-evidence-templates/live-adapter-evidence-template-gsd2.md",
+        "projects/ariadne/control/live-adapter-dossiers/live-adapter-dossier-gsd2.json",
+        "projects/ariadne/control/mutation-readiness-repair-plan.json",
+        "projects/ariadne/control/live-adapter-readiness.json",
+        "projects/ariadne/control/live-adapter-next-actions.json",
+        "projects/ariadne/control/live-adapter-approval-pack.json",
+        "projects/ariadne/control/live-adapter-approval-review-audit.json",
+        "projects/ariadne/control/mutation-readiness-audit.json",
+        "projects/ariadne/control/live-adapter-operator-evidence-workspace.json",
+        "projects/ariadne/control/operator-evidence/gsd2/operator-evidence.md",
+        "projects/ariadne/control/live-adapter-operator-evidence-audit.json"
+      ],
+      "tags": [
+        "ariadne",
+        "live-adapter",
+        "operator-assist",
+        "gsd2",
+        "needs_evidence"
+      ]
+    },
+    {
+      "slug": "live-adapter/operator-assist/all/notebooklm",
+      "title": "Operator Evidence Assist: notebooklm (aggregate)",
+      "kind": "live-adapter",
+      "content": "Target: notebooklm\nStatus: needs_evidence\nExisting refs: 11\nSupport files: 6\nPromoted live evidence: 0\n\nMissing sections:\n- Operator identity and timestamp\n- Approval packet review\n- Authentication or authorization boundary\n- Bounded action statement\n- Rollback or disable path\n- Post-action verification command\n- Dry-run command and safe output\n- Target-guarded execution wrapper\n- Exact confirm-plan proof\n\nPromoted live evidence summaries:\n\nGBrain advisory queries:\n- Find prior Ariadne decisions and evidence for the notebooklm live adapter.\n- List risks, rollback requirements, and stale assumptions for notebooklm approval.\n- Summarize operator-review evidence still missing before notebooklm mutation readiness.",
+      "evidenceRefs": [
+        "control/live-adapter-operator-evidence-assist.json",
+        "projects/ariadne/control/operator-evidence/notebooklm/read-only-assist.md",
+        "projects/ariadne/control/live-adapter-evidence-templates/live-adapter-evidence-template-notebooklm.md",
+        "projects/ariadne/control/live-adapter-dossiers/live-adapter-dossier-notebooklm.json",
+        "projects/ariadne/control/mutation-readiness-repair-plan.json",
+        "projects/ariadne/control/live-adapter-readiness.json",
+        "projects/ariadne/control/live-adapter-next-actions.json",
+        "projects/ariadne/control/live-adapter-approval-pack.json",
+        "projects/ariadne/control/live-adapter-approval-review-audit.json",
+        "projects/ariadne/control/mutation-readiness-audit.json",
+        "projects/ariadne/control/live-adapter-operator-evidence-workspace.json",
+        "projects/ariadne/control/operator-evidence/notebooklm/operator-evidence.md",
+        "projects/ariadne/control/live-adapter-operator-evidence-audit.json"
+      ],
+      "tags": [
+        "ariadne",
+        "live-adapter",
+        "operator-assist",
+        "notebooklm",
+        "needs_evidence"
+      ]
+    },
+    {
+      "slug": "live-adapter/promoted-live-evidence/live-evidence-promotion-deployment-2026-05-17T23-37-04-509Z",
+      "title": "Atlas Qwen runtime canary evidence",
+      "kind": "live-adapter",
+      "content": "Target: deployment\nStatus: promoted_for_operator_review\nGenerated: 2026-05-17T23:37:04.509Z\nSources: 2\nParsed sources: 2\nRedacted values: 2\n\nSource refs:\n- local-runtime-probe: projects/ariadne/infrastructure/runtime/local-runtime-probe-2026-05-17T23-36-40-581Z.json (69f19e1a7386be7d1187167f3ef602b34b0249a07f097ea31abcf4d657cc86f6)\n- e2e-smoke: projects/ariadne/evaluation/e2e-smoke-2026-05-17T23-36-40-560Z.json (7e9af32ddbf13aac82f55e56100a8393e78bc237e8ba3c4ad0cccc3dfa54cc8c)",
+      "evidenceRefs": [
+        "control/live-evidence-promotions/live-evidence-promotion-deployment-2026-05-17T23-37-04-509Z.json",
+        "projects/ariadne/infrastructure/runtime/local-runtime-probe-2026-05-17T23-36-40-581Z.json",
+        "projects/ariadne/evaluation/e2e-smoke-2026-05-17T23-36-40-560Z.json"
+      ],
+      "tags": [
+        "ariadne",
+        "live-adapter",
+        "promoted-live-evidence",
+        "deployment"
+      ]
+    },
+    {
+      "slug": "live-adapter/roadmap-completion",
+      "title": "Roadmap Completion Audit",
+      "kind": "live-adapter",
+      "content": "Status: blocked\nPassed: 6\nBlocked: 3\n\nRequirements:\n- passed: Core pipeline artifacts are present - 55 artifacts present; 0 required missing.\n- passed: Behavior confidence checks are passing - 6/6 behavior checks passed; 0 failed.\n- passed: Evaluation harness has current trend evidence - Evaluation trend status is stable; latest score is 86.\n- passed: Orchestration console is rendered and browser-checked - Visual checks: passed; browser checks: passed.\n- passed: Sleep, memory, agent mail, and lease records are visible - sleep=1, memory=1, mail=1, leases=1.\n- passed: GBrain is incorporated as advisory memory - 6 live-adapter dossier(s) include GBrain advisory queries; export=present; imported reports=1.\n- blocked: All live-adapter targets have complete operator evidence - 0/6 targets complete; 6 missing evidence; 54 missing section(s). Workplan status is evidence_required with 6 check command(s) and 6 import command(s). Queue status is evidence_required with 0 target(s) ready for import and 0 unchecked target(s). Workspace status is awaiting_operator_input with 6 fillable file(s). Assist status is awaiting_operator_review with 1 promoted live-evidence item(s). Next target is deployment (needs_evidence, 9 missing section(s)). Next target assist has 12 existing ref(s), 1 promoted live-evidence item(s), and 6 support file(s).\n- blocked: Live-adapter cutover gates are ready - 0/6 targets ready; 42 gates blocked.\n- blocked: Operator review session reflects live-adapter state - 0/6 targets ready for adapter work; 6 still require operator review.",
+      "evidenceRefs": [
+        "control/roadmap-completion-audit.json",
+        "projects/ariadne/evaluation/artifact-checks.json",
+        "projects/ariadne/evaluation/behavior-checks.json",
+        "projects/ariadne/evaluation/evaluation-trends.json",
+        "projects/ariadne/console/visual-checks.json",
+        "projects/ariadne/console/browser-checks.json",
+        "projects/ariadne/console/console-data.json",
+        "projects/ariadne/control/live-adapter-dossiers",
+        "projects/ariadne/integrations/gbrain/gbrain-export.json",
+        "projects/ariadne/control/live-adapter-operator-evidence-audit.json",
+        "projects/ariadne/control/live-adapter-operator-evidence-workplan.json",
+        "projects/ariadne/control/live-adapter-operator-evidence-queue.json",
+        "projects/ariadne/control/live-adapter-operator-evidence-workspace.json",
+        "projects/ariadne/control/live-adapter-operator-evidence-assist-deployment.json",
+        "projects/ariadne/control/operator-evidence/deployment/operator-evidence.md",
+        "projects/ariadne/control/operator-evidence/deployment/read-only-assist.md",
+        "projects/ariadne/control/live-evidence-promotions/live-evidence-promotion-deployment-2026-05-17T23-37-04-509Z.json",
+        "projects/ariadne/control/live-adapter-cutover-audit.json",
+        "projects/ariadne/control/live-adapter-review-session.json"
+      ],
+      "tags": [
+        "ariadne",
+        "live-adapter",
+        "roadmap-completion",
+        "blocked"
       ]
     }
   ]

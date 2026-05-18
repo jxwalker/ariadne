@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "project": "ariadne",
-  "generatedAt": "2026-05-17T09:47:19.015Z",
+  "generatedAt": "2026-05-18T03:38:00.186Z",
   "status": "blocked",
   "mutationApproved": false,
   "summary": {
@@ -10,7 +10,7 @@
     "completeTargets": 0,
     "incompleteTargets": 0,
     "missingTargets": 6,
-    "missingSections": 0,
+    "missingSections": 54,
     "advisoryWarnings": 0
   },
   "targets": [
@@ -18,10 +18,29 @@
       "target": "github",
       "status": "missing_evidence",
       "recordCount": 0,
-      "missingSections": [],
+      "missingSections": [
+        "Operator identity and timestamp",
+        "Approval packet review",
+        "Authentication or authorization boundary",
+        "Bounded action statement",
+        "Rollback or disable path",
+        "Post-action verification command",
+        "Dry-run command and safe output",
+        "Target-guarded execution wrapper",
+        "Exact confirm-plan proof"
+      ],
       "advisoryWarnings": [],
       "blockers": [
-        "No operator evidence record exists for github."
+        "No operator evidence record exists for github.",
+        "Missing operator evidence section: Operator identity and timestamp",
+        "Missing operator evidence section: Approval packet review",
+        "Missing operator evidence section: Authentication or authorization boundary",
+        "Missing operator evidence section: Bounded action statement",
+        "Missing operator evidence section: Rollback or disable path",
+        "Missing operator evidence section: Post-action verification command",
+        "Missing operator evidence section: Dry-run command and safe output",
+        "Missing operator evidence section: Target-guarded execution wrapper",
+        "Missing operator evidence section: Exact confirm-plan proof"
       ],
       "evidenceRefs": []
     },
@@ -29,10 +48,29 @@
       "target": "deployment",
       "status": "missing_evidence",
       "recordCount": 0,
-      "missingSections": [],
+      "missingSections": [
+        "Operator identity and timestamp",
+        "Approval packet review",
+        "Authentication or authorization boundary",
+        "Bounded action statement",
+        "Rollback or disable path",
+        "Post-action verification command",
+        "Dry-run command and safe output",
+        "Target-guarded execution wrapper",
+        "Exact confirm-plan proof"
+      ],
       "advisoryWarnings": [],
       "blockers": [
-        "No operator evidence record exists for deployment."
+        "No operator evidence record exists for deployment.",
+        "Missing operator evidence section: Operator identity and timestamp",
+        "Missing operator evidence section: Approval packet review",
+        "Missing operator evidence section: Authentication or authorization boundary",
+        "Missing operator evidence section: Bounded action statement",
+        "Missing operator evidence section: Rollback or disable path",
+        "Missing operator evidence section: Post-action verification command",
+        "Missing operator evidence section: Dry-run command and safe output",
+        "Missing operator evidence section: Target-guarded execution wrapper",
+        "Missing operator evidence section: Exact confirm-plan proof"
       ],
       "evidenceRefs": []
     },
@@ -40,10 +78,29 @@
       "target": "hermes-cron",
       "status": "missing_evidence",
       "recordCount": 0,
-      "missingSections": [],
+      "missingSections": [
+        "Operator identity and timestamp",
+        "Approval packet review",
+        "Authentication or authorization boundary",
+        "Bounded action statement",
+        "Rollback or disable path",
+        "Post-action verification command",
+        "Dry-run command and safe output",
+        "Target-guarded execution wrapper",
+        "Exact confirm-plan proof"
+      ],
       "advisoryWarnings": [],
       "blockers": [
-        "No operator evidence record exists for hermes-cron."
+        "No operator evidence record exists for hermes-cron.",
+        "Missing operator evidence section: Operator identity and timestamp",
+        "Missing operator evidence section: Approval packet review",
+        "Missing operator evidence section: Authentication or authorization boundary",
+        "Missing operator evidence section: Bounded action statement",
+        "Missing operator evidence section: Rollback or disable path",
+        "Missing operator evidence section: Post-action verification command",
+        "Missing operator evidence section: Dry-run command and safe output",
+        "Missing operator evidence section: Target-guarded execution wrapper",
+        "Missing operator evidence section: Exact confirm-plan proof"
       ],
       "evidenceRefs": []
     },
@@ -51,10 +108,29 @@
       "target": "openscorpion",
       "status": "missing_evidence",
       "recordCount": 0,
-      "missingSections": [],
+      "missingSections": [
+        "Operator identity and timestamp",
+        "Approval packet review",
+        "Authentication or authorization boundary",
+        "Bounded action statement",
+        "Rollback or disable path",
+        "Post-action verification command",
+        "Dry-run command and safe output",
+        "Target-guarded execution wrapper",
+        "Exact confirm-plan proof"
+      ],
       "advisoryWarnings": [],
       "blockers": [
-        "No operator evidence record exists for openscorpion."
+        "No operator evidence record exists for openscorpion.",
+        "Missing operator evidence section: Operator identity and timestamp",
+        "Missing operator evidence section: Approval packet review",
+        "Missing operator evidence section: Authentication or authorization boundary",
+        "Missing operator evidence section: Bounded action statement",
+        "Missing operator evidence section: Rollback or disable path",
+        "Missing operator evidence section: Post-action verification command",
+        "Missing operator evidence section: Dry-run command and safe output",
+        "Missing operator evidence section: Target-guarded execution wrapper",
+        "Missing operator evidence section: Exact confirm-plan proof"
       ],
       "evidenceRefs": []
     },
@@ -62,10 +138,29 @@
       "target": "gsd2",
       "status": "missing_evidence",
       "recordCount": 0,
-      "missingSections": [],
+      "missingSections": [
+        "Operator identity and timestamp",
+        "Approval packet review",
+        "Authentication or authorization boundary",
+        "Bounded action statement",
+        "Rollback or disable path",
+        "Post-action verification command",
+        "Dry-run command and safe output",
+        "Target-guarded execution wrapper",
+        "Exact confirm-plan proof"
+      ],
       "advisoryWarnings": [],
       "blockers": [
-        "No operator evidence record exists for gsd2."
+        "No operator evidence record exists for gsd2.",
+        "Missing operator evidence section: Operator identity and timestamp",
+        "Missing operator evidence section: Approval packet review",
+        "Missing operator evidence section: Authentication or authorization boundary",
+        "Missing operator evidence section: Bounded action statement",
+        "Missing operator evidence section: Rollback or disable path",
+        "Missing operator evidence section: Post-action verification command",
+        "Missing operator evidence section: Dry-run command and safe output",
+        "Missing operator evidence section: Target-guarded execution wrapper",
+        "Missing operator evidence section: Exact confirm-plan proof"
       ],
       "evidenceRefs": []
     },
@@ -73,10 +168,29 @@
       "target": "notebooklm",
       "status": "missing_evidence",
       "recordCount": 0,
-      "missingSections": [],
+      "missingSections": [
+        "Operator identity and timestamp",
+        "Approval packet review",
+        "Authentication or authorization boundary",
+        "Bounded action statement",
+        "Rollback or disable path",
+        "Post-action verification command",
+        "Dry-run command and safe output",
+        "Target-guarded execution wrapper",
+        "Exact confirm-plan proof"
+      ],
       "advisoryWarnings": [],
       "blockers": [
-        "No operator evidence record exists for notebooklm."
+        "No operator evidence record exists for notebooklm.",
+        "Missing operator evidence section: Operator identity and timestamp",
+        "Missing operator evidence section: Approval packet review",
+        "Missing operator evidence section: Authentication or authorization boundary",
+        "Missing operator evidence section: Bounded action statement",
+        "Missing operator evidence section: Rollback or disable path",
+        "Missing operator evidence section: Post-action verification command",
+        "Missing operator evidence section: Dry-run command and safe output",
+        "Missing operator evidence section: Target-guarded execution wrapper",
+        "Missing operator evidence section: Exact confirm-plan proof"
       ],
       "evidenceRefs": []
     }

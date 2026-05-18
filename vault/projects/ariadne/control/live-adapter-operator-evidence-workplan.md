@@ -2,7 +2,7 @@
 
 Project: ariadne
 Status: evidence_required
-Generated: 2026-05-17T09:47:18.490Z
+Generated: 2026-05-18T03:38:00.099Z
 Mutation approved: false
 
 ## Rule
@@ -32,7 +32,7 @@ This workplan collects the evidence still needed from an operator. It does not a
 
 Status: needs_evidence
 Template: projects/ariadne/control/live-adapter-evidence-templates/live-adapter-evidence-template-github.md
-First action: Fill and import operator evidence
+First action: Prepare, fill, and import operator evidence
 
 #### Check Command
 
@@ -54,7 +54,15 @@ npm run ariadne -- live-adapter-approval-review --project ariadne --target githu
 
 #### Missing Sections
 
-- none
+- Operator identity and timestamp
+- Approval packet review
+- Authentication or authorization boundary
+- Bounded action statement
+- Rollback or disable path
+- Post-action verification command
+- Dry-run command and safe output
+- Target-guarded execution wrapper
+- Exact confirm-plan proof
 
 #### Required Evidence
 
@@ -77,7 +85,7 @@ npm run ariadne -- live-adapter-approval-review --project ariadne --target githu
 
 #### Cutover Blockers
 
-- Operator evidence complete: No operator evidence record exists for github.
+- Operator evidence complete: No operator evidence record exists for github.; Missing operator evidence section: Operator identity and timestamp; Missing operator evidence section: Approval packet review; Missing operator evidence section: Authentication or authorization boundary; Missing operator evidence section: Bounded action statement; Missing operator evidence section: Rollback or disable path; Missing operator evidence section: Post-action verification command; Missing operator evidence section: Dry-run command and safe output; Missing operator evidence section: Target-guarded execution wrapper; Missing operator evidence section: Exact confirm-plan proof
 - Current accepted operator packet review: no accepted operator review exists
 - Mutation-readiness audit passed: No target-specific mutation-readiness plan passes audit.
 - Credential and auth-boundary evidence accepted: No passing readiness audit is available to prove auth evidence.
@@ -95,6 +103,7 @@ npm run ariadne -- live-adapter-approval-review --project ariadne --target githu
 
 - projects/ariadne/control/live-adapter-evidence-templates/live-adapter-evidence-template-github.md
 - projects/ariadne/control/live-adapter-dossiers/live-adapter-dossier-github.json
+- projects/ariadne/control/mutation-readiness-repair-plan.json
 - projects/ariadne/control/live-adapter-readiness.json
 - projects/ariadne/control/live-adapter-next-actions.json
 - projects/ariadne/control/live-adapter-approval-pack.json
@@ -108,7 +117,7 @@ npm run ariadne -- live-adapter-approval-review --project ariadne --target githu
 
 Status: needs_evidence
 Template: projects/ariadne/control/live-adapter-evidence-templates/live-adapter-evidence-template-deployment.md
-First action: Fill and import operator evidence
+First action: Prepare, fill, and import operator evidence
 
 #### Check Command
 
@@ -130,7 +139,15 @@ npm run ariadne -- live-adapter-approval-review --project ariadne --target deplo
 
 #### Missing Sections
 
-- none
+- Operator identity and timestamp
+- Approval packet review
+- Authentication or authorization boundary
+- Bounded action statement
+- Rollback or disable path
+- Post-action verification command
+- Dry-run command and safe output
+- Target-guarded execution wrapper
+- Exact confirm-plan proof
 
 #### Required Evidence
 
@@ -153,7 +170,7 @@ npm run ariadne -- live-adapter-approval-review --project ariadne --target deplo
 
 #### Cutover Blockers
 
-- Operator evidence complete: No operator evidence record exists for deployment.
+- Operator evidence complete: No operator evidence record exists for deployment.; Missing operator evidence section: Operator identity and timestamp; Missing operator evidence section: Approval packet review; Missing operator evidence section: Authentication or authorization boundary; Missing operator evidence section: Bounded action statement; Missing operator evidence section: Rollback or disable path; Missing operator evidence section: Post-action verification command; Missing operator evidence section: Dry-run command and safe output; Missing operator evidence section: Target-guarded execution wrapper; Missing operator evidence section: Exact confirm-plan proof
 - Current accepted operator packet review: no accepted operator review exists
 - Mutation-readiness audit passed: No target-specific mutation-readiness plan passes audit.
 - Credential and auth-boundary evidence accepted: No passing readiness audit is available to prove auth evidence.
@@ -171,6 +188,7 @@ npm run ariadne -- live-adapter-approval-review --project ariadne --target deplo
 
 - projects/ariadne/control/live-adapter-evidence-templates/live-adapter-evidence-template-deployment.md
 - projects/ariadne/control/live-adapter-dossiers/live-adapter-dossier-deployment.json
+- projects/ariadne/control/mutation-readiness-repair-plan.json
 - projects/ariadne/control/live-adapter-readiness.json
 - projects/ariadne/control/live-adapter-next-actions.json
 - projects/ariadne/control/live-adapter-approval-pack.json
@@ -179,12 +197,13 @@ npm run ariadne -- live-adapter-approval-review --project ariadne --target deplo
 - projects/ariadne/control/live-adapter-operator-evidence-workspace.json
 - projects/ariadne/control/operator-evidence/deployment/operator-evidence.md
 - projects/ariadne/control/live-adapter-operator-evidence-audit.json
+- projects/ariadne/control/live-evidence-promotions/live-evidence-promotion-deployment-2026-05-17T23-37-04-509Z.json
 
 ### hermes-cron
 
 Status: needs_evidence
 Template: projects/ariadne/control/live-adapter-evidence-templates/live-adapter-evidence-template-hermes-cron.md
-First action: Fill and import operator evidence
+First action: Prepare, fill, and import operator evidence
 
 #### Check Command
 
@@ -206,7 +225,15 @@ npm run ariadne -- live-adapter-approval-review --project ariadne --target herme
 
 #### Missing Sections
 
-- none
+- Operator identity and timestamp
+- Approval packet review
+- Authentication or authorization boundary
+- Bounded action statement
+- Rollback or disable path
+- Post-action verification command
+- Dry-run command and safe output
+- Target-guarded execution wrapper
+- Exact confirm-plan proof
 
 #### Required Evidence
 
@@ -229,7 +256,7 @@ npm run ariadne -- live-adapter-approval-review --project ariadne --target herme
 
 #### Cutover Blockers
 
-- Operator evidence complete: No operator evidence record exists for hermes-cron.
+- Operator evidence complete: No operator evidence record exists for hermes-cron.; Missing operator evidence section: Operator identity and timestamp; Missing operator evidence section: Approval packet review; Missing operator evidence section: Authentication or authorization boundary; Missing operator evidence section: Bounded action statement; Missing operator evidence section: Rollback or disable path; Missing operator evidence section: Post-action verification command; Missing operator evidence section: Dry-run command and safe output; Missing operator evidence section: Target-guarded execution wrapper; Missing operator evidence section: Exact confirm-plan proof
 - Current accepted operator packet review: no accepted operator review exists
 - Mutation-readiness audit passed: No target-specific mutation-readiness plan passes audit.
 - Credential and auth-boundary evidence accepted: No passing readiness audit is available to prove auth evidence.
@@ -247,6 +274,7 @@ npm run ariadne -- live-adapter-approval-review --project ariadne --target herme
 
 - projects/ariadne/control/live-adapter-evidence-templates/live-adapter-evidence-template-hermes-cron.md
 - projects/ariadne/control/live-adapter-dossiers/live-adapter-dossier-hermes-cron.json
+- projects/ariadne/control/mutation-readiness-repair-plan.json
 - projects/ariadne/control/live-adapter-readiness.json
 - projects/ariadne/control/live-adapter-next-actions.json
 - projects/ariadne/control/live-adapter-approval-pack.json
@@ -260,7 +288,7 @@ npm run ariadne -- live-adapter-approval-review --project ariadne --target herme
 
 Status: needs_evidence
 Template: projects/ariadne/control/live-adapter-evidence-templates/live-adapter-evidence-template-openscorpion.md
-First action: Fill and import operator evidence
+First action: Prepare, fill, and import operator evidence
 
 #### Check Command
 
@@ -282,7 +310,15 @@ npm run ariadne -- live-adapter-approval-review --project ariadne --target opens
 
 #### Missing Sections
 
-- none
+- Operator identity and timestamp
+- Approval packet review
+- Authentication or authorization boundary
+- Bounded action statement
+- Rollback or disable path
+- Post-action verification command
+- Dry-run command and safe output
+- Target-guarded execution wrapper
+- Exact confirm-plan proof
 
 #### Required Evidence
 
@@ -305,7 +341,7 @@ npm run ariadne -- live-adapter-approval-review --project ariadne --target opens
 
 #### Cutover Blockers
 
-- Operator evidence complete: No operator evidence record exists for openscorpion.
+- Operator evidence complete: No operator evidence record exists for openscorpion.; Missing operator evidence section: Operator identity and timestamp; Missing operator evidence section: Approval packet review; Missing operator evidence section: Authentication or authorization boundary; Missing operator evidence section: Bounded action statement; Missing operator evidence section: Rollback or disable path; Missing operator evidence section: Post-action verification command; Missing operator evidence section: Dry-run command and safe output; Missing operator evidence section: Target-guarded execution wrapper; Missing operator evidence section: Exact confirm-plan proof
 - Current accepted operator packet review: no accepted operator review exists
 - Mutation-readiness audit passed: No target-specific mutation-readiness plan passes audit.
 - Credential and auth-boundary evidence accepted: No passing readiness audit is available to prove auth evidence.
@@ -323,6 +359,7 @@ npm run ariadne -- live-adapter-approval-review --project ariadne --target opens
 
 - projects/ariadne/control/live-adapter-evidence-templates/live-adapter-evidence-template-openscorpion.md
 - projects/ariadne/control/live-adapter-dossiers/live-adapter-dossier-openscorpion.json
+- projects/ariadne/control/mutation-readiness-repair-plan.json
 - projects/ariadne/control/live-adapter-readiness.json
 - projects/ariadne/control/live-adapter-next-actions.json
 - projects/ariadne/control/live-adapter-approval-pack.json
@@ -336,7 +373,7 @@ npm run ariadne -- live-adapter-approval-review --project ariadne --target opens
 
 Status: needs_evidence
 Template: projects/ariadne/control/live-adapter-evidence-templates/live-adapter-evidence-template-gsd2.md
-First action: Fill and import operator evidence
+First action: Prepare, fill, and import operator evidence
 
 #### Check Command
 
@@ -358,7 +395,15 @@ npm run ariadne -- live-adapter-approval-review --project ariadne --target gsd2 
 
 #### Missing Sections
 
-- none
+- Operator identity and timestamp
+- Approval packet review
+- Authentication or authorization boundary
+- Bounded action statement
+- Rollback or disable path
+- Post-action verification command
+- Dry-run command and safe output
+- Target-guarded execution wrapper
+- Exact confirm-plan proof
 
 #### Required Evidence
 
@@ -381,7 +426,7 @@ npm run ariadne -- live-adapter-approval-review --project ariadne --target gsd2 
 
 #### Cutover Blockers
 
-- Operator evidence complete: No operator evidence record exists for gsd2.
+- Operator evidence complete: No operator evidence record exists for gsd2.; Missing operator evidence section: Operator identity and timestamp; Missing operator evidence section: Approval packet review; Missing operator evidence section: Authentication or authorization boundary; Missing operator evidence section: Bounded action statement; Missing operator evidence section: Rollback or disable path; Missing operator evidence section: Post-action verification command; Missing operator evidence section: Dry-run command and safe output; Missing operator evidence section: Target-guarded execution wrapper; Missing operator evidence section: Exact confirm-plan proof
 - Current accepted operator packet review: no accepted operator review exists
 - Mutation-readiness audit passed: No target-specific mutation-readiness plan passes audit.
 - Credential and auth-boundary evidence accepted: No passing readiness audit is available to prove auth evidence.
@@ -399,6 +444,7 @@ npm run ariadne -- live-adapter-approval-review --project ariadne --target gsd2 
 
 - projects/ariadne/control/live-adapter-evidence-templates/live-adapter-evidence-template-gsd2.md
 - projects/ariadne/control/live-adapter-dossiers/live-adapter-dossier-gsd2.json
+- projects/ariadne/control/mutation-readiness-repair-plan.json
 - projects/ariadne/control/live-adapter-readiness.json
 - projects/ariadne/control/live-adapter-next-actions.json
 - projects/ariadne/control/live-adapter-approval-pack.json
@@ -412,7 +458,7 @@ npm run ariadne -- live-adapter-approval-review --project ariadne --target gsd2 
 
 Status: needs_evidence
 Template: projects/ariadne/control/live-adapter-evidence-templates/live-adapter-evidence-template-notebooklm.md
-First action: Fill and import operator evidence
+First action: Prepare, fill, and import operator evidence
 
 #### Check Command
 
@@ -434,7 +480,15 @@ npm run ariadne -- live-adapter-approval-review --project ariadne --target noteb
 
 #### Missing Sections
 
-- none
+- Operator identity and timestamp
+- Approval packet review
+- Authentication or authorization boundary
+- Bounded action statement
+- Rollback or disable path
+- Post-action verification command
+- Dry-run command and safe output
+- Target-guarded execution wrapper
+- Exact confirm-plan proof
 
 #### Required Evidence
 
@@ -457,7 +511,7 @@ npm run ariadne -- live-adapter-approval-review --project ariadne --target noteb
 
 #### Cutover Blockers
 
-- Operator evidence complete: No operator evidence record exists for notebooklm.
+- Operator evidence complete: No operator evidence record exists for notebooklm.; Missing operator evidence section: Operator identity and timestamp; Missing operator evidence section: Approval packet review; Missing operator evidence section: Authentication or authorization boundary; Missing operator evidence section: Bounded action statement; Missing operator evidence section: Rollback or disable path; Missing operator evidence section: Post-action verification command; Missing operator evidence section: Dry-run command and safe output; Missing operator evidence section: Target-guarded execution wrapper; Missing operator evidence section: Exact confirm-plan proof
 - Current accepted operator packet review: no accepted operator review exists
 - Mutation-readiness audit passed: No target-specific mutation-readiness plan passes audit.
 - Credential and auth-boundary evidence accepted: No passing readiness audit is available to prove auth evidence.
@@ -475,6 +529,7 @@ npm run ariadne -- live-adapter-approval-review --project ariadne --target noteb
 
 - projects/ariadne/control/live-adapter-evidence-templates/live-adapter-evidence-template-notebooklm.md
 - projects/ariadne/control/live-adapter-dossiers/live-adapter-dossier-notebooklm.json
+- projects/ariadne/control/mutation-readiness-repair-plan.json
 - projects/ariadne/control/live-adapter-readiness.json
 - projects/ariadne/control/live-adapter-next-actions.json
 - projects/ariadne/control/live-adapter-approval-pack.json

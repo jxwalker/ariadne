@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "project": "ariadne",
-  "checkedAt": "2026-05-17T09:47:18.500Z",
+  "checkedAt": "2026-05-18T03:37:59.533Z",
   "status": "incomplete",
   "mutationApproved": false,
   "approvalGranted": false,
@@ -25,9 +25,20 @@
       "status": "incomplete",
       "sourceFileRef": "projects/ariadne/control/operator-evidence/github/operator-evidence.md",
       "evidenceFileRef": "projects/ariadne/control/operator-evidence/github/operator-evidence.md",
-      "checkRef": "projects/ariadne/control/live-adapter-operator-evidence-checks/operator-evidence-check-github-2026-05-17T09-47-18-388Z.json",
-      "checkMarkdownRef": "projects/ariadne/control/live-adapter-operator-evidence-checks/operator-evidence-check-github-2026-05-17T09-47-18-388Z.md",
+      "checkRef": "projects/ariadne/control/live-adapter-operator-evidence-checks/operator-evidence-check-github-2026-05-18T03-37-59-420Z.json",
+      "checkMarkdownRef": "projects/ariadne/control/live-adapter-operator-evidence-checks/operator-evidence-check-github-2026-05-18T03-37-59-420Z.md",
       "missingSections": 9,
+      "missingSectionLabels": [
+        "Operator identity and timestamp",
+        "Approval packet review",
+        "Authentication or authorization boundary",
+        "Bounded action statement",
+        "Rollback or disable path",
+        "Post-action verification command",
+        "Dry-run command and safe output",
+        "Target-guarded execution wrapper",
+        "Exact confirm-plan proof"
+      ],
       "sourceRef": "projects/ariadne/control/operator-evidence/github/operator-evidence.md"
     },
     {
@@ -35,9 +46,20 @@
       "status": "incomplete",
       "sourceFileRef": "projects/ariadne/control/operator-evidence/deployment/operator-evidence.md",
       "evidenceFileRef": "projects/ariadne/control/operator-evidence/deployment/operator-evidence.md",
-      "checkRef": "projects/ariadne/control/live-adapter-operator-evidence-checks/operator-evidence-check-deployment-2026-05-17T09-47-18-390Z.json",
-      "checkMarkdownRef": "projects/ariadne/control/live-adapter-operator-evidence-checks/operator-evidence-check-deployment-2026-05-17T09-47-18-390Z.md",
+      "checkRef": "projects/ariadne/control/live-adapter-operator-evidence-checks/operator-evidence-check-deployment-2026-05-18T03-37-59-421Z.json",
+      "checkMarkdownRef": "projects/ariadne/control/live-adapter-operator-evidence-checks/operator-evidence-check-deployment-2026-05-18T03-37-59-421Z.md",
       "missingSections": 9,
+      "missingSectionLabels": [
+        "Operator identity and timestamp",
+        "Approval packet review",
+        "Authentication or authorization boundary",
+        "Bounded action statement",
+        "Rollback or disable path",
+        "Post-action verification command",
+        "Dry-run command and safe output",
+        "Target-guarded execution wrapper",
+        "Exact confirm-plan proof"
+      ],
       "sourceRef": "projects/ariadne/control/operator-evidence/deployment/operator-evidence.md"
     },
     {
@@ -45,9 +67,20 @@
       "status": "incomplete",
       "sourceFileRef": "projects/ariadne/control/operator-evidence/hermes-cron/operator-evidence.md",
       "evidenceFileRef": "projects/ariadne/control/operator-evidence/hermes-cron/operator-evidence.md",
-      "checkRef": "projects/ariadne/control/live-adapter-operator-evidence-checks/operator-evidence-check-hermes-cron-2026-05-17T09-47-18-391Z.json",
-      "checkMarkdownRef": "projects/ariadne/control/live-adapter-operator-evidence-checks/operator-evidence-check-hermes-cron-2026-05-17T09-47-18-391Z.md",
+      "checkRef": "projects/ariadne/control/live-adapter-operator-evidence-checks/operator-evidence-check-hermes-cron-2026-05-18T03-37-59-423Z.json",
+      "checkMarkdownRef": "projects/ariadne/control/live-adapter-operator-evidence-checks/operator-evidence-check-hermes-cron-2026-05-18T03-37-59-423Z.md",
       "missingSections": 9,
+      "missingSectionLabels": [
+        "Operator identity and timestamp",
+        "Approval packet review",
+        "Authentication or authorization boundary",
+        "Bounded action statement",
+        "Rollback or disable path",
+        "Post-action verification command",
+        "Dry-run command and safe output",
+        "Target-guarded execution wrapper",
+        "Exact confirm-plan proof"
+      ],
       "sourceRef": "projects/ariadne/control/operator-evidence/hermes-cron/operator-evidence.md"
     },
     {
@@ -55,9 +88,20 @@
       "status": "incomplete",
       "sourceFileRef": "projects/ariadne/control/operator-evidence/openscorpion/operator-evidence.md",
       "evidenceFileRef": "projects/ariadne/control/operator-evidence/openscorpion/operator-evidence.md",
-      "checkRef": "projects/ariadne/control/live-adapter-operator-evidence-checks/operator-evidence-check-openscorpion-2026-05-17T09-47-18-393Z.json",
-      "checkMarkdownRef": "projects/ariadne/control/live-adapter-operator-evidence-checks/operator-evidence-check-openscorpion-2026-05-17T09-47-18-393Z.md",
+      "checkRef": "projects/ariadne/control/live-adapter-operator-evidence-checks/operator-evidence-check-openscorpion-2026-05-18T03-37-59-424Z.json",
+      "checkMarkdownRef": "projects/ariadne/control/live-adapter-operator-evidence-checks/operator-evidence-check-openscorpion-2026-05-18T03-37-59-424Z.md",
       "missingSections": 9,
+      "missingSectionLabels": [
+        "Operator identity and timestamp",
+        "Approval packet review",
+        "Authentication or authorization boundary",
+        "Bounded action statement",
+        "Rollback or disable path",
+        "Post-action verification command",
+        "Dry-run command and safe output",
+        "Target-guarded execution wrapper",
+        "Exact confirm-plan proof"
+      ],
       "sourceRef": "projects/ariadne/control/operator-evidence/openscorpion/operator-evidence.md"
     },
     {
@@ -65,9 +109,20 @@
       "status": "incomplete",
       "sourceFileRef": "projects/ariadne/control/operator-evidence/gsd2/operator-evidence.md",
       "evidenceFileRef": "projects/ariadne/control/operator-evidence/gsd2/operator-evidence.md",
-      "checkRef": "projects/ariadne/control/live-adapter-operator-evidence-checks/operator-evidence-check-gsd2-2026-05-17T09-47-18-394Z.json",
-      "checkMarkdownRef": "projects/ariadne/control/live-adapter-operator-evidence-checks/operator-evidence-check-gsd2-2026-05-17T09-47-18-394Z.md",
+      "checkRef": "projects/ariadne/control/live-adapter-operator-evidence-checks/operator-evidence-check-gsd2-2026-05-18T03-37-59-425Z.json",
+      "checkMarkdownRef": "projects/ariadne/control/live-adapter-operator-evidence-checks/operator-evidence-check-gsd2-2026-05-18T03-37-59-425Z.md",
       "missingSections": 9,
+      "missingSectionLabels": [
+        "Operator identity and timestamp",
+        "Approval packet review",
+        "Authentication or authorization boundary",
+        "Bounded action statement",
+        "Rollback or disable path",
+        "Post-action verification command",
+        "Dry-run command and safe output",
+        "Target-guarded execution wrapper",
+        "Exact confirm-plan proof"
+      ],
       "sourceRef": "projects/ariadne/control/operator-evidence/gsd2/operator-evidence.md"
     },
     {
@@ -75,9 +130,20 @@
       "status": "incomplete",
       "sourceFileRef": "projects/ariadne/control/operator-evidence/notebooklm/operator-evidence.md",
       "evidenceFileRef": "projects/ariadne/control/operator-evidence/notebooklm/operator-evidence.md",
-      "checkRef": "projects/ariadne/control/live-adapter-operator-evidence-checks/operator-evidence-check-notebooklm-2026-05-17T09-47-18-395Z.json",
-      "checkMarkdownRef": "projects/ariadne/control/live-adapter-operator-evidence-checks/operator-evidence-check-notebooklm-2026-05-17T09-47-18-395Z.md",
+      "checkRef": "projects/ariadne/control/live-adapter-operator-evidence-checks/operator-evidence-check-notebooklm-2026-05-18T03-37-59-425Z.json",
+      "checkMarkdownRef": "projects/ariadne/control/live-adapter-operator-evidence-checks/operator-evidence-check-notebooklm-2026-05-18T03-37-59-425Z.md",
       "missingSections": 9,
+      "missingSectionLabels": [
+        "Operator identity and timestamp",
+        "Approval packet review",
+        "Authentication or authorization boundary",
+        "Bounded action statement",
+        "Rollback or disable path",
+        "Post-action verification command",
+        "Dry-run command and safe output",
+        "Target-guarded execution wrapper",
+        "Exact confirm-plan proof"
+      ],
       "sourceRef": "projects/ariadne/control/operator-evidence/notebooklm/operator-evidence.md"
     }
   ]

@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "project": "ariadne",
-  "generatedAt": "2026-05-17T09:47:19.016Z",
+  "generatedAt": "2026-05-18T03:38:00.166Z",
   "status": "actions_required",
   "summary": {
     "targets": 6,
@@ -26,9 +26,9 @@
         {
           "id": "github-operator-evidence",
           "status": "pending",
-          "title": "Fill and import operator evidence",
-          "rationale": "The target has no imported operator evidence record. Fill the generated workspace file with real observations before packet review or cutover.",
-          "command": "npm run ariadne -- live-adapter-operator-evidence --project <project> --target github --from vault/projects/<project>/control/operator-evidence/github/operator-evidence.md --by <operator>",
+          "title": "Prepare, fill, and import operator evidence",
+          "rationale": "The target has no imported operator evidence record. Refresh the target packet, fill the generated workspace file with real observations, and import it before packet review or cutover.",
+          "command": "npm run ariadne -- live-adapter-operator-evidence-next --project <project> --target github",
           "evidenceRefs": [
             "control/live-adapter-operator-evidence-workspace.json",
             "control/operator-evidence/github/operator-evidence.md"
@@ -91,9 +91,9 @@
         {
           "id": "deployment-operator-evidence",
           "status": "pending",
-          "title": "Fill and import operator evidence",
-          "rationale": "The target has no imported operator evidence record. Fill the generated workspace file with real observations before packet review or cutover.",
-          "command": "npm run ariadne -- live-adapter-operator-evidence --project <project> --target deployment --from vault/projects/<project>/control/operator-evidence/deployment/operator-evidence.md --by <operator>",
+          "title": "Prepare, fill, and import operator evidence",
+          "rationale": "The target has no imported operator evidence record. Refresh the target packet, fill the generated workspace file with real observations, and import it before packet review or cutover.",
+          "command": "npm run ariadne -- live-adapter-operator-evidence-next --project <project> --target deployment",
           "evidenceRefs": [
             "control/live-adapter-operator-evidence-workspace.json",
             "control/operator-evidence/deployment/operator-evidence.md"
@@ -176,9 +176,9 @@
         {
           "id": "hermes-cron-operator-evidence",
           "status": "pending",
-          "title": "Fill and import operator evidence",
-          "rationale": "The target has no imported operator evidence record. Fill the generated workspace file with real observations before packet review or cutover.",
-          "command": "npm run ariadne -- live-adapter-operator-evidence --project <project> --target hermes-cron --from vault/projects/<project>/control/operator-evidence/hermes-cron/operator-evidence.md --by <operator>",
+          "title": "Prepare, fill, and import operator evidence",
+          "rationale": "The target has no imported operator evidence record. Refresh the target packet, fill the generated workspace file with real observations, and import it before packet review or cutover.",
+          "command": "npm run ariadne -- live-adapter-operator-evidence-next --project <project> --target hermes-cron",
           "evidenceRefs": [
             "control/live-adapter-operator-evidence-workspace.json",
             "control/operator-evidence/hermes-cron/operator-evidence.md"
@@ -261,9 +261,9 @@
         {
           "id": "openscorpion-operator-evidence",
           "status": "pending",
-          "title": "Fill and import operator evidence",
-          "rationale": "The target has no imported operator evidence record. Fill the generated workspace file with real observations before packet review or cutover.",
-          "command": "npm run ariadne -- live-adapter-operator-evidence --project <project> --target openscorpion --from vault/projects/<project>/control/operator-evidence/openscorpion/operator-evidence.md --by <operator>",
+          "title": "Prepare, fill, and import operator evidence",
+          "rationale": "The target has no imported operator evidence record. Refresh the target packet, fill the generated workspace file with real observations, and import it before packet review or cutover.",
+          "command": "npm run ariadne -- live-adapter-operator-evidence-next --project <project> --target openscorpion",
           "evidenceRefs": [
             "control/live-adapter-operator-evidence-workspace.json",
             "control/operator-evidence/openscorpion/operator-evidence.md"
@@ -346,9 +346,9 @@
         {
           "id": "gsd2-operator-evidence",
           "status": "pending",
-          "title": "Fill and import operator evidence",
-          "rationale": "The target has no imported operator evidence record. Fill the generated workspace file with real observations before packet review or cutover.",
-          "command": "npm run ariadne -- live-adapter-operator-evidence --project <project> --target gsd2 --from vault/projects/<project>/control/operator-evidence/gsd2/operator-evidence.md --by <operator>",
+          "title": "Prepare, fill, and import operator evidence",
+          "rationale": "The target has no imported operator evidence record. Refresh the target packet, fill the generated workspace file with real observations, and import it before packet review or cutover.",
+          "command": "npm run ariadne -- live-adapter-operator-evidence-next --project <project> --target gsd2",
           "evidenceRefs": [
             "control/live-adapter-operator-evidence-workspace.json",
             "control/operator-evidence/gsd2/operator-evidence.md"
@@ -431,9 +431,9 @@
         {
           "id": "notebooklm-operator-evidence",
           "status": "pending",
-          "title": "Fill and import operator evidence",
-          "rationale": "The target has no imported operator evidence record. Fill the generated workspace file with real observations before packet review or cutover.",
-          "command": "npm run ariadne -- live-adapter-operator-evidence --project <project> --target notebooklm --from vault/projects/<project>/control/operator-evidence/notebooklm/operator-evidence.md --by <operator>",
+          "title": "Prepare, fill, and import operator evidence",
+          "rationale": "The target has no imported operator evidence record. Refresh the target packet, fill the generated workspace file with real observations, and import it before packet review or cutover.",
+          "command": "npm run ariadne -- live-adapter-operator-evidence-next --project <project> --target notebooklm",
           "evidenceRefs": [
             "control/live-adapter-operator-evidence-workspace.json",
             "control/operator-evidence/notebooklm/operator-evidence.md"
