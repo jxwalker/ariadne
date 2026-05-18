@@ -73,6 +73,8 @@ Those live paths are roadmap items. The current job is to make state, evidence, 
 
 ## Quick Start
 
+Ariadne is operated workflow-first. Start from the console and its Next Best Action panel; use runner commands as the implementation surface behind that view.
+
 The main runner is named `ariadne`. Use `npm run ariadne -- <command>` during local development; installed builds expose the same command as the package binary. Do not use the old scaffold name `cli` for commands, docs, or new entrypoints.
 
 ```bash
@@ -82,68 +84,14 @@ npm test
 npm run ariadne -- ingest --project ariadne /path/to/source.md /path/to/source.docx
 npm run ariadne -- assemble --project ariadne
 npm run ariadne -- roadmap --project ariadne --target-url http://localhost:3000 --repo /path/to/repo
-npm run ariadne -- evaluation --project ariadne --target mac-local
-npm run ariadne -- artifact-checks --project ariadne
-npm run ariadne -- benchmark-pack --set all
-npm run ariadne -- benchmark-run --project bench-smoke --set smoke
-npm run ariadne -- github-mutation-plan --project ariadne --repo jxwalker/ariadne --action merge-pr --pr 29 --auth-evidence control/approvals/approval-...json --approval approval-...
-npm run ariadne -- notebooklm-mutation-plan --project ariadne --notebook "Ariadne Sources" --action export-notes --scope "Export reviewed NotebookLM notes" --auth-evidence control/approvals/approval-...json --dry-run "notebooklmctl notebook show 'Ariadne Sources'" --live-command "notebooklmctl notebook export-notes 'Ariadne Sources' --output notebooklm-export.md" --post-verify "test -s notebooklm-export.md" --rollback "Remove generated export and return to manual import" --approval approval-...
-npm run ariadne -- gsd2-mutation-plan --project ariadne --task TASK-001 --mode headless --package ariadne-roadmap --scope "Submit one reviewed task to GSD2" --auth-evidence control/approvals/approval-...json --dry-run "gsd task show TASK-001 --package ariadne-roadmap" --live-command "gsd headless TASK-001 --package ariadne-roadmap" --post-verify "gsd task show TASK-001 --package ariadne-roadmap" --rollback "Remove generated worktree and mark TASK-001 planned" --approval approval-...
-npm run ariadne -- hermes-cron-mutation-plan --project ariadne --action update --job nightly-memory-review --host beast --scope "Update nightly memory review schedule" --auth-evidence control/approvals/approval-...json --dry-run "hermes cron get nightly-memory-review --host beast" --live-command "hermes cron update nightly-memory-review --host beast --from reviewed-job.json" --post-verify "hermes cron get nightly-memory-review --host beast" --rollback "hermes cron update nightly-memory-review --host beast --from previous-job.json" --approval approval-...
-npm run ariadne -- openscorpion-mutation-plan --project ariadne --activity activity-001 --type ariadne.evidence --action submit-activity --route governed --scope "Submit reviewed evidence package" --auth-evidence control/approvals/approval-...json --dry-run "openscorpion activity validate activity-001 --route governed" --live-command "openscorpion activity submit activity-001 --route governed" --post-verify "openscorpion activity status activity-001 --route governed" --rollback "openscorpion activity withdraw activity-001 --route governed" --approval approval-...
-npm run ariadne -- deployment-mutation-plan --project ariadne --system proxmox --host beast --scope "Restart Ariadne worker service" --auth-evidence control/approvals/approval-...json --dry-run "ssh beast systemctl status ariadne" --live-command "ssh beast sudo systemctl restart ariadne" --post-verify "ssh beast systemctl is-active ariadne" --rollback "ssh beast sudo systemctl restart ariadne-previous" --approval approval-...
-npm run ariadne -- mutation-dry-run --project ariadne --plan mutation-readiness-github-...
-npm run ariadne -- live-adapter-readiness --project ariadne
-npm run ariadne -- live-adapter-next-actions --project ariadne
-npm run ariadne -- live-adapter-approval-pack --project ariadne
-npm run ariadne -- live-adapter-approval-review --project ariadne --target github --by james --status accepted --evidence control/live-adapter-approval-pack.json --notes "Packet reviewed; this does not approve mutation."
-npm run ariadne -- live-adapter-approval-review-audit --project ariadne
-npm run ariadne -- live-adapter-dossier --project ariadne --target github
-npm run ariadne -- live-adapter-cutover-audit --project ariadne
-npm run ariadne -- live-adapter-cutover-audit --project ariadne --target hermes-cron
-npm run ariadne -- live-adapter-review-session --project ariadne
-npm run ariadne -- live-adapter-review-session --project ariadne --target hermes-cron
-npm run ariadne -- live-adapter-evidence-templates --project ariadne
-npm run ariadne -- live-adapter-operator-evidence-workplan --project ariadne
-npm run ariadne -- live-adapter-operator-evidence-queue --project ariadne
-npm run ariadne -- live-adapter-operator-evidence-workspace --project ariadne
-npm run ariadne -- live-adapter-operator-evidence-workspace --project ariadne --target hermes-cron
-npm run ariadne -- live-adapter-operator-evidence-assist --project ariadne
-npm run ariadne -- live-adapter-operator-evidence-assist --project ariadne --target hermes-cron
-npm run ariadne -- live-adapter-operator-evidence-draft --project ariadne --target hermes-cron
-npm run ariadne -- live-adapter-operator-evidence-drafts --project ariadne
-npm run ariadne -- live-adapter-operator-evidence-check --project ariadne --target github --from vault/projects/ariadne/control/operator-evidence/github/operator-evidence.md
-npm run ariadne -- live-adapter-operator-evidence-check-all --project ariadne --source workspace
-npm run ariadne -- live-adapter-operator-evidence-check-all --project ariadne --source workspace --target hermes-cron
-npm run ariadne -- live-adapter-operator-evidence-import-ready --project ariadne --by james
-npm run ariadne -- live-adapter-operator-evidence-import-ready --project ariadne --by james --target hermes-cron
-npm run ariadne -- live-adapter-operator-evidence --project ariadne --target github --from vault/projects/ariadne/control/operator-evidence/github/operator-evidence.md --by james
-npm run ariadne -- live-adapter-operator-evidence-audit --project ariadne
 npm run ariadne -- roadmap-control-refresh --project ariadne
-npm run ariadne -- roadmap-completion-audit --project ariadne
-npm run ariadne -- mutation-readiness-repair-plan --project ariadne
-npm run ariadne -- github-mutation-execute --project ariadne --plan mutation-readiness-github-... --confirm-plan mutation-readiness-github-...
-npm run ariadne -- target-mutation-execute --project ariadne --target github --plan mutation-readiness-github-... --confirm-plan mutation-readiness-github-...
-npm run ariadne -- mutation-execute --project ariadne --plan mutation-readiness-github-... --confirm-plan mutation-readiness-github-...
-npm run ariadne -- evaluation-trends --project ariadne
-npm run ariadne -- usage-report --project ariadne
-npm run ariadne -- control --project ariadne
-npm run ariadne -- recovery-report --project ariadne
-npm run ariadne -- console-data --project ariadne
 npm run ariadne -- console-html --project ariadne --refresh-data
-npm run ariadne -- console-visual-checks --project ariadne
-npm run ariadne -- console-browser-checks --project ariadne
-npm run ariadne -- e2e-smoke --project ariadne --with-runtime-probe --runtime-canary --canary-endpoints lmstudio --lmstudio-canary-model google/gemma-3-4b --timeout-ms 60000
-npm run ariadne -- infra-live-local --project ariadne
-npm run ariadne -- local-runtime-probe --project ariadne --canary --canary-endpoints ds4-openai --ds4-canary-model deepseek-v4-flash
-ARIADNE_ATLAS_URL=http://your-atlas-host.tailnet:8888/v1 ARIADNE_ATLAS_CANARY_MODEL=qwen3.6-35b-a3b-nvfp4-atlas npm run ariadne -- local-runtime-probe --project ariadne --canary --canary-endpoints atlas --timeout-ms 60000
-npm run ariadne -- infra-live-ssh --project ariadne --host beast --target james@beast.lan
 npm run ariadne -- status --project ariadne
 ```
 
-The CLI also loads local `ARIADNE_` defaults from a git-ignored `.env` file in the current working directory. This is the preferred unattended path for private LAN or tailnet model endpoints such as Atlas; explicit shell variables still win over `.env` values, and non-`ARIADNE_` keys are ignored.
+The runner also loads local `ARIADNE_` defaults from a git-ignored `.env` file in the current working directory. This is the preferred unattended path for private LAN or tailnet model endpoints such as Atlas; explicit shell variables still win over `.env` values, and non-`ARIADNE_` keys are ignored.
 
-The generated console includes the mutation-readiness repair plan beside the mutation audit, and `e2e-smoke` now refreshes that read-only repair guidance before rendering the console. Blocked live-adapter work is visible by target without granting approval or running a live command. `status` also surfaces the live-adapter operator-evidence, queue, next target, the one-step next operator packet command, target-scoped follow-up commands, cutover, and review-session summaries so a blocked smoke result is explainable from one command.
+Read [Ariadne Workflows](docs/workflows.md) before using the longer command reference in [User Guide](docs/user-guide.md). The generated console includes a Capture -> Shape -> Build -> Verify -> Review -> Operate workflow lane, a single Next Best Action panel, mutation-readiness repair state, operator evidence state, and read-only runtime/deployment evidence. Blocked live-adapter work is visible by target without granting approval or running a live command.
 
 ## Vault Layout
 
