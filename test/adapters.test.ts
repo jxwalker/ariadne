@@ -2203,13 +2203,18 @@ describe("roadmap adapters", () => {
         }
       );
 
-      expect(runtimeProbe.probe.hermes.dashboard.url).toBe("http://runtime.env/hermes");
+      expect(runtimeProbe.probe.hermes.dashboard.url).toBe("<redacted-runtime-url>");
       expect(runtimeProbe.probe.modelEndpoints.find((endpoint) => endpoint.id === "atlas")?.url).toBe(
-        "http://runtime.env/atlas/v1"
+        "<redacted-runtime-url>"
       );
       expect(runtimeProbe.probe.modelEndpoints.find((endpoint) => endpoint.id === "atlas")?.canary?.model).toBe(
         "qwen3.6-35b-a3b-nvfp4-atlas"
       );
+      const runtimeProbeJson = await fs.readFile(runtimeProbe.jsonPath, "utf8");
+      const runtimeProbeMarkdown = await fs.readFile(runtimeProbe.markdownPath, "utf8");
+      expect(runtimeProbeJson).not.toContain("http://runtime.env");
+      expect(runtimeProbeJson).toContain("<redacted-runtime-url>");
+      expect(runtimeProbeMarkdown).not.toContain("http://runtime.env");
       expect(canaryRequests).toEqual([
         {
           url: "http://runtime.env/atlas/v1/chat/completions",
@@ -2443,6 +2448,13 @@ describe("roadmap adapters", () => {
     );
     expect(runtimeProbe.probe.summary.models).toBe(3);
     expect(runtimeProbe.probe.summary.usageRecords).toBe(3);
+    expect(runtimeProbe.probe.hermes.dashboard.url).toBe("<redacted-runtime-url>");
+    expect(runtimeProbe.probe.modelEndpoints.map((endpoint) => endpoint.url)).toEqual([
+      "<redacted-runtime-url>",
+      "<redacted-runtime-url>",
+      "<redacted-runtime-url>",
+      "<redacted-runtime-url>"
+    ]);
     expect(runtimeProbe.probe.modelEndpoints.find((endpoint) => endpoint.id === "ollama")?.canary?.status).toBe(
       "passed"
     );
