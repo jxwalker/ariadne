@@ -35,6 +35,7 @@ import { exportGsd2Bundle, importGsd2Bundle } from "./gsdAdapter.js";
 import { gsd2MutationModeOption, planGsd2Mutation } from "./gsdMutation.js";
 import { collectGsd2ProcessSnapshot } from "./gsdProcess.js";
 import { generateHealerProposal } from "./healerProposals.js";
+import { guidanceForHumanVerificationSection } from "./humanVerificationWorksheetMarkdown.js";
 import { generateHermesCronProposal, importHermesCronSnapshot } from "./hermesCron.js";
 import { hermesCronMutationActionOption, planHermesCronMutation } from "./hermesMutation.js";
 import { generateInfrastructureRegistry } from "./infrastructure.js";
@@ -1467,10 +1468,17 @@ async function main(): Promise<void> {
     });
     const consoleHtml = await generateConsoleHtml({ project, vaultRoot, refreshData: true });
     const evidenceRef = operatorEvidenceFileRef(packet.packet.project, packet.packet.target, packet.packet.evidenceRefs);
+    const currentSection = packet.packet.verificationWorksheet[0]?.missingSection;
+    const currentGuidance = currentSection ? guidanceForHumanVerificationSection(currentSection) : undefined;
     console.log(`Ariadne operator next: ${packet.packet.target}`);
     console.log(`Status: ${packet.packet.status}`);
     console.log(`Missing sections: ${packet.packet.summary.missingSections}`);
-    console.log(`Current section: ${packet.packet.verificationWorksheet[0]?.missingSection ?? "none"}`);
+    console.log(`Current section: ${currentSection ?? "none"}`);
+    if (currentGuidance) {
+      console.log(`Start with: ${currentGuidance.startWith}`);
+      console.log(`Record in: ${currentGuidance.recordIn}`);
+      console.log(`Preflight expectation: ${currentGuidance.preflight}`);
+    }
     console.log(`Console: ${consoleHtml.htmlPath}`);
     console.log(`Packet: ${packet.markdownPath}`);
     console.log(`Fill: ${path.join(vaultRoot, evidenceRef)}`);

@@ -9,6 +9,7 @@ import { generateLiveAdapterOperatorEvidenceQueue } from "./liveAdapterOperatorE
 import { generateLiveAdapterOperatorEvidenceWorkplan } from "./liveAdapterOperatorEvidenceWorkplan.js";
 import { generateLiveAdapterOperatorEvidenceWorkspace } from "./liveAdapterOperatorEvidenceWorkspace.js";
 import {
+  guidanceForHumanVerificationSection,
   renderHumanVerificationFillOrder,
   renderHumanVerificationReferenceDetails,
   renderHumanVerificationWorksheetTable
@@ -151,6 +152,8 @@ export async function generateLiveAdapterOperatorEvidenceNextPacket(input: {
 }
 
 function renderPacket(packet: LiveAdapterOperatorEvidenceNextPacket): string {
+  const currentSection = packet.verificationWorksheet[0]?.missingSection;
+  const currentGuidance = currentSection ? guidanceForHumanVerificationSection(currentSection) : undefined;
   return [
     `# Live Adapter Operator Evidence Next Packet: ${packet.target}`,
     "",
@@ -175,6 +178,13 @@ function renderPacket(packet: LiveAdapterOperatorEvidenceNextPacket): string {
     `- Support file refs: ${packet.summary.supportFileRefs}`,
     `- Cutover blocked gates: ${packet.summary.cutoverBlockedGates}`,
     `- Verification worksheet rows: ${packet.verificationWorksheet.length}`,
+    "",
+    "## Current Section Handoff",
+    "",
+    currentSection ? `- Current section: ${currentSection}` : "- Current section: none",
+    currentGuidance ? `- Start with: ${currentGuidance.startWith}` : "- Start with: keep the current imported evidence under review",
+    currentGuidance ? `- Record verified observation in: ${currentGuidance.recordIn}` : "- Record verified observation in: operator-evidence.md",
+    currentGuidance ? `- Preflight expectation: ${currentGuidance.preflight}` : "- Preflight expectation: rerun the target check before cutover",
     "",
     "## Generated Refs",
     "",
