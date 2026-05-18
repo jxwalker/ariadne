@@ -1041,6 +1041,14 @@ export interface LiveAdapterOperatorEvidenceAssist {
     importCommand: string;
     existingEvidenceRefs: string[];
     promotedLiveEvidence: PromotedLiveEvidenceSummary[];
+    reviewChecklist: Array<{
+      missingSection: string;
+      humanVerificationPrompt: string;
+      existingEvidenceRefs: string[];
+      promotedLiveEvidenceRefs: string[];
+      gbrainQueries: string[];
+      humanVerificationRequired: true;
+    }>;
     supportFileRefs: string[];
     missingSections: string[];
     requiredEvidence: string[];

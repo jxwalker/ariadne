@@ -52,6 +52,7 @@ export async function generateLiveAdapterOperatorEvidenceAssist(input: {
       importCommand: workspaceTarget.importCommand,
       existingEvidenceRefs,
       promotedLiveEvidence,
+      reviewChecklist: reviewChecklist(workspaceTarget, existingEvidenceRefs, promotedLiveEvidence),
       supportFileRefs,
       missingSections: workspaceTarget.missingSections,
       requiredEvidence: workspaceTarget.requiredEvidence,
@@ -241,8 +242,23 @@ function nextSteps(target: WorkspaceTarget): string[] {
     "Open read-only-assist.md and the listed support refs.",
     "Verify each relevant fact manually before copying it into operator-evidence.md.",
     "Fill the Operator and Review timestamp fields with real operator values.",
-    "Run the check command, then import only when the check is complete."
+    "Run the check command, then import only after the check is complete and the operator evidence file contains verified human observations."
   ];
+}
+
+function reviewChecklist(
+  target: WorkspaceTarget,
+  existingEvidenceRefs: string[],
+  promotedLiveEvidence: PromotedLiveEvidenceSummary[]
+): AssistTarget["reviewChecklist"] {
+  return target.missingSections.map((missingSection) => ({
+    missingSection,
+    humanVerificationPrompt: `Human operator must verify ${target.target} ${missingSection} from source systems or cited Ariadne refs before recording it in operator-evidence.md.`,
+    existingEvidenceRefs,
+    promotedLiveEvidenceRefs: promotedLiveEvidence.map((item) => item.ref),
+    gbrainQueries: target.gbrainQueries,
+    humanVerificationRequired: true
+  }));
 }
 
 function isWorkspace(value: unknown): value is LiveAdapterOperatorEvidenceWorkspace {
@@ -324,8 +340,17 @@ function renderTargetAssist(project: string, generatedAt: string, target: Assist
     "",
     "## Commands",
     "",
+    "These commands are safe to run during assist review because they only validate the current workspace file.",
+    "",
     "```bash",
     target.checkCommand,
+    "```",
+    "",
+    "## Import Command After Human Verification",
+    "",
+    "Run this only after a human operator has filled operator-evidence.md with verified observations and the check command reports complete evidence.",
+    "",
+    "```bash",
     target.importCommand,
     "```",
     "",
@@ -336,6 +361,10 @@ function renderTargetAssist(project: string, generatedAt: string, target: Assist
     "## Promoted Live Evidence",
     "",
     ...promotedLiveEvidenceLines(target.promotedLiveEvidence),
+    "",
+    "## Human Verification Worksheet",
+    "",
+    ...reviewChecklistLines(target.reviewChecklist),
     "",
     "## Support File Refs",
     "",
@@ -382,6 +411,21 @@ function promotedLiveEvidenceLines(items: PromotedLiveEvidenceSummary[]): string
   ]);
 }
 
+function reviewChecklistLines(items: AssistTarget["reviewChecklist"]): string[] {
+  return [
+    "| Missing section | Human verification prompt | Existing refs | Promoted live evidence | GBrain queries |",
+    "| --- | --- | ---: | ---: | ---: |",
+    ...(items.length === 0
+      ? [
+          "| none | No missing sections. Confirm the imported operator record remains current before relying on it. | 0 | 0 | 0 |"
+        ]
+      : items.map(
+          (item) =>
+            `| ${cell(item.missingSection)} | ${cell(item.humanVerificationPrompt)} | ${item.existingEvidenceRefs.length} | ${item.promotedLiveEvidenceRefs.length} | ${item.gbrainQueries.length} |`
+        ))
+  ];
+}
+
 function cell(value: string): string {
-  return value.replace(/\|/g, "\\|").replace(/\n/g, " ");
+  return value.replace(/\|/g, "\\|").replace(/[`<>]/g, "").replace(/\n/g, " ");
 }
