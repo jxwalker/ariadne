@@ -2,7 +2,7 @@
 
 Project: ariadne
 Status: ready_for_operator_review
-Generated: 2026-05-18T08:36:33.339Z
+Generated: 2026-05-18T15:10:37.335Z
 Next actions: projects/ariadne/control/live-adapter-next-actions.json
 
 ## Summary
@@ -107,7 +107,7 @@ npm run ariadne -- deployment-mutation-plan --project <project> --system <proxmo
 #### Dry Run
 
 ```bash
-Create and audit-pass a target-specific readiness plan first.
+After mutation-readiness-deployment-2026-05-18T14-54-52-671Z passes audit, run npm run ariadne -- mutation-dry-run --project <project> --plan mutation-readiness-deployment-2026-05-18T14-54-52-671Z
 ```
 
 #### Execution
@@ -121,20 +121,14 @@ Post-verification: Verify service state, host health, and affected endpoint beha
 
 #### Blockers
 
-- no accepted operator review exists for live-adapter approval packet
-- no target-specific readiness plan exists
 - no readiness plan passes audit
 - no passed dry-run evidence exists for an audit-passed plan
 - no passed target-guarded execution evidence exists
 
 #### Next Actions
 
-- pending: Prepare, fill, and import operator evidence
-- pending: Record operator review of the approval packet
-- pending: Record an operator approval request
-- blocked: Create a target-specific mutation-readiness plan
-- pending: Fix readiness audit blockers
-- blocked: Run the reviewed dry-run command
+- pending: Resolve existing readiness plan blockers
+- pending: Run the reviewed dry-run command
 - blocked: Capture target-guarded execution evidence
 
 ### hermes-cron

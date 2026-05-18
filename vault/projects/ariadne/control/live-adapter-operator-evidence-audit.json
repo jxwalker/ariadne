@@ -1,16 +1,16 @@
 {
   "schemaVersion": 1,
   "project": "ariadne",
-  "generatedAt": "2026-05-18T08:36:33.357Z",
+  "generatedAt": "2026-05-18T15:10:37.352Z",
   "status": "blocked",
   "mutationApproved": false,
   "summary": {
     "targets": 6,
-    "records": 0,
-    "completeTargets": 0,
+    "records": 1,
+    "completeTargets": 1,
     "incompleteTargets": 0,
-    "missingTargets": 6,
-    "missingSections": 54,
+    "missingTargets": 5,
+    "missingSections": 45,
     "advisoryWarnings": 0
   },
   "targets": [
@@ -46,33 +46,16 @@
     },
     {
       "target": "deployment",
-      "status": "missing_evidence",
-      "recordCount": 0,
-      "missingSections": [
-        "Operator identity and timestamp",
-        "Approval packet review",
-        "Authentication or authorization boundary",
-        "Bounded action statement",
-        "Rollback or disable path",
-        "Post-action verification command",
-        "Dry-run command and safe output",
-        "Target-guarded execution wrapper",
-        "Exact confirm-plan proof"
-      ],
+      "status": "complete",
+      "recordCount": 1,
+      "latestRecordId": "operator-evidence-deployment-2026-05-18T14-56-47-861Z",
+      "latestRecordRef": "projects/ariadne/control/live-adapter-operator-evidence/operator-evidence-deployment-2026-05-18T14-56-47-861Z.json",
+      "missingSections": [],
       "advisoryWarnings": [],
-      "blockers": [
-        "No operator evidence record exists for deployment.",
-        "Missing operator evidence section: Operator identity and timestamp",
-        "Missing operator evidence section: Approval packet review",
-        "Missing operator evidence section: Authentication or authorization boundary",
-        "Missing operator evidence section: Bounded action statement",
-        "Missing operator evidence section: Rollback or disable path",
-        "Missing operator evidence section: Post-action verification command",
-        "Missing operator evidence section: Dry-run command and safe output",
-        "Missing operator evidence section: Target-guarded execution wrapper",
-        "Missing operator evidence section: Exact confirm-plan proof"
-      ],
-      "evidenceRefs": []
+      "blockers": [],
+      "evidenceRefs": [
+        "projects/ariadne/control/live-adapter-operator-evidence/operator-evidence-deployment-2026-05-18T14-56-47-861Z.json"
+      ]
     },
     {
       "target": "hermes-cron",

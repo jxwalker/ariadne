@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "project": "ariadne",
-  "generatedAt": "2026-05-18T08:36:33.354Z",
+  "generatedAt": "2026-05-18T15:10:37.350Z",
   "status": "blocked",
   "summary": {
     "targets": 6,
@@ -10,7 +10,7 @@
     "passedPlans": 0,
     "passedDryRuns": 0,
     "passedExecutions": 0,
-    "acceptedApprovalReviews": 0
+    "acceptedApprovalReviews": 1
   },
   "targets": [
     {
@@ -36,22 +36,22 @@
     {
       "target": "deployment",
       "status": "blocked",
-      "planCount": 0,
+      "planCount": 1,
       "passedPlanCount": 0,
       "passedDryRunCount": 0,
       "passedExecutionCount": 0,
-      "approvalReviewCount": 0,
-      "acceptedApprovalReviewCount": 0,
+      "approvalReviewCount": 1,
+      "acceptedApprovalReviewCount": 1,
+      "latestAcceptedApprovalReviewId": "approval-review-deployment-2026-05-18T14-57-00-710Z",
       "executeCommand": "deployment-mutation-execute",
       "blockers": [
-        "no accepted operator review exists for live-adapter approval packet",
-        "no target-specific readiness plan exists",
         "no readiness plan passes audit",
         "no passed dry-run evidence exists for an audit-passed plan",
         "no passed target-guarded execution evidence exists"
       ],
       "evidenceRefs": [
-        "control/mutation-readiness-audit.json"
+        "control/mutation-readiness-audit.json",
+        "control/live-adapter-approval-reviews/approval-review-deployment-2026-05-18T14-57-00-710Z.json"
       ]
     },
     {

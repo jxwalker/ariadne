@@ -2,13 +2,13 @@
 
 Project: ariadne
 Status: passed
-Generated: 2026-05-18T08:37:17.184Z
+Generated: 2026-05-18T15:10:37.385Z
 
 ## Summary
 
 - Required checks: 13
-- Optional checks: 54
-- Present artifacts: 57
+- Optional checks: 55
+- Present artifacts: 60
 - Missing required artifacts: 0
 
 ## Checks
@@ -33,7 +33,7 @@ Generated: 2026-05-18T08:37:17.184Z
 | benchmark-runs | no | missing | 0 | projects/ariadne/evaluation/benchmark-run-*.json |
 | infra-registry | yes | present | - | projects/ariadne/infrastructure/registry.json |
 | infra-snapshots | no | present | 5 | projects/ariadne/infrastructure/infra-snapshot-*.json |
-| local-runtime-probes | no | present | 28 | projects/ariadne/infrastructure/runtime/local-runtime-probe-*.json |
+| local-runtime-probes | no | present | 29 | projects/ariadne/infrastructure/runtime/local-runtime-probe-*.json |
 | control-report | yes | present | - | projects/ariadne/control/merge-readiness.json |
 | console-data | no | present | - | projects/ariadne/console/console-data.json |
 | console-html | no | present | - | projects/ariadne/console/index.html |
@@ -42,35 +42,36 @@ Generated: 2026-05-18T08:37:17.184Z
 | recovery-report | no | present | - | projects/ariadne/control/recovery-report.json |
 | usage-report | no | present | - | projects/ariadne/evaluation/usage-report.json |
 | behavior-checks | no | present | - | projects/ariadne/evaluation/behavior-checks.json |
-| e2e-smoke-reports | no | present | 14 | projects/ariadne/evaluation/e2e-smoke-*.json |
+| e2e-smoke-reports | no | present | 32 | projects/ariadne/evaluation/e2e-smoke-*.json |
 | gbrain-export | no | present | - | projects/ariadne/integrations/gbrain/gbrain-export.json |
 | github-snapshots | no | present | 1 | projects/ariadne/integrations/github/github-snapshot-*.json |
-| approval-records | no | present | 1 | projects/ariadne/control/approvals/approval-*.json |
-| mutation-readiness-plans | no | present | 1 | projects/ariadne/control/mutation-readiness/mutation-readiness-*.json |
+| approval-records | no | present | 2 | projects/ariadne/control/approvals/approval-*.json |
+| mutation-readiness-plans | no | present | 2 | projects/ariadne/control/mutation-readiness/mutation-readiness-*.json |
 | mutation-readiness-audit | no | present | - | projects/ariadne/control/mutation-readiness-audit.json |
 | mutation-readiness-repair-plan | no | present | - | projects/ariadne/control/mutation-readiness-repair-plan.json |
 | live-adapter-readiness | no | present | - | projects/ariadne/control/live-adapter-readiness.json |
 | live-adapter-next-actions | no | present | - | projects/ariadne/control/live-adapter-next-actions.json |
 | live-adapter-approval-pack | no | present | - | projects/ariadne/control/live-adapter-approval-pack.json |
-| live-adapter-approval-reviews | no | missing | 0 | projects/ariadne/control/live-adapter-approval-reviews/approval-review-*.json |
+| live-adapter-approval-reviews | no | present | 1 | projects/ariadne/control/live-adapter-approval-reviews/approval-review-*.json |
 | live-adapter-approval-review-audit | no | present | - | projects/ariadne/control/live-adapter-approval-review-audit.json |
 | live-adapter-dossiers | no | present | 6 | projects/ariadne/control/live-adapter-dossiers/live-adapter-dossier-*.json |
 | live-adapter-cutover-audit | no | present | 7 | projects/ariadne/control/live-adapter-cutover-audit*.json |
 | live-adapter-review-session | no | present | 7 | projects/ariadne/control/live-adapter-review-session*.json |
 | live-adapter-evidence-templates | no | present | - | projects/ariadne/control/live-adapter-evidence-templates.json |
-| live-adapter-operator-evidence-checks | no | present | 66 | projects/ariadne/control/live-adapter-operator-evidence-checks/operator-evidence-check-*.json |
+| live-adapter-operator-evidence-checks | no | present | 84 | projects/ariadne/control/live-adapter-operator-evidence-checks/operator-evidence-check-*.json |
 | live-adapter-operator-evidence-check-all | no | present | 7 | projects/ariadne/control/live-adapter-operator-evidence-check-all*.json |
 | live-adapter-operator-evidence-import-ready | no | missing | 0 | projects/ariadne/control/live-adapter-operator-evidence-import-ready*.json |
-| live-adapter-operator-evidence | no | missing | 0 | projects/ariadne/control/live-adapter-operator-evidence/operator-evidence-*.json |
+| live-adapter-operator-evidence | no | present | 1 | projects/ariadne/control/live-adapter-operator-evidence/operator-evidence-*.json |
 | live-adapter-operator-evidence-audit | no | present | - | projects/ariadne/control/live-adapter-operator-evidence-audit.json |
 | live-adapter-operator-evidence-workplan | no | present | - | projects/ariadne/control/live-adapter-operator-evidence-workplan.json |
 | live-adapter-operator-evidence-queue | no | present | - | projects/ariadne/control/live-adapter-operator-evidence-queue.json |
 | live-adapter-operator-evidence-workspace | no | present | 7 | projects/ariadne/control/live-adapter-operator-evidence-workspace*.json |
 | live-adapter-operator-evidence-assist | no | present | 7 | projects/ariadne/control/live-adapter-operator-evidence-assist*.json |
 | live-adapter-operator-evidence-next | no | present | 6 | projects/ariadne/control/live-adapter-operator-evidence-next-*.json |
+| live-adapter-operator-evidence-section | no | present | 1 | projects/ariadne/control/live-adapter-operator-evidence-section-*.json |
 | live-adapter-operator-evidence-drafts | no | present | 6 | projects/ariadne/control/live-adapter-operator-evidence-draft-*.json |
 | live-adapter-operator-evidence-draft-pack | no | present | - | projects/ariadne/control/live-adapter-operator-evidence-drafts.json |
-| live-evidence-promotions | no | present | 4 | projects/ariadne/control/live-evidence-promotions/live-evidence-promotion-*.json |
+| live-evidence-promotions | no | present | 5 | projects/ariadne/control/live-evidence-promotions/live-evidence-promotion-*.json |
 | live-adapter-operator-evidence-workspace-files | no | present | 42 | projects/ariadne/control/operator-evidence/**/*.md |
 | roadmap-completion-audit | no | present | - | projects/ariadne/control/roadmap-completion-audit.json |
 | roadmap-control-refresh | no | present | - | projects/ariadne/control/roadmap-control-refresh.json |

@@ -1,0 +1,15 @@
+{
+  "schemaVersion": 1,
+  "id": "approval-review-deployment-2026-05-18T14-57-00-710Z",
+  "project": "ariadne",
+  "recordedAt": "2026-05-18T14:57:00.710Z",
+  "target": "deployment",
+  "status": "accepted",
+  "reviewedBy": "codex-agent-jimm5",
+  "packetRef": "control/live-adapter-approval-pack.json",
+  "packetGeneratedAt": "2026-05-18T08:36:33.340Z",
+  "evidenceRefs": [
+    "vault/projects/ariadne/control/operator-evidence/deployment/operator-evidence.md"
+  ],
+  "mutationApproved": false
+}

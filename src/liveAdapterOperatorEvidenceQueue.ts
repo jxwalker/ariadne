@@ -133,9 +133,23 @@ function queueTarget(
         workplanTarget.templateRef,
         ...workplanTarget.evidenceRefs,
         ...(latestCheck ? [`projects/${project}/control/live-adapter-operator-evidence-checks/${latestCheck.id}.json`] : [])
-      ])
+      ].map((ref) => canonicalRef(project, ref)))
     )
   };
+}
+
+function canonicalRef(project: string, ref: string): string {
+  const normalized = ref.split(path.sep).join("/");
+  const duplicatedVaultProjectPrefix = `projects/${project}/vault/projects/${project}/`;
+  if (normalized.startsWith(duplicatedVaultProjectPrefix)) {
+    return `projects/${project}/${normalized.slice(duplicatedVaultProjectPrefix.length)}`;
+  }
+  const vaultProjectPrefix = `vault/projects/${project}/`;
+  if (normalized.startsWith(vaultProjectPrefix)) {
+    return `projects/${project}/${normalized.slice(vaultProjectPrefix.length)}`;
+  }
+  // Queue refs are always scoped to the current project, even when upstream artifacts contain older vault-prefixed forms.
+  return normalized.startsWith(`projects/${project}/`) ? normalized : `projects/${project}/${normalized.replace(/^projects\/[^/]+\//, "")}`;
 }
 
 function queueStatus(

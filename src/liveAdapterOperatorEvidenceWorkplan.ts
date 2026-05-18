@@ -176,6 +176,14 @@ function isReviewablePromotion(project: string, promotion: unknown): promotion i
 
 function canonicalRef(project: string, ref: string): string {
   const normalized = ref.split(path.sep).join("/");
+  const duplicatedVaultProjectPrefix = `projects/${project}/vault/projects/${project}/`;
+  if (normalized.startsWith(duplicatedVaultProjectPrefix)) {
+    return `projects/${project}/${normalized.slice(duplicatedVaultProjectPrefix.length)}`;
+  }
+  const vaultProjectPrefix = `vault/projects/${project}/`;
+  if (normalized.startsWith(vaultProjectPrefix)) {
+    return `projects/${project}/${normalized.slice(vaultProjectPrefix.length)}`;
+  }
   return normalized.startsWith(`projects/${project}/`) ? normalized : `projects/${project}/${normalized.replace(/^projects\/[^/]+\//, "")}`;
 }
 

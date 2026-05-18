@@ -233,6 +233,9 @@ function vaultRelative(vaultRoot: string, absolutePath: string): string {
 function canonicalEvidenceRef(vaultRoot: string, project: string, ref: string): string {
   if (path.isAbsolute(ref)) return vaultRelative(vaultRoot, ref);
   const normalized = ref.split(path.sep).join("/");
+  const vaultProjectPrefix = `vault/projects/${project}/`;
+  if (normalized.startsWith(vaultProjectPrefix)) return `projects/${project}/${normalized.slice(vaultProjectPrefix.length)}`;
+  if (normalized.startsWith("vault/")) return normalized.slice("vault/".length);
   return normalized.startsWith(`projects/${project}/`) ? normalized : `projects/${project}/${normalized}`;
 }
 

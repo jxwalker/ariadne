@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "project": "ariadne",
-  "generatedAt": "2026-05-18T08:36:33.389Z",
+  "generatedAt": "2026-05-18T15:10:37.382Z",
   "status": "blocked",
   "mutationApproved": false,
   "approvalGranted": false,
@@ -11,14 +11,15 @@
     "roadmapBlocked": 3,
     "artifactStatus": "passed",
     "artifactMissingRequired": 0,
-    "gbrainDocuments": 43,
+    "gbrainDocuments": 44,
     "liveAdapterStatus": "actions_required",
     "operatorEvidenceStatus": "blocked",
     "operatorQueueStatus": "evidence_required",
-    "operatorNextTarget": "deployment",
+    "operatorNextTarget": "github",
     "operatorNextTargetStatus": "needs_evidence",
     "operatorNextTargetMissingSections": 9,
-    "dossiers": 6
+    "dossiers": 6,
+    "consoleRefreshed": true
   },
   "artifacts": {
     "mutationReadinessAudit": "projects/ariadne/control/mutation-readiness-audit.json",
@@ -34,8 +35,9 @@
     "liveAdapterOperatorEvidenceAssist": "projects/ariadne/control/live-adapter-operator-evidence-assist.json",
     "liveAdapterOperatorEvidenceBatchCheck": "projects/ariadne/control/live-adapter-operator-evidence-check-all.json",
     "liveAdapterOperatorEvidenceQueue": "projects/ariadne/control/live-adapter-operator-evidence-queue.json",
-    "liveAdapterOperatorEvidenceNext": "projects/ariadne/control/live-adapter-operator-evidence-next-deployment.json",
-    "liveAdapterOperatorEvidenceDraft": "projects/ariadne/control/live-adapter-operator-evidence-draft-deployment.json",
+    "liveAdapterOperatorEvidenceNext": "projects/ariadne/control/live-adapter-operator-evidence-next-github.json",
+    "liveAdapterOperatorEvidenceSection": "projects/ariadne/control/live-adapter-operator-evidence-section-github.json",
+    "liveAdapterOperatorEvidenceDraft": "projects/ariadne/control/live-adapter-operator-evidence-draft-github.json",
     "liveAdapterOperatorEvidenceDraftPack": "projects/ariadne/control/live-adapter-operator-evidence-drafts.json",
     "liveAdapterReviewSession": "projects/ariadne/control/live-adapter-review-session.json",
     "liveAdapterCutoverAudit": "projects/ariadne/control/live-adapter-cutover-audit.json",
@@ -49,14 +51,17 @@
     ],
     "gbrainExport": "projects/ariadne/integrations/gbrain/gbrain-export.json",
     "artifactChecks": "projects/ariadne/evaluation/artifact-checks.json",
-    "roadmapCompletionAudit": "projects/ariadne/control/roadmap-completion-audit.json"
+    "roadmapCompletionAudit": "projects/ariadne/control/roadmap-completion-audit.json",
+    "consoleHtml": "projects/ariadne/console/index.html",
+    "consoleData": "projects/ariadne/console/console-data.json"
   },
   "commands": {
     "status": "npm run ariadne -- status --project ariadne",
     "e2eSmoke": "npm run ariadne -- e2e-smoke --project ariadne",
     "roadmapControlRefresh": "npm run ariadne -- roadmap-control-refresh --project ariadne",
-    "nextOperatorPacket": "npm run ariadne -- live-adapter-operator-evidence-next --project ariadne --target deployment",
-    "nextOperatorDraft": "npm run ariadne -- live-adapter-operator-evidence-draft --project ariadne --target deployment",
+    "nextOperatorPacket": "npm run ariadne -- live-adapter-operator-evidence-next --project ariadne --target github",
+    "nextOperatorSection": "npm run ariadne -- operator-section --project ariadne --target github",
+    "nextOperatorDraft": "npm run ariadne -- live-adapter-operator-evidence-draft --project ariadne --target github",
     "operatorDraftPack": "npm run ariadne -- live-adapter-operator-evidence-drafts --project ariadne"
   },
   "notes": [

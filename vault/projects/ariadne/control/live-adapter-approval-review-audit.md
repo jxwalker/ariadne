@@ -2,15 +2,15 @@
 
 Project: ariadne
 Status: blocked
-Generated: 2026-05-18T08:36:33.355Z
+Generated: 2026-05-18T15:10:37.351Z
 Approval pack: control/live-adapter-approval-pack.json
 
 ## Summary
 
 - Targets: 6
 - Packet targets: 6
-- Review records: 0
-- Current accepted reviews: 0
+- Review records: 1
+- Current accepted reviews: 1
 - Stale accepted reviews: 0
 - Invalid records: 0
 - Missing evidence refs: 0
@@ -20,7 +20,7 @@ Approval pack: control/live-adapter-approval-pack.json
 | Target | Status | Packet | Reviews | Accepted | Current | Blockers |
 | --- | --- | --- | ---: | ---: | ---: | --- |
 | github | missing_review | yes | 0 | 0 | 0 | no accepted operator review exists |
-| deployment | missing_review | yes | 0 | 0 | 0 | no accepted operator review exists |
+| deployment | current_accepted | yes | 1 | 1 | 1 | none |
 | hermes-cron | missing_review | yes | 0 | 0 | 0 | no accepted operator review exists |
 | openscorpion | missing_review | yes | 0 | 0 | 0 | no accepted operator review exists |
 | gsd2 | missing_review | yes | 0 | 0 | 0 | no accepted operator review exists |

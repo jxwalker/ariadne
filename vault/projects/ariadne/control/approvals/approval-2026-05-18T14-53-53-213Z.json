@@ -1,0 +1,16 @@
+{
+  "schemaVersion": 1,
+  "id": "approval-2026-05-18T14-53-53-213Z",
+  "project": "ariadne",
+  "requestedAt": "2026-05-18T14:53:53.213Z",
+  "requestedBy": "codex-agent-jimm5",
+  "target": "deployment",
+  "action": "Prepare one reviewed deployment adapter readiness plan for Atlas runtime health verification; no live infrastructure mutation is approved by this request",
+  "risk": "high",
+  "status": "requested",
+  "reason": "Move the deployment target from missing-plan to reviewed readiness evidence using current Atlas runtime and local Mac operator-boundary observations before any future mutation is considered.",
+  "rollback": "No live mutation is approved here. If a later approved deployment command changes service state, rollback must use the recorded host-specific rollback command and rerun post-action verification.",
+  "evidenceRefs": [
+    "vault/projects/ariadne/control/live-evidence-promotions/live-evidence-promotion-deployment-2026-05-18T14-53-28-810Z.json"
+  ]
+}

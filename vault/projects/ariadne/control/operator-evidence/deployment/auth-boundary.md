@@ -10,11 +10,11 @@ Record observed authentication, authorization, and account-boundary facts for th
 
 ## Observations
 
-- Operator:
-- Timestamp:
-- Evidence refs:
-- Decision or finding:
-- Notes:
+- Operator: codex-agent-jimm5 under local user james
+- Timestamp: 2026-05-18T14:53:05Z
+- Evidence refs: vault/projects/ariadne/infrastructure/runtime/local-runtime-probe-2026-05-18T14-53-07-316Z.json; vault/projects/ariadne/control/live-evidence-promotions/live-evidence-promotion-deployment-2026-05-18T14-53-28-810Z.json
+- Decision or finding: local command boundary observed on jimm5.local as user james, uid 501, admin group present; Atlas endpoint responded to /v1/models with qwen3.6-35b-a3b-nvfp4-atlas and the Ariadne Atlas canary passed.
+- Notes: Persisted runtime probe redacts the non-loopback Atlas URL. This observation proves read-only runtime reachability and local operator account context only; it does not prove sudo authority on a deployment host and does not approve mutation.
 
 ## Related Commands
 

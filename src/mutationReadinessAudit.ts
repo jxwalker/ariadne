@@ -68,7 +68,7 @@ async function auditPlan(
 ): Promise<MutationReadinessAudit["checks"][number]> {
   const blockers: string[] = [];
   const warnings: string[] = [];
-  const evidenceRefs = [...plan.authEvidenceRefs, ...plan.evidenceRefs];
+  const evidenceRefs = Array.from(new Set([...plan.authEvidenceRefs, ...plan.evidenceRefs]));
 
   if (plan.execute !== false) {
     blockers.push("plan is executable; readiness plans must keep execute=false");

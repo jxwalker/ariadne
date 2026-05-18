@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "project": "ariadne",
-  "checkedAt": "2026-05-18T08:36:30.417Z",
+  "checkedAt": "2026-05-18T15:10:33.424Z",
   "status": "incomplete",
   "mutationApproved": false,
   "approvalGranted": false,
@@ -12,12 +12,12 @@
   "summary": {
     "targets": 6,
     "checks": 6,
-    "completeChecks": 0,
-    "incompleteChecks": 6,
+    "completeChecks": 1,
+    "incompleteChecks": 5,
     "failedChecks": 0,
     "missingSources": 0,
     "missingTemplates": 0,
-    "missingSections": 54
+    "missingSections": 45
   },
   "targets": [
     {
@@ -25,8 +25,8 @@
       "status": "incomplete",
       "sourceFileRef": "projects/ariadne/control/operator-evidence/github/operator-evidence.md",
       "evidenceFileRef": "projects/ariadne/control/operator-evidence/github/operator-evidence.md",
-      "checkRef": "projects/ariadne/control/live-adapter-operator-evidence-checks/operator-evidence-check-github-2026-05-18T08-36-30-304Z.json",
-      "checkMarkdownRef": "projects/ariadne/control/live-adapter-operator-evidence-checks/operator-evidence-check-github-2026-05-18T08-36-30-304Z.md",
+      "checkRef": "projects/ariadne/control/live-adapter-operator-evidence-checks/operator-evidence-check-github-2026-05-18T15-10-33-229Z.json",
+      "checkMarkdownRef": "projects/ariadne/control/live-adapter-operator-evidence-checks/operator-evidence-check-github-2026-05-18T15-10-33-229Z.md",
       "missingSections": 9,
       "missingSectionLabels": [
         "Operator identity and timestamp",
@@ -43,23 +43,13 @@
     },
     {
       "target": "deployment",
-      "status": "incomplete",
+      "status": "complete",
       "sourceFileRef": "projects/ariadne/control/operator-evidence/deployment/operator-evidence.md",
       "evidenceFileRef": "projects/ariadne/control/operator-evidence/deployment/operator-evidence.md",
-      "checkRef": "projects/ariadne/control/live-adapter-operator-evidence-checks/operator-evidence-check-deployment-2026-05-18T08-36-30-305Z.json",
-      "checkMarkdownRef": "projects/ariadne/control/live-adapter-operator-evidence-checks/operator-evidence-check-deployment-2026-05-18T08-36-30-305Z.md",
-      "missingSections": 9,
-      "missingSectionLabels": [
-        "Operator identity and timestamp",
-        "Approval packet review",
-        "Authentication or authorization boundary",
-        "Bounded action statement",
-        "Rollback or disable path",
-        "Post-action verification command",
-        "Dry-run command and safe output",
-        "Target-guarded execution wrapper",
-        "Exact confirm-plan proof"
-      ],
+      "checkRef": "projects/ariadne/control/live-adapter-operator-evidence-checks/operator-evidence-check-deployment-2026-05-18T15-10-33-231Z.json",
+      "checkMarkdownRef": "projects/ariadne/control/live-adapter-operator-evidence-checks/operator-evidence-check-deployment-2026-05-18T15-10-33-231Z.md",
+      "missingSections": 0,
+      "missingSectionLabels": [],
       "sourceRef": "projects/ariadne/control/operator-evidence/deployment/operator-evidence.md"
     },
     {
@@ -67,8 +57,8 @@
       "status": "incomplete",
       "sourceFileRef": "projects/ariadne/control/operator-evidence/hermes-cron/operator-evidence.md",
       "evidenceFileRef": "projects/ariadne/control/operator-evidence/hermes-cron/operator-evidence.md",
-      "checkRef": "projects/ariadne/control/live-adapter-operator-evidence-checks/operator-evidence-check-hermes-cron-2026-05-18T08-36-30-306Z.json",
-      "checkMarkdownRef": "projects/ariadne/control/live-adapter-operator-evidence-checks/operator-evidence-check-hermes-cron-2026-05-18T08-36-30-306Z.md",
+      "checkRef": "projects/ariadne/control/live-adapter-operator-evidence-checks/operator-evidence-check-hermes-cron-2026-05-18T15-10-33-232Z.json",
+      "checkMarkdownRef": "projects/ariadne/control/live-adapter-operator-evidence-checks/operator-evidence-check-hermes-cron-2026-05-18T15-10-33-232Z.md",
       "missingSections": 9,
       "missingSectionLabels": [
         "Operator identity and timestamp",
@@ -88,8 +78,8 @@
       "status": "incomplete",
       "sourceFileRef": "projects/ariadne/control/operator-evidence/openscorpion/operator-evidence.md",
       "evidenceFileRef": "projects/ariadne/control/operator-evidence/openscorpion/operator-evidence.md",
-      "checkRef": "projects/ariadne/control/live-adapter-operator-evidence-checks/operator-evidence-check-openscorpion-2026-05-18T08-36-30-307Z.json",
-      "checkMarkdownRef": "projects/ariadne/control/live-adapter-operator-evidence-checks/operator-evidence-check-openscorpion-2026-05-18T08-36-30-307Z.md",
+      "checkRef": "projects/ariadne/control/live-adapter-operator-evidence-checks/operator-evidence-check-openscorpion-2026-05-18T15-10-33-233Z.json",
+      "checkMarkdownRef": "projects/ariadne/control/live-adapter-operator-evidence-checks/operator-evidence-check-openscorpion-2026-05-18T15-10-33-233Z.md",
       "missingSections": 9,
       "missingSectionLabels": [
         "Operator identity and timestamp",
@@ -109,8 +99,8 @@
       "status": "incomplete",
       "sourceFileRef": "projects/ariadne/control/operator-evidence/gsd2/operator-evidence.md",
       "evidenceFileRef": "projects/ariadne/control/operator-evidence/gsd2/operator-evidence.md",
-      "checkRef": "projects/ariadne/control/live-adapter-operator-evidence-checks/operator-evidence-check-gsd2-2026-05-18T08-36-30-308Z.json",
-      "checkMarkdownRef": "projects/ariadne/control/live-adapter-operator-evidence-checks/operator-evidence-check-gsd2-2026-05-18T08-36-30-308Z.md",
+      "checkRef": "projects/ariadne/control/live-adapter-operator-evidence-checks/operator-evidence-check-gsd2-2026-05-18T15-10-33-234Z.json",
+      "checkMarkdownRef": "projects/ariadne/control/live-adapter-operator-evidence-checks/operator-evidence-check-gsd2-2026-05-18T15-10-33-234Z.md",
       "missingSections": 9,
       "missingSectionLabels": [
         "Operator identity and timestamp",
@@ -130,8 +120,8 @@
       "status": "incomplete",
       "sourceFileRef": "projects/ariadne/control/operator-evidence/notebooklm/operator-evidence.md",
       "evidenceFileRef": "projects/ariadne/control/operator-evidence/notebooklm/operator-evidence.md",
-      "checkRef": "projects/ariadne/control/live-adapter-operator-evidence-checks/operator-evidence-check-notebooklm-2026-05-18T08-36-30-309Z.json",
-      "checkMarkdownRef": "projects/ariadne/control/live-adapter-operator-evidence-checks/operator-evidence-check-notebooklm-2026-05-18T08-36-30-309Z.md",
+      "checkRef": "projects/ariadne/control/live-adapter-operator-evidence-checks/operator-evidence-check-notebooklm-2026-05-18T15-10-33-235Z.json",
+      "checkMarkdownRef": "projects/ariadne/control/live-adapter-operator-evidence-checks/operator-evidence-check-notebooklm-2026-05-18T15-10-33-235Z.md",
       "missingSections": 9,
       "missingSectionLabels": [
         "Operator identity and timestamp",

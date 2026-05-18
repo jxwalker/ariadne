@@ -2,7 +2,7 @@
 
 Project: ariadne
 Status: blocked
-Generated: 2026-05-18T08:36:33.354Z
+Generated: 2026-05-18T15:10:37.350Z
 
 ## Summary
 
@@ -12,14 +12,14 @@ Generated: 2026-05-18T08:36:33.354Z
 - Passed plans: 0
 - Passed dry-runs: 0
 - Passed executions: 0
-- Accepted approval reviews: 0
+- Accepted approval reviews: 1
 
 ## Targets
 
 | Target | Status | Reviews | Plans | Dry-runs | Executions | Execute command | Blockers |
 | --- | --- | ---: | ---: | ---: | ---: | --- | --- |
 | github | blocked | 0/0 | 0/1 | 0 | 0 | github-mutation-execute | no accepted operator review exists for live-adapter approval packet<br>no readiness plan passes audit<br>no passed dry-run evidence exists for an audit-passed plan<br>no passed target-guarded execution evidence exists |
-| deployment | blocked | 0/0 | 0/0 | 0 | 0 | deployment-mutation-execute | no accepted operator review exists for live-adapter approval packet<br>no target-specific readiness plan exists<br>no readiness plan passes audit<br>no passed dry-run evidence exists for an audit-passed plan<br>no passed target-guarded execution evidence exists |
+| deployment | blocked | 1/1 | 0/1 | 0 | 0 | deployment-mutation-execute | no readiness plan passes audit<br>no passed dry-run evidence exists for an audit-passed plan<br>no passed target-guarded execution evidence exists |
 | hermes-cron | blocked | 0/0 | 0/0 | 0 | 0 | hermes-cron-mutation-execute | no accepted operator review exists for live-adapter approval packet<br>no target-specific readiness plan exists<br>no readiness plan passes audit<br>no passed dry-run evidence exists for an audit-passed plan<br>no passed target-guarded execution evidence exists |
 | openscorpion | blocked | 0/0 | 0/0 | 0 | 0 | openscorpion-mutation-execute | no accepted operator review exists for live-adapter approval packet<br>no target-specific readiness plan exists<br>no readiness plan passes audit<br>no passed dry-run evidence exists for an audit-passed plan<br>no passed target-guarded execution evidence exists |
 | gsd2 | blocked | 0/0 | 0/0 | 0 | 0 | gsd2-mutation-execute | no accepted operator review exists for live-adapter approval packet<br>no target-specific readiness plan exists<br>no readiness plan passes audit<br>no passed dry-run evidence exists for an audit-passed plan<br>no passed target-guarded execution evidence exists |

@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
   "project": "ariadne",
-  "checkedAt": "2026-05-18T08:30:56.508Z",
+  "checkedAt": "2026-05-18T15:10:34.679Z",
   "target": "deployment",
-  "status": "incomplete",
+  "status": "complete",
   "mutationApproved": false,
   "approvalGranted": false,
   "source": "workspace",
@@ -13,33 +13,23 @@
   "summary": {
     "targets": 1,
     "checks": 1,
-    "completeChecks": 0,
-    "incompleteChecks": 1,
+    "completeChecks": 1,
+    "incompleteChecks": 0,
     "failedChecks": 0,
     "missingSources": 0,
     "missingTemplates": 0,
-    "missingSections": 9
+    "missingSections": 0
   },
   "targets": [
     {
       "target": "deployment",
-      "status": "incomplete",
+      "status": "complete",
       "sourceFileRef": "projects/ariadne/control/operator-evidence/deployment/operator-evidence.md",
       "evidenceFileRef": "projects/ariadne/control/operator-evidence/deployment/operator-evidence.md",
-      "checkRef": "projects/ariadne/control/live-adapter-operator-evidence-checks/operator-evidence-check-deployment-2026-05-18T08-30-56-506Z.json",
-      "checkMarkdownRef": "projects/ariadne/control/live-adapter-operator-evidence-checks/operator-evidence-check-deployment-2026-05-18T08-30-56-506Z.md",
-      "missingSections": 9,
-      "missingSectionLabels": [
-        "Operator identity and timestamp",
-        "Approval packet review",
-        "Authentication or authorization boundary",
-        "Bounded action statement",
-        "Rollback or disable path",
-        "Post-action verification command",
-        "Dry-run command and safe output",
-        "Target-guarded execution wrapper",
-        "Exact confirm-plan proof"
-      ],
+      "checkRef": "projects/ariadne/control/live-adapter-operator-evidence-checks/operator-evidence-check-deployment-2026-05-18T15-10-34-678Z.json",
+      "checkMarkdownRef": "projects/ariadne/control/live-adapter-operator-evidence-checks/operator-evidence-check-deployment-2026-05-18T15-10-34-678Z.md",
+      "missingSections": 0,
+      "missingSectionLabels": [],
       "sourceRef": "projects/ariadne/control/operator-evidence/deployment/operator-evidence.md"
     }
   ]
