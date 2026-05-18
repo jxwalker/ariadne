@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "project": "ariadne",
-  "generatedAt": "2026-05-18T05:22:24.548Z",
+  "generatedAt": "2026-05-18T06:33:39.676Z",
   "status": "ready_for_operator_review",
   "summary": {
     "targets": 6,
@@ -45,7 +45,7 @@
         "blocked: Capture target-guarded execution evidence"
       ],
       "evidenceRefs": [
-        "control/live-adapter-operator-evidence-workspace.json",
+        "control/live-adapter-operator-evidence-workspace-github.json",
         "control/operator-evidence/github/operator-evidence.md",
         "control/mutation-readiness-audit.json"
       ]
@@ -87,7 +87,7 @@
         "blocked: Capture target-guarded execution evidence"
       ],
       "evidenceRefs": [
-        "control/live-adapter-operator-evidence-workspace.json",
+        "control/live-adapter-operator-evidence-workspace-deployment.json",
         "control/operator-evidence/deployment/operator-evidence.md",
         "control/mutation-readiness-audit.json"
       ]
@@ -129,7 +129,7 @@
         "blocked: Capture target-guarded execution evidence"
       ],
       "evidenceRefs": [
-        "control/live-adapter-operator-evidence-workspace.json",
+        "control/live-adapter-operator-evidence-workspace-hermes-cron.json",
         "control/operator-evidence/hermes-cron/operator-evidence.md",
         "control/mutation-readiness-audit.json"
       ]
@@ -171,7 +171,7 @@
         "blocked: Capture target-guarded execution evidence"
       ],
       "evidenceRefs": [
-        "control/live-adapter-operator-evidence-workspace.json",
+        "control/live-adapter-operator-evidence-workspace-openscorpion.json",
         "control/operator-evidence/openscorpion/operator-evidence.md",
         "control/mutation-readiness-audit.json"
       ]
@@ -213,7 +213,7 @@
         "blocked: Capture target-guarded execution evidence"
       ],
       "evidenceRefs": [
-        "control/live-adapter-operator-evidence-workspace.json",
+        "control/live-adapter-operator-evidence-workspace-gsd2.json",
         "control/operator-evidence/gsd2/operator-evidence.md",
         "control/mutation-readiness-audit.json"
       ]
@@ -255,7 +255,7 @@
         "blocked: Capture target-guarded execution evidence"
       ],
       "evidenceRefs": [
-        "control/live-adapter-operator-evidence-workspace.json",
+        "control/live-adapter-operator-evidence-workspace-notebooklm.json",
         "control/operator-evidence/notebooklm/operator-evidence.md",
         "control/mutation-readiness-audit.json"
       ]

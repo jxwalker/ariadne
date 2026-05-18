@@ -331,6 +331,8 @@ Artifacts:
 - `control/live-adapter-operator-evidence-assist.md`
 - `control/live-adapter-operator-evidence-workspace.json`
 - `control/live-adapter-operator-evidence-workspace.md`
+- `control/live-adapter-operator-evidence-workspace-<target>.json`
+- `control/live-adapter-operator-evidence-workspace-<target>.md`
 - `control/live-adapter-operator-evidence-next-<target>.json`
 - `control/live-adapter-operator-evidence-next-<target>.md`
 - `control/live-evidence-promotions/live-evidence-promotion-<target>-<timestamp>.json`

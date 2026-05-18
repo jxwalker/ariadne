@@ -1,7 +1,7 @@
 # Read-Only Operator Evidence Assist: openscorpion
 
 Project: ariadne
-Generated: 2026-05-18T05:22:23.686Z
+Generated: 2026-05-18T06:33:38.475Z
 Target: openscorpion
 Status: needs_evidence
 Mutation approved: false
@@ -43,7 +43,7 @@ npm run ariadne -- live-adapter-operator-evidence --project ariadne --target ope
 - projects/ariadne/control/live-adapter-approval-pack.json
 - projects/ariadne/control/live-adapter-approval-review-audit.json
 - projects/ariadne/control/mutation-readiness-audit.json
-- projects/ariadne/control/live-adapter-operator-evidence-workspace.json
+- projects/ariadne/control/live-adapter-operator-evidence-workspace-openscorpion.json
 - projects/ariadne/control/operator-evidence/openscorpion/operator-evidence.md
 - projects/ariadne/control/live-adapter-operator-evidence-audit.json
 

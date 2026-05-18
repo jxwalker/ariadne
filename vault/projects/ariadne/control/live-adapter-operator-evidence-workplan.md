@@ -2,7 +2,7 @@
 
 Project: ariadne
 Status: evidence_required
-Generated: 2026-05-18T05:22:24.478Z
+Generated: 2026-05-18T06:33:39.608Z
 Mutation approved: false
 
 ## Rule
@@ -109,7 +109,7 @@ npm run ariadne -- live-adapter-approval-review --project ariadne --target githu
 - projects/ariadne/control/live-adapter-approval-pack.json
 - projects/ariadne/control/live-adapter-approval-review-audit.json
 - projects/ariadne/control/mutation-readiness-audit.json
-- projects/ariadne/control/live-adapter-operator-evidence-workspace.json
+- projects/ariadne/control/live-adapter-operator-evidence-workspace-github.json
 - projects/ariadne/control/operator-evidence/github/operator-evidence.md
 - projects/ariadne/control/live-adapter-operator-evidence-audit.json
 
@@ -194,7 +194,7 @@ npm run ariadne -- live-adapter-approval-review --project ariadne --target deplo
 - projects/ariadne/control/live-adapter-approval-pack.json
 - projects/ariadne/control/live-adapter-approval-review-audit.json
 - projects/ariadne/control/mutation-readiness-audit.json
-- projects/ariadne/control/live-adapter-operator-evidence-workspace.json
+- projects/ariadne/control/live-adapter-operator-evidence-workspace-deployment.json
 - projects/ariadne/control/operator-evidence/deployment/operator-evidence.md
 - projects/ariadne/control/live-adapter-operator-evidence-audit.json
 - projects/ariadne/control/live-evidence-promotions/live-evidence-promotion-deployment-2026-05-17T23-37-04-509Z.json
@@ -280,7 +280,7 @@ npm run ariadne -- live-adapter-approval-review --project ariadne --target herme
 - projects/ariadne/control/live-adapter-approval-pack.json
 - projects/ariadne/control/live-adapter-approval-review-audit.json
 - projects/ariadne/control/mutation-readiness-audit.json
-- projects/ariadne/control/live-adapter-operator-evidence-workspace.json
+- projects/ariadne/control/live-adapter-operator-evidence-workspace-hermes-cron.json
 - projects/ariadne/control/operator-evidence/hermes-cron/operator-evidence.md
 - projects/ariadne/control/live-adapter-operator-evidence-audit.json
 
@@ -365,7 +365,7 @@ npm run ariadne -- live-adapter-approval-review --project ariadne --target opens
 - projects/ariadne/control/live-adapter-approval-pack.json
 - projects/ariadne/control/live-adapter-approval-review-audit.json
 - projects/ariadne/control/mutation-readiness-audit.json
-- projects/ariadne/control/live-adapter-operator-evidence-workspace.json
+- projects/ariadne/control/live-adapter-operator-evidence-workspace-openscorpion.json
 - projects/ariadne/control/operator-evidence/openscorpion/operator-evidence.md
 - projects/ariadne/control/live-adapter-operator-evidence-audit.json
 
@@ -450,7 +450,7 @@ npm run ariadne -- live-adapter-approval-review --project ariadne --target gsd2 
 - projects/ariadne/control/live-adapter-approval-pack.json
 - projects/ariadne/control/live-adapter-approval-review-audit.json
 - projects/ariadne/control/mutation-readiness-audit.json
-- projects/ariadne/control/live-adapter-operator-evidence-workspace.json
+- projects/ariadne/control/live-adapter-operator-evidence-workspace-gsd2.json
 - projects/ariadne/control/operator-evidence/gsd2/operator-evidence.md
 - projects/ariadne/control/live-adapter-operator-evidence-audit.json
 
@@ -535,6 +535,6 @@ npm run ariadne -- live-adapter-approval-review --project ariadne --target noteb
 - projects/ariadne/control/live-adapter-approval-pack.json
 - projects/ariadne/control/live-adapter-approval-review-audit.json
 - projects/ariadne/control/mutation-readiness-audit.json
-- projects/ariadne/control/live-adapter-operator-evidence-workspace.json
+- projects/ariadne/control/live-adapter-operator-evidence-workspace-notebooklm.json
 - projects/ariadne/control/operator-evidence/notebooklm/operator-evidence.md
 - projects/ariadne/control/live-adapter-operator-evidence-audit.json

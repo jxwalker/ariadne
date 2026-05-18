@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "project": "ariadne",
-  "generatedAt": "2026-05-18T05:22:24.553Z",
+  "generatedAt": "2026-05-18T06:33:39.682Z",
   "target": "deployment",
   "status": "ready_for_operator_review",
   "readinessRef": "projects/ariadne/control/live-adapter-readiness.json",
@@ -48,7 +48,7 @@
       "rationale": "The target has no imported operator evidence record. Refresh the target packet, fill the generated workspace file with real observations, and import it before packet review or cutover.",
       "command": "npm run ariadne -- live-adapter-operator-evidence-next --project <project> --target deployment",
       "evidenceRefs": [
-        "control/live-adapter-operator-evidence-workspace.json",
+        "control/live-adapter-operator-evidence-workspace-deployment.json",
         "control/operator-evidence/deployment/operator-evidence.md"
       ]
     },
@@ -150,7 +150,7 @@
       "blocked: Capture target-guarded execution evidence"
     ],
     "evidenceRefs": [
-      "control/live-adapter-operator-evidence-workspace.json",
+      "control/live-adapter-operator-evidence-workspace-deployment.json",
       "control/operator-evidence/deployment/operator-evidence.md",
       "control/mutation-readiness-audit.json"
     ]
@@ -191,7 +191,7 @@
     "projects/ariadne/control/live-adapter-approval-pack.json",
     "projects/ariadne/control/live-adapter-approval-review-audit.json",
     "projects/ariadne/control/mutation-readiness-audit.json",
-    "projects/ariadne/control/live-adapter-operator-evidence-workspace.json",
+    "projects/ariadne/control/live-adapter-operator-evidence-workspace-deployment.json",
     "projects/ariadne/control/operator-evidence/deployment/operator-evidence.md"
   ]
 }

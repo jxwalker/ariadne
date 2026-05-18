@@ -964,7 +964,8 @@ describe("roadmap adapters", () => {
     expect(githubActions?.actions[0]?.command).toBe(
       "npm run ariadne -- live-adapter-operator-evidence-next --project <project> --target github"
     );
-    expect(githubActions?.actions[0]?.evidenceRefs).toContain("control/live-adapter-operator-evidence-workspace.json");
+    expect(githubActions?.actions[0]?.evidenceRefs).toContain("control/live-adapter-operator-evidence-workspace-github.json");
+    expect(githubActions?.actions[0]?.evidenceRefs).not.toContain("control/live-adapter-operator-evidence-workspace.json");
     expect(githubActions?.actions.some((action) => action.id === "github-replace-placeholder" && action.status === "ready")).toBe(true);
     expect(deploymentActions?.actions[0]?.id).toBe("deployment-operator-evidence");
     expect(deploymentActions?.actions[0]?.command).toBe(
@@ -995,6 +996,8 @@ describe("roadmap adapters", () => {
     expect(deploymentRepair?.approvalCommand).toContain("--target deployment");
     expect(hermesRepair?.status).toBe("missing_plan");
     expect(hermesRepair?.regenerationCommand).toContain("hermes-cron-mutation-plan");
+    expect(hermesRepair?.evidenceRefs).toContain("control/live-adapter-operator-evidence-workspace-hermes-cron.json");
+    expect(hermesRepair?.evidenceRefs).not.toContain("control/live-adapter-operator-evidence-workspace.json");
     const repairPlanMarkdown = await fs.readFile(repairPlan.markdownPath, "utf8");
     expect(repairPlanMarkdown).toContain("## Target Commands");
     expect(repairPlanMarkdown).toContain("#### Approval Request");
