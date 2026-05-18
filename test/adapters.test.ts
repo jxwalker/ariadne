@@ -2014,6 +2014,22 @@ describe("roadmap adapters", () => {
     expect(e2eSmokeMarkdown).toContain("Roadmap control refresh");
     expect(e2eSmokeMarkdown).toContain("mutationAllowed=false");
     expect(e2eSmokeMarkdown).toContain("This command does not create approvals");
+    const defaultStatusOutput = execFileSync(tsx, ["src/ariadne.ts", "status", "--project", "ariadne", "--vault", vaultRoot], {
+      cwd: process.cwd(),
+      encoding: "utf8"
+    });
+    expect(defaultStatusOutput).toContain("Operator handoff: npm run ariadne -- operator-next");
+    expect(defaultStatusOutput).toContain("Operator section: npm run ariadne -- operator-section");
+    expect(defaultStatusOutput).not.toContain("Operator packet:");
+    expect(defaultStatusOutput).toContain("Operator expert commands hidden");
+    const expertStatusOutput = execFileSync(
+      tsx,
+      ["src/ariadne.ts", "status", "--project", "ariadne", "--vault", vaultRoot, "--expert"],
+      { cwd: process.cwd(), encoding: "utf8" }
+    );
+    expect(expertStatusOutput).toContain("Operator handoff: npm run ariadne -- operator-next");
+    expect(expertStatusOutput).toContain("Operator section: npm run ariadne -- operator-section");
+    expect(expertStatusOutput).toContain("Operator expert command: npm run ariadne -- live-adapter-operator-evidence-next");
     const status = await projectStatus(vaultRoot, "ariadne");
     expect(status.readinessStatus).toBe("review_required");
     expect(status.roadmapCompletionStatus).toBe("blocked");
