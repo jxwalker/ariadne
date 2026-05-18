@@ -1559,6 +1559,16 @@ describe("roadmap adapters", () => {
     expect(nextPacketOperatorCommands).toContain("live-adapter-operator-evidence-check");
     expect(nextPacketOperatorCommands).not.toContain("live-adapter-operator-evidence --project");
     expect(nextPacketImportCommand).toContain("live-adapter-operator-evidence");
+    const reusedPreflightPacket = await generateLiveAdapterOperatorEvidenceNextPacket({
+      project: "ariadne",
+      vaultRoot,
+      target: "deployment",
+      preflightBatch: workspaceBatchPreflight
+    });
+    expect(reusedPreflightPacket.packet.refs.checkBatch).toBe(
+      "projects/ariadne/control/live-adapter-operator-evidence-check-all.json"
+    );
+    expect(reusedPreflightPacket.packet.refs.queue).toBe("projects/ariadne/control/live-adapter-operator-evidence-queue.json");
     const explicitHermesPacket = await generateLiveAdapterOperatorEvidenceNextPacket({
       project: "ariadne",
       vaultRoot,
@@ -1568,6 +1578,12 @@ describe("roadmap adapters", () => {
     expect(explicitHermesPacket.packet.selectedBy).toBe("explicit");
     expect(explicitHermesPacket.packet.refs.reviewSession).toContain("live-adapter-review-session-hermes-cron.json");
     expect(explicitHermesPacket.packet.refs.cutoverAudit).toContain("live-adapter-cutover-audit-hermes-cron.json");
+    expect(explicitHermesPacket.packet.verificationWorksheet[0]?.existingEvidenceRefs).toContain(
+      "projects/ariadne/control/live-adapter-operator-evidence-workspace-hermes-cron.json"
+    );
+    expect(explicitHermesPacket.packet.verificationWorksheet[0]?.existingEvidenceRefs).not.toContain(
+      "projects/ariadne/control/live-adapter-operator-evidence-workspace.json"
+    );
     const gsd2Workspace = operatorEvidenceWorkspace.workspace.targets.find((target) => target.target === "gsd2");
     expect(gsd2Workspace?.evidenceFileRef).toContain("control/operator-evidence/gsd2/operator-evidence.md");
     const gsd2WorkspaceFile = path.join(vaultRoot, gsd2Workspace?.evidenceFileRef ?? "");

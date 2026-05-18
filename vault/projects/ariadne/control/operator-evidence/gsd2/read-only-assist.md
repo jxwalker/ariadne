@@ -1,7 +1,7 @@
 # Read-Only Operator Evidence Assist: gsd2
 
 Project: ariadne
-Generated: 2026-05-18T03:37:59.305Z
+Generated: 2026-05-18T04:58:55.363Z
 Target: gsd2
 Status: needs_evidence
 Mutation approved: false
@@ -19,8 +19,17 @@ This file is generated from existing Ariadne artifacts. It is not operator evide
 
 ## Commands
 
+These commands are safe to run during assist review because they only validate the current workspace file.
+
 ```bash
 npm run ariadne -- live-adapter-operator-evidence-check --project ariadne --target gsd2 --from vault/projects/ariadne/control/operator-evidence/gsd2/operator-evidence.md
+```
+
+## Import Command After Human Verification
+
+Run this only after a human operator has filled operator-evidence.md with verified observations and the check command reports complete evidence.
+
+```bash
 npm run ariadne -- live-adapter-operator-evidence --project ariadne --target gsd2 --from vault/projects/ariadne/control/operator-evidence/gsd2/operator-evidence.md --by <operator>
 ```
 
@@ -41,6 +50,20 @@ npm run ariadne -- live-adapter-operator-evidence --project ariadne --target gsd
 ## Promoted Live Evidence
 
 - none
+
+## Human Verification Worksheet
+
+| Missing section | Human verification prompt | Existing refs | Promoted live evidence | GBrain queries |
+| --- | --- | ---: | ---: | ---: |
+| Operator identity and timestamp | Human operator must verify gsd2 Operator identity and timestamp from source systems or cited Ariadne refs before recording it in operator-evidence.md. | 11 | 0 | 3 |
+| Approval packet review | Human operator must verify gsd2 Approval packet review from source systems or cited Ariadne refs before recording it in operator-evidence.md. | 11 | 0 | 3 |
+| Authentication or authorization boundary | Human operator must verify gsd2 Authentication or authorization boundary from source systems or cited Ariadne refs before recording it in operator-evidence.md. | 11 | 0 | 3 |
+| Bounded action statement | Human operator must verify gsd2 Bounded action statement from source systems or cited Ariadne refs before recording it in operator-evidence.md. | 11 | 0 | 3 |
+| Rollback or disable path | Human operator must verify gsd2 Rollback or disable path from source systems or cited Ariadne refs before recording it in operator-evidence.md. | 11 | 0 | 3 |
+| Post-action verification command | Human operator must verify gsd2 Post-action verification command from source systems or cited Ariadne refs before recording it in operator-evidence.md. | 11 | 0 | 3 |
+| Dry-run command and safe output | Human operator must verify gsd2 Dry-run command and safe output from source systems or cited Ariadne refs before recording it in operator-evidence.md. | 11 | 0 | 3 |
+| Target-guarded execution wrapper | Human operator must verify gsd2 Target-guarded execution wrapper from source systems or cited Ariadne refs before recording it in operator-evidence.md. | 11 | 0 | 3 |
+| Exact confirm-plan proof | Human operator must verify gsd2 Exact confirm-plan proof from source systems or cited Ariadne refs before recording it in operator-evidence.md. | 11 | 0 | 3 |
 
 ## Support File Refs
 
@@ -103,4 +126,4 @@ npm run ariadne -- live-adapter-operator-evidence --project ariadne --target gsd
 - Open read-only-assist.md and the listed support refs.
 - Verify each relevant fact manually before copying it into operator-evidence.md.
 - Fill the Operator and Review timestamp fields with real operator values.
-- Run the check command, then import only when the check is complete.
+- Run the check command, then import only after the check is complete and the operator evidence file contains verified human observations.

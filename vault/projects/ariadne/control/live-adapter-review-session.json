@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "project": "ariadne",
-  "generatedAt": "2026-05-18T03:38:00.182Z",
+  "generatedAt": "2026-05-18T04:58:56.289Z",
   "status": "operator_review_required",
   "mutationApproved": false,
   "operatorDecisionRequired": true,
@@ -50,13 +50,13 @@
       "operatorEvidenceFileRef": "projects/ariadne/control/operator-evidence/github/operator-evidence.md",
       "operatorEvidenceCheckCommand": "npm run ariadne -- live-adapter-operator-evidence-check --project ariadne --target github --from vault/projects/ariadne/control/operator-evidence/github/operator-evidence.md",
       "operatorEvidenceImportCommand": "npm run ariadne -- live-adapter-operator-evidence --project ariadne --target github --from vault/projects/ariadne/control/operator-evidence/github/operator-evidence.md --by <operator>",
-      "latestOperatorEvidenceCheckRef": "projects/ariadne/control/live-adapter-operator-evidence-checks/operator-evidence-check-github-2026-05-18T03-37-59-420Z.json",
+      "latestOperatorEvidenceCheckRef": "projects/ariadne/control/live-adapter-operator-evidence-checks/operator-evidence-check-github-2026-05-18T04-58-55-489Z.json",
       "operatorEvidenceAssistFileRef": "projects/ariadne/control/operator-evidence/github/read-only-assist.md",
       "operatorEvidenceAssistNextSteps": [
         "Open read-only-assist.md and the listed support refs.",
         "Verify each relevant fact manually before copying it into operator-evidence.md.",
         "Fill the Operator and Review timestamp fields with real operator values.",
-        "Run the check command, then import only when the check is complete."
+        "Run the check command, then import only after the check is complete and the operator evidence file contains verified human observations."
       ],
       "missingOperatorEvidenceSections": [
         "Operator identity and timestamp",
@@ -142,13 +142,13 @@
       "operatorEvidenceFileRef": "projects/ariadne/control/operator-evidence/deployment/operator-evidence.md",
       "operatorEvidenceCheckCommand": "npm run ariadne -- live-adapter-operator-evidence-check --project ariadne --target deployment --from vault/projects/ariadne/control/operator-evidence/deployment/operator-evidence.md",
       "operatorEvidenceImportCommand": "npm run ariadne -- live-adapter-operator-evidence --project ariadne --target deployment --from vault/projects/ariadne/control/operator-evidence/deployment/operator-evidence.md --by <operator>",
-      "latestOperatorEvidenceCheckRef": "projects/ariadne/control/live-adapter-operator-evidence-checks/operator-evidence-check-deployment-2026-05-18T03-37-59-992Z.json",
+      "latestOperatorEvidenceCheckRef": "projects/ariadne/control/live-adapter-operator-evidence-checks/operator-evidence-check-deployment-2026-05-18T04-58-55-490Z.json",
       "operatorEvidenceAssistFileRef": "projects/ariadne/control/operator-evidence/deployment/read-only-assist.md",
       "operatorEvidenceAssistNextSteps": [
         "Open read-only-assist.md and the listed support refs.",
         "Verify each relevant fact manually before copying it into operator-evidence.md.",
         "Fill the Operator and Review timestamp fields with real operator values.",
-        "Run the check command, then import only when the check is complete."
+        "Run the check command, then import only after the check is complete and the operator evidence file contains verified human observations."
       ],
       "missingOperatorEvidenceSections": [
         "Operator identity and timestamp",
@@ -235,13 +235,13 @@
       "operatorEvidenceFileRef": "projects/ariadne/control/operator-evidence/hermes-cron/operator-evidence.md",
       "operatorEvidenceCheckCommand": "npm run ariadne -- live-adapter-operator-evidence-check --project ariadne --target hermes-cron --from vault/projects/ariadne/control/operator-evidence/hermes-cron/operator-evidence.md",
       "operatorEvidenceImportCommand": "npm run ariadne -- live-adapter-operator-evidence --project ariadne --target hermes-cron --from vault/projects/ariadne/control/operator-evidence/hermes-cron/operator-evidence.md --by <operator>",
-      "latestOperatorEvidenceCheckRef": "projects/ariadne/control/live-adapter-operator-evidence-checks/operator-evidence-check-hermes-cron-2026-05-18T03-37-59-423Z.json",
+      "latestOperatorEvidenceCheckRef": "projects/ariadne/control/live-adapter-operator-evidence-checks/operator-evidence-check-hermes-cron-2026-05-18T04-58-55-491Z.json",
       "operatorEvidenceAssistFileRef": "projects/ariadne/control/operator-evidence/hermes-cron/read-only-assist.md",
       "operatorEvidenceAssistNextSteps": [
         "Open read-only-assist.md and the listed support refs.",
         "Verify each relevant fact manually before copying it into operator-evidence.md.",
         "Fill the Operator and Review timestamp fields with real operator values.",
-        "Run the check command, then import only when the check is complete."
+        "Run the check command, then import only after the check is complete and the operator evidence file contains verified human observations."
       ],
       "missingOperatorEvidenceSections": [
         "Operator identity and timestamp",
@@ -328,13 +328,13 @@
       "operatorEvidenceFileRef": "projects/ariadne/control/operator-evidence/openscorpion/operator-evidence.md",
       "operatorEvidenceCheckCommand": "npm run ariadne -- live-adapter-operator-evidence-check --project ariadne --target openscorpion --from vault/projects/ariadne/control/operator-evidence/openscorpion/operator-evidence.md",
       "operatorEvidenceImportCommand": "npm run ariadne -- live-adapter-operator-evidence --project ariadne --target openscorpion --from vault/projects/ariadne/control/operator-evidence/openscorpion/operator-evidence.md --by <operator>",
-      "latestOperatorEvidenceCheckRef": "projects/ariadne/control/live-adapter-operator-evidence-checks/operator-evidence-check-openscorpion-2026-05-18T03-37-59-424Z.json",
+      "latestOperatorEvidenceCheckRef": "projects/ariadne/control/live-adapter-operator-evidence-checks/operator-evidence-check-openscorpion-2026-05-18T04-58-55-491Z.json",
       "operatorEvidenceAssistFileRef": "projects/ariadne/control/operator-evidence/openscorpion/read-only-assist.md",
       "operatorEvidenceAssistNextSteps": [
         "Open read-only-assist.md and the listed support refs.",
         "Verify each relevant fact manually before copying it into operator-evidence.md.",
         "Fill the Operator and Review timestamp fields with real operator values.",
-        "Run the check command, then import only when the check is complete."
+        "Run the check command, then import only after the check is complete and the operator evidence file contains verified human observations."
       ],
       "missingOperatorEvidenceSections": [
         "Operator identity and timestamp",
@@ -421,13 +421,13 @@
       "operatorEvidenceFileRef": "projects/ariadne/control/operator-evidence/gsd2/operator-evidence.md",
       "operatorEvidenceCheckCommand": "npm run ariadne -- live-adapter-operator-evidence-check --project ariadne --target gsd2 --from vault/projects/ariadne/control/operator-evidence/gsd2/operator-evidence.md",
       "operatorEvidenceImportCommand": "npm run ariadne -- live-adapter-operator-evidence --project ariadne --target gsd2 --from vault/projects/ariadne/control/operator-evidence/gsd2/operator-evidence.md --by <operator>",
-      "latestOperatorEvidenceCheckRef": "projects/ariadne/control/live-adapter-operator-evidence-checks/operator-evidence-check-gsd2-2026-05-18T03-37-59-425Z.json",
+      "latestOperatorEvidenceCheckRef": "projects/ariadne/control/live-adapter-operator-evidence-checks/operator-evidence-check-gsd2-2026-05-18T04-58-55-492Z.json",
       "operatorEvidenceAssistFileRef": "projects/ariadne/control/operator-evidence/gsd2/read-only-assist.md",
       "operatorEvidenceAssistNextSteps": [
         "Open read-only-assist.md and the listed support refs.",
         "Verify each relevant fact manually before copying it into operator-evidence.md.",
         "Fill the Operator and Review timestamp fields with real operator values.",
-        "Run the check command, then import only when the check is complete."
+        "Run the check command, then import only after the check is complete and the operator evidence file contains verified human observations."
       ],
       "missingOperatorEvidenceSections": [
         "Operator identity and timestamp",
@@ -514,13 +514,13 @@
       "operatorEvidenceFileRef": "projects/ariadne/control/operator-evidence/notebooklm/operator-evidence.md",
       "operatorEvidenceCheckCommand": "npm run ariadne -- live-adapter-operator-evidence-check --project ariadne --target notebooklm --from vault/projects/ariadne/control/operator-evidence/notebooklm/operator-evidence.md",
       "operatorEvidenceImportCommand": "npm run ariadne -- live-adapter-operator-evidence --project ariadne --target notebooklm --from vault/projects/ariadne/control/operator-evidence/notebooklm/operator-evidence.md --by <operator>",
-      "latestOperatorEvidenceCheckRef": "projects/ariadne/control/live-adapter-operator-evidence-checks/operator-evidence-check-notebooklm-2026-05-18T03-37-59-425Z.json",
+      "latestOperatorEvidenceCheckRef": "projects/ariadne/control/live-adapter-operator-evidence-checks/operator-evidence-check-notebooklm-2026-05-18T04-58-55-493Z.json",
       "operatorEvidenceAssistFileRef": "projects/ariadne/control/operator-evidence/notebooklm/read-only-assist.md",
       "operatorEvidenceAssistNextSteps": [
         "Open read-only-assist.md and the listed support refs.",
         "Verify each relevant fact manually before copying it into operator-evidence.md.",
         "Fill the Operator and Review timestamp fields with real operator values.",
-        "Run the check command, then import only when the check is complete."
+        "Run the check command, then import only after the check is complete and the operator evidence file contains verified human observations."
       ],
       "missingOperatorEvidenceSections": [
         "Operator identity and timestamp",

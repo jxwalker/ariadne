@@ -3,7 +3,7 @@
 Project: ariadne
 Target: deployment
 Status: operator_review_required
-Generated: 2026-05-18T03:38:00.128Z
+Generated: 2026-05-18T04:58:56.237Z
 Mutation approved: false
 Operator decision required: true
 
@@ -67,7 +67,7 @@ Missing operator evidence sections:
 - Target-guarded execution wrapper
 - Exact confirm-plan proof
 
-Latest preflight: projects/ariadne/control/live-adapter-operator-evidence-checks/operator-evidence-check-deployment-2026-05-18T03-37-59-992Z.json
+Latest preflight: projects/ariadne/control/live-adapter-operator-evidence-checks/operator-evidence-check-deployment-2026-05-18T04-58-55-490Z.json
 
 Read-only assist: projects/ariadne/control/operator-evidence/deployment/read-only-assist.md
 
@@ -75,7 +75,7 @@ Assist next steps:
 - Open read-only-assist.md and the listed support refs.
 - Verify each relevant fact manually before copying it into operator-evidence.md.
 - Fill the Operator and Review timestamp fields with real operator values.
-- Run the check command, then import only when the check is complete.
+- Run the check command, then import only after the check is complete and the operator evidence file contains verified human observations.
 
 #### Review Command
 

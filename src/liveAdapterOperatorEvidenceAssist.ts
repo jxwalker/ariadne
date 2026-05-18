@@ -38,7 +38,12 @@ export async function generateLiveAdapterOperatorEvidenceAssist(input: {
   for (const workspaceTarget of workspace.targets) {
     const workplanTarget = workplanByTarget.get(workspaceTarget.target);
     if (!workplanTarget) throw new Error(`Missing workplan target for ${workspaceTarget.target}.`);
-    const existingEvidenceRefs = await existingRefs(input.vaultRoot, project, workplanTarget.evidenceRefs);
+    const existingEvidenceRefs = targetScopedExistingRefs(
+      project,
+      await existingRefs(input.vaultRoot, project, workplanTarget.evidenceRefs),
+      path.relative(input.vaultRoot, workspaceResult.jsonPath),
+      input.target
+    );
     const promotedLiveEvidence = await promotedLiveEvidenceSummaries(input.vaultRoot, project, existingEvidenceRefs);
     const assistFileRef = `projects/${project}/control/operator-evidence/${workspaceTarget.target}/read-only-assist.md`;
     const supportFileRefs = Array.from(new Set([...workspaceTarget.supportFileRefs, assistFileRef]));
@@ -140,6 +145,18 @@ async function existingRefs(vaultRoot: string, project: string, refs: string[]):
     }
   }
   return Array.from(new Set(existing));
+}
+
+function targetScopedExistingRefs(
+  project: string,
+  refs: string[],
+  workspaceRef: string,
+  target?: LiveAdapterTarget
+): string[] {
+  if (!target) return refs;
+  const aggregateWorkspaceRef = `projects/${project}/control/live-adapter-operator-evidence-workspace.json`;
+  const scopedWorkspaceRef = workspaceRef.split(path.sep).join("/");
+  return Array.from(new Set(refs.map((ref) => (ref === aggregateWorkspaceRef ? scopedWorkspaceRef : ref))));
 }
 
 async function promotedLiveEvidenceSummaries(
