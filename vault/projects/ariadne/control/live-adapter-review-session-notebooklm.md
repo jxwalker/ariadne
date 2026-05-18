@@ -3,7 +3,7 @@
 Project: ariadne
 Target: notebooklm
 Status: operator_review_required
-Generated: 2026-05-18T06:16:30.649Z
+Generated: 2026-05-18T08:09:24.936Z
 Mutation approved: false
 Operator decision required: true
 
@@ -67,7 +67,7 @@ Missing operator evidence sections:
 - Target-guarded execution wrapper
 - Exact confirm-plan proof
 
-Latest preflight: projects/ariadne/control/live-adapter-operator-evidence-checks/operator-evidence-check-notebooklm-2026-05-18T05-22-23-804Z.json
+Latest preflight: projects/ariadne/control/live-adapter-operator-evidence-checks/operator-evidence-check-notebooklm-2026-05-18T08-09-24-813Z.json
 
 Read-only assist: projects/ariadne/control/operator-evidence/notebooklm/read-only-assist.md
 

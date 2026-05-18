@@ -3,7 +3,7 @@
 Project: ariadne
 Target: openscorpion
 Status: blocked
-Generated: 2026-05-18T05:43:29.900Z
+Generated: 2026-05-18T08:09:24.082Z
 Mutation allowed: false
 
 This audit does not enable or execute live adapters. It verifies whether a target has enough current evidence to replace placeholder commands with a target-specific live adapter implementation.

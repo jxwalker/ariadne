@@ -1,7 +1,7 @@
 # Live Adapter Operator Evidence Next Packet: hermes-cron
 
 Project: ariadne
-Generated: 2026-05-18T05:43:29.465Z
+Generated: 2026-05-18T08:09:23.652Z
 Target: hermes-cron
 Selected by: explicit
 Status: operator_action_required
@@ -78,6 +78,70 @@ npm run ariadne -- live-adapter-operator-evidence --project ariadne --target her
 | Dry-run command and safe output | Human operator must verify hermes-cron Dry-run command and safe output from source systems or cited Ariadne refs before recording it in operator-evidence.md. | 11 | 0 | 3 |
 | Target-guarded execution wrapper | Human operator must verify hermes-cron Target-guarded execution wrapper from source systems or cited Ariadne refs before recording it in operator-evidence.md. | 11 | 0 | 3 |
 | Exact confirm-plan proof | Human operator must verify hermes-cron Exact confirm-plan proof from source systems or cited Ariadne refs before recording it in operator-evidence.md. | 11 | 0 | 3 |
+
+## Human Verification Reference Details
+
+### Common References
+
+Existing refs:
+- projects/ariadne/control/live-adapter-evidence-templates/live-adapter-evidence-template-hermes-cron.md
+- projects/ariadne/control/live-adapter-dossiers/live-adapter-dossier-hermes-cron.json
+- projects/ariadne/control/mutation-readiness-repair-plan.json
+- projects/ariadne/control/live-adapter-readiness.json
+- projects/ariadne/control/live-adapter-next-actions.json
+- projects/ariadne/control/live-adapter-approval-pack.json
+- projects/ariadne/control/live-adapter-approval-review-audit.json
+- projects/ariadne/control/mutation-readiness-audit.json
+- projects/ariadne/control/live-adapter-operator-evidence-workspace-hermes-cron.json
+- projects/ariadne/control/operator-evidence/hermes-cron/operator-evidence.md
+- projects/ariadne/control/live-adapter-operator-evidence-audit.json
+
+Promoted live evidence refs:
+- none
+
+GBrain queries:
+- Find prior Ariadne decisions and evidence for the hermes-cron live adapter.
+- List risks, rollback requirements, and stale assumptions for hermes-cron approval.
+- Summarize operator-review evidence still missing before hermes-cron mutation readiness.
+
+### Section-Specific Prompts
+
+#### Operator identity and timestamp
+
+Prompt: Human operator must verify hermes-cron Operator identity and timestamp from source systems or cited Ariadne refs before recording it in operator-evidence.md.
+
+#### Approval packet review
+
+Prompt: Human operator must verify hermes-cron Approval packet review from source systems or cited Ariadne refs before recording it in operator-evidence.md.
+
+#### Authentication or authorization boundary
+
+Prompt: Human operator must verify hermes-cron Authentication or authorization boundary from source systems or cited Ariadne refs before recording it in operator-evidence.md.
+
+#### Bounded action statement
+
+Prompt: Human operator must verify hermes-cron Bounded action statement from source systems or cited Ariadne refs before recording it in operator-evidence.md.
+
+#### Rollback or disable path
+
+Prompt: Human operator must verify hermes-cron Rollback or disable path from source systems or cited Ariadne refs before recording it in operator-evidence.md.
+
+#### Post-action verification command
+
+Prompt: Human operator must verify hermes-cron Post-action verification command from source systems or cited Ariadne refs before recording it in operator-evidence.md.
+
+#### Dry-run command and safe output
+
+Prompt: Human operator must verify hermes-cron Dry-run command and safe output from source systems or cited Ariadne refs before recording it in operator-evidence.md.
+
+#### Target-guarded execution wrapper
+
+Prompt: Human operator must verify hermes-cron Target-guarded execution wrapper from source systems or cited Ariadne refs before recording it in operator-evidence.md.
+
+#### Exact confirm-plan proof
+
+Prompt: Human operator must verify hermes-cron Exact confirm-plan proof from source systems or cited Ariadne refs before recording it in operator-evidence.md.
+
 
 ## Evidence Refs
 

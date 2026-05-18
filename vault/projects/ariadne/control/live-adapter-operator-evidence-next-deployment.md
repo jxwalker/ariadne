@@ -1,7 +1,7 @@
 # Live Adapter Operator Evidence Next Packet: deployment
 
 Project: ariadne
-Generated: 2026-05-18T07:35:57.261Z
+Generated: 2026-05-18T08:09:22.751Z
 Target: deployment
 Selected by: explicit
 Status: operator_action_required
@@ -29,7 +29,7 @@ This packet runs only non-mutating preparation steps. It does not import operato
 - operatorEvidenceAudit: projects/ariadne/control/live-adapter-operator-evidence-audit.json
 - workspace: projects/ariadne/control/live-adapter-operator-evidence-workspace-deployment.json
 - assist: projects/ariadne/control/live-adapter-operator-evidence-assist-deployment.json
-- checkBatch: projects/ariadne/control/live-adapter-operator-evidence-check-all-deployment.json
+- checkBatch: projects/ariadne/control/live-adapter-operator-evidence-check-all.json
 - reviewSession: projects/ariadne/control/live-adapter-review-session-deployment.json
 - cutoverAudit: projects/ariadne/control/live-adapter-cutover-audit-deployment.json
 

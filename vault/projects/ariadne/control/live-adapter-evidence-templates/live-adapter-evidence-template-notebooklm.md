@@ -1,7 +1,7 @@
 # Live Adapter Operator Evidence Template: notebooklm
 
 Project: ariadne
-Generated: 2026-05-18T05:22:24.471Z
+Generated: 2026-05-18T08:09:24.898Z
 Status: awaiting_operator_evidence
 Mutation approved: false
 

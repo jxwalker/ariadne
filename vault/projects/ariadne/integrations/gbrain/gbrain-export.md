@@ -2,8 +2,8 @@
 
 Project: ariadne
 Mode: read_only_export
-Generated: 2026-05-18T05:22:24.585Z
-Documents: 35
+Generated: 2026-05-18T08:09:25.005Z
+Documents: 40
 
 ## Instructions
 
@@ -42,6 +42,11 @@ Documents: 35
 | live-adapter/dossier/notebooklm | live-adapter | 9 |
 | live-adapter/dossier/openscorpion | live-adapter | 9 |
 | live-adapter/operator-assist/deployment | live-adapter | 14 |
+| live-adapter/operator-assist/github | live-adapter | 13 |
+| live-adapter/operator-assist/gsd2 | live-adapter | 13 |
+| live-adapter/operator-assist/hermes-cron | live-adapter | 13 |
+| live-adapter/operator-assist/notebooklm | live-adapter | 13 |
+| live-adapter/operator-assist/openscorpion | live-adapter | 13 |
 | live-adapter/operator-assist/all/github | live-adapter | 13 |
 | live-adapter/operator-assist/all/deployment | live-adapter | 14 |
 | live-adapter/operator-assist/all/hermes-cron | live-adapter | 13 |

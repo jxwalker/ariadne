@@ -3,7 +3,7 @@
 Project: ariadne
 Target: openscorpion
 Status: operator_review_required
-Generated: 2026-05-18T06:16:29.651Z
+Generated: 2026-05-18T08:09:24.078Z
 Mutation approved: false
 Operator decision required: true
 
@@ -67,7 +67,7 @@ Missing operator evidence sections:
 - Target-guarded execution wrapper
 - Exact confirm-plan proof
 
-Latest preflight: projects/ariadne/control/live-adapter-operator-evidence-checks/operator-evidence-check-openscorpion-2026-05-18T05-22-23-802Z.json
+Latest preflight: projects/ariadne/control/live-adapter-operator-evidence-checks/operator-evidence-check-openscorpion-2026-05-18T08-09-23-949Z.json
 
 Read-only assist: projects/ariadne/control/operator-evidence/openscorpion/read-only-assist.md
 
