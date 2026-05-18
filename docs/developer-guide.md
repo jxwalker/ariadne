@@ -50,6 +50,7 @@ Do not add `npm run cli`, `src/cli.ts`, or docs that describe the main runner as
 - `src/approvals.ts`: explicit approval requests and decisions for mutation-capable adapters.
 - `src/recovery.ts`: crash recovery reports from recorded vault state.
 - `src/consoleData.ts`: normalised read-only console projection.
+- `src/consoleWorkflow.ts`: workflow-stage, next-action, and surface-responsibility projection for console data.
 - `src/consoleHtml.ts`: static workflow and evidence console renderer over console data.
 - `src/consoleVisualChecks.ts`: deterministic visual contract checks for the generated console.
 - `src/consoleBrowserChecks.ts`: Playwright-backed console rendering and screenshot evidence.

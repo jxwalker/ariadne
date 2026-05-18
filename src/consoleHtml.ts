@@ -21,8 +21,6 @@ function renderConsole(data: ConsoleData): string {
   const latestEvaluation = data.evaluations.at(-1);
   const failedChecks = data.checks.filter((check) => check.status === "failed").length;
   const missingGates = data.readiness?.missing.length ?? 0;
-  const workflowStages = projectWorkflowStages(data);
-  const nextAction = nextBestAction(data);
   const timeline = [
     ...data.sources.map((source) => ({
       time: source.ingestedAt,
@@ -218,7 +216,7 @@ function renderConsole(data: ConsoleData): string {
     `<span>${missingGates} missing gates</span>`,
     "</div>",
     "</section>",
-    workflowOverview(workflowStages, nextAction),
+    workflowOverview(data.workflow),
     '<section class="metrics" aria-label="Project metrics">',
     metric("Sources", data.summary.sources),
     metric("Extractions", data.summary.extractionResults, "results"),
@@ -308,132 +306,24 @@ function renderConsole(data: ConsoleData): string {
   ].join("\n");
 }
 
-type WorkflowStage = {
-  title: string;
-  status: string;
-  detail: string;
-  proof: string;
-};
-
-type NextBestAction = {
-  title: string;
-  status: string;
-  detail: string;
-  artifact: string;
-  command?: string;
-};
-
-function workflowOverview(stages: WorkflowStage[], nextAction: NextBestAction): string {
+function workflowOverview(workflow: ConsoleData["workflow"]): string {
   return [
     '<section class="workflow" aria-label="Ariadne workflow">',
     '<div class="workflow-lanes">',
-    ...stages.map(
+    ...workflow.stages.map(
       (stage) =>
-        `<article class="workflow-stage"><div><span>${escapeHtml(stage.title)}</span><strong class="${statusClass(stage.status)}">${escapeHtml(stage.status)}</strong></div><p>${escapeHtml(stage.detail)}</p><small>${escapeHtml(stage.proof)}</small></article>`
+        `<article class="workflow-stage"><div><span>${escapeHtml(stage.label)}</span><strong class="${statusClass(stage.status)}">${escapeHtml(stage.status)}</strong></div><p>${escapeHtml(stage.detail)}</p><small>${escapeHtml(stage.proofRef)}</small></article>`
     ),
     "</div>",
     '<div class="next-action" data-visual-role="next-best-action">',
     '<span class="label">Next best action</span>',
-    `<strong class="${statusClass(nextAction.status)}">${escapeHtml(nextAction.title)}</strong>`,
-    `<p>${escapeHtml(nextAction.detail)}</p>`,
-    `<small>${escapeHtml(nextAction.artifact)}</small>`,
-    ...(nextAction.command ? [`<code>${escapeHtml(nextAction.command)}</code>`] : []),
+    `<strong class="${statusClass(workflow.nextAction.status)}">${escapeHtml(workflow.nextAction.title)}</strong>`,
+    `<p>${escapeHtml(workflow.nextAction.detail)}</p>`,
+    `<small>${escapeHtml(workflow.nextAction.artifactRef)}</small>`,
+    ...(workflow.nextAction.command ? [`<code>${escapeHtml(workflow.nextAction.command)}</code>`] : []),
     "</div>",
     "</section>"
   ].join("");
-}
-
-function projectWorkflowStages(data: ConsoleData): WorkflowStage[] {
-  const failedChecks = data.checks.filter((check) => check.status === "failed").length;
-  const passedChecks = data.checks.filter((check) => check.status === "passed").length;
-  const latestRun = data.executionRuns.at(-1);
-  const hasPlaywrightEvidence = data.playwrightEvidence.length > 0 || Boolean(data.consoleBrowserChecks);
-  const reviewStatus = data.summary.roadmapCompletionStatus ?? data.summary.liveAdapterReviewSessionStatus ?? "pending";
-  const operateStatus =
-    data.summary.hermesCronSnapshots > 0 || data.summary.localRuntimeProbes > 0 || data.summary.deploymentSnapshots > 0
-      ? "ready"
-      : "pending";
-
-  return [
-    {
-      title: "Capture",
-      status: data.summary.sources > 0 ? "complete" : "missing",
-      detail: `${data.summary.sources} source file(s), ${data.summary.extractionResults} extraction result(s).`,
-      proof: data.artifacts.hotIndex ?? "HOT_INDEX.md"
-    },
-    {
-      title: "Shape",
-      status: data.summary.requirements > 0 && data.summary.tasks > 0 ? "complete" : "pending",
-      detail: `${data.summary.requirements} requirement(s), ${data.summary.tasks} task(s).`,
-      proof: data.artifacts.prd ?? data.artifacts.roadmap ?? "requirements and GSD artifacts"
-    },
-    {
-      title: "Build",
-      status: latestRun ? latestRun.status : "pending",
-      detail: latestRun ? `${latestRun.taskIds.length} task(s) in latest run.` : "No execution run recorded.",
-      proof: latestRun?.id ?? data.artifacts.roadmap ?? "execution run"
-    },
-    {
-      title: "Verify",
-      status: failedChecks > 0 ? "failed" : passedChecks > 0 || hasPlaywrightEvidence ? "ready" : "pending",
-      detail: `${passedChecks} passed check(s), ${failedChecks} failed check(s), ${data.playwrightEvidence.length} UI evidence record(s).`,
-      proof: data.artifacts.consoleBrowserChecks ?? data.artifacts.artifactChecks ?? "verification artifacts"
-    },
-    {
-      title: "Review",
-      status: reviewStatus,
-      detail: `${data.summary.pendingApprovals} pending approval(s), ${data.summary.roadmapCompletionBlocked ?? 0} roadmap blocker(s).`,
-      proof: data.artifacts.roadmapCompletionAudit ?? data.artifacts.liveAdapterReviewSession ?? "review artifacts"
-    },
-    {
-      title: "Operate",
-      status: operateStatus,
-      detail: `${data.summary.hermesCronSnapshots} Hermes snapshot(s), ${data.summary.localRuntimeProbes} runtime probe(s), ${data.summary.deploymentSnapshots} deployment snapshot(s).`,
-      proof: data.artifacts.localRuntimeProbes ?? "operations artifacts"
-    }
-  ];
-}
-
-function nextBestAction(data: ConsoleData): NextBestAction {
-  const nextTarget = data.liveAdapterOperatorEvidenceQueue?.targets.find((target) =>
-    ["needs_evidence", "unchecked", "needs_rework"].includes(target.status)
-  );
-  if (nextTarget) {
-    const missing = nextTarget.latestCheckMissingSections ?? nextTarget.missingSections.length;
-    return {
-      title: `${nextTarget.target} operator evidence`,
-      status: nextTarget.status,
-      detail: `${missing} missing section(s). ${nextTarget.nextAction}`,
-      artifact: nextTarget.evidenceRefs[0] ?? nextTarget.templateRef,
-      command: `npm run ariadne -- live-adapter-operator-evidence-next --project ${data.project} --target ${nextTarget.target}`
-    };
-  }
-
-  const blockedRequirement = data.roadmapCompletionAudit?.requirements.find((requirement) => requirement.status === "blocked");
-  if (blockedRequirement) {
-    return {
-      title: blockedRequirement.id,
-      status: blockedRequirement.status,
-      detail: blockedRequirement.detail,
-      artifact: data.artifacts.roadmapCompletionAudit ?? "control/roadmap-completion-audit.md"
-    };
-  }
-
-  if ((data.readiness?.missing.length ?? 0) > 0) {
-    return {
-      title: "Merge readiness gates",
-      status: data.summary.readinessStatus ?? "blocked",
-      detail: data.readiness?.missing[0] ?? "A merge-readiness gate is missing.",
-      artifact: data.artifacts.control ?? "control/merge-readiness.md"
-    };
-  }
-
-  return {
-    title: "Ready for next slice",
-    status: "ready",
-    detail: "Current artifacts do not expose a blocking action.",
-    artifact: data.artifacts.hotIndex ?? "HOT_INDEX.md"
-  };
 }
 
 function metric(label: string, value: string | number, note = "total"): string {

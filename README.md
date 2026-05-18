@@ -91,7 +91,7 @@ npm run ariadne -- status --project ariadne
 
 The runner also loads local `ARIADNE_` defaults from a git-ignored `.env` file in the current working directory. This is the preferred unattended path for private LAN or tailnet model endpoints such as Atlas; explicit shell variables still win over `.env` values, and non-`ARIADNE_` keys are ignored.
 
-Read [Ariadne Workflows](docs/workflows.md) before using the longer command reference in [User Guide](docs/user-guide.md). The generated console includes a Capture -> Shape -> Build -> Verify -> Review -> Operate workflow lane, a single Next Best Action panel, mutation-readiness repair state, operator evidence state, and read-only runtime/deployment evidence. Blocked live-adapter work is visible by target without granting approval or running a live command.
+Read [Ariadne Workflows](docs/workflows.md) before using the longer command reference in [User Guide](docs/user-guide.md). The generated console includes a Capture -> Shape -> Build -> Verify -> Review -> Operate workflow lane, a single Next Best Action panel, mutation-readiness repair state, operator evidence state, and read-only runtime/deployment evidence. The same journey state is available as typed `workflow` data in `console/console-data.json` for Hermes dashboards and future live UIs. Blocked live-adapter work is visible by target without granting approval or running a live command.
 
 ## Vault Layout
 

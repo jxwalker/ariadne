@@ -14,6 +14,7 @@ import { generateConsoleData } from "../src/consoleData.js";
 import { generateConsoleBrowserCheckReport } from "../src/consoleBrowserChecks.js";
 import { generateConsoleHtml } from "../src/consoleHtml.js";
 import { generateConsoleVisualCheckReport } from "../src/consoleVisualChecks.js";
+import { buildConsoleWorkflow } from "../src/consoleWorkflow.js";
 import { recordAgentLease, recordAgentMail, recordMemoryProposal, recordSleepRoutine } from "../src/coordination.js";
 import { collectSshDeploymentSnapshot, importDeploymentSnapshot } from "../src/deploymentAdapters.js";
 import { planDeploymentMutation } from "../src/deploymentMutation.js";
@@ -2989,6 +2990,40 @@ describe("roadmap adapters", () => {
     expect(console.data.summary.recoveryIssues).toBe(recovery.report.issues.length);
     expect(console.data.recovery?.status).toBe("attention_required");
     expect(console.data.artifacts.control).toBeTruthy();
+    expect(console.data.workflow.schemaVersion).toBe(1);
+    expect(console.data.workflow.stages.map((stage) => stage.id)).toEqual([
+      "capture",
+      "shape",
+      "build",
+      "verify",
+      "review",
+      "operate"
+    ]);
+    expect(console.data.workflow.surfaces.map((surface) => surface.id)).toEqual([
+      "ariadne-console",
+      "hermes",
+      "notebooklm",
+      "gbrain",
+      "ariadne-runner"
+    ]);
+    expect(console.data.workflow.nextAction.artifactRef).toBeTruthy();
+    const { workflow: _workflow, ...consoleWorkflowInput } = console.data;
+    const failedBrowserWorkflow = buildConsoleWorkflow({
+      ...consoleWorkflowInput,
+      consoleBrowserChecks: {
+        schemaVersion: 1,
+        project: "ariadne",
+        generatedAt: new Date().toISOString(),
+        htmlPath: "console/index.html",
+        screenshotPath: "console/screenshots/failed.png",
+        status: "failed",
+        viewport: { width: 900, height: 900 },
+        summary: { passed: 9, failed: 1 },
+        checks: [{ id: "layout", label: "Layout", status: "failed", detail: "Overlap detected." }]
+      }
+    });
+    expect(failedBrowserWorkflow.stages.find((stage) => stage.id === "verify")?.status).toBe("failed");
+    expect(failedBrowserWorkflow.stages.find((stage) => stage.id === "verify")?.detail).toContain("1 browser failure");
 
     const consoleHtml = await generateConsoleHtml({
       project: "ariadne",

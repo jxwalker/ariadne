@@ -1,6 +1,7 @@
 import fs from "node:fs/promises";
 import path from "node:path";
 import { writeJsonArtifact } from "./artifacts.js";
+import { buildConsoleWorkflow } from "./consoleWorkflow.js";
 import { isLiveAdapterTarget } from "./liveAdapterTargets.js";
 import { projectDir, slugifyProject } from "./paths.js";
 import { loadRecords } from "./vault.js";
@@ -276,7 +277,7 @@ export async function collectConsoleData(vaultRoot: string, projectInput: string
     ) ?? [];
   const latestRuntimeProbe = latestLocalRuntimeProbe(localRuntimeProbesForConsole);
 
-  const data: ConsoleData = {
+  const baseData: Omit<ConsoleData, "workflow"> = {
     schemaVersion: 1,
     project,
     generatedAt: new Date().toISOString(),
@@ -489,6 +490,7 @@ export async function collectConsoleData(vaultRoot: string, projectInput: string
       hermesCronProposals: await existingPath(vaultRoot, path.join(dir, "coordination", "hermes"))
     }
   };
+  const data: ConsoleData = { ...baseData, workflow: buildConsoleWorkflow(baseData) };
   return makePortable(data, vaultRoot);
 }
 
