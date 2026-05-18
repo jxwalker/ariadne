@@ -80,10 +80,10 @@ The main runner is named `ariadne`. Use `npm run ariadne -- <command>` during lo
 For the MVP path, run the one-shot setup:
 
 ```bash
-./scripts/ariadne-mvp-setup.sh
+npm run setup:mvp
 ```
 
-Then open `vault/projects/ariadne/console/index.html` and follow the current route and Next Best Action.
+This runs the setup script, refreshes the control plane, regenerates the console, and prints the current `operator-next` handoff. Then open `vault/projects/ariadne/console/index.html` and follow the current route and Next Best Action.
 
 The manual development path is:
 

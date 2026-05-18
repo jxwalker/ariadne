@@ -10,7 +10,13 @@ From the repo root:
 ./scripts/ariadne-mvp-setup.sh
 ```
 
-The script installs dependencies, installs Playwright Chromium, typechecks, runs tests, builds the runner, generates the console, and prints the next guide.
+You can also use the npm alias:
+
+```bash
+npm run setup:mvp
+```
+
+The script installs dependencies, installs Playwright Chromium, typechecks, runs tests, builds the runner, refreshes the control plane, regenerates the console, and prints the current operator handoff.
 
 If you use a different project name:
 
@@ -23,7 +29,7 @@ ARIADNE_PROJECT=my-project ./scripts/ariadne-mvp-setup.sh
 Use this as the normal entrypoint:
 
 ```bash
-npm run ariadne -- guide --project ariadne
+npm run ariadne -- operator-next --project ariadne
 ```
 
 Then open:
@@ -33,6 +39,12 @@ vault/projects/ariadne/console/index.html
 ```
 
 The console is the human cockpit. Hermes is the background runtime for scheduling, sleep, memory, mail, and coordination. GBrain is advisory memory. NotebookLM is source-grounded research input. The `ariadne` runner is the expert automation surface behind the UI.
+
+Use `guide` only when you want the broader workflow explanation:
+
+```bash
+npm run ariadne -- guide --project ariadne
+```
 
 ## What To Look At First
 

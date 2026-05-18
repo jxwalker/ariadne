@@ -19,11 +19,14 @@ npm test
 echo "==> Building Ariadne"
 npm run build
 
-echo "==> Generating console and guide for project: $PROJECT"
-npm run ariadne -- console-html --project "$PROJECT" --refresh-data
-npm run ariadne -- guide --project "$PROJECT"
+echo "==> Refreshing MVP control plane for project: $PROJECT"
+npm run ariadne -- roadmap-control-refresh --project "$PROJECT"
+
+echo "==> Printing next operator handoff"
+npm run ariadne -- operator-next --project "$PROJECT"
 
 echo
 echo "Ariadne MVP setup complete."
 echo "Open: $ROOT_DIR/vault/projects/$PROJECT/console/index.html"
-echo "Next: npm run ariadne -- guide --project $PROJECT"
+echo "Next: npm run ariadne -- operator-next --project $PROJECT"
+echo "Docs: $ROOT_DIR/docs/user-guide.md"

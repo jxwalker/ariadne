@@ -11,6 +11,23 @@ import { generatePrd } from "../src/prd.js";
 import { assembleDossier, ingestFiles } from "../src/vault.js";
 
 describe("roadmap generation", () => {
+  it("keeps the MVP setup entrypoint aligned with the operator handoff", async () => {
+    const packageJson = JSON.parse(await fs.readFile(path.join(process.cwd(), "package.json"), "utf8")) as {
+      scripts: Record<string, string>;
+    };
+    const setupScript = await fs.readFile(path.join(process.cwd(), "scripts", "ariadne-mvp-setup.sh"), "utf8");
+    const readme = await fs.readFile(path.join(process.cwd(), "README.md"), "utf8");
+    const userGuide = await fs.readFile(path.join(process.cwd(), "docs", "user-guide.md"), "utf8");
+
+    expect(packageJson.scripts["setup:mvp"]).toBe("./scripts/ariadne-mvp-setup.sh");
+    expect(setupScript).toContain("roadmap-control-refresh --project");
+    expect(setupScript).toContain("operator-next --project");
+    expect(setupScript).toContain("Docs:");
+    expect(readme).toContain("npm run setup:mvp");
+    expect(userGuide).toContain("npm run setup:mvp");
+    expect(userGuide).toContain("npm run ariadne -- operator-next --project ariadne");
+  });
+
   it("turns an evidence dossier into PRD, GSD, execution, verification, infra, and control artifacts", async () => {
     const temp = await fs.mkdtemp(path.join(os.tmpdir(), "ariadne-roadmap-"));
     const source = path.join(temp, "manifesto.md");
