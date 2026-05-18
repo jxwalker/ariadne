@@ -10,6 +10,7 @@ export function buildConsoleWorkflow(data: ConsoleWorkflowInput): ConsoleWorkflo
     stages: projectWorkflowStages(data),
     nextAction: nextBestAction(data),
     operatorChecklist: operatorChecklist(data),
+    routes: workflowRoutes(data),
     modes: [
       {
         id: "guided",
@@ -85,6 +86,167 @@ export function buildConsoleWorkflow(data: ConsoleWorkflowInput): ConsoleWorkflo
       }
     ]
   };
+}
+
+function workflowRoutes(data: ConsoleWorkflowInput): ConsoleWorkflow["routes"] {
+  const selectedTarget = selectNextOperatorEvidenceTarget(
+    data.liveAdapterOperatorEvidenceQueue,
+    data.liveAdapterOperatorEvidenceWorkplan,
+    data.liveAdapterOperatorEvidenceAudit
+  );
+  const operatorRouteCurrent = Boolean(selectedTarget);
+  const roadmapBlocked = (data.summary.roadmapCompletionBlocked ?? 0) > 0;
+  const verifyBlocked =
+    (data.consoleBrowserChecks?.summary.failed ?? 0) > 0 || data.checks.some((check) => check.status === "failed");
+  const currentAction = nextBestAction(data);
+  return [
+    {
+      id: "idea-to-system",
+      label: "Idea to working system",
+      audience: "First-time coders, founders, and operators starting from notes, NotebookLM, drawings, or white papers.",
+      current: !operatorRouteCurrent && data.summary.sources === 0,
+      primarySurface: "ariadne-console",
+      supportSurfaces: ["notebooklm", "gbrain", "ariadne-runner"],
+      summary: "Capture source material, shape it into tasks, build a bounded slice, verify it, review it, then operate it.",
+      steps: [
+        {
+          id: "capture-source",
+          title: "Capture source material",
+          detail: "Import notes, NotebookLM exports, dictated transcripts, drawings, screenshots, white papers, or repo context.",
+          stage: "capture",
+          surface: "ariadne-console",
+          artifactRef: data.artifacts.hotIndex ?? "context/HOT_INDEX.md"
+        },
+        {
+          id: "shape-plan",
+          title: "Shape the plan",
+          detail: "Generate the PRD, roadmap, task bundle, ambiguity list, and acceptance criteria from preserved evidence.",
+          stage: "shape",
+          surface: "ariadne-runner",
+          artifactRef: data.artifacts.prd ?? data.artifacts.roadmap ?? "requirements and GSD artifacts"
+        },
+        {
+          id: "build-verify-review",
+          title: "Build, verify, review",
+          detail: "Work a small implementation slice, run deterministic checks and Playwright evidence, then collect reviewer signals.",
+          stage: "verify",
+          surface: "ariadne-console",
+          artifactRef: data.artifacts.consoleBrowserChecks ?? data.artifacts.artifactChecks ?? "verification artifacts"
+        }
+      ]
+    },
+    {
+      id: "implementation-slice",
+      label: "Implementation slice",
+      audience: "Experienced developers moving a bounded feature through branch, tests, PR, reviewers, and merge.",
+      current: !operatorRouteCurrent && (roadmapBlocked || verifyBlocked),
+      primarySurface: "ariadne-console",
+      supportSurfaces: ["ariadne-runner", "hermes", "gbrain"],
+      summary: "Use the console for state, the runner for refresh and tests, and GitHub reviewers for the ship decision.",
+      steps: [
+        {
+          id: "open-blocker",
+          title: "Open the blocker",
+          detail: "Start from the Next Best Action and its backing artifact instead of scanning command references.",
+          stage: "review",
+          surface: "ariadne-console",
+          artifactRef: currentAction.artifactRef ?? data.artifacts.roadmapCompletionAudit ?? "current blocker"
+        },
+        {
+          id: "refresh-run-checks",
+          title: "Refresh and run checks",
+          detail: "Regenerate only the artifacts behind the blocked stage, then run type, unit, build, browser, and visual checks.",
+          stage: "verify",
+          surface: "ariadne-runner",
+          command: `npm run ariadne -- roadmap-control-refresh --project ${data.project}`
+        },
+        {
+          id: "review-merge",
+          title: "Review and merge",
+          detail: "Push the bounded branch, collect Grok/CodeRabbit feedback, fix actionable items, merge, and prune stale branches.",
+          stage: "review",
+          surface: "ariadne-console",
+          artifactRef: data.artifacts.githubSnapshots ?? "GitHub PR evidence"
+        }
+      ]
+    },
+    {
+      id: "operator-evidence",
+      label: selectedTarget ? `${selectedTarget.target} evidence gate` : "Operator evidence gate",
+      audience: "Humans verifying external-system facts before Ariadne can import evidence or execute mutations.",
+      current: operatorRouteCurrent,
+      primarySurface: "ariadne-console",
+      supportSurfaces: ["ariadne-runner", "gbrain"],
+      summary: selectedTarget
+        ? `Fill ${selectedTarget.missingSections} missing section(s), preflight the workspace, then import only after human verification.`
+        : "Fill target evidence workspaces from real systems before cutover or mutation work can proceed.",
+      steps: [
+        {
+          id: "read-packet",
+          title: "Read the target packet",
+          detail: "Use the packet and read-only assist file to understand what is missing without treating generated text as proof.",
+          stage: "review",
+          surface: "ariadne-console",
+          artifactRef: selectedTarget
+            ? `projects/${data.project}/control/live-adapter-operator-evidence-next-${selectedTarget.target}.md`
+            : data.artifacts.liveAdapterOperatorEvidenceQueue ?? "operator evidence queue"
+        },
+        {
+          id: "fill-preflight",
+          title: "Fill and preflight evidence",
+          detail: "Record observations from source systems in operator-evidence.md, then run the target preflight check.",
+          stage: "review",
+          surface: "ariadne-runner",
+          command: selectedTarget
+            ? `npm run ariadne -- live-adapter-operator-evidence-check-all --project ${data.project} --source workspace --target ${selectedTarget.target}`
+            : undefined
+        },
+        {
+          id: "import-review-cutover",
+          title: "Import, review, cutover audit",
+          detail: "Import only passing evidence, then refresh the review session and cutover audit before any live adapter work.",
+          stage: "operate",
+          surface: "ariadne-console",
+          artifactRef: data.artifacts.liveAdapterCutoverAudit ?? "live adapter cutover audit"
+        }
+      ]
+    },
+    {
+      id: "automation-loop",
+      label: "Sleep, memory, and automation loop",
+      audience: "Operators wiring recurring reviews, memory proposals, mail, and background refresh jobs.",
+      current: !operatorRouteCurrent && !roadmapBlocked && (data.summary.hermesCronSnapshots > 0 || data.summary.localRuntimeProbes > 0),
+      primarySurface: "hermes",
+      supportSurfaces: ["ariadne-console", "ariadne-runner", "gbrain"],
+      summary: "Hermes schedules reviewed routines and feeds Ariadne evidence; Ariadne remains the cockpit and gatekeeper.",
+      steps: [
+        {
+          id: "propose-routine",
+          title: "Propose the routine",
+          detail: "Create sleep, memory, mail, lease, cron, or deployment records as reviewable evidence first.",
+          stage: "operate",
+          surface: "hermes",
+          artifactRef: data.artifacts.hermesCronProposals ?? "coordination artifacts"
+        },
+        {
+          id: "record-evidence",
+          title: "Record runtime evidence",
+          detail: "Import read-only snapshots, runtime probes, and GBrain reports without granting mutation authority.",
+          stage: "operate",
+          surface: "ariadne-runner",
+          artifactRef: data.artifacts.localRuntimeProbes ?? data.artifacts.hermesCronSnapshots ?? "runtime evidence"
+        },
+        {
+          id: "review-memory",
+          title: "Review memory and state",
+          detail: "Use GBrain as advisory search context; keep approvals, gates, and deployment state in Ariadne artifacts.",
+          stage: "review",
+          surface: "gbrain",
+          artifactRef: data.artifacts.gbrainExport ?? "GBrain evidence bundle"
+        }
+      ]
+    }
+  ];
 }
 
 function operatorChecklist(data: ConsoleWorkflowInput): ConsoleWorkflow["operatorChecklist"] {

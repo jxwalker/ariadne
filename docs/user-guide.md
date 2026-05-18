@@ -481,7 +481,7 @@ npm run ariadne -- guide --project ariadne
 npm run ariadne -- status --project ariadne
 ```
 
-When live-adapter evidence is incomplete, `guide` prints the next operator target as a progressive workflow: read the packet, fill verified observations, review GBrain/assist context, preflight, import only after human verification, then review cutover state. It also prints a section-by-section evidence checklist for the selected target, including where to start, where to record the verified observation, the preflight expectation, and how much GBrain/promoted-evidence context is attached. Guided mode hides runner commands; use `--mode developer`, `--mode operator`, or `--show-commands` when you need the command details.
+When live-adapter evidence is incomplete, `guide` prints the next operator target as a progressive workflow: read the packet, fill verified observations, review GBrain/assist context, preflight, import only after human verification, then review cutover state. It also prints a section-by-section evidence checklist for the selected target, including where to start, where to record the verified observation, the preflight expectation, and how much GBrain/promoted-evidence context is attached. The same guide now includes interaction routes so users can choose between idea-to-system, implementation-slice, operator-evidence, and Hermes automation workflows without reading the full command list. Guided mode hides runner commands; use `--mode developer`, `--mode operator`, or `--show-commands` when you need the command details.
 
 The control report is the answer to: what is proven, what is missing, and what gate still blocks the work?
 

@@ -77,6 +77,21 @@ export function renderWorkflowGuide(
     }),
     ...operatorChecklistLines(data, commandVisible),
     "",
+    "Interaction routes:",
+    ...data.workflow.routes.flatMap((route) => {
+      const lines = [
+        `- ${route.label}${route.current ? " (current)" : ""}: ${route.summary}`,
+        `  For: ${route.audience}`,
+        `  Surface: ${surfaceLabel(data, route.primarySurface)} primary; ${route.supportSurfaces.map((id) => surfaceLabel(data, id)).join(", ")} support.`
+      ];
+      for (const step of route.steps) {
+        lines.push(`  - ${step.title} [${stageLabel(data, step.stage)} / ${surfaceLabel(data, step.surface)}]: ${step.detail}`);
+        if (step.artifactRef) lines.push(`    Artifact: ${step.artifactRef}`);
+        if (commandVisible && step.command) lines.push(`    Command: ${step.command}`);
+      }
+      return lines;
+    }),
+    "",
     "Surface rule:",
     "Ariadne Console is the human cockpit. Hermes is the runtime backplane for scheduling, sleep, memory, mail, and coordination. NotebookLM and GBrain provide source and memory context. The ariadne runner is the expert automation surface behind the UI."
   ];
@@ -93,6 +108,10 @@ export function renderWorkflowGuide(
 
 function surfaceLabel(data: ConsoleData, id: string): string {
   return data.workflow.surfaces.find((surface) => surface.id === id)?.label ?? id;
+}
+
+function stageLabel(data: ConsoleData, id: string): string {
+  return data.workflow.stages.find((stage) => stage.id === id)?.label ?? id;
 }
 
 function operatorChecklistLines(data: ConsoleData, commandVisible: boolean): string[] {

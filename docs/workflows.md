@@ -31,6 +31,8 @@ The console exposes the interaction model as `workflow.modes` so a UI can route 
 
 The important rule is simple: Hermes runs routines, but Ariadne remains the evidence cockpit and approval gate. NotebookLM and GBrain provide research and memory context; they do not approve work, verify behavior, or grant mutation authority.
 
+`workflow.routes` is the higher-level route map for overloaded users. It collapses the system into four canonical paths: idea to working system, implementation slice, operator evidence gate, and sleep/memory automation loop. The current route is marked in the data and UI, so a user can ignore unrelated commands until the route changes.
+
 ## User Modes
 
 ### Guided Developer
@@ -140,6 +142,7 @@ When adding a new command, also decide which workflow stage it supports and whet
 - `workflow.nextAction`: the selected human next action, its source, artifact ref, and optional runner command.
 - `workflow.nextAction.steps`: the progressive action plan behind the selected next action. Guided users can follow the step titles in order; experienced operators can expand the attached commands and artifact refs.
 - `workflow.operatorChecklist`: when operator evidence blocks the roadmap, the selected target's missing sections with start refs, recording location, preflight guidance, promoted-live-evidence counts, and GBrain query counts. This is a fill aid only; it does not create evidence or approve mutation.
+- `workflow.routes`: the four canonical interaction routes, their audiences, primary/support surfaces, current-route marker, and route-specific steps. This is the main answer to "how does the operator interact?".
 - `workflow.modes`: guided, developer, operator, and automation interaction modes with primary surface, support surfaces, command policy, and next-step guidance.
 - `workflow.surfaces`: the responsibility split for Ariadne Console, Hermes, NotebookLM, GBrain, and the `ariadne` runner.
 
