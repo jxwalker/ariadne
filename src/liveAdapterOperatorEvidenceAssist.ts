@@ -3,11 +3,11 @@ import path from "node:path";
 import { writeJsonArtifact, writeTextArtifact } from "./artifacts.js";
 import type { LiveAdapterTarget } from "./liveAdapterTargets.js";
 import { generateLiveAdapterOperatorEvidenceWorkspace } from "./liveAdapterOperatorEvidenceWorkspace.js";
+import { generateLiveAdapterOperatorEvidenceWorkplan } from "./liveAdapterOperatorEvidenceWorkplan.js";
 import { projectDir, slugifyProject } from "./paths.js";
 import type {
   LiveAdapterOperatorEvidenceAssist,
-  LiveAdapterOperatorEvidenceWorkspace,
-  LiveAdapterOperatorEvidenceWorkplan
+  LiveAdapterOperatorEvidenceWorkspace
 } from "./types.js";
 
 type AssistTarget = LiveAdapterOperatorEvidenceAssist["targets"][number];
@@ -25,7 +25,9 @@ export async function generateLiveAdapterOperatorEvidenceAssist(input: {
     (await readExistingWorkspace(input.vaultRoot, project, input.target)) ??
     (await generateLiveAdapterOperatorEvidenceWorkspace({ project, vaultRoot: input.vaultRoot, target: input.target }));
   const workspace = workspaceResult.workspace;
-  const workplan = await readWorkplan(input.vaultRoot, workspace.workplanRef);
+  // Preserve existing workspace files, but refresh the stable workplan artifact so assist packets see newly promoted read-only evidence.
+  const workplanResult = await generateLiveAdapterOperatorEvidenceWorkplan({ project, vaultRoot: input.vaultRoot });
+  const workplan = workplanResult.workplan;
   const workplanByTarget = new Map(workplan.targets.map((target) => [target.target, target]));
   const targets: AssistTarget[] = [];
 
@@ -81,7 +83,7 @@ export async function generateLiveAdapterOperatorEvidenceAssist(input: {
     operatorEvidenceRecordCreated: false,
     workspaceRef: path.relative(input.vaultRoot, workspaceResult.jsonPath),
     queueRef: workspace.queueRef,
-    workplanRef: workspace.workplanRef,
+    workplanRef: path.relative(input.vaultRoot, workplanResult.jsonPath),
     summary,
     targets
   };
@@ -116,10 +118,6 @@ async function readExistingWorkspace(
     if ((error as NodeJS.ErrnoException).code === "ENOENT") return undefined;
     throw error;
   }
-}
-
-async function readWorkplan(vaultRoot: string, relativeRef: string): Promise<LiveAdapterOperatorEvidenceWorkplan> {
-  return JSON.parse(await fs.readFile(resolveVaultRef(vaultRoot, "", relativeRef), "utf8")) as LiveAdapterOperatorEvidenceWorkplan;
 }
 
 async function existingRefs(vaultRoot: string, project: string, refs: string[]): Promise<string[]> {

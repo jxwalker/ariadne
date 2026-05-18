@@ -2176,6 +2176,16 @@ describe("roadmap adapters", () => {
     expect(JSON.stringify(deploymentSnapshot.snapshot.raw)).not.toContain("beast-secret.lan");
     expect(JSON.stringify(deploymentSnapshot.snapshot.raw)).not.toContain("james@beast.lan");
 
+    const staleDeploymentWorkspace = await generateLiveAdapterOperatorEvidenceWorkspace({
+      project: "ariadne",
+      vaultRoot,
+      target: "deployment"
+    });
+    const staleDeploymentEvidencePath = path.join(
+      vaultRoot,
+      staleDeploymentWorkspace.workspace.targets[0]?.evidenceFileRef ?? ""
+    );
+    await fs.appendFile(staleDeploymentEvidencePath, "\nOperator draft marker: keep deployment draft\n");
     const promotedLiveEvidence = await promoteLiveEvidence({
       project: "ariadne",
       vaultRoot,
@@ -2264,6 +2274,19 @@ describe("roadmap adapters", () => {
         fs.rm(operatorEvidenceCreatedPromotionPath, { force: true })
       ]);
     }
+    const assistWithPromotion = await generateLiveAdapterOperatorEvidenceAssist({
+      project: "ariadne",
+      vaultRoot,
+      target: "deployment"
+    });
+    const deploymentAssistEvidenceRefs =
+      assistWithPromotion.assist.targets.find((target) => target.target === "deployment")?.existingEvidenceRefs ?? [];
+    expect(deploymentAssistEvidenceRefs).toContain(promotionRef);
+    expect(assistWithPromotion.assist.workplanRef).toBe(
+      "projects/ariadne/control/live-adapter-operator-evidence-workplan.json"
+    );
+    expect(assistWithPromotion.assist.workspaceRef).toBe(path.relative(vaultRoot, staleDeploymentWorkspace.jsonPath));
+    expect(await fs.readFile(staleDeploymentEvidencePath, "utf8")).toContain("Operator draft marker: keep deployment draft");
     const falseJson = path.join(vaultRoot, "projects", "ariadne", "deployment", "false.json");
     await fs.writeFile(falseJson, "false");
     const promotedFalsyJson = await promoteLiveEvidence({
