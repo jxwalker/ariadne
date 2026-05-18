@@ -88,6 +88,7 @@ import { runTargetMutationExecution, targetForMutationExecutionCommand } from ".
 import { generateUsageMetricsReport, importUsageMetrics } from "../src/usageMetrics.js";
 import { guardWorktrees } from "../src/worktreeGuard.js";
 import { assembleDossier, ingestFiles, projectStatus } from "../src/vault.js";
+import { renderWorkflowGuide } from "../src/workflowGuide.js";
 
 async function preparedProject(): Promise<{ temp: string; vaultRoot: string }> {
   const temp = await fs.mkdtemp(path.join(os.tmpdir(), "ariadne-adapters-"));
@@ -3048,6 +3049,15 @@ describe("roadmap adapters", () => {
         "gbrain"
       );
     }
+    const guidedGuide = renderWorkflowGuide(console.data, { mode: "guided", vaultRoot });
+    expect(guidedGuide).toContain("Ariadne guide: ariadne");
+    expect(guidedGuide).toContain("Mode: Guided");
+    expect(guidedGuide).toContain("Next best action:");
+    expect(guidedGuide).toContain("Commands are hidden");
+    expect(guidedGuide).not.toContain("Command: npm run ariadne");
+    const operatorGuide = renderWorkflowGuide(console.data, { mode: "operator", vaultRoot });
+    expect(operatorGuide).toContain("Command: npm run ariadne");
+    expect(operatorGuide).toContain("Surface rule:");
     const { workflow: _workflow, ...consoleWorkflowInput } = console.data;
     const withoutOperatorEvidence = {
       ...consoleWorkflowInput,
@@ -3138,6 +3148,8 @@ describe("roadmap adapters", () => {
     expect(html).toContain("Runtime");
     expect(html).toContain("ds4-openai");
     expect(html).toContain("console-data");
+    expect(html).toContain("command-disclosure");
+    expect(html).toContain("Runner command");
     expect(html).not.toContain(temp);
     expect(visual.report.status).toBe("passed");
     expect(browser.report.status).toBe("passed");
