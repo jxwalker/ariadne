@@ -1503,8 +1503,75 @@ describe("roadmap adapters", () => {
     expect(githubWorkspace?.checkCommand).toContain("control/operator-evidence/github/operator-evidence.md");
     expect(githubWorkspace?.supportFileRefs).toContain("projects/ariadne/control/operator-evidence/github/gbrain-notes.md");
     expect(githubWorkspace?.supportFileRefs).toContain("projects/ariadne/control/operator-evidence/github/read-only-assist.md");
+    const notebookWorkspace = operatorEvidenceWorkspace.workspace.targets.find((target) => target.target === "notebooklm");
+    const notebookWorkspaceFile = path.join(vaultRoot, notebookWorkspace?.evidenceFileRef ?? "");
+    const notebookWorkspaceMarkdown = await fs.readFile(notebookWorkspaceFile, "utf8");
+    expect(notebookWorkspaceMarkdown).toContain("- Current section: none");
+    expect(notebookWorkspaceMarkdown).toContain("| 1 | none | No missing sections.");
     const githubWorkspaceFile = path.join(vaultRoot, githubWorkspace?.evidenceFileRef ?? "");
+    const githubWorkspaceMarkdown = await fs.readFile(githubWorkspaceFile, "utf8");
+    expect(githubWorkspaceMarkdown).toContain("## Current Section Handoff");
+    expect(githubWorkspaceMarkdown).toContain("## Section Fill Order");
+    expect(githubWorkspaceMarkdown).toContain("## Section Observation Notes");
+    expect(githubWorkspaceMarkdown).toContain("Operator identity and timestamp");
+    expect(githubWorkspaceMarkdown).toContain("| Step | Missing section | Start with | Record verified observation in | Preflight expectation |");
+    await fs.writeFile(
+      githubWorkspaceFile,
+      [
+        "# Operator Evidence: GitHub",
+        "",
+        "Mutation approved: false",
+        "",
+        "## Operator Observations",
+        "",
+        "- Operator:",
+        "- Review timestamp:",
+        "- Packet reviewed:",
+        "- Decision for packet completeness:",
+        "- Missing evidence:",
+        "- Notes:",
+        "",
+        "## Current Missing Sections",
+        "",
+        "- Operator identity and timestamp",
+        ""
+      ].join("\n")
+    );
+    await generateLiveAdapterOperatorEvidenceWorkspace({ project: "ariadne", vaultRoot, target: "github" });
+    const refreshedGithubWorkspaceMarkdown = await fs.readFile(githubWorkspaceFile, "utf8");
+    expect(refreshedGithubWorkspaceMarkdown).toContain("## Current Section Handoff");
+    expect(refreshedGithubWorkspaceMarkdown).toContain("## Section Fill Order");
+    const checkedTemplate = [
+      "# Operator Evidence: GitHub",
+      "",
+      "Mutation approved: false",
+      "",
+      "## Required Evidence To Attach",
+      "",
+      "- [x] operator identity and review timestamp",
+      ""
+    ].join("\n");
+    await fs.writeFile(githubWorkspaceFile, checkedTemplate);
+    await generateLiveAdapterOperatorEvidenceWorkspace({ project: "ariadne", vaultRoot, target: "github" });
+    expect(await fs.readFile(githubWorkspaceFile, "utf8")).toBe(checkedTemplate);
+    const filledFieldTemplate = [
+      "# Operator Evidence: GitHub",
+      "",
+      "Mutation approved: false",
+      "",
+      "## Operator Observations",
+      "",
+      "- Operator: james",
+      "- Review timestamp:",
+      ""
+    ].join("\n");
+    await fs.writeFile(githubWorkspaceFile, filledFieldTemplate);
+    await generateLiveAdapterOperatorEvidenceWorkspace({ project: "ariadne", vaultRoot, target: "github" });
+    expect(await fs.readFile(githubWorkspaceFile, "utf8")).toBe(filledFieldTemplate);
     await fs.appendFile(githubWorkspaceFile, "\nOperator draft marker: keep me\n");
+    const markedTemplate = await fs.readFile(githubWorkspaceFile, "utf8");
+    await generateLiveAdapterOperatorEvidenceWorkspace({ project: "ariadne", vaultRoot, target: "github" });
+    expect(await fs.readFile(githubWorkspaceFile, "utf8")).toBe(markedTemplate);
     const queueJsonBeforeScopedWorkspace = await fs.readFile(operatorEvidenceQueue.jsonPath, "utf8");
     const workplanJsonBeforeScopedWorkspace = await fs.readFile(operatorEvidenceWorkplan.jsonPath, "utf8");
     const scopedHermesWorkspace = await generateLiveAdapterOperatorEvidenceWorkspace({
@@ -2274,7 +2341,7 @@ describe("roadmap adapters", () => {
     expect(refreshArtifactChecks.report.checks.find((check) => check.id === "roadmap-control-refresh")?.status).toBe(
       "present"
     );
-  }, 15000);
+  }, 30000);
 
   it("uses environment defaults for local runtime endpoint URLs and canary models", async () => {
     const { vaultRoot } = await preparedProject();
