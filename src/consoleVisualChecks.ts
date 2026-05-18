@@ -23,6 +23,7 @@ export async function generateConsoleVisualCheckReport(input: {
     checkContains(html, "workflow", "Workflow overview", 'aria-label="Ariadne workflow"'),
     checkContains(html, "next-best-action", "Next best action panel", "Next best action"),
     checkContains(html, "next-action-steps", "Next action steps", 'data-visual-role="next-action-steps"'),
+    operatorChecklistVisualCheck(html, embeddedData),
     checkContains(html, "operator-modes", "Operator modes panel", 'data-visual-role="operator-modes"'),
     checkContains(html, "workflow-surfaces", "Workflow surfaces panel", 'data-visual-role="workflow-surfaces"'),
     embeddedWorkflowDataCheck(embeddedData),
@@ -127,6 +128,7 @@ function embeddedDataCheck(data: ConsoleData | undefined): ConsoleVisualCheckRep
 function embeddedWorkflowDataCheck(data: ConsoleData | undefined): ConsoleVisualCheckReport["checks"][number] {
   const stageIds = data?.workflow?.stages.map((stage) => stage.id) ?? [];
   const nextActionSteps = data?.workflow?.nextAction?.steps;
+  const checklist = data?.workflow?.operatorChecklist;
   const valid =
     data?.workflow?.schemaVersion === 1 &&
     stageIds.join(",") === "capture,shape,build,verify,review,operate" &&
@@ -134,6 +136,29 @@ function embeddedWorkflowDataCheck(data: ConsoleData | undefined): ConsoleVisual
     Array.isArray(nextActionSteps) &&
     nextActionSteps.length > 0 &&
     nextActionSteps.every((step) => Boolean(step.id && step.title && step.detail && step.surface && step.kind)) &&
+    (!checklist ||
+      (Boolean(
+        checklist.target &&
+          checklist.status &&
+          checklist.evidenceFileRef &&
+          checklist.assistFileRef &&
+          checklist.checkCommand &&
+          checklist.importCommand
+      ) &&
+        Number.isInteger(checklist.missingSections) &&
+        checklist.sections.length > 0 &&
+        checklist.sections.every((section) =>
+          Boolean(
+            section.missingSection &&
+              section.prompt &&
+              section.startWith &&
+              section.recordIn &&
+              section.preflight &&
+              Array.isArray(section.existingEvidenceRefs) &&
+              Array.isArray(section.promotedLiveEvidenceRefs) &&
+              Array.isArray(section.gbrainQueries)
+          )
+        ))) &&
     Boolean(data?.workflow?.modes?.some((mode) => mode.id === "guided" && mode.primarySurface === "ariadne-console")) &&
     Boolean(data?.workflow?.modes?.some((mode) => mode.id === "automation" && mode.primarySurface === "hermes")) &&
     Boolean(data?.workflow?.surfaces?.some((surface) => surface.id === "hermes")) &&
@@ -145,6 +170,19 @@ function embeddedWorkflowDataCheck(data: ConsoleData | undefined): ConsoleVisual
     detail: valid
       ? `Workflow stages, ${data?.workflow?.nextAction?.steps.length ?? 0} action steps, ${data?.workflow?.modes?.length ?? 0} operator modes, and ${data?.workflow?.surfaces?.length ?? 0} surface contract entries are present.`
       : "Embedded console workflow data is missing or malformed."
+  };
+}
+
+function operatorChecklistVisualCheck(html: string, data: ConsoleData | undefined): ConsoleVisualCheckReport["checks"][number] {
+  const required = Boolean(data?.workflow?.operatorChecklist);
+  const present = !required || html.includes('data-visual-role="operator-evidence-checklist"');
+  return {
+    id: "operator-evidence-checklist",
+    label: "Operator evidence checklist",
+    status: present ? "passed" : "failed",
+    detail: required
+      ? detailSentence(present ? "Found" : "Missing", "operator evidence checklist")
+      : "No operator checklist is required."
   };
 }
 

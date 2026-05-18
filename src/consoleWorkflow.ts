@@ -1,4 +1,5 @@
 import type { ConsoleData, ConsoleWorkflow } from "./types.js";
+import { guidanceForHumanVerificationSection } from "./humanVerificationWorksheetMarkdown.js";
 import { selectNextOperatorEvidenceTarget } from "./liveAdapterOperatorEvidenceNextTarget.js";
 
 type ConsoleWorkflowInput = Omit<ConsoleData, "workflow">;
@@ -8,6 +9,7 @@ export function buildConsoleWorkflow(data: ConsoleWorkflowInput): ConsoleWorkflo
     schemaVersion: 1,
     stages: projectWorkflowStages(data),
     nextAction: nextBestAction(data),
+    operatorChecklist: operatorChecklist(data),
     modes: [
       {
         id: "guided",
@@ -82,6 +84,69 @@ export function buildConsoleWorkflow(data: ConsoleWorkflowInput): ConsoleWorkflo
         mutationAuthority: "approved-mutation-only"
       }
     ]
+  };
+}
+
+function operatorChecklist(data: ConsoleWorkflowInput): ConsoleWorkflow["operatorChecklist"] {
+  const selectedTarget = selectNextOperatorEvidenceTarget(
+    data.liveAdapterOperatorEvidenceQueue,
+    data.liveAdapterOperatorEvidenceWorkplan,
+    data.liveAdapterOperatorEvidenceAudit
+  );
+  if (!selectedTarget) return undefined;
+  const assistTarget = data.liveAdapterOperatorEvidenceAssist?.targets.find(
+    (target) => target.target === selectedTarget.target
+  );
+  const queueTarget = data.liveAdapterOperatorEvidenceQueue?.targets.find((target) => target.target === selectedTarget.target);
+  const workplanTarget = data.liveAdapterOperatorEvidenceWorkplan?.targets.find(
+    (target) => target.target === selectedTarget.target
+  );
+  const fallbackMissingSections = queueTarget?.missingSections ?? workplanTarget?.missingSections ?? [];
+  const checklistRows =
+    assistTarget?.reviewChecklist && assistTarget.reviewChecklist.length > 0
+      ? assistTarget.reviewChecklist
+      : fallbackMissingSections.map((missingSection) => ({
+          missingSection,
+          humanVerificationPrompt: `Human operator must verify ${selectedTarget.target} ${missingSection} from source systems or cited Ariadne refs before recording it in operator-evidence.md.`,
+          existingEvidenceRefs: workplanTarget?.evidenceRefs ?? queueTarget?.evidenceRefs ?? [],
+          promotedLiveEvidenceRefs: [],
+          gbrainQueries: workplanTarget?.gbrainQueries ?? [],
+          humanVerificationRequired: true as const
+        }));
+  if (checklistRows.length === 0) return undefined;
+  const evidenceFileRef =
+    assistTarget?.evidenceFileRef ?? `projects/${data.project}/control/operator-evidence/${selectedTarget.target}/operator-evidence.md`;
+  const assistFileRef =
+    assistTarget?.assistFileRef ?? `projects/${data.project}/control/operator-evidence/${selectedTarget.target}/read-only-assist.md`;
+  return {
+    target: selectedTarget.target,
+    status: assistTarget?.status ?? queueTarget?.status ?? selectedTarget.status ?? "needs_evidence",
+    evidenceFileRef,
+    assistFileRef,
+    checkCommand:
+      assistTarget?.checkCommand ??
+      queueTarget?.checkCommand ??
+      workplanTarget?.checkCommand ??
+      `npm run ariadne -- live-adapter-operator-evidence-check --project ${data.project} --target ${selectedTarget.target} --from vault/${evidenceFileRef}`,
+    importCommand:
+      assistTarget?.importCommand ??
+      queueTarget?.importCommand ??
+      workplanTarget?.importCommand ??
+      `npm run ariadne -- live-adapter-operator-evidence --project ${data.project} --target ${selectedTarget.target} --from vault/${evidenceFileRef} --by <operator>`,
+    missingSections: checklistRows.length,
+    sections: checklistRows.map((row) => {
+      const guidance = guidanceForHumanVerificationSection(row.missingSection);
+      return {
+        missingSection: row.missingSection,
+        prompt: row.humanVerificationPrompt,
+        startWith: guidance.startWith,
+        recordIn: guidance.recordIn,
+        preflight: guidance.preflight,
+        existingEvidenceRefs: row.existingEvidenceRefs,
+        promotedLiveEvidenceRefs: row.promotedLiveEvidenceRefs,
+        gbrainQueries: row.gbrainQueries
+      };
+    })
   };
 }
 

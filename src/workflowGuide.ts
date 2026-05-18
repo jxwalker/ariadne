@@ -75,6 +75,7 @@ export function renderWorkflowGuide(
       if (commandVisible && step.command) stepLines.push(`   Command: ${step.command}`);
       return stepLines;
     }),
+    ...operatorChecklistLines(data, commandVisible),
     "",
     "Surface rule:",
     "Ariadne Console is the human cockpit. Hermes is the runtime backplane for scheduling, sleep, memory, mail, and coordination. NotebookLM and GBrain provide source and memory context. The ariadne runner is the expert automation surface behind the UI."
@@ -92,4 +93,29 @@ export function renderWorkflowGuide(
 
 function surfaceLabel(data: ConsoleData, id: string): string {
   return data.workflow.surfaces.find((surface) => surface.id === id)?.label ?? id;
+}
+
+function operatorChecklistLines(data: ConsoleData, commandVisible: boolean): string[] {
+  const checklist = data.workflow.operatorChecklist;
+  if (!checklist) return [];
+  return [
+    "",
+    `Evidence checklist: ${checklist.target} (${checklist.missingSections} missing)`,
+    `Evidence file: ${checklist.evidenceFileRef}`,
+    `Assist file: ${checklist.assistFileRef}`,
+    ...checklist.sections.flatMap((section, index) => {
+      const lines = [
+        `${index + 1}. ${section.missingSection}`,
+        `   Prompt: ${section.prompt}`,
+        `   Start with: ${section.startWith}`,
+        `   Record in: ${section.recordIn}`,
+        `   Preflight: ${section.preflight}`,
+        `   Context: ${section.existingEvidenceRefs.length} existing ref(s), ${section.promotedLiveEvidenceRefs.length} promoted live ref(s), ${section.gbrainQueries.length} GBrain quer${section.gbrainQueries.length === 1 ? "y" : "ies"}`
+      ];
+      return lines;
+    }),
+    ...(commandVisible
+      ? [`Preflight command: ${checklist.checkCommand}`, `Import command after human verification: ${checklist.importCommand}`]
+      : [])
+  ];
 }

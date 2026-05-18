@@ -8,7 +8,10 @@ export type OperatorEvidenceTarget = LiveAdapterOperatorEvidenceQueue["targets"]
 
 export interface NextOperatorEvidenceTarget {
   target: OperatorEvidenceTarget;
-  status: string;
+  status:
+    | LiveAdapterOperatorEvidenceQueue["targets"][number]["status"]
+    | LiveAdapterOperatorEvidenceWorkplan["targets"][number]["status"]
+    | LiveAdapterOperatorEvidenceAudit["targets"][number]["status"];
   missingSections: number;
   nextAction?: string;
 }

@@ -22,7 +22,7 @@ export function renderHumanVerificationFillOrder(items: HumanVerificationWorkshe
     ...(items.length === 0
       ? ["| 1 | none | No missing sections. | Keep the current imported evidence record under review. | Rerun the target check before cutover. |"]
       : items.map((item, index) => {
-          const guidance = fillGuidanceForSection(item.missingSection);
+          const guidance = guidanceForHumanVerificationSection(item.missingSection);
           return `| ${index + 1} | ${markdownCell(item.missingSection)} | ${markdownCell(guidance.startWith)} | ${markdownCell(guidance.recordIn)} | ${markdownCell(guidance.preflight)} |`;
         }))
   ];
@@ -60,7 +60,7 @@ export function markdownCell(value: string): string {
   return value.replace(/\|/g, "\\|").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/\n/g, " ");
 }
 
-function fillGuidanceForSection(section: string): { startWith: string; recordIn: string; preflight: string } {
+export function guidanceForHumanVerificationSection(section: string): { startWith: string; recordIn: string; preflight: string } {
   const normalized = section.toLowerCase();
   if (normalized.includes("operator identity") || normalized.includes("timestamp")) {
     return {

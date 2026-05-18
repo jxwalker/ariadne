@@ -3048,17 +3048,48 @@ describe("roadmap adapters", () => {
       expect(console.data.workflow.nextAction.steps.find((step) => step.id === "review-assist-and-gbrain")?.surface).toBe(
         "gbrain"
       );
+      expect(console.data.workflow.operatorChecklist?.target).toBe(console.data.workflow.nextAction.title.split(" ")[0]);
+      expect(console.data.workflow.operatorChecklist?.sections.length).toBeGreaterThan(0);
+      const checklistSection = console.data.workflow.operatorChecklist?.sections[0];
+      expect(checklistSection?.startWith).toBeTruthy();
+      expect(checklistSection?.recordIn).toBe("operator-evidence.md");
+      expect(checklistSection?.preflight).toBeTruthy();
+      expect(checklistSection?.gbrainQueries.length).toBeGreaterThan(0);
     }
     const guidedGuide = renderWorkflowGuide(console.data, { mode: "guided", vaultRoot });
     expect(guidedGuide).toContain("Ariadne guide: ariadne");
     expect(guidedGuide).toContain("Mode: Guided");
     expect(guidedGuide).toContain("Next best action:");
+    expect(guidedGuide).toContain("Evidence checklist:");
+    expect(guidedGuide).toContain("GBrain queries");
     expect(guidedGuide).toContain("Commands are hidden");
     expect(guidedGuide).not.toContain("Command: npm run ariadne");
     const operatorGuide = renderWorkflowGuide(console.data, { mode: "operator", vaultRoot });
     expect(operatorGuide).toContain("Command: npm run ariadne");
     expect(operatorGuide).toContain("Surface rule:");
     const { workflow: _workflow, ...consoleWorkflowInput } = console.data;
+    const queueTarget = consoleWorkflowInput.liveAdapterOperatorEvidenceQueue?.targets[0];
+    if (queueTarget && consoleWorkflowInput.liveAdapterOperatorEvidenceQueue) {
+      const emptyChecklistWorkflow = buildConsoleWorkflow({
+        ...consoleWorkflowInput,
+        liveAdapterOperatorEvidenceAssist: undefined,
+        liveAdapterOperatorEvidenceWorkplan: undefined,
+        liveAdapterOperatorEvidenceAudit: undefined,
+        liveAdapterOperatorEvidenceQueue: {
+          ...consoleWorkflowInput.liveAdapterOperatorEvidenceQueue,
+          targets: [
+            {
+              ...queueTarget,
+              latestCheckMissingSections: 0,
+              missingSections: [],
+              evidenceRefs: []
+            }
+          ]
+        }
+      });
+      expect(emptyChecklistWorkflow.nextAction.source).toBe("operator-evidence-queue");
+      expect(emptyChecklistWorkflow.operatorChecklist).toBeUndefined();
+    }
     const withoutOperatorEvidence = {
       ...consoleWorkflowInput,
       liveAdapterOperatorEvidenceQueue: undefined,
@@ -3150,6 +3181,8 @@ describe("roadmap adapters", () => {
     expect(html).toContain("console-data");
     expect(html).toContain("command-disclosure");
     expect(html).toContain("Runner command");
+    expect(html).toContain("operator-evidence-checklist");
+    expect(html).toContain("Evidence checklist");
     expect(html).not.toContain(temp);
     expect(visual.report.status).toBe("passed");
     expect(browser.report.status).toBe("passed");

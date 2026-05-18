@@ -36,6 +36,7 @@ export async function generateConsoleBrowserCheckReport(input: {
     checks.push(await visibleCheck(page, "workflow", "Workflow overview", "text=Capture"));
     checks.push(await visibleCheck(page, "next-best-action", "Next best action", "text=Next best action"));
     checks.push(await visibleCheck(page, "next-action-steps", "Next action steps", '[data-visual-role="next-action-steps"]'));
+    checks.push(await operatorChecklistVisibleCheck(page));
     checks.push(await visibleCheck(page, "operator-modes", "Operator modes", "text=Operator modes"));
     checks.push(await visibleCheck(page, "workflow-surfaces", "Workflow surfaces", "text=Surface split"));
     checks.push(await visibleCheck(page, "gate-matrix", "Gate matrix section", "text=Gate Matrix"));
@@ -130,12 +131,32 @@ async function embeddedWorkflowDataCheck(page: Page): Promise<ConsoleBrowserChec
               artifactRef?: string;
               steps?: Array<{ id?: string; title?: string; detail?: string; surface?: string; kind?: string }>;
             };
+            operatorChecklist?: {
+              target?: string;
+              status?: string;
+              evidenceFileRef?: string;
+              assistFileRef?: string;
+              checkCommand?: string;
+              importCommand?: string;
+              missingSections?: number;
+              sections?: Array<{
+                missingSection?: string;
+                prompt?: string;
+                startWith?: string;
+                recordIn?: string;
+                preflight?: string;
+                existingEvidenceRefs?: unknown[];
+                promotedLiveEvidenceRefs?: unknown[];
+                gbrainQueries?: unknown[];
+              }>;
+            };
             modes?: Array<{ id?: string; primarySurface?: string }>;
             surfaces?: Array<{ id?: string }>;
           };
         };
         const stageIds = data.workflow?.stages?.map((stage) => stage.id).join(",");
         const steps = data.workflow?.nextAction?.steps;
+        const checklist = data.workflow?.operatorChecklist;
         const modes = data.workflow?.modes ?? [];
         const surfaceIds = new Set(data.workflow?.surfaces?.map((surface) => surface.id));
         return (
@@ -145,6 +166,29 @@ async function embeddedWorkflowDataCheck(page: Page): Promise<ConsoleBrowserChec
           Array.isArray(steps) &&
           steps.length > 0 &&
           steps.every((step) => step.id && step.title && step.detail && step.surface && step.kind) &&
+          (!checklist ||
+            (Boolean(
+              checklist.target &&
+                checklist.status &&
+                checklist.evidenceFileRef &&
+                checklist.assistFileRef &&
+                checklist.checkCommand &&
+                checklist.importCommand
+            ) &&
+              Number.isInteger(checklist.missingSections) &&
+              Array.isArray(checklist.sections) &&
+              checklist.sections.length > 0 &&
+              checklist.sections.every(
+                (section) =>
+                  section.missingSection &&
+                  section.prompt &&
+                  section.startWith &&
+                  section.recordIn &&
+                  section.preflight &&
+                  Array.isArray(section.existingEvidenceRefs) &&
+                  Array.isArray(section.promotedLiveEvidenceRefs) &&
+                  Array.isArray(section.gbrainQueries)
+              ))) &&
           modes.some((mode) => mode.id === "guided" && mode.primarySurface === "ariadne-console") &&
           modes.some((mode) => mode.id === "automation" && mode.primarySurface === "hermes") &&
           surfaceIds.has("hermes") &&
@@ -161,6 +205,34 @@ async function embeddedWorkflowDataCheck(page: Page): Promise<ConsoleBrowserChec
     status: valid ? "passed" : "failed",
     detail: valid ? "Embedded workflow data is parseable." : "Embedded workflow data is missing or malformed."
   };
+}
+
+async function operatorChecklistVisibleCheck(page: Page): Promise<ConsoleBrowserCheckReport["checks"][number]> {
+  const required = await page
+    .locator("#console-data")
+    .evaluate((node) => {
+      try {
+        const data = JSON.parse(node.textContent ?? "{}") as { workflow?: { operatorChecklist?: unknown } };
+        return Boolean(data.workflow?.operatorChecklist);
+      } catch {
+        return false;
+      }
+    })
+    .catch(() => false);
+  if (!required) {
+    return {
+      id: "operator-evidence-checklist",
+      label: "Operator evidence checklist",
+      status: "passed",
+      detail: "No operator checklist is required."
+    };
+  }
+  return visibleCheck(
+    page,
+    "operator-evidence-checklist",
+    "Operator evidence checklist",
+    '[data-visual-role="operator-evidence-checklist"]'
+  );
 }
 
 async function operatorEvidenceCheckCommandCheck(page: Page): Promise<ConsoleBrowserCheckReport["checks"][number]> {
