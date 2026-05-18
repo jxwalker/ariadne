@@ -379,10 +379,11 @@ function operatorChecklist(checklist: ConsoleData["workflow"]["operatorChecklist
     '<div class="operator-checklist" data-visual-role="operator-evidence-checklist">',
     '<div class="workflow-subhead"><span class="label">Evidence checklist</span><p>Work one missing section at a time; GBrain is context, not proof.</p></div>',
     `<div class="checklist-summary"><strong>${escapeHtml(checklist.target)}</strong><span class="checklist-status ${statusClass(checklist.status)}">${escapeHtml(checklist.status)}</span><small>${checklist.missingSections} missing section(s)</small></div>`,
+    `<div class="checklist-progress" data-visual-role="operator-evidence-progress"><strong>Start here: ${escapeHtml(checklist.fillProgress.currentSection)}</strong><span>${checklist.fillProgress.readyForHumanFill}/${checklist.missingSections} ready for human fill</span><span>${checklist.fillProgress.contextBacked} context-backed</span><span>${checklist.fillProgress.promotedLiveEvidenceBacked} live-evidence-backed</span><span>${checklist.fillProgress.gbrainBacked} GBrain-backed</span></div>`,
     '<ol class="checklist-sections">',
     ...checklist.sections.map(
       (section) =>
-        `<li><div><strong>${escapeHtml(section.missingSection)}</strong><span>${section.gbrainQueries.length} GBrain</span></div><p>${escapeHtml(section.prompt)}</p><dl><dt>Start with</dt><dd>${escapeHtml(section.startWith)}</dd><dt>Record in</dt><dd>${escapeHtml(section.recordIn)}</dd><dt>Preflight</dt><dd>${escapeHtml(section.preflight)}</dd></dl><small>${section.existingEvidenceRefs.length} existing ref(s), ${section.promotedLiveEvidenceRefs.length} promoted live ref(s)</small></li>`
+        `<li class="${section.current ? "checklist-current" : ""}"><div><strong>${escapeHtml(section.missingSection)}</strong><span class="${statusClass(section.status)}">${escapeHtml(`${section.status}${section.current ? " (current)" : ""}`)}</span></div><p>${escapeHtml(section.prompt)}</p><dl><dt>Start with</dt><dd>${escapeHtml(section.startWith)}</dd><dt>Record in</dt><dd>${escapeHtml(section.recordIn)}</dd><dt>Preflight</dt><dd>${escapeHtml(section.preflight)}</dd></dl><small>${section.existingEvidenceRefs.length} existing ref(s), ${section.promotedLiveEvidenceRefs.length} promoted live ref(s), ${section.gbrainQueries.length} GBrain quer${section.gbrainQueries.length === 1 ? "y" : "ies"}</small></li>`
     ),
     "</ol>",
     `<small>Evidence: ${escapeHtml(checklist.evidenceFileRef)}</small>`,
@@ -975,6 +976,7 @@ function statusClass(value: string | undefined): string {
     value === "ready_for_import" ||
     value === "ready_for_adapter" ||
     value === "audit_passed" ||
+    value === "ready_for_human_fill" ||
     value === "info"
   ) {
     return "ok";
@@ -998,7 +1000,9 @@ function statusClass(value: string | undefined): string {
     value === "operator_action_required" ||
     value === "needs_evidence" ||
     value === "needs_rework" ||
-    value === "unchecked"
+    value === "unchecked" ||
+    value === "context_available" ||
+    value === "missing_context"
   ) {
     return "warn";
   }
@@ -1274,6 +1278,27 @@ h1 {
   font-family: var(--mono);
   font-size: 12px;
 }
+.checklist-progress {
+  border: 1px solid var(--line);
+  background: var(--bg);
+  padding: 12px;
+  display: flex;
+  gap: 12px;
+  align-items: baseline;
+  flex-wrap: wrap;
+}
+.checklist-progress strong {
+  color: var(--ink);
+  font-family: var(--mono);
+  font-size: 13px;
+}
+.checklist-progress span {
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: .04em;
+  text-transform: uppercase;
+}
 .checklist-sections {
   list-style: decimal;
   list-style-position: outside;
@@ -1288,6 +1313,10 @@ h1 {
   border: 1px solid var(--line);
   padding: 12px;
   background: var(--bg);
+}
+.checklist-sections li.checklist-current {
+  border-color: var(--accent);
+  box-shadow: inset 0 3px 0 var(--accent);
 }
 .checklist-sections li > * + * {
   margin-top: 8px;

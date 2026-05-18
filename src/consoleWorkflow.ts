@@ -1,4 +1,4 @@
-import type { ConsoleData, ConsoleWorkflow } from "./types.js";
+import type { ConsoleData, ConsoleOperatorChecklistSection, ConsoleWorkflow } from "./types.js";
 import { guidanceForHumanVerificationSection } from "./humanVerificationWorksheetMarkdown.js";
 import { selectNextOperatorEvidenceTarget } from "./liveAdapterOperatorEvidenceNextTarget.js";
 
@@ -280,6 +280,22 @@ function operatorChecklist(data: ConsoleWorkflowInput): ConsoleWorkflow["operato
     assistTarget?.evidenceFileRef ?? `projects/${data.project}/control/operator-evidence/${selectedTarget.target}/operator-evidence.md`;
   const assistFileRef =
     assistTarget?.assistFileRef ?? `projects/${data.project}/control/operator-evidence/${selectedTarget.target}/read-only-assist.md`;
+  const sections = checklistRows.map((row, index) => {
+    const guidance = guidanceForHumanVerificationSection(row.missingSection);
+    const status = checklistSectionStatus(row);
+    return {
+      missingSection: row.missingSection,
+      status,
+      current: index === 0,
+      prompt: row.humanVerificationPrompt,
+      startWith: guidance.startWith,
+      recordIn: guidance.recordIn,
+      preflight: guidance.preflight,
+      existingEvidenceRefs: row.existingEvidenceRefs,
+      promotedLiveEvidenceRefs: row.promotedLiveEvidenceRefs,
+      gbrainQueries: row.gbrainQueries
+    };
+  });
   return {
     target: selectedTarget.target,
     status: assistTarget?.status ?? queueTarget?.status ?? selectedTarget.status ?? "needs_evidence",
@@ -296,20 +312,27 @@ function operatorChecklist(data: ConsoleWorkflowInput): ConsoleWorkflow["operato
       workplanTarget?.importCommand ??
       `npm run ariadne -- live-adapter-operator-evidence --project ${data.project} --target ${selectedTarget.target} --from vault/${evidenceFileRef} --by <operator>`,
     missingSections: checklistRows.length,
-    sections: checklistRows.map((row) => {
-      const guidance = guidanceForHumanVerificationSection(row.missingSection);
-      return {
-        missingSection: row.missingSection,
-        prompt: row.humanVerificationPrompt,
-        startWith: guidance.startWith,
-        recordIn: guidance.recordIn,
-        preflight: guidance.preflight,
-        existingEvidenceRefs: row.existingEvidenceRefs,
-        promotedLiveEvidenceRefs: row.promotedLiveEvidenceRefs,
-        gbrainQueries: row.gbrainQueries
-      };
-    })
+    fillProgress: {
+      currentSection: sections[0]?.missingSection ?? "none",
+      readyForHumanFill: sections.filter((section) => section.status === "ready_for_human_fill").length,
+      contextBacked: sections.filter((section) => section.existingEvidenceRefs.length > 0).length,
+      promotedLiveEvidenceBacked: sections.filter((section) => section.promotedLiveEvidenceRefs.length > 0).length,
+      gbrainBacked: sections.filter((section) => section.gbrainQueries.length > 0).length
+    },
+    sections
   };
+}
+
+function checklistSectionStatus(row: {
+  existingEvidenceRefs: string[];
+  promotedLiveEvidenceRefs: string[];
+  gbrainQueries: string[];
+}): ConsoleOperatorChecklistSection["status"] {
+  const hasEvidence = row.existingEvidenceRefs.length > 0 || row.promotedLiveEvidenceRefs.length > 0;
+  const hasGbrain = row.gbrainQueries.length > 0;
+  if (hasEvidence && hasGbrain) return "ready_for_human_fill";
+  if (hasEvidence || hasGbrain) return "context_available";
+  return "missing_context";
 }
 
 function projectWorkflowStages(data: ConsoleWorkflowInput): ConsoleWorkflow["stages"] {

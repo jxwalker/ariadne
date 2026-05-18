@@ -3055,6 +3055,7 @@ describe("roadmap adapters", () => {
       expect(step.surface).toBeTruthy();
       expect(step.kind).toBeTruthy();
     }
+    const { workflow: _workflow, ...consoleWorkflowInput } = console.data;
     if (console.data.workflow.nextAction.source === "operator-evidence-queue") {
       expect(console.data.workflow.nextAction.steps.map((step) => step.id)).toEqual([
         "open-next-packet",
@@ -3070,18 +3071,88 @@ describe("roadmap adapters", () => {
       );
       expect(console.data.workflow.operatorChecklist?.target).toBe(console.data.workflow.nextAction.title.split(" ")[0]);
       expect(console.data.workflow.operatorChecklist?.sections.length).toBeGreaterThan(0);
+      expect(console.data.workflow.operatorChecklist?.fillProgress.currentSection).toBe(
+        console.data.workflow.operatorChecklist?.sections[0]?.missingSection
+      );
+      expect(console.data.workflow.operatorChecklist?.fillProgress.readyForHumanFill).toBeGreaterThan(0);
       const checklistSection = console.data.workflow.operatorChecklist?.sections[0];
+      expect(checklistSection?.current).toBe(true);
+      expect(checklistSection?.status).toBe("ready_for_human_fill");
       expect(checklistSection?.startWith).toBeTruthy();
       expect(checklistSection?.recordIn).toBe("operator-evidence.md");
       expect(checklistSection?.preflight).toBeTruthy();
       expect(checklistSection?.gbrainQueries.length).toBeGreaterThan(0);
       expect(console.data.workflow.routes.find((route) => route.id === "operator-evidence")?.current).toBe(true);
+      const assistTarget = consoleWorkflowInput.liveAdapterOperatorEvidenceAssist?.targets.find(
+        (target) => target.target === console.data.workflow.operatorChecklist?.target
+      );
+      if (assistTarget && consoleWorkflowInput.liveAdapterOperatorEvidenceAssist) {
+        const classifiedWorkflow = buildConsoleWorkflow({
+          ...consoleWorkflowInput,
+          liveAdapterOperatorEvidenceAssist: {
+            ...consoleWorkflowInput.liveAdapterOperatorEvidenceAssist,
+            targets: [
+              {
+                ...assistTarget,
+                reviewChecklist: [
+                  {
+                    missingSection: "Existing only",
+                    humanVerificationPrompt: "Verify existing context.",
+                    existingEvidenceRefs: ["control/existing.json"],
+                    promotedLiveEvidenceRefs: [],
+                    gbrainQueries: [],
+                    humanVerificationRequired: true
+                  },
+                  {
+                    missingSection: "Promoted only",
+                    humanVerificationPrompt: "Verify promoted live evidence.",
+                    existingEvidenceRefs: [],
+                    promotedLiveEvidenceRefs: ["control/promoted-live-evidence.json"],
+                    gbrainQueries: [],
+                    humanVerificationRequired: true
+                  },
+                  {
+                    missingSection: "Evidence and GBrain",
+                    humanVerificationPrompt: "Verify evidence with GBrain context.",
+                    existingEvidenceRefs: ["control/existing.json"],
+                    promotedLiveEvidenceRefs: [],
+                    gbrainQueries: ["What supports this section?"],
+                    humanVerificationRequired: true
+                  },
+                  {
+                    missingSection: "No context",
+                    humanVerificationPrompt: "Verify from source systems.",
+                    existingEvidenceRefs: [],
+                    promotedLiveEvidenceRefs: [],
+                    gbrainQueries: [],
+                    humanVerificationRequired: true
+                  }
+                ]
+              }
+            ]
+          }
+        });
+        expect(classifiedWorkflow.operatorChecklist?.sections.map((section) => section.status)).toEqual([
+          "context_available",
+          "context_available",
+          "ready_for_human_fill",
+          "missing_context"
+        ]);
+        expect(classifiedWorkflow.operatorChecklist?.fillProgress).toMatchObject({
+          readyForHumanFill: 1,
+          contextBacked: 2,
+          promotedLiveEvidenceBacked: 1,
+          gbrainBacked: 1
+        });
+      }
     }
     const guidedGuide = renderWorkflowGuide(console.data, { mode: "guided", vaultRoot });
     expect(guidedGuide).toContain("Ariadne guide: ariadne");
     expect(guidedGuide).toContain("Mode: Guided");
     expect(guidedGuide).toContain("Next best action:");
     expect(guidedGuide).toContain("Evidence checklist:");
+    expect(guidedGuide).toContain("Start here:");
+    expect(guidedGuide).toContain("ready for human fill");
     expect(guidedGuide).toContain("Interaction routes:");
     expect(guidedGuide).toContain("Sleep, memory, and automation loop");
     expect(guidedGuide).toContain("GBrain queries");
@@ -3090,7 +3161,6 @@ describe("roadmap adapters", () => {
     const operatorGuide = renderWorkflowGuide(console.data, { mode: "operator", vaultRoot });
     expect(operatorGuide).toContain("Command: npm run ariadne");
     expect(operatorGuide).toContain("Surface rule:");
-    const { workflow: _workflow, ...consoleWorkflowInput } = console.data;
     const queueTarget = consoleWorkflowInput.liveAdapterOperatorEvidenceQueue?.targets[0];
     if (queueTarget && consoleWorkflowInput.liveAdapterOperatorEvidenceQueue) {
       const emptyChecklistWorkflow = buildConsoleWorkflow({
@@ -3205,6 +3275,8 @@ describe("roadmap adapters", () => {
     expect(html).toContain("command-disclosure");
     expect(html).toContain("Runner command");
     expect(html).toContain("operator-evidence-checklist");
+    expect(html).toContain("operator-evidence-progress");
+    expect(html).toContain("ready_for_human_fill (current)");
     expect(html).toContain("Evidence checklist");
     expect(html).toContain("workflow-routes");
     expect(html).toContain("Interaction routes");
@@ -3212,6 +3284,27 @@ describe("roadmap adapters", () => {
     expect(visual.report.status).toBe("passed");
     expect(browser.report.status).toBe("passed");
     await expect(fs.stat(path.join(vaultRoot, browser.report.screenshotPath))).resolves.toBeTruthy();
+    const syntheticHtmlPath = path.join(temp, "synthetic-console.html");
+    await fs.writeFile(
+      syntheticHtmlPath,
+      `<!doctype html><html><body><div data-visual-role="operator-evidence-progress">ready</div><script type="application/json" id="console-data">\n${JSON.stringify(console.data)}\n</script></body></html>`
+    );
+    const syntheticVisual = await generateConsoleVisualCheckReport({
+      project: "ariadne",
+      vaultRoot,
+      htmlPath: syntheticHtmlPath
+    });
+    const syntheticBrowser = await generateConsoleBrowserCheckReport({
+      project: "ariadne",
+      vaultRoot,
+      htmlPath: syntheticHtmlPath,
+      width: 640,
+      height: 480
+    });
+    expect(syntheticVisual.report.checks.find((check) => check.id === "operator-evidence-progress")?.status).toBe("passed");
+    expect(syntheticBrowser.report.checks.find((check) => check.id === "operator-evidence-progress")?.status).toBe(
+      "passed"
+    );
   });
 
   it("builds GitHub-specific mutation readiness plans", async () => {
