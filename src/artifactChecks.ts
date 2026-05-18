@@ -459,6 +459,13 @@ const ARTIFACT_SPECS: ArtifactSpec[] = [
     relativePath: "control/roadmap-completion-audit.json"
   },
   {
+    id: "roadmap-control-refresh",
+    label: "Roadmap control refresh report",
+    required: false,
+    kind: "file",
+    relativePath: "control/roadmap-control-refresh.json"
+  },
+  {
     id: "mutation-dry-runs",
     label: "Mutation dry-run records",
     required: false,

@@ -185,6 +185,7 @@ Implemented:
 - trend report generation
 - conservative roadmap-completion audit that blocks until artifact, behavior, evaluation, console, GBrain, operator-evidence, review-session, and cutover evidence prove the roadmap complete
 - roadmap-completion audit next-target guidance that emits the one-step next operator packet command plus target-scoped operator-evidence, review-session, and cutover commands from the current queue
+- roadmap-control-refresh command that regenerates live-adapter control artifacts, operator evidence queue, next operator packet, roadmap audit, GBrain export, and artifact checks before completion decisions
 - token/cost metrics from Hermes and review tools
 - runner support for `evaluation`, `evaluation-record`, `evaluation-trends`, `usage-import`, `usage-report`, `artifact-checks`, `benchmark-pack`, and `benchmark-run`
 - mutation and approved-fixture checks for behavior confidence

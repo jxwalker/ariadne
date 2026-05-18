@@ -129,6 +129,8 @@ The repair plan does not approve or execute anything. It classifies blocker type
 
 `status` exposes the same next-target selection in the normal project summary. When operator evidence is blocked it prints the target, queue/audit status, missing-section count, next action, the one-step next operator packet command, and target-scoped follow-up commands. This keeps the unattended loop grounded in the same evidence as `roadmap-completion-audit` without creating approval or operator evidence.
 
+`roadmap-control-refresh` is the deterministic refresh pass for stale control outputs. It regenerates mutation-readiness audit and repair guidance, live-adapter readiness, next actions, approval pack, approval-review audit, dossiers, evidence templates, operator workplan, workspace, read-only assist, workspace preflight, queue, next operator packet, review session, cutover audit, roadmap completion audit, GBrain export, and artifact checks. It writes `control/roadmap-control-refresh.json` and `.md`, keeps `mutationApproved=false`, and does not import operator evidence.
+
 `live-adapter-operator-evidence-workspace` evaluates the queue into concrete operator paperwork. It proves the remaining work has target-specific files, check commands, import commands, support refs, and GBrain note slots, but it still does not prove the evidence has been filled or approved.
 
 When `live-adapter-operator-evidence-workspace` is run with `--target` and a current queue/workplan already exists, it reuses those artifacts and writes only the scoped workspace plus that target's fillable files. This keeps one-adapter paperwork from refreshing unrelated global control reports.

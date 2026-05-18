@@ -70,6 +70,7 @@ import { planNotebookLmMutation } from "../src/notebookLmMutation.js";
 import { recordPlaywrightEvidence } from "../src/playwrightEvidence.js";
 import { generatePrd } from "../src/prd.js";
 import { generateRecoveryReport } from "../src/recovery.js";
+import { refreshRoadmapControlArtifacts } from "../src/roadmapControlRefresh.js";
 import { generateRoadmapCompletionAudit } from "../src/roadmapCompletionAudit.js";
 import { captureTargetAppEvidence } from "../src/targetAppCapture.js";
 import { runTargetMutationExecution, targetForMutationExecutionCommand } from "../src/targetMutationExecute.js";
@@ -1897,7 +1898,46 @@ describe("roadmap adapters", () => {
     expect(e2eSmokeCheck?.status).toBe("present");
     expect(mutationDryRunCheck?.status).toBe("present");
     expect(mutationExecutionCheck?.status).toBe("present");
-  });
+
+    const controlRefresh = await refreshRoadmapControlArtifacts({ project: "ariadne", vaultRoot });
+    expect(controlRefresh.report.status).toBe("blocked");
+    expect(controlRefresh.report.mutationApproved).toBe(false);
+    expect(controlRefresh.report.approvalGranted).toBe(false);
+    expect(controlRefresh.report.operatorEvidenceRecordCreated).toBe(false);
+    expect(controlRefresh.report.summary.gbrainDocuments).toBeGreaterThan(0);
+    expect(controlRefresh.report.summary.operatorNextTarget).toBeTruthy();
+    expect(controlRefresh.report.commands.nextOperatorPacket).toContain("live-adapter-operator-evidence-next");
+    expect(controlRefresh.report.artifacts.liveAdapterNextActions).toContain("control/live-adapter-next-actions.json");
+    expect(controlRefresh.report.artifacts.roadmapCompletionAudit).toContain("control/roadmap-completion-audit.json");
+    expect(controlRefresh.report.artifacts.gbrainExport).toContain("integrations/gbrain/gbrain-export.json");
+    const refreshedNextActions = JSON.parse(
+      await fs.readFile(path.join(vaultRoot, controlRefresh.report.artifacts.liveAdapterNextActions), "utf8")
+    ) as Awaited<ReturnType<typeof generateLiveAdapterNextActions>>["report"];
+    expect(
+      refreshedNextActions.targets.some((target) =>
+        target.actions.some((action) => action.command?.includes("live-adapter-operator-evidence-next"))
+      )
+    ).toBe(true);
+    const refreshedRoadmap = JSON.parse(
+      await fs.readFile(path.join(vaultRoot, controlRefresh.report.artifacts.roadmapCompletionAudit), "utf8")
+    ) as Awaited<ReturnType<typeof generateRoadmapCompletionAudit>>["audit"];
+    expect(
+      refreshedRoadmap.requirements
+        .find((requirement) => requirement.id === "operator-evidence")
+        ?.nextCommands.some((command) => command.includes("live-adapter-operator-evidence-next"))
+    ).toBe(true);
+    const refreshedGbrain = JSON.parse(
+      await fs.readFile(path.join(vaultRoot, controlRefresh.report.artifacts.gbrainExport), "utf8")
+    ) as Awaited<ReturnType<typeof exportGbrainBundle>>["bundle"];
+    expect(refreshedGbrain.documents.some((document) => document.slug === "live-adapter/roadmap-completion")).toBe(true);
+    expect(
+      refreshedGbrain.documents.some((document) => document.slug.startsWith("live-adapter/operator-assist"))
+    ).toBe(true);
+    const refreshArtifactChecks = await generateArtifactCheckReport({ project: "ariadne", vaultRoot });
+    expect(refreshArtifactChecks.report.checks.find((check) => check.id === "roadmap-control-refresh")?.status).toBe(
+      "present"
+    );
+  }, 15000);
 
   it("uses environment defaults for local runtime endpoint URLs and canary models", async () => {
     const { vaultRoot } = await preparedProject();
