@@ -23,6 +23,7 @@ import { planDeploymentMutation } from "./deploymentMutation.js";
 import { generateEvaluationPlan, recordEvaluationRun } from "./evaluation.js";
 import { generateEvaluationTrendReport } from "./evaluationTrends.js";
 import { runE2eSmoke } from "./e2eSmoke.js";
+import { loadLocalEnvDefaults } from "./envDefaults.js";
 import { markRunStatus, planExecution } from "./execution.js";
 import { importExtractionResult } from "./extractionResults.js";
 import { extractionRunnerOption, planExtractionRunner } from "./extractionRunnerPlan.js";
@@ -247,6 +248,7 @@ function usage(): string {
 }
 
 async function main(): Promise<void> {
+  await loadLocalEnvDefaults();
   const parsed = parseArgs(process.argv.slice(2));
   const vaultRoot = path.resolve(optionString(parsed.options, "vault", defaultVaultRoot()));
   const project = optionString(parsed.options, "project", "default");

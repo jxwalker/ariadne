@@ -295,6 +295,15 @@ ARIADNE_ATLAS_URL=http://your-atlas-host.tailnet:8888/v1 ARIADNE_ATLAS_CANARY_MO
 
 The static infrastructure registry records Atlas with a neutral `atlas.local` alias as a placeholder. Pass the real local URL, such as a LAN or tailnet address, with `ARIADNE_ATLAS_URL` or `--atlas-url` when collecting runtime evidence. Runtime probe artifacts and appended canary usage records are ignored by Git by default because they may include private endpoint URLs.
 
+For unattended local runs, place private `ARIADNE_` runtime defaults in a git-ignored `.env` file in the current working directory:
+
+```bash
+ARIADNE_ATLAS_URL=http://your-atlas-host.tailnet:8888/v1
+ARIADNE_ATLAS_CANARY_MODEL=qwen3.6-35b-a3b-nvfp4-atlas
+```
+
+Ariadne loads `.env` before dispatching commands, ignores non-`ARIADNE_` keys, and does not overwrite variables already exported in the shell.
+
 Run the local end-to-end smoke harness:
 
 ```bash
