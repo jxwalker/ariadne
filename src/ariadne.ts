@@ -220,6 +220,7 @@ function usage(): string {
     "  ariadne live-adapter-operator-evidence --project <project> --target <github|deployment|hermes-cron|openscorpion|gsd2|notebooklm> --from <operator-evidence.md> --by <operator> [--notes <text>]",
     "  ariadne live-adapter-operator-evidence-audit --project <project>",
     "  ariadne live-adapter-operator-evidence-next --project <project> [--target <github|deployment|hermes-cron|openscorpion|gsd2|notebooklm>]",
+    "  ariadne operator-next --project <project> [--target <github|deployment|hermes-cron|openscorpion|gsd2|notebooklm>]",
     "  ariadne live-adapter-operator-evidence-workplan --project <project>",
     "  ariadne live-adapter-operator-evidence-queue --project <project>",
     "  ariadne live-adapter-operator-evidence-workspace --project <project> [--target <github|deployment|hermes-cron|openscorpion|gsd2|notebooklm>]",
@@ -1456,6 +1457,26 @@ async function main(): Promise<void> {
     return;
   }
 
+  if (parsed.command === "operator-next") {
+    const packet = await generateLiveAdapterOperatorEvidenceNextPacket({
+      project,
+      vaultRoot,
+      target: optionalLiveAdapterOperatorEvidenceTarget(parsed.options)
+    });
+    const consoleHtml = await generateConsoleHtml({ project, vaultRoot, refreshData: true });
+    const evidenceRef = operatorEvidenceFileRef(packet.packet.project, packet.packet.target, packet.packet.evidenceRefs);
+    console.log(`Ariadne operator next: ${packet.packet.target}`);
+    console.log(`Status: ${packet.packet.status}`);
+    console.log(`Missing sections: ${packet.packet.summary.missingSections}`);
+    console.log(`Console: ${consoleHtml.htmlPath}`);
+    console.log(`Packet: ${packet.markdownPath}`);
+    console.log(`Fill: ${path.join(vaultRoot, evidenceRef)}`);
+    console.log(`Preflight: ${packet.packet.commands.check}`);
+    console.log(`Import after human verification: ${packet.packet.afterHumanVerificationCommands.import}`);
+    console.log("Rule: do not import until a human has filled the evidence file and the preflight reports complete evidence.");
+    return;
+  }
+
   if (parsed.command === "live-adapter-operator-evidence-workplan") {
     const result = await generateLiveAdapterOperatorEvidenceWorkplan({ project, vaultRoot });
     console.log(`Live adapter operator evidence workplan: ${result.markdownPath}`);
@@ -1907,6 +1928,13 @@ function optionalLiveAdapterOperatorEvidenceTarget(options: Map<string, string |
   if (value === undefined) return undefined;
   if (value === true) throw new Error("--target requires a value.");
   return liveAdapterOperatorEvidenceTargetOption(value);
+}
+
+function operatorEvidenceFileRef(project: string, target: string, evidenceRefs: string[]): string {
+  return (
+    evidenceRefs.find((ref) => ref.endsWith(`/control/operator-evidence/${target}/operator-evidence.md`)) ??
+    `projects/${project}/control/operator-evidence/${target}/operator-evidence.md`
+  );
 }
 
 function optionalLiveAdapterTarget(options: Map<string, string | true>) {
