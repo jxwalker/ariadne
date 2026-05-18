@@ -13,6 +13,7 @@ import type {
   EvaluationTrendReport,
   LiveAdapterCutoverAudit,
   LiveAdapterOperatorEvidenceAudit,
+  LiveAdapterOperatorEvidenceAssist,
   LiveAdapterOperatorEvidenceQueue,
   LiveAdapterOperatorEvidenceWorkspace,
   LiveAdapterOperatorEvidenceWorkplan,
@@ -47,6 +48,9 @@ export async function generateRoadmapCompletionAudit(input: {
   const operatorEvidenceWorkspace = await readJson<LiveAdapterOperatorEvidenceWorkspace>(
     path.join(dir, "control", "live-adapter-operator-evidence-workspace.json")
   );
+  const operatorEvidenceAssist = await readJson<LiveAdapterOperatorEvidenceAssist>(
+    path.join(dir, "control", "live-adapter-operator-evidence-assist.json")
+  );
   const cutoverAudit = await readJson<LiveAdapterCutoverAudit>(path.join(dir, "control", "live-adapter-cutover-audit.json"));
   const reviewSession = await readJson<LiveAdapterReviewSession>(path.join(dir, "control", "live-adapter-review-session.json"));
   const dossiers = await readDossiers(path.join(dir, "control", "live-adapter-dossiers"));
@@ -59,6 +63,11 @@ export async function generateRoadmapCompletionAudit(input: {
     operatorEvidenceWorkplan,
     operatorEvidenceAudit
   );
+  const nextOperatorEvidenceAssist = nextOperatorEvidenceTarget
+    ? await readJson<LiveAdapterOperatorEvidenceAssist>(
+        path.join(dir, "control", `live-adapter-operator-evidence-assist-${nextOperatorEvidenceTarget.target}.json`)
+      )
+    : undefined;
 
   const requirements: Requirement[] = [
     {
@@ -210,11 +219,24 @@ export async function generateRoadmapCompletionAudit(input: {
     operatorEvidenceRequirement.detail += ` Workspace status is ${operatorEvidenceWorkspace.status} with ${operatorEvidenceWorkspace.summary.workspaceFiles} fillable file(s).`;
     operatorEvidenceRequirement.evidenceRefs.push("projects/" + project + "/control/live-adapter-operator-evidence-workspace.json");
   }
+  const aggregateAssist = nextOperatorEvidenceAssist ?? operatorEvidenceAssist;
+  if (operatorEvidenceRequirement && aggregateAssist) {
+    operatorEvidenceRequirement.detail += ` Assist status is ${aggregateAssist.status} with ${aggregateAssist.summary.promotedLiveEvidence} promoted live-evidence item(s).`;
+    addEvidenceRefs(operatorEvidenceRequirement, [assistRef(project, aggregateAssist)]);
+  }
   if (operatorEvidenceRequirement && nextOperatorEvidenceTarget) {
     operatorEvidenceRequirement.detail += ` Next target is ${nextOperatorEvidenceTarget.target} (${nextOperatorEvidenceTarget.status}, ${nextOperatorEvidenceTarget.missingSections} missing section(s)).`;
-    operatorEvidenceRequirement.evidenceRefs.push(
+    addEvidenceRefs(operatorEvidenceRequirement, [
       `projects/${project}/control/operator-evidence/${nextOperatorEvidenceTarget.target}/operator-evidence.md`
-    );
+    ]);
+    const nextAssistTarget = aggregateAssist?.targets.find((target) => target.target === nextOperatorEvidenceTarget.target);
+    if (nextAssistTarget) {
+      operatorEvidenceRequirement.detail += ` Next target assist has ${nextAssistTarget.existingEvidenceRefs.length} existing ref(s), ${nextAssistTarget.promotedLiveEvidence.length} promoted live-evidence item(s), and ${nextAssistTarget.supportFileRefs.length} support file(s).`;
+      addEvidenceRefs(operatorEvidenceRequirement, [
+        nextAssistTarget.assistFileRef,
+        ...nextAssistTarget.promotedLiveEvidence.map((item) => item.ref)
+      ]);
+    }
   }
   const audit: RoadmapCompletionAudit = {
     schemaVersion: 1,
@@ -227,6 +249,16 @@ export async function generateRoadmapCompletionAudit(input: {
   const jsonPath = await writeJsonArtifact(input.vaultRoot, project, "control", "roadmap-completion-audit.json", audit);
   const markdownPath = await writeTextArtifact(input.vaultRoot, project, "control", "roadmap-completion-audit.md", renderAudit(audit));
   return { jsonPath, markdownPath, audit };
+}
+
+function assistRef(project: string, assist: LiveAdapterOperatorEvidenceAssist): string {
+  return assist.target
+    ? `projects/${project}/control/live-adapter-operator-evidence-assist-${assist.target}.json`
+    : `projects/${project}/control/live-adapter-operator-evidence-assist.json`;
+}
+
+function addEvidenceRefs(requirement: Requirement, refs: string[]): void {
+  requirement.evidenceRefs = Array.from(new Set([...requirement.evidenceRefs, ...refs]));
 }
 
 async function readJson<T>(filePath: string): Promise<T | undefined> {
