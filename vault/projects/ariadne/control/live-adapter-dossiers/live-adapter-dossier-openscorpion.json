@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "project": "ariadne",
-  "generatedAt": "2026-05-18T04:58:56.278Z",
+  "generatedAt": "2026-05-18T05:22:24.552Z",
   "target": "openscorpion",
   "status": "ready_for_operator_review",
   "readinessRef": "projects/ariadne/control/live-adapter-readiness.json",

@@ -1101,6 +1101,40 @@ export interface LiveAdapterOperatorEvidenceNextPacket {
   evidenceRefs: string[];
 }
 
+export interface LiveAdapterOperatorEvidenceDraft {
+  schemaVersion: 1;
+  project: string;
+  generatedAt: string;
+  target: Exclude<MutationReadinessPlan["target"], "generic">;
+  status: "drafted_for_human_verification";
+  mutationApproved: false;
+  approvalGranted: false;
+  operatorEvidenceRecordCreated: false;
+  sourcePacketRef: string;
+  draftFileRef: string;
+  summary: {
+    missingSections: number;
+    candidateRows: number;
+    existingEvidenceRefs: number;
+    promotedLiveEvidenceRefs: number;
+    gbrainQueries: number;
+  };
+  commands: {
+    check: string;
+    importAfterHumanVerification: string;
+  };
+  rows: Array<{
+    missingSection: string;
+    humanVerificationPrompt: string;
+    candidateAction: string;
+    existingEvidenceRefs: string[];
+    promotedLiveEvidenceRefs: string[];
+    gbrainQueries: string[];
+    humanVerificationRequired: true;
+  }>;
+  notes: string[];
+}
+
 export interface LiveEvidencePromotion {
   schemaVersion: 1;
   id: string;

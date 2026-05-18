@@ -431,6 +431,16 @@ const ARTIFACT_SPECS: ArtifactSpec[] = [
     minimumCount: 1
   },
   {
+    id: "live-adapter-operator-evidence-drafts",
+    label: "Live adapter operator evidence drafts",
+    required: false,
+    kind: "matching-files",
+    relativePath: "control",
+    prefix: "live-adapter-operator-evidence-draft-",
+    suffix: ".json",
+    minimumCount: 1
+  },
+  {
     id: "live-evidence-promotions",
     label: "Sanitized live evidence promotions",
     required: false,
@@ -449,7 +459,8 @@ const ARTIFACT_SPECS: ArtifactSpec[] = [
     prefix: "",
     suffix: ".md",
     minimumCount: 6,
-    recursive: true
+    recursive: true,
+    excludePrefixes: ["operator-evidence-draft"]
   },
   {
     id: "roadmap-completion-audit",

@@ -3,7 +3,7 @@
 Project: ariadne
 Target: deployment
 Status: blocked
-Generated: 2026-05-18T04:58:56.243Z
+Generated: 2026-05-18T05:22:24.514Z
 Mutation allowed: false
 
 This audit does not enable or execute live adapters. It verifies whether a target has enough current evidence to replace placeholder commands with a target-specific live adapter implementation.

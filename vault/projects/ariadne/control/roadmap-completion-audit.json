@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "project": "ariadne",
-  "generatedAt": "2026-05-18T04:58:56.302Z",
+  "generatedAt": "2026-05-18T05:22:24.574Z",
   "status": "blocked",
   "summary": {
     "requirements": 9,
@@ -14,7 +14,7 @@
       "id": "core-artifact-contracts",
       "title": "Core pipeline artifacts are present",
       "status": "passed",
-      "detail": "55 artifacts present; 0 required missing.",
+      "detail": "56 artifacts present; 0 required missing.",
       "evidenceRefs": [
         "projects/ariadne/evaluation/artifact-checks.json"
       ],
@@ -95,6 +95,7 @@
         "npm run ariadne -- live-adapter-operator-evidence-next --project ariadne --target deployment",
         "npm run ariadne -- live-adapter-operator-evidence-workspace --project ariadne --target deployment",
         "npm run ariadne -- live-adapter-operator-evidence-assist --project ariadne --target deployment",
+        "npm run ariadne -- live-adapter-operator-evidence-draft --project ariadne --target deployment",
         "npm run ariadne -- live-adapter-operator-evidence-check-all --project ariadne --source workspace --target deployment",
         "npm run ariadne -- live-adapter-operator-evidence-import-ready --project ariadne --by <operator> --target deployment",
         "npm run ariadne -- live-adapter-review-session --project ariadne --target deployment",

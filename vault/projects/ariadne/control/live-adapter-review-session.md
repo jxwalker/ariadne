@@ -3,7 +3,7 @@
 Project: ariadne
 Target: all
 Status: operator_review_required
-Generated: 2026-05-18T04:58:56.289Z
+Generated: 2026-05-18T05:22:24.560Z
 Mutation approved: false
 Operator decision required: true
 
@@ -67,7 +67,7 @@ Missing operator evidence sections:
 - Target-guarded execution wrapper
 - Exact confirm-plan proof
 
-Latest preflight: projects/ariadne/control/live-adapter-operator-evidence-checks/operator-evidence-check-github-2026-05-18T04-58-55-489Z.json
+Latest preflight: projects/ariadne/control/live-adapter-operator-evidence-checks/operator-evidence-check-github-2026-05-18T05-22-23-800Z.json
 
 Read-only assist: projects/ariadne/control/operator-evidence/github/read-only-assist.md
 
@@ -198,7 +198,7 @@ Missing operator evidence sections:
 - Target-guarded execution wrapper
 - Exact confirm-plan proof
 
-Latest preflight: projects/ariadne/control/live-adapter-operator-evidence-checks/operator-evidence-check-deployment-2026-05-18T04-58-55-490Z.json
+Latest preflight: projects/ariadne/control/live-adapter-operator-evidence-checks/operator-evidence-check-deployment-2026-05-18T05-22-23-801Z.json
 
 Read-only assist: projects/ariadne/control/operator-evidence/deployment/read-only-assist.md
 
@@ -332,7 +332,7 @@ Missing operator evidence sections:
 - Target-guarded execution wrapper
 - Exact confirm-plan proof
 
-Latest preflight: projects/ariadne/control/live-adapter-operator-evidence-checks/operator-evidence-check-hermes-cron-2026-05-18T04-58-55-491Z.json
+Latest preflight: projects/ariadne/control/live-adapter-operator-evidence-checks/operator-evidence-check-hermes-cron-2026-05-18T05-22-23-802Z.json
 
 Read-only assist: projects/ariadne/control/operator-evidence/hermes-cron/read-only-assist.md
 
@@ -466,7 +466,7 @@ Missing operator evidence sections:
 - Target-guarded execution wrapper
 - Exact confirm-plan proof
 
-Latest preflight: projects/ariadne/control/live-adapter-operator-evidence-checks/operator-evidence-check-openscorpion-2026-05-18T04-58-55-491Z.json
+Latest preflight: projects/ariadne/control/live-adapter-operator-evidence-checks/operator-evidence-check-openscorpion-2026-05-18T05-22-23-802Z.json
 
 Read-only assist: projects/ariadne/control/operator-evidence/openscorpion/read-only-assist.md
 
@@ -600,7 +600,7 @@ Missing operator evidence sections:
 - Target-guarded execution wrapper
 - Exact confirm-plan proof
 
-Latest preflight: projects/ariadne/control/live-adapter-operator-evidence-checks/operator-evidence-check-gsd2-2026-05-18T04-58-55-492Z.json
+Latest preflight: projects/ariadne/control/live-adapter-operator-evidence-checks/operator-evidence-check-gsd2-2026-05-18T05-22-23-803Z.json
 
 Read-only assist: projects/ariadne/control/operator-evidence/gsd2/read-only-assist.md
 
@@ -734,7 +734,7 @@ Missing operator evidence sections:
 - Target-guarded execution wrapper
 - Exact confirm-plan proof
 
-Latest preflight: projects/ariadne/control/live-adapter-operator-evidence-checks/operator-evidence-check-notebooklm-2026-05-18T04-58-55-493Z.json
+Latest preflight: projects/ariadne/control/live-adapter-operator-evidence-checks/operator-evidence-check-notebooklm-2026-05-18T05-22-23-804Z.json
 
 Read-only assist: projects/ariadne/control/operator-evidence/notebooklm/read-only-assist.md
 

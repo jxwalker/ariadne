@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "project": "ariadne",
-  "generatedAt": "2026-05-18T04:58:56.201Z",
+  "generatedAt": "2026-05-18T05:22:24.481Z",
   "status": "evidence_required",
   "mutationApproved": false,
   "operatorEvidenceAuditRef": "projects/ariadne/control/live-adapter-operator-evidence-audit.json",
@@ -20,8 +20,8 @@
       "target": "github",
       "status": "needs_evidence",
       "operatorEvidenceStatus": "missing_evidence",
-      "latestCheckId": "operator-evidence-check-github-2026-05-18T04-58-55-489Z",
-      "latestCheckRef": "projects/ariadne/control/live-adapter-operator-evidence-checks/operator-evidence-check-github-2026-05-18T04-58-55-489Z.json",
+      "latestCheckId": "operator-evidence-check-github-2026-05-18T05-22-23-800Z",
+      "latestCheckRef": "projects/ariadne/control/live-adapter-operator-evidence-checks/operator-evidence-check-github-2026-05-18T05-22-23-800Z.json",
       "latestCheckStatus": "incomplete",
       "latestCheckMissingSections": 9,
       "missingSections": [
@@ -51,15 +51,15 @@
         "projects/ariadne/control/live-adapter-operator-evidence-workspace.json",
         "projects/ariadne/control/operator-evidence/github/operator-evidence.md",
         "projects/ariadne/control/live-adapter-operator-evidence-audit.json",
-        "projects/ariadne/control/live-adapter-operator-evidence-checks/operator-evidence-check-github-2026-05-18T04-58-55-489Z.json"
+        "projects/ariadne/control/live-adapter-operator-evidence-checks/operator-evidence-check-github-2026-05-18T05-22-23-800Z.json"
       ]
     },
     {
       "target": "deployment",
       "status": "needs_evidence",
       "operatorEvidenceStatus": "missing_evidence",
-      "latestCheckId": "operator-evidence-check-deployment-2026-05-18T04-58-55-490Z",
-      "latestCheckRef": "projects/ariadne/control/live-adapter-operator-evidence-checks/operator-evidence-check-deployment-2026-05-18T04-58-55-490Z.json",
+      "latestCheckId": "operator-evidence-check-deployment-2026-05-18T05-22-23-801Z",
+      "latestCheckRef": "projects/ariadne/control/live-adapter-operator-evidence-checks/operator-evidence-check-deployment-2026-05-18T05-22-23-801Z.json",
       "latestCheckStatus": "incomplete",
       "latestCheckMissingSections": 9,
       "missingSections": [
@@ -90,15 +90,15 @@
         "projects/ariadne/control/operator-evidence/deployment/operator-evidence.md",
         "projects/ariadne/control/live-adapter-operator-evidence-audit.json",
         "projects/ariadne/control/live-evidence-promotions/live-evidence-promotion-deployment-2026-05-17T23-37-04-509Z.json",
-        "projects/ariadne/control/live-adapter-operator-evidence-checks/operator-evidence-check-deployment-2026-05-18T04-58-55-490Z.json"
+        "projects/ariadne/control/live-adapter-operator-evidence-checks/operator-evidence-check-deployment-2026-05-18T05-22-23-801Z.json"
       ]
     },
     {
       "target": "hermes-cron",
       "status": "needs_evidence",
       "operatorEvidenceStatus": "missing_evidence",
-      "latestCheckId": "operator-evidence-check-hermes-cron-2026-05-18T04-58-55-491Z",
-      "latestCheckRef": "projects/ariadne/control/live-adapter-operator-evidence-checks/operator-evidence-check-hermes-cron-2026-05-18T04-58-55-491Z.json",
+      "latestCheckId": "operator-evidence-check-hermes-cron-2026-05-18T05-22-23-802Z",
+      "latestCheckRef": "projects/ariadne/control/live-adapter-operator-evidence-checks/operator-evidence-check-hermes-cron-2026-05-18T05-22-23-802Z.json",
       "latestCheckStatus": "incomplete",
       "latestCheckMissingSections": 9,
       "missingSections": [
@@ -128,15 +128,15 @@
         "projects/ariadne/control/live-adapter-operator-evidence-workspace.json",
         "projects/ariadne/control/operator-evidence/hermes-cron/operator-evidence.md",
         "projects/ariadne/control/live-adapter-operator-evidence-audit.json",
-        "projects/ariadne/control/live-adapter-operator-evidence-checks/operator-evidence-check-hermes-cron-2026-05-18T04-58-55-491Z.json"
+        "projects/ariadne/control/live-adapter-operator-evidence-checks/operator-evidence-check-hermes-cron-2026-05-18T05-22-23-802Z.json"
       ]
     },
     {
       "target": "openscorpion",
       "status": "needs_evidence",
       "operatorEvidenceStatus": "missing_evidence",
-      "latestCheckId": "operator-evidence-check-openscorpion-2026-05-18T04-58-55-491Z",
-      "latestCheckRef": "projects/ariadne/control/live-adapter-operator-evidence-checks/operator-evidence-check-openscorpion-2026-05-18T04-58-55-491Z.json",
+      "latestCheckId": "operator-evidence-check-openscorpion-2026-05-18T05-22-23-802Z",
+      "latestCheckRef": "projects/ariadne/control/live-adapter-operator-evidence-checks/operator-evidence-check-openscorpion-2026-05-18T05-22-23-802Z.json",
       "latestCheckStatus": "incomplete",
       "latestCheckMissingSections": 9,
       "missingSections": [
@@ -166,15 +166,15 @@
         "projects/ariadne/control/live-adapter-operator-evidence-workspace.json",
         "projects/ariadne/control/operator-evidence/openscorpion/operator-evidence.md",
         "projects/ariadne/control/live-adapter-operator-evidence-audit.json",
-        "projects/ariadne/control/live-adapter-operator-evidence-checks/operator-evidence-check-openscorpion-2026-05-18T04-58-55-491Z.json"
+        "projects/ariadne/control/live-adapter-operator-evidence-checks/operator-evidence-check-openscorpion-2026-05-18T05-22-23-802Z.json"
       ]
     },
     {
       "target": "gsd2",
       "status": "needs_evidence",
       "operatorEvidenceStatus": "missing_evidence",
-      "latestCheckId": "operator-evidence-check-gsd2-2026-05-18T04-58-55-492Z",
-      "latestCheckRef": "projects/ariadne/control/live-adapter-operator-evidence-checks/operator-evidence-check-gsd2-2026-05-18T04-58-55-492Z.json",
+      "latestCheckId": "operator-evidence-check-gsd2-2026-05-18T05-22-23-803Z",
+      "latestCheckRef": "projects/ariadne/control/live-adapter-operator-evidence-checks/operator-evidence-check-gsd2-2026-05-18T05-22-23-803Z.json",
       "latestCheckStatus": "incomplete",
       "latestCheckMissingSections": 9,
       "missingSections": [
@@ -204,15 +204,15 @@
         "projects/ariadne/control/live-adapter-operator-evidence-workspace.json",
         "projects/ariadne/control/operator-evidence/gsd2/operator-evidence.md",
         "projects/ariadne/control/live-adapter-operator-evidence-audit.json",
-        "projects/ariadne/control/live-adapter-operator-evidence-checks/operator-evidence-check-gsd2-2026-05-18T04-58-55-492Z.json"
+        "projects/ariadne/control/live-adapter-operator-evidence-checks/operator-evidence-check-gsd2-2026-05-18T05-22-23-803Z.json"
       ]
     },
     {
       "target": "notebooklm",
       "status": "needs_evidence",
       "operatorEvidenceStatus": "missing_evidence",
-      "latestCheckId": "operator-evidence-check-notebooklm-2026-05-18T04-58-55-493Z",
-      "latestCheckRef": "projects/ariadne/control/live-adapter-operator-evidence-checks/operator-evidence-check-notebooklm-2026-05-18T04-58-55-493Z.json",
+      "latestCheckId": "operator-evidence-check-notebooklm-2026-05-18T05-22-23-804Z",
+      "latestCheckRef": "projects/ariadne/control/live-adapter-operator-evidence-checks/operator-evidence-check-notebooklm-2026-05-18T05-22-23-804Z.json",
       "latestCheckStatus": "incomplete",
       "latestCheckMissingSections": 9,
       "missingSections": [
@@ -242,7 +242,7 @@
         "projects/ariadne/control/live-adapter-operator-evidence-workspace.json",
         "projects/ariadne/control/operator-evidence/notebooklm/operator-evidence.md",
         "projects/ariadne/control/live-adapter-operator-evidence-audit.json",
-        "projects/ariadne/control/live-adapter-operator-evidence-checks/operator-evidence-check-notebooklm-2026-05-18T04-58-55-493Z.json"
+        "projects/ariadne/control/live-adapter-operator-evidence-checks/operator-evidence-check-notebooklm-2026-05-18T05-22-23-804Z.json"
       ]
     }
   ]
