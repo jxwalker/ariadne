@@ -4,7 +4,7 @@
 
 `ariadne` is an evidence-threaded control layer for agentic software delivery. It helps a developer move from rough source material, such as drawings, white papers, dictated notes, screenshots, NotebookLM exports, and repo context, into a working, tested, reviewable implementation flow.
 
-Ariadne is not another coding assistant. It is the harness around assistants, local models, NotebookLM, GBrain, Hermes, tests, Playwright, CI, review bots, and deployment evidence.
+Ariadne is a harness around assistants, local models, NotebookLM, GBrain, Hermes, tests, Playwright, CI, review bots, and deployment evidence.
 
 ## MVP Install
 
@@ -187,7 +187,7 @@ npm run ariadne -- e2e-smoke --project ariadne
 
 ## Deployment Intent
 
-Ariadne is designed for a mixed estate:
+Ariadne is designed for a my mixed estate - in the future I will make this more generic.  You will need yo adjust for your own lab environment:
 
 - Macs for development, local verification, screenshots, and Playwright evidence.
 - DGX Spark for high-memory and GPU-heavy model/evaluation workloads.
