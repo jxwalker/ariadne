@@ -1,0 +1,85 @@
+name: CI
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+    branches: [main, master]
+
+permissions:
+  contents: read
+
+jobs:
+  lint-and-test:
+    runs-on: [self-hosted, linux, ariadne, ubuntu-24.04]
+    timeout-minutes: 30
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Type check
+        run: npm run check
+
+      - name: Run tests
+        run: npm test
+
+  build:
+    runs-on: [self-hosted, linux, ariadne, ubuntu-24.04]
+    needs: lint-and-test
+    timeout-minutes: 20
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build
+        run: npm run build
+
+  mvp-verification:
+    runs-on: [self-hosted, linux, ariadne, ubuntu-24.04]
+    needs: build
+    timeout-minutes: 45
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'npm'
+
+      - name: Install dependencies + Playwright
+        run: |
+          npm ci
+          npx playwright install --with-deps chromium
+
+      - name: Run MVP setup & console checks
+        run: npm run setup:mvp
+        continue-on-error: true
+        env:
+          CI: true
+
+      - name: Console visual checks
+        run: npm run ariadne -- console-visual-checks --project ariadne
+        continue-on-error: true
