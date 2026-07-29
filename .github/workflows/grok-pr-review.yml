@@ -19,7 +19,9 @@ concurrency:
 
 jobs:
   review:
-    runs-on: ubuntu-latest
+    # Never expose a self-hosted lab runner or API secret to fork-origin code.
+    if: github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: [self-hosted, Linux, X64, ariadne]
     timeout-minutes: 20
     steps:
       - name: Check Grok API key
