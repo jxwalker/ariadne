@@ -9,6 +9,7 @@ import type { GithubSnapshot } from "./types.js";
 const execFileAsync = promisify(execFile);
 
 const PR_FIELDS = [
+  "author",
   "number",
   "title",
   "state",
@@ -47,6 +48,7 @@ export async function collectGithubSnapshot(input: {
   vaultRoot: string;
   repository: string;
   pullRequest?: number;
+  onlyOpen?: boolean;
   limit?: number;
 }): Promise<{ jsonPath: string; markdownPath: string; snapshot: GithubSnapshot }> {
   const args = input.pullRequest
@@ -57,7 +59,7 @@ export async function collectGithubSnapshot(input: {
         "--repo",
         input.repository,
         "--state",
-        "all",
+        input.onlyOpen ? "open" : "all",
         "--limit",
         String(input.limit ?? 20),
         "--json",
@@ -114,6 +116,7 @@ function normalisePullRequests(raw: unknown): GithubSnapshot["pullRequests"] {
   return values.filter(isObject).map((entry, index) => {
     const checks = normaliseChecks(entry.statusCheckRollup);
     return {
+      author: isObject(entry.author) ? stringValue(entry.author.login) : undefined,
       number: numberValue(entry.number) ?? index + 1,
       title: stringValue(entry.title) ?? `Pull request ${index + 1}`,
       state: stringValue(entry.state) ?? "UNKNOWN",

@@ -1848,6 +1848,7 @@ export interface GithubSnapshot {
     pendingChecks: number;
   };
   pullRequests: Array<{
+    author?: string;
     number: number;
     title: string;
     state: string;
