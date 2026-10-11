@@ -1123,13 +1123,14 @@ h1 {
 .workflow {
   display: grid;
   grid-template-columns: minmax(0, 1fr) minmax(300px, .42fr);
+  align-items: start;
   gap: 20px;
   padding: 22px 0;
   border-bottom: 1px solid var(--line);
 }
 .workflow-lanes {
   display: grid;
-  grid-template-columns: repeat(6, minmax(0, 1fr));
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   border: 1px solid var(--line);
   background: var(--panel);
 }
