@@ -194,6 +194,109 @@ class ActivityTests(unittest.TestCase):
         self.assertEqual(d['runs'][0]['github'][0]['state'],'open');self.assertNotIn('SECRET',canonical(d));self.assertNotIn('PRIVATE',canonical(d))
         with patch('activity_insights.MAX_RECORDS',2):self.assertTrue(project(self.store,{},'24h',1310)['truncated'])
 
+    def control_record(self, directory, category, ident, **values):
+        names={'approvals':'approvals','plans':'mutation-readiness','dryRuns':'mutation-dry-runs','executions':'mutation-executions'}
+        singleton={'audit':'mutation-readiness-audit.json','readiness':'live-adapter-readiness.json','cutover':'live-adapter-cutover-audit.json'}
+        p=directory/names[category]/(ident+'.json') if category in names else directory/singleton[category]
+        p.parent.mkdir(parents=True,exist_ok=True)
+        record={'schemaVersion':1,'id':ident,'project':'ariadne','target':'ingest','generatedAt':'2026-10-12T12:00:00Z','status':'passed'}|values
+        p.write_text(canonical(record));return p
+
+    def test_controls_states_history_and_cross_directory_precedence(self):
+        from activity_controls import controls
+        from activity_server import stamp
+        at=stamp('2026-10-12T13:00:00Z');first=self.root/'dev-control';second=self.root/'overlay-control'
+        self.control_record(first,'approvals','approved',status='approved',decisionBy='Operator',decidedAt='2026-10-12T12:00:00Z')
+        self.control_record(second,'approvals','approved',status='requested',generatedAt='2026-05-01T12:00:00Z')
+        self.control_record(first,'approvals','pending',status='requested')
+        self.control_record(first,'plans','old-plan',status='ready_for_bounded_review',generatedAt='2026-05-01T12:00:00Z')
+        self.control_record(first,'audit','audit',status='blocked',checks=[{'planId':'old-plan','status':'blocked','blockers':['Approval pending']}])
+        self.control_record(first,'dryRuns','dry-run',planId='ingest-plan',exitCode=0)
+        self.control_record(first,'executions','failed-ingest',planId='ingest-plan',status='failed',liveExitCode=1,finishedAt='2026-10-12T12:01:00Z')
+        self.control_record(first,'executions','passed-ingest',planId='ingest-plan',liveExitCode=0,postVerificationExitCode=0,finishedAt='2026-10-12T12:02:00Z',rollback='Restore previous release')
+        d=controls(self.store,{},[str(first),str(second)],at);rows={r['id']:r for r in d['controls']}
+        self.assertEqual(rows['approvals']['status'],'fail');self.assertEqual(rows['approvals']['recordCount'],2)
+        self.assertEqual(rows['plans']['status'],'stale');self.assertEqual(rows['audit']['status'],'fail')
+        self.assertTrue(any(c['recordId']=='old-plan' and 'age ' in c['message'] for c in d['callouts']))
+        self.assertEqual(rows['dryRuns']['status'],'pass');self.assertEqual(rows['executions']['status'],'pass')
+        self.assertEqual(rows['readiness']['status'],'missing');self.assertEqual(rows['executions']['recordCount'],2)
+        self.assertEqual(rows['executions']['records'][0]['postVerify'],'passed')
+        self.assertTrue(any(c['recordId']=='failed-ingest' and 'later record passed-ingest' in c['message'] for c in d['callouts']))
+        self.assertTrue(any(c['recordId']=='pending' for c in d['callouts']))
+        self.assertEqual(d['evidenceDirectories'][0]['state'],'read-only')
+
+    def test_controls_redact_secret_strings_and_drop_raw_fields(self):
+        from activity_controls import controls
+        directory=self.root/'controls'
+        self.control_record(directory,'executions','execution',planId='plan',liveExitCode=0,postVerificationExitCode=0,
+            liveCommand='curl -H "Authorization: Bearer DO_NOT_SHOW" https://example.com',
+            postVerificationCommand='node --check server.js',rollback='Restore previous release',
+            scope='api_key=DO_NOT_SHOW',liveStdout='PRIVATE OUTPUT',postVerificationStderr='PRIVATE ERROR',
+            env={'PASSWORD':'DO_NOT_SHOW'},apiKey='DO_NOT_SHOW')
+        self.control_record(directory,'approvals','approval',status='approved',decisionBy='Operator',
+            action='echo ghp_abcdefghijklmnop',rollback='echo opaque-value',scope='normal bounded scope')
+        d=controls(self.store,{'source':{'secret':'opaque-value'}},[str(directory)])
+        raw=canonical(d)
+        for forbidden in ['DO_NOT_SHOW','PRIVATE OUTPUT','PRIVATE ERROR','PASSWORD','opaque-value','ghp_abcdefghijklmnop','liveStdout','postVerificationStderr','apiKey']:
+            self.assertNotIn(forbidden,raw)
+        self.assertIn('[redacted sensitive material]',raw);self.assertIn('node --check server.js',raw)
+        self.assertIn('Restore previous release',raw);self.assertIn('Operator',raw)
+        from activity_controls import text
+        for value in ['curl --key HIDDEN https://example.com','key=HIDDEN','refreshKey: HIDDEN','JWT eyJabc.defghi.signature','PRIVATE_KEY=HIDDEN']:
+            self.assertEqual(text(value),'[redacted sensitive material]')
+
+    def test_controls_invalid_missing_timestamp_symlink_and_limits(self):
+        from activity_controls import controls
+        directory=self.root/'controls'
+        self.control_record(directory,'approvals','bad-clock',status='approved',generatedAt='not-a-date')
+        outside=self.root/'outside.json';outside.write_text('PRIVATE OUTSIDE')
+        (directory/'approvals'/'link.json').symlink_to(outside)
+        (directory/'approvals'/'broken.json').write_text('not-json SECRET')
+        (self.root/'linked-control').symlink_to(directory,target_is_directory=True)
+        d=controls(self.store,{},[str(directory),str(self.root/'absent'),'relative',str(self.root/'linked-control')])
+        row=next(r for r in d['controls'] if r['id']=='approvals');self.assertEqual(row['status'],'missing')
+        self.assertTrue(d['warnings']);self.assertNotIn('PRIVATE',canonical(d));self.assertNotIn('SECRET',canonical(d))
+        self.assertEqual([r['state'] for r in d['evidenceDirectories']],['read-only','missing','invalid','invalid'])
+        with patch('activity_controls.MAX_FILES',1):self.assertTrue(controls(self.store,{},[str(directory)])['truncated'])
+
+    def test_controls_sources_hosted_onboarding_and_receipt_coverage(self):
+        from activity_controls import controls
+        self.fixture_run('report',[1000,1100],['task.start','heartbeat'])
+        self.accept(event('task.start',0,'controlled')|{'sourceId':'grok-provider','agent':event()['agent']|{'product':'Grok'},'location':{'kind':'cloud','name':'Provider'}})
+        with self.store.connect() as db:db.execute('UPDATE events SET received=1100 WHERE source=?',('grok-provider',))
+        self.store.process()
+        registry={'test':{},'quiet':{},'revoked':{'revoked':True},'grok-provider':{'displayName':'Grok hosted'}}
+        d=controls(self.store,registry,[],1150);rows={r['id']:r for r in d['controls']}
+        self.assertEqual(rows['source:test']['status'],'pass');self.assertEqual(rows['source:quiet']['status'],'missing')
+        self.assertEqual(rows['source:revoked']['status'],'fail');self.assertIn('provider-pending',rows['source:grok-provider']['summary'])
+        receipts=rows['receipts']['records'][0];self.assertEqual(receipts['acceptedEvents'],3);self.assertIsNone(receipts['duplicateReceipts'])
+        self.accept(event('task.start',0,'production')|{'sourceId':'grok-provider','agent':event()['agent']|{'product':'Grok'},'location':{'kind':'cloud','name':'Provider'}})
+        with self.store.connect() as db:db.execute('UPDATE events SET received=1140 WHERE source=?',('grok-provider',))
+        self.store.process()
+        rows={r['id']:r for r in controls(self.store,registry,[],1150)['controls']}
+        self.assertEqual(rows['source:grok-provider']['status'],'pass');self.assertIn('hosted-event-observed',rows['source:grok-provider']['summary'])
+        stale=next(r for r in controls(self.store,registry,[],10000)['controls'] if r['id']=='source:test')
+        self.assertEqual(stale['status'],'stale')
+
+    def test_controls_webhooks_reconciliation_and_post_verify_failure(self):
+        from activity_controls import controls
+        from activity_server import stamp
+        at=stamp('2026-10-12T13:00:00Z')
+        directory=self.root/'controls'
+        self.control_record(directory,'executions','bad-verify',planId='plan',liveExitCode=0,postVerificationExitCode=1)
+        self.store.webhook('delivery','ping',b'{}')
+        with self.store.connect() as db:
+            db.execute('UPDATE webhooks SET received=1000')
+            db.execute('INSERT INTO health VALUES(?,?,?,?)',('github:owner/repo',1000,'success','Metadata collected'))
+            db.execute('INSERT INTO health VALUES(?,?,?,?)',('github:owner/failed',at-1,'error','Read-only API failed'))
+        d=controls(self.store,{},[str(directory)],at);rows={r['id']:r for r in d['controls']}
+        self.assertEqual(rows['reconciliation:owner/repo']['status'],'stale')
+        self.assertEqual(rows['reconciliation:owner/failed']['status'],'fail')
+        self.assertEqual(rows['webhooks']['records'][0]['count'],1)
+        self.assertEqual(rows['webhooks']['records'][0]['kinds'][0]['kind'],'ping')
+        self.assertEqual(rows['executions']['status'],'fail');self.assertEqual(rows['executions']['records'][0]['postVerify'],'failed')
+        self.assertTrue(any(c['recordId']=='bad-verify' for c in d['callouts']))
+
     def test_public_nginx_allowlist_excludes_insights(self):
         import re
         config=(pathlib.Path(__file__).resolve().parents[1]/'deployment/activity/public-ingestion.nginx.example').read_text()
@@ -204,7 +307,7 @@ class ActivityTests(unittest.TestCase):
         self.assertIn('limit_except POST { deny all; }',body);self.assertIn('location / { return 404; }',config)
         pattern=route.strip()[2:]
         self.assertIsNotNone(re.fullmatch(pattern,'/ingest/v1/events'));self.assertIsNotNone(re.fullmatch(pattern,'/ingest/v1/github'))
-        for path in ['/api/insights','/api/runs','/api/sources','/api/activity','/','/assets/activity-dashboard.js','/ingest/v1/events/']:
+        for path in ['/api/insights','/api/runs','/api/sources','/api/activity','/api/controls','/','/assets/activity-dashboard.js','/ingest/v1/events/']:
             self.assertIsNone(re.fullmatch(pattern,path))
 
     def test_http_boundaries(self):
@@ -222,18 +325,22 @@ class ActivityTests(unittest.TestCase):
             with self.assertRaises(urllib.error.HTTPError) as ex:urllib.request.urlopen(urllib.request.Request(base+'/ingest/v1/github',data=payload+b' ',headers=headers))
             self.assertEqual(ex.exception.code,401)
             self.store.process()
-            for route in ['/api/insights?range=24h','/api/runs?stale=show&snapshots=show','/api/sources','/api/activity']:
+            for route in ['/api/insights?range=24h','/api/runs?stale=show&snapshots=show','/api/sources','/api/activity','/api/controls']:
                 with urllib.request.urlopen(base+route) as r:
                     projection=r.read().decode();self.assertNotIn('unsafe',projection);self.assertNotIn('test-secret',projection);self.assertNotIn('onerror',projection)
             for route in ['/api/insights?range=forever','/api/runs?page=bad','/api/sources?'+('&x=y'*21)]:
                 with self.assertRaises(urllib.error.HTTPError) as ex:urllib.request.urlopen(base+route)
                 self.assertEqual(ex.exception.code,400)
+            with urllib.request.urlopen(base+'/api/controls') as r:
+                controls_payload=json.load(r);self.assertEqual(controls_payload['schemaVersion'],1);self.assertTrue(controls_payload['controls']);self.assertIn('summary',controls_payload)
+            with self.assertRaises(urllib.error.HTTPError) as ex:urllib.request.urlopen(urllib.request.Request(base+'/api/controls',data=b'{}'))
+            self.assertEqual(ex.exception.code,404)
             self.app.config['consoleHtml']=str(self.root/'index.html')
             (self.root/'index.html').write_text('<html><head><meta http-equiv="refresh" content="30"></head><body><main class="shell"><div class="repo-work"><strong>Codex</strong><p>SECRET PROMPT</p><small>Latest update: SECRET OUTPUT</small></div><script type="application/json" id="console-data">'+canonical({'agentTelemetry':[{'sessions':[{'task':'SECRET PROMPT','update':'SECRET OUTPUT'}]}]})+'</script></main></body></html>')
             with urllib.request.urlopen(base+'/') as r:
                 page=r.read().decode();self.assertNotIn('SECRET',page);self.assertNotIn('http-equiv="refresh"',page);self.assertIn('script-src \'self\'',r.headers['Content-Security-Policy'])
             self.app.config['ingestOnly']=True
-            for route in ['/','/readyz','/healthz','/api/activity','/api/insights?range=7d','/api/runs?page=1','/api/sources','/assets/activity-dashboard.js']:
+            for route in ['/','/readyz','/healthz','/api/activity','/api/insights?range=7d','/api/runs?page=1','/api/sources','/api/controls','/assets/activity-dashboard.js']:
                 with self.assertRaises(urllib.error.HTTPError) as ex: urllib.request.urlopen(base+route)
                 self.assertEqual(ex.exception.code,404)
         finally:server.shutdown();thread.join();server.server_close()

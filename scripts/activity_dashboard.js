@@ -3,7 +3,10 @@
 'use strict';
 const $=id=>document.getElementById(id), esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const colors={Claude:'#175e52',Codex:'#345ba5',Grok:'#8b4788',GitHub:'#875019',Other:'#53645e',success:'#175e52',failure:'#a33139','unknown/interrupted':'#875019',ongoing:'#345ba5'};
-let page=1,pages=1,busy=false,pending=false,runRequest=0;
+let page=1,pages=1,busy=false,pending=false,runRequest=0,initialized=false;
+const initialFilters=new URLSearchParams(location.search);
+if(['24h','7d','30d'].includes(initialFilters.get('range')))$('insight-range').value=initialFilters.get('range');
+$('insight-runs').open=['repo','agent','machine','source','state','text','group','snapshots','stale'].some(k=>initialFilters.get(k));
 const relative=t=>{if(t==null)return 'Never';let s=Math.max(0,Date.now()/1000-t);return s<60?`${Math.floor(s)}s ago`:s<3600?`${Math.floor(s/60)}m ago`:s<86400?`${Math.floor(s/3600)}h ago`:`${Math.floor(s/86400)}d ago`;};
 const absolute=t=>t==null?'Never':new Date(t*1000).toISOString();
 const duration=s=>s==null?'No data':s<60?`${Math.round(s)}s`:s<3600?`${Math.round(s/60)}m`:`${(s/3600).toFixed(1)}h`;
@@ -37,6 +40,24 @@ function render(data){const m=data.metrics;
  $('insight-repos').innerHTML=(repos.length?card('Repository activity · top 10 by observations',svg('Observed commits, PRs and terminal CI results',repoBars,Math.min(10,repos.length)*65+15)+'<p class="chart-key">Green: commits · Blue: observed PRs · Purple: CI results</p>'):'')+(repos.length?repos.map(r=>card(r.repo,`<p>${r.commits} commits · ${r.prs} observed PRs</p><p>CI: ${r.passRate==null?'No terminal results':`${(r.passRate*100).toFixed(1)}% passing (${r.passed}/${r.checks})`}</p><p>${r.observations} stored observations</p>`)).join(''):empty);
 
  for(const key of ['repo','agent','machine','source','state']){const el=$('insight-filters').elements[key],old=el.value;const vals=data.filters[key];el.innerHTML='<option value="">All</option>'+vals.map(v=>`<option value="${esc(v)}">${esc(key==='source'?(data.sourceLabels?.[v]||data.sources.find(s=>s.id===v)?.name||'Unregistered source'):v)}</option>`).join('');el.value=old;}
+ if(!initialized){for(const [key,value] of initialFilters){const el=$('insight-filters').elements[key];if(el){if(el.type==='checkbox')el.checked=value==='show';else el.value=value;}}initialized=true;}
+}
+function fields(value,path="",opened=new Set()){
+ const label=k=>k.replace(/([a-z])([A-Z])/g,'$1 $2').replace(/^./,c=>c.toUpperCase());
+ if(value===null||value===undefined)return '<span>Unavailable</span>';
+ if(Array.isArray(value))return value.length?'<ul>'+value.map((v,i)=>'<li>'+fields(v,path+'/'+i,opened)+'</li>').join('')+'</ul>':'<span>None recorded</span>';
+ if(typeof value==='object')return '<dl class="control-fields">'+Object.entries(value).map(([key,v])=>`<dt>${esc(label(key))}</dt><dd>${(Array.isArray(v)||v&&typeof v==='object')?`<details data-control="${esc(path+'/'+key)}" ${opened.has(path+'/'+key)?'open':''}><summary>${esc(label(key))}${Array.isArray(v)?' ('+v.length+')':''}</summary>${fields(v,path+'/'+key,opened)}</details>`:recordField(key,v,path+'/'+key,opened)}</dd>`).join('')+'</dl>';
+ return esc(value);
+}
+function recordField(key,value,path,opened){
+ const timestamp=typeof value==='number'?value:typeof value==='string'?Date.parse(value)/1000:NaN;
+ if((key==='at'||key==='lastAccepted'||key.endsWith('At'))&&Number.isFinite(timestamp))return time(timestamp);
+ return fields(value,path,opened);
+}
+function renderControls(data){
+ const opened=new Set([...$('orchestration-controls').querySelectorAll('details[open]')].map(e=>e.dataset.control));
+ $('controls-status').textContent=`Updated ${absolute(data.generatedAt)} · ${Object.entries(data.summary).map(([state,n])=>n+' '+state).join(' · ')}${data.truncated?' · Partial evidence: record limit reached':''}${data.warnings.length?' · '+data.warnings.length+' unreadable evidence warnings':''}`;
+ $('control-rows').innerHTML=data.controls.map(c=>`<tr><td data-label="Control / evidence"><strong>${esc(c.title)}</strong><small>${esc(c.summary)}</small></td><td data-label="Status"><span class="control-badge ${esc(c.status)}">${esc(c.status)}</span></td><td data-label="Last evidence">${c.lastEvidence==null?'Missing timestamp':time(c.lastEvidence)}<small>Freshness ${c.staleAfterSeconds/3600}h</small></td><td data-label="Sanitized records"><details data-control="${esc(c.id)}" ${opened.has(c.id)?'open':''}><summary>${c.recordCount} record${c.recordCount===1?'':'s'}${c.recordsTruncated?' (latest 100 shown)':''}</summary>${c.records.length?c.records.map(r=>`<article class="control-record">${c.records.length>1?`<details data-control="${esc(c.id+'/record/'+r.id)}" ${opened.has(c.id+'/record/'+r.id)?'open':''}><summary>${esc(r.id)}${r.status?' · '+esc(r.status):''}${r.controlStatus?' · '+esc(r.controlStatus):''}</summary><p>${r.at==null?'Missing evidence time':time(r.at)}</p>${fields(r,c.id+'/'+r.id,opened)}</details>`:`<h3>${esc(r.id)}${r.status?' · '+esc(r.status):''}${r.controlStatus?' · '+esc(r.controlStatus):''}</h3>${fields(r,c.id+'/'+r.id,opened)}`}</article>`).join(''):'<p>No record supplied. Configure read-only control evidence directories on the private server.</p>'}</details></td></tr>`).join('');
 }
 async function fetchJSON(path){const r=await fetch(path,{cache:'no-store'});if(!r.ok)throw Error(`HTTP ${r.status}`);return r.json();}
 async function renderRuns(){
@@ -47,9 +68,10 @@ async function renderRuns(){
 const opened=new Set([...$('insight-rows').querySelectorAll('details[open]')].map(e=>e.dataset.run));let group=null;
  $('insight-rows').innerHTML=data.runs.map(r=>{const g=p.get('group');let header='';if(g&&group!==r[g]){group=r[g];header=`<tr class="insight-group"><td colspan="5">${esc(group)}</td></tr>`;}
  const key=r.source+'/'+r.id;return header+`<tr><td data-label="Run / repository">${esc(r.repo)}<small title="${esc(r.id)}">${esc(r.id.slice(0,10))}${r.snapshot?' · snapshot':''}</small></td><td data-label="Agent / machine">${esc(r.agent)}<small>${esc(r.machine)}</small></td><td data-label="State">${esc(r.state)}<small>${duration(r.duration)} observed</small></td><td data-label="Last event">${time(r.last)}</td><td data-label="Evidence"><details data-run="${esc(key)}" ${opened.has(key)?'open':''}><summary>${r.eventCount} events${r.gaps?` · ${r.gaps} gaps`:''}</summary><p>${esc(r.sourceName)}${r.branch?` · ${esc(r.branch)}`:''}${r.commit?` · ${esc(r.commit.slice(0,8))}`:''}${r.pr?` · PR #${r.pr}`:''}</p><p>Independent GitHub association (repository + PR/branch/commit; not authorship)</p>${r.github.length?`<ul>${r.github.map(e=>`<li>${esc(e.kind)} · ${esc(e.state)} · ${time(e.at)}${e.url?` · <a href="${esc(e.url)}" rel="noreferrer">GitHub evidence</a>`:''}</li>`).join('')}</ul>`:'<p>No matching GitHub observation in this range.</p>'}<p>Latest 30 accepted lifecycle events</p><ul>${r.evidence.map(e=>`<li>${esc(e.kind)} #${e.sequence} · ${esc(e.sourceName)} · ${time(e.at)}</li>`).join('')}</ul></details></td></tr>`;}).join('')||'<tr><td colspan="5">No runs match. Include snapshots or stale runs to inspect collected history.</td></tr>';
+ $('insight-run-summary').textContent=`Agent activity log (${data.total} matching runs) — click to expand`;
  $('insight-page').textContent=`Page ${data.total?page:0} of ${pages} · ${data.total} matching runs`;$('insight-prev').disabled=page<=1;$('insight-next').disabled=page>=pages;
 }
-async function poll(){if(document.hidden)return;if(busy){pending=true;return;}busy=true;const range=$('insight-range').value;try{const d=await fetchJSON('/api/insights?range='+range);if(range!==$('insight-range').value){pending=true;return;}render(d);await renderRuns();}catch(e){$('insight-status').textContent='Refresh unavailable; showing last collected view. '+e.message;}finally{busy=false;if(pending){pending=false;poll();}}}
+async function poll(){if(document.hidden)return;if(busy){pending=true;return;}busy=true;const range=$('insight-range').value;try{const d=await fetchJSON('/api/insights?range='+range);if(range!==$('insight-range').value){pending=true;return;}render(d);await Promise.all([renderRuns(),fetchJSON('/api/controls').then(renderControls).catch(()=>{$('controls-status').textContent='Control refresh unavailable; previous evidence retained.';})]);}catch(e){$('insight-status').textContent='Refresh unavailable; showing last collected view. '+e.message;}finally{busy=false;if(pending){pending=false;poll();}}}
 
 $('insight-range').addEventListener('change',()=>{page=1;poll();});$('insight-filters').addEventListener('submit',e=>e.preventDefault());let debounce;
 $('insight-filters').addEventListener('input',()=>{page=1;clearTimeout(debounce);debounce=setTimeout(()=>renderRuns().catch(()=>{$('insight-status').textContent='Run refresh unavailable.';}),250);});

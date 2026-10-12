@@ -255,13 +255,17 @@ class Handler(BaseHTTPRequestHandler):
         if len(route.query)>2048: return self.reply(400,{'error':'query too long'})
         try: filters=parse_qs(route.query,max_num_fields=20)
         except ValueError:return self.reply(400,{'error':'too many query fields'})
-        if route.path in {'/api/activity','/api/insights','/api/runs','/api/sources'}:
+        if route.path in {'/api/activity','/api/insights','/api/runs','/api/sources','/api/controls'}:
             from activity_insights import project,page_runs,sources_view
             try:
                 registry=self.server.app.sources()
+                from activity_controls import controls
+                if route.path=='/api/controls':return self.reply(200,controls(self.server.app.store,registry,self.server.app.config.get('controlEvidenceDirs',[])))
                 if route.path=='/api/sources':return self.reply(200,{'sources':sources_view(self.server.app.store,registry,time.time())})
                 data=project(self.server.app.store,registry,filters.get('range',['24h'])[0])
                 if route.path=='/api/runs':return self.reply(200,page_runs(data,filters))
+                control_data=controls(self.server.app.store,registry,self.server.app.config.get('controlEvidenceDirs',[]))
+                data['insights'].extend(c['message'] for c in control_data['callouts'])
                 data['filters']={key:sorted({r[key] for r in data['runs']}) for key in ['repo','agent','machine','source','state']}
                 data['sourceLabels']={r['source']:r['sourceName'] for r in data['runs']}
                 data.pop('runs')

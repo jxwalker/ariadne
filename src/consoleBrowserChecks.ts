@@ -91,12 +91,22 @@ async function visibleCheck(
   selector: string
 ): Promise<ConsoleBrowserCheckReport["checks"][number]> {
   const locator = page.locator(selector).first();
+  let openedDisclosure = false;
+  if ((await locator.count()) > 0 && !(await locator.isVisible().catch(() => false))) {
+    openedDisclosure = await locator.evaluate(element => {
+      let opened = false;
+      for (let parent = element.parentElement; parent; parent = parent.parentElement) {
+        if (parent instanceof HTMLDetailsElement && !parent.open) { parent.open = true; opened = true; }
+      }
+      return opened;
+    }).catch(() => false);
+  }
   const visible = await locator.isVisible().catch(() => false);
   return {
     id,
     label,
     status: visible ? "passed" : "failed",
-    detail: visible ? `${label} is visible.` : `${label} is not visible.`
+    detail: visible ? `${label} is visible${openedDisclosure ? " after expanding its evidence disclosure" : ""}.` : `${label} is not visible.`
   };
 }
 

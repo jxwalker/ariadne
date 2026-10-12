@@ -23,6 +23,11 @@ try {
   const liveTop=await page.locator('#insight-live').evaluate(e=>e.getBoundingClientRect().top);
   assert(liveTop<450,'live summary near top');
   assert.equal(await page.locator('img').evaluateAll(imgs=>imgs.filter(img=>!img.complete||!img.naturalWidth).length),0);
+  assert.equal(await page.locator('#insight-runs').evaluate(e=>e.open),false,'activity log starts collapsed');
+  await page.locator('#insight-run-summary').click();
+  await page.waitForFunction(()=>document.querySelector('#controls-status').textContent.startsWith('Updated'));
+  assert(await page.locator('#control-rows tr').count()>0,'control evidence is visible');
+  await page.locator('#control-rows details').first().evaluate(e=>e.open=true);
   await page.locator('[name=snapshots]').check();await page.locator('[name=stale]').check();
   await page.waitForTimeout(2000);
   assert((await page.locator('#insight-page').innerText()).includes('matching runs'));
@@ -47,6 +52,7 @@ try {
   assert.equal(await page.locator('[name=group]').inputValue(),'machine');
   assert(Math.abs(await page.evaluate(()=>scrollY)-y)<5,'poll preserves scroll');
   assert(await page.locator('#insight-rows details[open]').count()>0,'poll preserves evidence drawers');
+  assert(await page.locator('#control-rows details[open]').count()>0,'poll preserves control drawers');
   // Simulate Page Visibility API state without freezing browser timers.
   await page.evaluate(()=>Object.defineProperty(document,'hidden',{configurable:true,get:()=>true}));
   const hiddenBefore=polls;await page.waitForTimeout(16000);assert.equal(polls,hiddenBefore,'hidden tab stops polling');
