@@ -141,14 +141,21 @@ class Store:
                     explicit_text='\n'.join(str(x) for x in [pr.get('body',''),b.get('issue',{}).get('body',''),b.get('comment',{}).get('body','')])
                     explicit=(re.search(r'(?m)^Ariadne-Task: '+re.escape(e['taskId'])+r'\s*$',explicit_text) is not None or re.search(r'(?m)^Ariadne-Run: '+re.escape(e['runId'])+r'\s*$',explicit_text) is not None)
                     if explicit or (e.get('pr') and e['pr']==(pr.get('number') or b.get('number'))) or (e.get('branch') and e['branch']==branch) or (e.get('commit') and e['commit']==sha):
-                        evidence.append({'kind':obs['kind'],'observedAt':o['observed'],'association':'repository/branch/commit/PR reference; not agent authorship','state': ('; '.join(str(x.get('state') or x.get('conclusion') or x.get('status')) for page in b.get('pages',[]) for x in (page if isinstance(page,list) else page.get('check_runs',[]))) if b.get('pages') else None) or pr.get('state') or b.get('state') or b.get('workflow_run',{}).get('conclusion') or b.get('check_run',{}).get('conclusion'),'url':pr.get('html_url') if safe_link(pr.get('html_url')) else None})
+                        observed_state=pr.get('state') or b.get('state') or b.get('workflow_run',{}).get('conclusion') or b.get('check_run',{}).get('conclusion')
+                        if obs['kind'] in {'pull_request_review','check_run'} and 'pages' in b:
+                            records=[x for page in b['pages'] for x in (page if isinstance(page,list) else page.get('check_runs',[]))]
+                            observed_state='; '.join(str(x.get('state') or x.get('conclusion') or x.get('status')) for x in records) or ('no reviews' if obs['kind']=='pull_request_review' else 'no checks')
+                        evidence.append({'kind':obs['kind'],'observedAt':o['observed'],'association':'repository/branch/commit/PR reference; not agent authorship','state':observed_state,'url':pr.get('html_url') if safe_link(pr.get('html_url')) else None})
                 timeline=[{'eventId':x['id'],'receivedAt':x['received_at'],'kind':json.loads(x['envelope'])['kind'],'sequence':json.loads(x['envelope'])['sequence']} for x in db.execute("SELECT * FROM events WHERE source=? AND json_extract(envelope,'$.runId')=? ORDER BY received DESC LIMIT 30",(r['source'],r['run']))]
                 runs.append({'event':e,'state':state,'lastReceipt':r['last'],'sequenceGaps':r['gaps'],'delivery':'accepted; agent report','github':evidence,'timeline':timeline})
             grouped={}; uncorrelated=[]
             for r in runs:
                 e=r['event']; registration=sources.get(e['sourceId'],{}); host=registration.get('correlationHost')
                 if not host or not e.get('sessionId'): uncorrelated.append(r);continue
-                key=(host,e['repository'],e['agent']['product'].lower(),e['sessionId'])
+                # Known display names for the same CLI; retain the original envelope.
+                product=e['agent']['product'].lower()
+                product={'claude code':'claude','codex cli':'codex'}.get(product,product)
+                key=(host,e['repository'],product,e['sessionId'])
                 previous=grouped.get(key)
                 if not previous: grouped[key]=r;r['correlatedSourceIds']=[e['sourceId']];continue
                 previous_registration=sources.get(previous['event']['sourceId'],{})

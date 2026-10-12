@@ -1,6 +1,8 @@
 import hashlib,hmac,json,pathlib,tempfile,time,unittest,threading,urllib.request,urllib.error
 from activity_server import App,Store,validate,dashboard,canonical,ThreadingHTTPServer,Handler
-from activity_sender import enqueue,hook
+from activity_sender import enqueue,hook,flush
+from unittest.mock import patch
+import os
 
 def event(kind='task.start',seq=0,run='run',parent=None):
     e={'schemaVersion':1,'eventId':f'{run}-{seq}-{kind}','sourceId':'test','agent':{'identity':'integration','product':'controlled test','version':'1'},'project':'ariadne','repository':'jxwalker/ariadne','taskId':'task','runId':run,'sequence':seq,'occurredAt':'2026-10-12T12:00:00Z','kind':kind,'label':'<script>unsafe</script>','summary':'<img src=x onerror=x>'}
@@ -50,6 +52,28 @@ class ActivityTests(unittest.TestCase):
     def test_webhook_dedupe_reconcile(self):
         e=event()|{'branch':'feature'};self.accept(e);raw=json.dumps({'repository':{'full_name':'jxwalker/ariadne'},'pull_request':{'number':1,'head':{'ref':'feature'},'state':'open','html_url':'https://github.com/jxwalker/ariadne/pull/1'}}).encode();self.assertFalse(self.store.webhook('delivery','pull_request',raw));self.assertTrue(self.store.webhook('delivery','pull_request',raw));self.store.process();self.assertEqual(self.store.snapshot({})['runs'][0]['github'][0]['kind'],'pull_request')
         with self.assertRaises(ValueError):self.store.webhook('delivery','pull_request',b'{}')
+    def test_sender_timestamp_ties_preserve_lifecycle_order(self):
+        c={'spool':str(self.root/'spool'),'sourceId':'test','agent':event()['agent'],'project':'ariadne','repository':'jxwalker/ariadne'}
+        enqueue(c,'task.start','run','task');enqueue(c,'heartbeat','run','task')
+        spool=pathlib.Path(c['spool'])
+        # Reverse directory/name order and tie timestamps, as on the live VM.
+        files=list(spool.glob('*.json'))
+        for p in files:
+            e=json.loads(p.read_text());p.rename(spool/('z.json' if e['sequence']==0 else 'a.json'))
+        for p in spool.glob('*.json'):os.utime(p,(1,1))
+        delivered=[]
+        def deliver(config,raw):
+            e=json.loads(raw);delivered.append(e['sequence']);self.accept(e);return {'accepted':True}
+        with patch('activity_sender.deliver',side_effect=deliver):flush(c)
+        self.store.process()
+        self.assertEqual(delivered,[0,1]);self.assertEqual(self.store.snapshot({})['runs'][0]['state'],'working')
+
+    def test_empty_review_pages_do_not_inherit_pr_open_state(self):
+        self.accept(event()|{'pr':7});self.store.process()
+        body={'kind':'pull_request_review','body':{'pull_request':{'number':7,'state':'open','html_url':'https://github.com/jxwalker/ariadne/pull/7'},'pages':[[]]}}
+        with self.store.connect() as db:db.execute('INSERT INTO observations VALUES(?,?,?,?)',('reviews','jxwalker/ariadne',time.time(),canonical(body)))
+        self.assertEqual(self.store.snapshot({})['runs'][0]['github'][0]['state'],'no reviews')
+
     def test_hooks_spool_privacy_and_parent(self):
         c={'spool':str(self.root/'spool'),'sourceId':'test','agent':event()['agent'],'project':'ariadne','repository':'jxwalker/ariadne','workspace':str(self.root)}
         hook(c,{'hook_event_name':'Stop','session_id':'session','cwd':str(self.root),'prompt':'SECRET','tool_input':{'command':'secret'}})
@@ -78,8 +102,8 @@ class ActivityTests(unittest.TestCase):
             reconcile(self.store,['jxwalker/ariadne']);self.assertEqual(paginate.call_count,3)
         snap=self.store.snapshot({}); self.assertEqual(snap['health'][0]['status'],'success');self.assertTrue(any('APPROVED'==x['state'] for x in snap['runs'][0]['github']))
     def test_registered_session_correlation(self):
-        a=event()|{'sessionId':'session'};self.accept(a)
-        b=event('task.progress',1,'native')|{'sourceId':'native','sessionId':'session'};self.accept(b);self.store.process()
+        a=event()|{'sessionId':'session','agent':event()['agent']|{'product':'Claude'}};self.accept(a)
+        b=event('task.progress',1,'native')|{'sourceId':'native','sessionId':'session','agent':event()['agent']|{'product':'Claude Code'}};self.accept(b);self.store.process()
         registry={'test':{'correlationHost':'approved-host','provenance':'read-only local snapshot'},'native':{'correlationHost':'approved-host'}}
         merged=self.store.snapshot(registry)['runs'];self.assertEqual(len(merged),1);self.assertEqual(merged[0]['event']['sourceId'],'native');self.assertEqual(len(merged[0]['timeline']),2)
         self.assertEqual(len(self.store.snapshot({})['runs']),2)
