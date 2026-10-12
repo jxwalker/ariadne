@@ -1,0 +1,17 @@
+{
+  "schemaVersion": 1,
+  "id": "approval-2026-10-12T15-19-06-018Z",
+  "project": "ariadne",
+  "requestedAt": "2026-10-12T15:19:06.018Z",
+  "requestedBy": "ariadne-bot",
+  "target": "deployment",
+  "action": "proxmox/codex-dev: create Cloudflare tunnel ariadne-ingest + DNS ingest.scorpion-labs.com + loopback nginx allowlist (POST /ingest/v1/events, /ingest/v1/github only, 64 KiB) as user units",
+  "risk": "high",
+  "status": "approved",
+  "reason": "Restricted public ingestion route per Ariadne brief; dashboard stays tailnet-only",
+  "rollback": "~/ariadne-run/ingest/rollback.sh; then delete ingest CNAME and tunnel ariadne-ingest",
+  "evidenceRefs": [],
+  "decidedAt": "2026-10-12T15:19:12.633Z",
+  "decisionBy": "james",
+  "decisionNotes": "Recorded by Ariadne Bot from James chat approval 12 Oct 2026: brief [t0u] restricted public ingestion route; \"pick a scorpion-labs.com subdomain and we can set it up on cloudflare\"; \"Carry on\"."
+}

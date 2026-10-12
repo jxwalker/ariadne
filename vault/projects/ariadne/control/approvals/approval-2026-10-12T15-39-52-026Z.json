@@ -1,0 +1,17 @@
+{
+  "schemaVersion": 1,
+  "id": "approval-2026-10-12T15-39-52-026Z",
+  "project": "ariadne",
+  "requestedAt": "2026-10-12T15:39:52.026Z",
+  "requestedBy": "ariadne-bot",
+  "target": "deployment",
+  "action": "proxmox/codex-dev + github jxwalker/ariadne: GitHub webhook to https://ingest.scorpion-labs.com/ingest/v1/github with mode-600 secret",
+  "risk": "high",
+  "status": "approved",
+  "reason": "James chat yes 2026-10-12 16:31 BST: redeploy to main, set up GitHub webhook, send real Grok event",
+  "rollback": "bash /home/james/ariadne-run/webhook/rollback.sh",
+  "evidenceRefs": [],
+  "decidedAt": "2026-10-12T15:39:53.988Z",
+  "decisionBy": "james",
+  "decisionNotes": "Recorded by Ariadne Bot from James chat \"yes\" 2026-10-12 16:31 BST to the remaining Ariadne steps (redeploy to main, GitHub webhook, real Grok event)."
+}

@@ -1,0 +1,17 @@
+{
+  "schemaVersion": 1,
+  "id": "approval-2026-10-12T17-52-20-034Z",
+  "project": "ariadne",
+  "requestedAt": "2026-10-12T17:52:20.034Z",
+  "requestedBy": "ariadne-bot",
+  "target": "deployment",
+  "action": "proxmox/codex-dev: deploy Ariadne dashboard v2 (main d0fbc7d, PR #161)",
+  "risk": "high",
+  "status": "approved",
+  "reason": "James chat 2026-10-12 18:47 BST: Yes, merge PR #161 and deploy it",
+  "rollback": "bash /home/james/ariadne-run/dash-deploy/rollback.sh",
+  "evidenceRefs": [],
+  "decidedAt": "2026-10-12T17:52:22.620Z",
+  "decisionBy": "james",
+  "decisionNotes": "Recorded by Ariadne Bot from James chat 18:47 BST 2026-10-12: \"Yes, merge PR #161 and deploy it\" (covers updating ~/workspaces/ariadne built console from merged main d0fbc7d)."
+}

@@ -1,0 +1,32 @@
+# Mutation Execution
+
+Id: mutation-execution-2026-10-12T15-40-03-116Z
+Plan: mutation-readiness-deployment-2026-10-12T15-39-55-991Z
+Target: deployment
+Status: passed
+Started: 2026-10-12T15:40:03.116Z
+Finished: 2026-10-12T15:40:17.579Z
+Duration ms: 14463
+Execute: true
+Audit: projects/ariadne/control/mutation-readiness-audit.json
+Dry run: mutation-dry-run-2026-10-12T15-40-00-058Z
+
+## Live Command
+
+```bash
+bash /home/james/ariadne-run/webhook/apply.sh
+```
+
+Exit code: 0
+
+## Post Verification
+
+```bash
+bash /home/james/ariadne-run/webhook/verify.sh
+```
+
+Exit code: 0
+
+## Rollback
+
+proxmox/codex-dev: codex-dev: bash /home/james/ariadne-run/webhook/rollback.sh

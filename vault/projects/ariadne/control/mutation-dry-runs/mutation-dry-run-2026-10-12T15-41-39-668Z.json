@@ -1,0 +1,18 @@
+{
+  "schemaVersion": 1,
+  "id": "mutation-dry-run-2026-10-12T15-41-39-668Z",
+  "project": "ariadne",
+  "planId": "mutation-readiness-deployment-2026-10-12T15-41-35-854Z",
+  "target": "deployment",
+  "startedAt": "2026-10-12T15:41:39.668Z",
+  "finishedAt": "2026-10-12T15:41:39.746Z",
+  "status": "passed",
+  "command": "bash /home/james/ariadne-run/grok/dryrun.sh",
+  "exitCode": 0,
+  "bufferExceeded": false,
+  "durationMs": 77,
+  "stdout": "grok 1.0.13 (5e9a58528b76) [stable]\ncodex-dev-grok-cli exists: False\n2606:4700:3033::ac43:a886 ingest.scorpion-labs.com\n",
+  "stderr": "",
+  "auditRef": "projects/ariadne/control/mutation-readiness-audit.json",
+  "execute": false
+}

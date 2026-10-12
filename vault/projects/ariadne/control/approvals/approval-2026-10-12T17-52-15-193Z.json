@@ -1,0 +1,17 @@
+{
+  "schemaVersion": 1,
+  "id": "approval-2026-10-12T17-52-15-193Z",
+  "project": "ariadne",
+  "requestedAt": "2026-10-12T17:52:15.193Z",
+  "requestedBy": "ariadne-bot",
+  "target": "deployment",
+  "action": "proxmox/codex-dev: RETROACTIVE record of 17:58 BST hotfix collapsing the legacy activity log into a details element in installed activity_server.py",
+  "risk": "medium",
+  "status": "approved",
+  "reason": "Retroactive: hotfix applied ~17:58 BST 2026-10-12 with James chat approval; recorded after the fact for audit completeness",
+  "rollback": "Restore pre-hotfix activity_server.py from backup and restart ariadne-activity",
+  "evidenceRefs": [],
+  "decidedAt": "2026-10-12T17:52:17.686Z",
+  "decisionBy": "james",
+  "decisionNotes": "Retroactively recorded by Ariadne Bot: James approved the 17:58 BST dashboard hotfix in chat; superseded by d0fbc7d deploy."
+}

@@ -1,0 +1,17 @@
+{
+  "schemaVersion": 1,
+  "id": "approval-2026-10-12T15-41-31-964Z",
+  "project": "ariadne",
+  "requestedAt": "2026-10-12T15:41:31.964Z",
+  "requestedBy": "ariadne-bot",
+  "target": "deployment",
+  "action": "proxmox/codex-dev: provision Ariadne source codex-dev-grok-cli and send real Grok CLI event to public ingest",
+  "risk": "high",
+  "status": "approved",
+  "reason": "James chat yes 2026-10-12 16:31 BST: redeploy to main, set up GitHub webhook, send real Grok event",
+  "rollback": "bash /home/james/ariadne-run/grok/rollback.sh",
+  "evidenceRefs": [],
+  "decidedAt": "2026-10-12T15:41:33.901Z",
+  "decisionBy": "james",
+  "decisionNotes": "Recorded by Ariadne Bot from James chat \"yes\" 2026-10-12 16:31 BST to the remaining Ariadne steps (redeploy to main, GitHub webhook, real Grok event)."
+}

@@ -1,13 +1,14 @@
 {
   "schemaVersion": 1,
   "project": "ariadne",
-  "generatedAt": "2026-05-18T15:10:37.351Z",
-  "status": "blocked",
+  "generatedAt": "2026-10-12T18:23:53.245Z",
+  "status": "ready_for_bounded_review",
   "mutationAllowed": false,
   "summary": {
-    "plans": 2,
-    "ready": 0,
-    "blocked": 2,
+    "plans": 8,
+    "ready": 6,
+    "blocked": 0,
+    "retired": 2,
     "approvalRequired": 2,
     "approvalRejected": 0,
     "missingEvidence": 0,
@@ -18,13 +19,10 @@
     {
       "planId": "mutation-readiness-deployment-2026-05-18T14-54-52-671Z",
       "target": "deployment",
-      "status": "blocked",
-      "blockers": [
-        "approval state is approval_required",
-        "approval record is requested"
-      ],
+      "status": "retired",
+      "blockers": [],
       "warnings": [
-        "high-risk plan requires explicit operator review even after this audit passes"
+        "approval approval-2026-05-18T14-53-53-213Z is rejected; plan retired and excluded from readiness"
       ],
       "evidenceRefs": [
         "vault/projects/ariadne/control/live-evidence-promotions/live-evidence-promotion-deployment-2026-05-18T14-53-28-810Z.json",
@@ -42,15 +40,133 @@
       ]
     },
     {
+      "planId": "mutation-readiness-deployment-2026-10-12T15-19-14-572Z",
+      "target": "deployment",
+      "status": "passed",
+      "blockers": [],
+      "warnings": [],
+      "evidenceRefs": [
+        "control/approvals/approval-2026-10-12T15-19-06-018Z.json"
+      ],
+      "requiredGates": [
+        "bounded scope recorded",
+        "auth evidence reviewed",
+        "dry-run command reviewed",
+        "rollback command reviewed",
+        "human approval record approved",
+        "CodeRabbit or human review approval",
+        "post-action verification command defined",
+        "deployment target and rollback host verified"
+      ]
+    },
+    {
+      "planId": "mutation-readiness-deployment-2026-10-12T15-32-36-775Z",
+      "target": "deployment",
+      "status": "passed",
+      "blockers": [],
+      "warnings": [],
+      "evidenceRefs": [
+        "control/approvals/approval-2026-10-12T15-32-32-921Z.json"
+      ],
+      "requiredGates": [
+        "bounded scope recorded",
+        "auth evidence reviewed",
+        "dry-run command reviewed",
+        "rollback command reviewed",
+        "human approval record approved",
+        "CodeRabbit or human review approval",
+        "post-action verification command defined",
+        "deployment target and rollback host verified"
+      ]
+    },
+    {
+      "planId": "mutation-readiness-deployment-2026-10-12T15-39-55-991Z",
+      "target": "deployment",
+      "status": "passed",
+      "blockers": [],
+      "warnings": [],
+      "evidenceRefs": [
+        "control/approvals/approval-2026-10-12T15-39-52-026Z.json"
+      ],
+      "requiredGates": [
+        "bounded scope recorded",
+        "auth evidence reviewed",
+        "dry-run command reviewed",
+        "rollback command reviewed",
+        "human approval record approved",
+        "CodeRabbit or human review approval",
+        "post-action verification command defined",
+        "deployment target and rollback host verified"
+      ]
+    },
+    {
+      "planId": "mutation-readiness-deployment-2026-10-12T15-41-35-854Z",
+      "target": "deployment",
+      "status": "passed",
+      "blockers": [],
+      "warnings": [],
+      "evidenceRefs": [
+        "control/approvals/approval-2026-10-12T15-41-31-964Z.json"
+      ],
+      "requiredGates": [
+        "bounded scope recorded",
+        "auth evidence reviewed",
+        "dry-run command reviewed",
+        "rollback command reviewed",
+        "human approval record approved",
+        "CodeRabbit or human review approval",
+        "post-action verification command defined",
+        "deployment target and rollback host verified"
+      ]
+    },
+    {
+      "planId": "mutation-readiness-deployment-2026-10-12T17-52-25-200Z",
+      "target": "deployment",
+      "status": "passed",
+      "blockers": [],
+      "warnings": [],
+      "evidenceRefs": [
+        "control/approvals/approval-2026-10-12T17-52-20-034Z.json"
+      ],
+      "requiredGates": [
+        "bounded scope recorded",
+        "auth evidence reviewed",
+        "dry-run command reviewed",
+        "rollback command reviewed",
+        "human approval record approved",
+        "CodeRabbit or human review approval",
+        "post-action verification command defined",
+        "deployment target and rollback host verified"
+      ]
+    },
+    {
+      "planId": "mutation-readiness-deployment-2026-10-12T18-23-40-442Z",
+      "target": "deployment",
+      "status": "passed",
+      "blockers": [],
+      "warnings": [],
+      "evidenceRefs": [
+        "control/approvals/approval-2026-10-12T18-23-36-210Z.json"
+      ],
+      "requiredGates": [
+        "bounded scope recorded",
+        "auth evidence reviewed",
+        "dry-run command reviewed",
+        "rollback command reviewed",
+        "human approval record approved",
+        "CodeRabbit or human review approval",
+        "post-action verification command defined",
+        "deployment target and rollback host verified"
+      ]
+    },
+    {
       "planId": "mutation-readiness-github-2026-05-16T16-50-54-241Z",
       "target": "github",
-      "status": "blocked",
-      "blockers": [
-        "approval state is approval_required",
-        "approval record is requested",
-        "post-action verification command is missing"
+      "status": "retired",
+      "blockers": [],
+      "warnings": [
+        "approval approval-2026-05-16T13-21-33-834Z is rejected; plan retired and excluded from readiness"
       ],
-      "warnings": [],
       "evidenceRefs": [
         "vault/projects/ariadne/integrations/github/github-snapshot-2026-05-16T12-25-16-576Z.json",
         "vault/projects/ariadne/control/approvals/approval-2026-05-16T13-21-33-834Z.json",

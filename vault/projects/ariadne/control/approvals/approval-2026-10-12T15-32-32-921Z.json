@@ -1,0 +1,17 @@
+{
+  "schemaVersion": 1,
+  "id": "approval-2026-10-12T15-32-32-921Z",
+  "project": "ariadne",
+  "requestedAt": "2026-10-12T15:32:32.921Z",
+  "requestedBy": "ariadne-bot",
+  "target": "deployment",
+  "action": "proxmox/codex-dev: redeploy Ariadne activity release c8ac2d9 -> main 9782e98 via deployment/activity/install.sh",
+  "risk": "high",
+  "status": "approved",
+  "reason": "James chat yes 2026-10-12 16:31 BST: redeploy to main, set up GitHub webhook, send real Grok event",
+  "rollback": "bash /home/james/ariadne-run/redeploy/rollback.sh",
+  "evidenceRefs": [],
+  "decidedAt": "2026-10-12T15:32:34.821Z",
+  "decisionBy": "james",
+  "decisionNotes": "Recorded by Ariadne Bot from James chat \"yes\" 2026-10-12 16:31 BST to the remaining Ariadne steps (redeploy to main, GitHub webhook, real Grok event)."
+}

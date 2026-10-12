@@ -1,0 +1,18 @@
+{
+  "schemaVersion": 1,
+  "id": "mutation-dry-run-2026-10-12T17-52-30-629Z",
+  "project": "ariadne",
+  "planId": "mutation-readiness-deployment-2026-10-12T17-52-25-200Z",
+  "target": "deployment",
+  "startedAt": "2026-10-12T17:52:30.629Z",
+  "finishedAt": "2026-10-12T17:52:32.097Z",
+  "status": "passed",
+  "command": "bash /home/james/ariadne-run/dash-deploy/dryrun.sh",
+  "exitCode": 0,
+  "bufferExceeded": false,
+  "durationMs": 1468,
+  "stdout": "package = d0fbc7d\nOK\noverlay will change: dist/src/consoleBrowserChecks.js\noverlay will change: dist/src/consoleHtml.js\ncontrol dir ok: /home/james/workspaces/ariadne-dev/vault/projects/ariadne/control\ncontrol dir ok: /home/james/workspaces/ariadne/vault/projects/ariadne/control\nactive\n",
+  "stderr": "",
+  "auditRef": "projects/ariadne/control/mutation-readiness-audit.json",
+  "execute": false
+}

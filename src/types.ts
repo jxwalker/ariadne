@@ -410,6 +410,7 @@ export interface MutationReadinessAudit {
     blocked: number;
     approvalRequired: number;
     approvalRejected: number;
+    retired?: number;
     missingEvidence: number;
     unsafeDryRuns: number;
     executablePlans: number;
@@ -417,7 +418,7 @@ export interface MutationReadinessAudit {
   checks: Array<{
     planId: string;
     target: MutationReadinessPlan["target"];
-    status: "passed" | "blocked";
+    status: "passed" | "blocked" | "retired";
     blockers: string[];
     warnings: string[];
     evidenceRefs: string[];

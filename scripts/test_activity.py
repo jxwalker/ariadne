@@ -225,6 +225,21 @@ class ActivityTests(unittest.TestCase):
         self.assertTrue(any(c['recordId']=='pending' for c in d['callouts']))
         self.assertEqual(d['evidenceDirectories'][0]['state'],'read-only')
 
+    def test_controls_retired_plans_and_rejected_approvals_are_closed(self):
+        from activity_controls import controls
+        from activity_server import stamp
+        at=stamp('2026-10-12T13:00:00Z');d=self.root/'retire-control'
+        self.control_record(d,'approvals','old-approval',status='rejected',decisionBy='james',decidedAt='2026-10-12T12:30:00Z',generatedAt='2026-05-16T12:00:00Z')
+        self.control_record(d,'approvals','new-approval',status='approved',decidedAt='2026-10-12T12:00:00Z')
+        self.control_record(d,'plans','old-plan',status='approval_required',approvalRef='old-approval',approvalStatus='requested',generatedAt='2026-05-16T12:00:00Z')
+        self.control_record(d,'plans','new-plan',status='ready_for_bounded_review',approvalRef='new-approval',approvalStatus='approved')
+        self.control_record(d,'audit','audit',status='ready_for_bounded_review',checks=[{'planId':'old-plan','status':'retired','blockers':[]},{'planId':'new-plan','status':'passed','blockers':[]}])
+        out=controls(self.store,{},[str(d)],at);rows={r['id']:r for r in out['controls']}
+        self.assertEqual(rows['approvals']['status'],'pass');self.assertEqual(rows['plans']['status'],'pass');self.assertEqual(rows['audit']['status'],'pass')
+        plan=next(r for r in rows['plans']['records'] if r['id']=='old-plan')
+        self.assertEqual((plan['status'],plan['controlStatus'],plan['approvalStatus']),('retired','closed','rejected'))
+        self.assertFalse(any(c['recordId'] in {'old-plan','old-approval'} for c in out['callouts']))
+
     def test_controls_redact_secret_strings_and_drop_raw_fields(self):
         from activity_controls import controls
         directory=self.root/'controls'
