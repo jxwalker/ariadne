@@ -20,7 +20,7 @@ def main():
                 if repo not in c['githubRepositories']:continue
                 # Snapshot source is distinct from hook source. Exact host+session correlation is exposed.
                 run=hashlib.sha256((host+'\n'+s['id']).encode()).hexdigest()[:32]
-                ident=hashlib.sha256(('metadata-v2\n'+run+'\n'+s['lastEventAt']+'\n'+s['event']).encode()).hexdigest()
+                ident=hashlib.sha256(('metadata-v2\n'+run+'\n'+s['lastEventAt']+'\n'+s['event']+'\n'+canonical(c.get('snapshotRunRefs',{}).get(run,{}))).encode()).hexdigest()
                 kind={'working':'task.progress','interrupted':'task.interrupted'}.get(s['status'],'session.end')
                 with store.connect() as db:
                     old=db.execute('SELECT seq FROM runs WHERE source=? AND run=?',(source,run)).fetchone()
@@ -28,6 +28,9 @@ def main():
                 if exists:continue
                 e={'schemaVersion':1,'eventId':ident,'sourceId':source,'agent':{'identity':s['agent'],'product':s['agent'],'version':'read-only collector'},'project':'scorpion-labs','repository':repo,'taskId':run,'runId':run,'sessionId':s['id'],'sequence':old['seq']+1 if old else 0,'occurredAt':s['lastEventAt'],'kind':kind,'label':(s['agent']+' repository activity')[:160],'summary':('Read-only observation: '+s['status']+'; last tool: '+s.get('lastTool','unknown'))[:500],'location':{'kind':'machine','name':host}}
                 if s.get('branch'):e['branch']=s['branch']
+                # Trusted operator binding after independently checking exact host/session/worktree.
+                for key,value in c.get('snapshotRunRefs',{}).get(run,{}).items():
+                    if key in {'branch','commit','pr'}:e[key]=value
                 validate(e);store.accept(e,canonical(e).encode())
         except (ValueError,KeyError,TypeError):continue
     store.process()

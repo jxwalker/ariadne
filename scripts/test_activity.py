@@ -81,6 +81,15 @@ class ActivityTests(unittest.TestCase):
         registry={'test':{'correlationHost':'approved-host','provenance':'read-only local snapshot'},'native':{'correlationHost':'approved-host'}}
         merged=self.store.snapshot(registry)['runs'];self.assertEqual(len(merged),1);self.assertEqual(merged[0]['event']['sourceId'],'native');self.assertEqual(len(merged[0]['timeline']),2)
         self.assertEqual(len(self.store.snapshot({})['runs']),2)
+    def test_snapshot_metadata_privacy_and_operator_binding(self):
+        import sys
+        from unittest.mock import patch
+        from activity_snapshot_import import main
+        snapshots=self.root/'snapshots';snapshots.mkdir();session='test-session';run=hashlib.sha256(('approved-host\n'+session).encode()).hexdigest()[:32]
+        (snapshots/'host.json').write_text(json.dumps({'host':'approved-host','status':'available','collectedAt':__import__('activity_server').now(),'sessions':[{'id':session,'agent':'Codex','repository':'jxwalker/ariadne','lastEventAt':__import__('activity_server').now(),'event':'task_started','status':'working','task':'SECRET PROMPT','update':'SECRET OUTPUT','lastTool':'Read'}]}))
+        config=self.app.config|{'snapshotDirectory':str(snapshots),'snapshotSources':{'approved-host':'test'},'githubRepositories':['jxwalker/ariadne'],'snapshotRunRefs':{run:{'branch':'verified-branch','pr':157}}};file=self.root/'server.json';file.write_text(json.dumps(config))
+        with patch.object(sys,'argv',['import','--config',str(file)]):main()
+        projection=self.store.snapshot({})['runs'][0]['event'];self.assertNotIn('SECRET',canonical(projection));self.assertEqual(projection['branch'],'verified-branch');self.assertEqual(projection['pr'],157)
     def test_http_boundaries(self):
         server=ThreadingHTTPServer(('127.0.0.1',0),Handler);server.app=self.app;thread=threading.Thread(target=server.serve_forever);thread.start();base=f'http://127.0.0.1:{server.server_port}'
         try:
