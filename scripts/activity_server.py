@@ -234,6 +234,8 @@ class Handler(BaseHTTPRequestHandler):
         if filters.get('location'): data['runs']=[r for r in data['runs'] if r['event'].get('location',{}).get('name')==filters['location'][0]]
         p=pathlib.Path(self.server.app.config['consoleHtml'])
         body=p.read_text() if p.exists() else '<html><head><title>Ariadne</title></head><body><h1>Ariadne</h1></body></html>'
+        # Legacy task labels can be prompt-derived; suppress those excerpts on the new surface.
+        body=re.sub(r'(<div class="repo-work"><strong>.*?</strong>)<p>.*?</p>',r'\1<p>Read-only repository session</p>',body,flags=re.DOTALL)
         body=body.replace('content="30"','content="10"')
         if 'http-equiv="refresh"' not in body: body=body.replace('</head>','<meta http-equiv="refresh" content="10"></head>')
         body=body.replace('<main class="shell">','<main class="shell">'+dashboard(data),1) if '<main class="shell">' in body else body.replace('</body>',dashboard(data)+'</body>')
