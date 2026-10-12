@@ -53,6 +53,34 @@ class ActivityTests(unittest.TestCase):
         hook(c,{'hook_event_name':'Stop','session_id':'session','cwd':str(self.root),'prompt':'SECRET','tool_input':{'command':'secret'}})
         e=json.loads(next((self.root/'spool').glob('*.json')).read_text()); self.assertNotIn('SECRET',canonical(e));self.assertEqual(e['kind'],'task.progress');self.assertIn('completion unknown',e['summary'])
         hook(c,{'hook_event_name':'SubagentStop','session_id':'session','agent_id':'child','cwd':str(self.root)});ev=[json.loads(p.read_text()) for p in (self.root/'spool').glob('*.json')];self.assertEqual(next(x for x in ev if x['runId']=='child')['parentRunId'],'session')
+    def test_sequence_identity_rate_and_public_read_boundaries(self):
+        self.accept(event()); e=event()|{'eventId':'other'}
+        with self.assertRaises(ValueError): self.accept(e)
+        with self.assertRaises(ValueError): self.accept(event('heartbeat',1)|{'taskId':'different-task'})
+        e=event();raw=canonical(e).encode()
+        for i in range(120): self.app.authenticate(self.headers(raw,nonce='rate-'+str(i)),raw,e)
+        with self.assertRaises(OverflowError): self.app.authenticate(self.headers(raw,nonce='excess'),raw,e)
+        replacement=App(self.app.config)
+        with self.assertRaises(OverflowError): replacement.authenticate(self.headers(raw,nonce='restart'),raw,e)
+    def test_old_gh_pagination_and_task_scoped_reconciliation(self):
+        from unittest.mock import patch
+        from activity_reconcile import pages,reconcile
+        with patch('activity_reconcile.subprocess.run') as run:
+            run.return_value.stdout='[1,2]\n[3]'
+            self.assertEqual(pages('test'),[[1,2],[3]])
+            self.assertNotIn('--slurp',run.call_args.args[0])
+        self.accept(event()|{'branch':'feature'});self.store.process()
+        pr={'number':7,'state':'open','head':{'ref':'feature','sha':'a'*40}}
+        unrelated={'number':8,'state':'open','head':{'ref':'other','sha':'b'*40}}
+        with patch('activity_reconcile.pages',side_effect=[[[pr,unrelated]],[[{'state':'APPROVED'}]],[{'check_runs':[{'conclusion':'success'}]}]]) as paginate:
+            reconcile(self.store,['jxwalker/ariadne']);self.assertEqual(paginate.call_count,3)
+        snap=self.store.snapshot({}); self.assertEqual(snap['health'][0]['status'],'success');self.assertTrue(any('APPROVED'==x['state'] for x in snap['runs'][0]['github']))
+    def test_registered_session_correlation(self):
+        a=event()|{'sessionId':'session'};self.accept(a)
+        b=event('task.progress',1,'native')|{'sourceId':'native','sessionId':'session'};self.accept(b);self.store.process()
+        registry={'test':{'correlationHost':'approved-host','provenance':'read-only local snapshot'},'native':{'correlationHost':'approved-host'}}
+        merged=self.store.snapshot(registry)['runs'];self.assertEqual(len(merged),1);self.assertEqual(merged[0]['event']['sourceId'],'native');self.assertEqual(len(merged[0]['timeline']),2)
+        self.assertEqual(len(self.store.snapshot({})['runs']),2)
     def test_http_boundaries(self):
         server=ThreadingHTTPServer(('127.0.0.1',0),Handler);server.app=self.app;thread=threading.Thread(target=server.serve_forever);thread.start();base=f'http://127.0.0.1:{server.server_port}'
         try:
@@ -67,5 +95,9 @@ class ActivityTests(unittest.TestCase):
             with urllib.request.urlopen(urllib.request.Request(base+'/ingest/v1/github',data=payload,headers=headers)) as r:self.assertEqual(r.status,202)
             with self.assertRaises(urllib.error.HTTPError) as ex:urllib.request.urlopen(urllib.request.Request(base+'/ingest/v1/github',data=payload+b' ',headers=headers))
             self.assertEqual(ex.exception.code,401)
+            self.app.config['ingestOnly']=True
+            for route in ['/','/readyz','/healthz','/api/activity']:
+                with self.assertRaises(urllib.error.HTTPError) as ex: urllib.request.urlopen(base+route)
+                self.assertEqual(ex.exception.code,404)
         finally:server.shutdown();thread.join();server.server_close()
 if __name__=='__main__':unittest.main()

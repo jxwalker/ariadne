@@ -58,7 +58,7 @@ def hook(c,data):
     enqueue(c,kind,run,c.get('taskId',session),summary={'Stop':'Response stopped; task completion unknown','PostToolUseFailure':'Tool error observed; task state remains independent'}.get(name,name),parent=session if name.startswith('Subagent') else None,session=session)
 
 def main():
-    p=argparse.ArgumentParser(); p.add_argument('--config',required=True); p.add_argument('mode',choices=['hook','flush','worker','event','run']); p.add_argument('--kind',default='task.progress'); p.add_argument('--run-id'); p.add_argument('--task-id'); p.add_argument('--summary',default=''); p.add_argument('command',nargs=argparse.REMAINDER); a=p.parse_args(); c=config(a.config)
+    p=argparse.ArgumentParser(); p.add_argument('--config',required=True); p.add_argument('mode',choices=['hook','flush','worker','event','run']); p.add_argument('--kind',default='task.progress'); p.add_argument('--run-id'); p.add_argument('--task-id'); p.add_argument('--summary',default=''); argv=sys.argv[1:]; split=argv.index('--') if '--' in argv else len(argv); a=p.parse_args(argv[:split]); a.command=argv[split+1:]; c=config(a.config)
     if a.mode=='hook':
         try: hook(c,json.loads(sys.stdin.read(65537)))
         except Exception: pass

@@ -47,12 +47,18 @@ def validate(e):
 
 def canonical(e): return json.dumps(e,sort_keys=True,separators=(',',':'),ensure_ascii=False)
 
+class ClosingConnection(sqlite3.Connection):
+    def __exit__(self,*args):
+        try: return super().__exit__(*args)
+        finally: self.close()
+
 class Store:
     def __init__(self,path):
         self.path=str(path); pathlib.Path(path).parent.mkdir(parents=True,exist_ok=True)
         with self.connect() as db:
             db.executescript('''
             PRAGMA journal_mode=WAL;
+            CREATE TABLE IF NOT EXISTS rates(source TEXT, minute INTEGER, requests INTEGER, PRIMARY KEY(source,minute));
             CREATE TABLE IF NOT EXISTS migrations(version INTEGER PRIMARY KEY);
             INSERT OR IGNORE INTO migrations VALUES(1);
             CREATE TABLE IF NOT EXISTS events(id TEXT PRIMARY KEY, source TEXT, received REAL, received_at TEXT, raw BLOB, envelope TEXT, processed INTEGER DEFAULT 0);
@@ -63,7 +69,7 @@ class Store:
             ''')
         os.chmod(self.path,0o600)
     def connect(self):
-        db=sqlite3.connect(self.path,timeout=10); db.row_factory=sqlite3.Row
+        db=sqlite3.connect(self.path,timeout=10,factory=ClosingConnection); db.row_factory=sqlite3.Row
         db.execute('PRAGMA synchronous=FULL'); return db
     def accept(self,e,raw):
         received=now()
@@ -119,12 +125,28 @@ class Store:
                 for o in db.execute('SELECT * FROM observations WHERE repo=? ORDER BY observed DESC LIMIT 200',(e['repository'],)):
                     obs=json.loads(o['body']); b=obs.get('body',{}); pr=b.get('pull_request',{}); branch=pr.get('head',{}).get('ref') or b.get('ref','').removeprefix('refs/heads/'); sha=pr.get('head',{}).get('sha') or b.get('after') or b.get('head_sha') or b.get('workflow_run',{}).get('head_sha') or b.get('check_run',{}).get('head_sha') or b.get('check_suite',{}).get('head_sha')
                     if (e.get('pr') and e['pr']==(pr.get('number') or b.get('number'))) or (e.get('branch') and e['branch']==branch) or (e.get('commit') and e['commit']==sha):
-                        evidence.append({'kind':obs['kind'],'observedAt':o['observed'],'association':'repository/branch/commit/PR reference; not agent authorship','state':pr.get('state') or b.get('state') or b.get('workflow_run',{}).get('conclusion') or b.get('check_run',{}).get('conclusion'),'url':pr.get('html_url') if safe_link(pr.get('html_url')) else None})
+                        evidence.append({'kind':obs['kind'],'observedAt':o['observed'],'association':'repository/branch/commit/PR reference; not agent authorship','state': ('; '.join(str(x.get('state') or x.get('conclusion') or x.get('status')) for page in b.get('pages',[]) for x in (page if isinstance(page,list) else page.get('check_runs',[]))) if b.get('pages') else None) or pr.get('state') or b.get('state') or b.get('workflow_run',{}).get('conclusion') or b.get('check_run',{}).get('conclusion'),'url':pr.get('html_url') if safe_link(pr.get('html_url')) else None})
                 timeline=[{'eventId':x['id'],'receivedAt':x['received_at'],'kind':json.loads(x['envelope'])['kind'],'sequence':json.loads(x['envelope'])['sequence']} for x in db.execute("SELECT * FROM events WHERE source=? AND json_extract(envelope,'$.runId')=? ORDER BY received DESC LIMIT 30",(r['source'],r['run']))]
                 runs.append({'event':e,'state':state,'lastReceipt':r['last'],'sequenceGaps':r['gaps'],'delivery':'accepted; agent report','github':evidence,'timeline':timeline})
+            grouped={}; uncorrelated=[]
+            for r in runs:
+                e=r['event']; registration=sources.get(e['sourceId'],{}); host=registration.get('correlationHost')
+                if not host or not e.get('sessionId'): uncorrelated.append(r);continue
+                key=(host,e['repository'],e['agent']['product'].lower(),e['sessionId'])
+                previous=grouped.get(key)
+                if not previous: grouped[key]=r;r['correlatedSourceIds']=[e['sourceId']];continue
+                previous_registration=sources.get(previous['event']['sourceId'],{})
+                # Native event evidence wins over read-only snapshots; server-approved host mapping only.
+                native=registration.get('provenance')!='read-only local snapshot'
+                previous_native=previous_registration.get('provenance')!='read-only local snapshot'
+                winner=r if (native and not previous_native) or (native==previous_native and r['lastReceipt']>previous['lastReceipt']) else previous
+                winner['correlatedSourceIds']=list(set(previous.get('correlatedSourceIds',[])+[e['sourceId']]))
+                winner['timeline']=sorted(previous['timeline']+r['timeline'],key=lambda x:x['receivedAt'],reverse=True)[:30]
+                grouped[key]=winner
+            runs=uncorrelated+list(grouped.values())
             return {'generatedAt':now(),'runs':runs,'sources':[{'sourceId':s,'state':'revoked' if v.get('revoked') else 'never-connected' if s not in last else 'connected' if t-last[s]<=90 else 'stale','lastReceipt':last.get(s)} for s,v in sources.items()], 'queueBacklog':db.execute('SELECT (SELECT COUNT(*) FROM events WHERE processed=0)+(SELECT COUNT(*) FROM webhooks WHERE processed=0)').fetchone()[0], 'health':[dict(r) for r in db.execute('SELECT * FROM health')]}
     def backup(self,target):
-        with self.connect() as db, sqlite3.connect(target) as out: db.backup(out)
+        with self.connect() as db, sqlite3.connect(target,factory=ClosingConnection) as out: db.backup(out)
         os.chmod(target,0o600)
 
 class App:
@@ -147,11 +169,13 @@ class App:
         with self.store.connect() as db:
             db.execute('CREATE TABLE IF NOT EXISTS nonces(source TEXT, nonce TEXT, digest TEXT, at REAL, PRIMARY KEY(source,nonce))')
             db.execute('BEGIN IMMEDIATE'); db.execute('DELETE FROM nonces WHERE at<?',(time.time()-600,))
+            minute=int(time.time()/60);db.execute('DELETE FROM rates WHERE minute<?',(minute-1,))
+            rate=db.execute('SELECT requests FROM rates WHERE source=? AND minute=?',(s,minute)).fetchone()
+            if rate and rate[0]>=120: raise OverflowError('rate limited')
+            db.execute('INSERT INTO rates VALUES(?,?,1) ON CONFLICT(source,minute) DO UPDATE SET requests=requests+1',(s,minute))
             row=db.execute('SELECT digest FROM nonces WHERE source=? AND nonce=?',(s,nonce)).fetchone(); digest=hashlib.sha256(raw).hexdigest()
             if row and row[0]!=digest: raise PermissionError('nonce replay conflict')
             db.execute('INSERT OR IGNORE INTO nonces VALUES(?,?,?,?)',(s,nonce,digest,time.time()))
-        minute=int(time.time()/60); key=(s,minute); self.rates={k:v for k,v in self.rates.items() if k[1]>=minute}; self.rates[key]=self.rates.get(key,0)+1
-        if self.rates[key]>120: raise OverflowError('rate limited')
     def work(self):
         while not self.stop.wait(0.5):
             try: self.store.process()
@@ -217,7 +241,7 @@ def dashboard(data):
         e=r['event']; evidence='; '.join(esc(x['kind']+': '+str(x['state'])) for x in r['github']) or 'No matching independent GitHub evidence'
         timeline=' '.join(esc(x['kind']+' #'+str(x['sequence'])) for x in reversed(r['timeline']))
         links=' '.join('<a rel="noreferrer" href="'+esc(x)+'">Evidence link</a>' for x in e.get('evidenceLinks',[]) if safe_link(x))
-        rows.append('<tr>'+''.join('<td>'+v+'</td>' for v in [esc(e['repository']),esc(e['agent']['product']+' / '+e['sourceId']),esc(e['label'])+'<br>'+esc(e['summary']),esc(r['state']),esc(e['branch'] if 'branch' in e else 'unassociated'),esc(datetime.fromtimestamp(r['lastReceipt'],timezone.utc).isoformat()),esc(e['taskId']+' / '+e['runId'])+'<br>'+esc(r['delivery'])+'<br>Sequence gaps: '+esc(r['sequenceGaps']),evidence+'<br>'+timeline+'<br>'+links])+'</tr>')
+        rows.append('<tr>'+''.join('<td>'+v+'</td>' for v in [esc(e['repository']),esc(e['agent']['product']+' / '+e['sourceId']),esc(e['label'])+'<br>'+esc(e['summary']),esc(r['state']),esc(e['branch'] if 'branch' in e else 'unassociated'),esc(datetime.fromtimestamp(r['lastReceipt'],timezone.utc).isoformat()),esc(e['taskId']+' / '+e['runId'])+'<br>'+esc(r['delivery'])+'<br>Correlated sources: '+esc(', '.join(r.get('correlatedSourceIds',[])))+'<br>Sequence gaps: '+esc(r['sequenceGaps']),evidence+'<br>'+timeline+'<br>'+links])+'</tr>')
     return '<section id="durable-activity" style="padding:24px;overflow:auto"><h2>Durable agent activity</h2><form method="get"><label>Repository <input name="repository"></label> <label>Agent <input name="agent"></label> <label>Source <input name="sourceId"></label> <label>Task <input name="taskId"></label> <button>Filter</button></form><p>Accepted private reports; completion never grants delivery approval. Refresh at most every 10 seconds.</p><p>'+esc(data['generatedAt'])+' · Queue backlog '+esc(data['queueBacklog'])+'</p><p>'+ ' · '.join(esc(s['sourceId']+': '+s['state']) for s in data['sources'])+'</p><table><thead><tr>'+''.join('<th>'+s+'</th>' for s in ['Repository','Agent / source','Task / progress','Agent-reported state','Branch','Last accepted heartbeat/event','Task / run / receipt','Independent evidence / timeline'])+'</tr></thead><tbody>'+''.join(rows)+'</tbody></table><p>Integration health: '+esc(canonical(data['health']))+'</p></section>'
 
 def main():
