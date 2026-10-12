@@ -25,7 +25,7 @@ receive='''import json,pathlib,sys,hashlib
 root=pathlib.Path("/home/james/workspaces/ariadne/vault/projects/scorpion-labs/integrations/agents")
 root.mkdir(parents=True,exist_ok=True)
 for data in json.load(sys.stdin):
- if data.get("schemaVersion")!=1 or data.get("host") not in ("JW-MBP","M5"):raise ValueError("unexpected source")
+ if data.get("schemaVersion")!=1 or data.get("host") not in ("JW-MBP","M5","claude-dev"):raise ValueError("unexpected source")
  name=hashlib.sha256(data["host"].encode()).hexdigest()[:16]+".json"
  p=root/name;t=p.with_suffix(".tmp");t.write_text(json.dumps(data));t.replace(p)
 '''
