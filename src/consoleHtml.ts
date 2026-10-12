@@ -198,6 +198,7 @@ function renderConsole(data: ConsoleData): string {
     "<style>",
     css(),
     "</style>",
+    repositoryOnly && (data.agentTelemetry?.length ?? 0) > 0 ? '<meta http-equiv="refresh" content="30">' : "",
     "</head>",
     "<body>",
     '<main class="shell">',
@@ -217,6 +218,7 @@ function renderConsole(data: ConsoleData): string {
     repositoryOnly ? `<span>${new Set(data.github.snapshots.map(s => s.repository)).size} repositories</span>` : `<span>${missingGates} missing gates</span>`,
     "</div>",
     "</section>",
+    (data.agentTelemetry?.length ?? 0) > 0 ? section("Live agents", liveAgents(data)) : "",
     section("Repository activity", github(data)),
     data.sources.length === 0 && data.tasks.length === 0 ? '<details><summary>Orchestration evidence and controls</summary>' : "",
     workflowOverview(data.workflow),
@@ -927,6 +929,21 @@ function deployment(data: ConsoleData): string {
     ),
     "</div>"
   ].join("");
+}
+
+function liveAgents(data: ConsoleData): string {
+  const snapshots = [...(data.agentTelemetry ?? [])].sort((a,b) => Number(b.status === "available" && b.sessions.some(s => s.status === "working")) - Number(a.status === "available" && a.sessions.some(s => s.status === "working")) || a.host.localeCompare(b.host));
+  const now = Date.parse(data.generatedAt);
+  return '<p class="stamp">Session events from the connected machines · refreshed every 30 seconds. Includes work before a PR exists.</p><div class="agent-activity">' + snapshots.map(snapshot => {
+    const disconnected = snapshot.status !== "available" || now - Date.parse(snapshot.collectedAt) > 180_000;
+    const sessions = [...snapshot.sessions].sort((a,b) => Number(b.status === "working") - Number(a.status === "working") || b.lastEventAt.localeCompare(a.lastEventAt));
+    return `<article class="repo-card"><h3>${escapeHtml(snapshot.host)}</h3><p class="stamp">${disconnected ? "Connection stale or unavailable" : "Connected"} · collected ${escapeHtml(snapshot.collectedAt)}</p>${snapshot.sources.map(source => `<small>${escapeHtml(source.agent)}: ${source.status === "available" ? `${snapshot.sessions.filter(s => s.agent === source.agent).length} recent sessions` : escapeHtml(source.status.replaceAll("_", " "))}</small>`).join("<br>")}${sessions.length ? sessions.slice(0,12).map(session => {
+      const stale = disconnected || (session.status === "working" && now - Date.parse(session.lastEventAt) > 180_000);
+      const state = stale ? "stale" : session.status;
+      const pr = session.branch ? data.github.snapshots.flatMap(s => s.repository === session.repository ? s.pullRequests : []).find(p => p.headRefName === session.branch && p.state === "OPEN") : undefined;
+      return `<div class="repo-work"><strong>${escapeHtml(session.agent)} · ${escapeHtml(state)}</strong><p>${escapeHtml(session.task)}</p>${session.update ? `<small>Latest update: ${escapeHtml(session.update)}</small>` : ""}<small>${escapeHtml(session.repository)}${session.branch ? ` · ${escapeHtml(session.branch)}` : ""} · ${pr ? `PR #${pr.number}` : "No matching PR in collected evidence"}</small><small>Last event ${escapeHtml(session.lastEventAt)} · ${escapeHtml(session.event)}${session.lastTool ? ` · tool: ${escapeHtml(session.lastTool)}` : ""}</small>${session.changedFiles.length ? `<small>Changed files: ${session.changedFiles.map(escapeHtml).join(", ")}</small>` : ""}<details><summary>Session evidence</summary><small>Session ${escapeHtml(session.id)} · source ${escapeHtml(session.source)}</small></details></div>`;
+    }).join("") : (disconnected ? '<p>Agent activity unavailable until this machine connects.</p>' : '<p>No recent repository sessions on this machine.</p>')}</article>`;
+  }).join("") + '</div>';
 }
 
 function github(data: ConsoleData): string {
@@ -1647,6 +1664,8 @@ time {
   justify-content: space-between;
   gap: 16px;
 }
+.agent-activity { display:grid; grid-template-columns:repeat(auto-fit,minmax(min(100%,360px),1fr)); gap:18px; align-items:start; }
+.repo-work details>summary { padding:6px 0; font-size:12px; }
 .repo-activity { display:grid; grid-template-columns:repeat(auto-fit,minmax(min(100%,420px),1fr)); gap:18px; }
 .repo-card { max-height:560px; overflow:auto; background:#ffffff; border:1px solid #d2d9d7; border-radius:14px; padding:20px; }
 .repo-work { padding:14px 0; border-top:1px solid #d2d9d7; }

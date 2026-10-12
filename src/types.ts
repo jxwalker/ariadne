@@ -1900,7 +1900,22 @@ export interface RecoveryReport {
   }>;
 }
 
+export interface AgentTelemetrySnapshot {
+  schemaVersion: 1;
+  host: string;
+  collectedAt: string;
+  status: "available" | "unreachable";
+  sources: Array<{agent: "Claude" | "Codex"; status: string; method: string}>;
+  sessions: Array<{
+    id: string; agent: "Claude" | "Codex"; host: string; task: string;
+    status: "working" | "idle" | "interrupted" | "error" | "stale" | "unknown";
+    repository: string; branch?: string | null; changedFiles: string[];
+    lastEventAt: string; event: string; lastTool: string; source: string; update?: string;
+  }>;
+}
+
 export interface ConsoleData {
+  agentTelemetry?: AgentTelemetrySnapshot[];
   schemaVersion: 1;
   project: string;
   generatedAt: string;
