@@ -31,7 +31,7 @@ sources.setdefault('grok-hosted-pending',{'secret':secrets.token_hex(32),'projec
 (p/'sources.json').chmod(0o600);(p/'server.json').write_text(json.dumps(c,indent=2));(p/'server.json').chmod(0o600)
 PY
 systemctl --user daemon-reload
-systemctl --user enable --now ariadne-activity.service ariadne-activity-import.timer ariadne-activity-reconcile.timer
+systemctl --user enable --now ariadne-activity.service ariadne-activity-import.timer ariadne-activity-reconcile.timer ariadne-activity-backup.timer
 # Approved private tailnet HTTPS only. Never Funnel, never public DNS.
 sudo -n tailscale serve --bg --https=443 http://127.0.0.1:18095
 printf '%s\n' "$backup" > "$state/last-install-backup"

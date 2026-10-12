@@ -1,0 +1,103 @@
+{
+  "hooks": {
+    "SessionStart": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "/usr/bin/python3 /APPROVED/ARIADNE/scripts/activity_sender.py --config /PROTECTED/ariadne-sender.json hook || true",
+            "timeout": 2
+          }
+        ]
+      }
+    ],
+    "UserPromptSubmit": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "/usr/bin/python3 /APPROVED/ARIADNE/scripts/activity_sender.py --config /PROTECTED/ariadne-sender.json hook || true",
+            "timeout": 2
+          }
+        ]
+      }
+    ],
+    "PreToolUse": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "/usr/bin/python3 /APPROVED/ARIADNE/scripts/activity_sender.py --config /PROTECTED/ariadne-sender.json hook || true",
+            "timeout": 2
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "/usr/bin/python3 /APPROVED/ARIADNE/scripts/activity_sender.py --config /PROTECTED/ariadne-sender.json hook || true",
+            "timeout": 2
+          }
+        ]
+      }
+    ],
+    "PostToolUseFailure": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "/usr/bin/python3 /APPROVED/ARIADNE/scripts/activity_sender.py --config /PROTECTED/ariadne-sender.json hook || true",
+            "timeout": 2
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "/usr/bin/python3 /APPROVED/ARIADNE/scripts/activity_sender.py --config /PROTECTED/ariadne-sender.json hook || true",
+            "timeout": 2
+          }
+        ]
+      }
+    ],
+    "SessionEnd": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "/usr/bin/python3 /APPROVED/ARIADNE/scripts/activity_sender.py --config /PROTECTED/ariadne-sender.json hook || true",
+            "timeout": 2
+          }
+        ]
+      }
+    ],
+    "SubagentStart": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "/usr/bin/python3 /APPROVED/ARIADNE/scripts/activity_sender.py --config /PROTECTED/ariadne-sender.json hook || true",
+            "timeout": 2
+          }
+        ]
+      }
+    ],
+    "SubagentStop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "/usr/bin/python3 /APPROVED/ARIADNE/scripts/activity_sender.py --config /PROTECTED/ariadne-sender.json hook || true",
+            "timeout": 2
+          }
+        ]
+      }
+    ]
+  }
+}
