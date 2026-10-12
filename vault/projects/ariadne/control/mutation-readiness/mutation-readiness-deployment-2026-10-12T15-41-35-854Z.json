@@ -1,0 +1,31 @@
+{
+  "schemaVersion": 1,
+  "id": "mutation-readiness-deployment-2026-10-12T15-41-35-854Z",
+  "project": "ariadne",
+  "generatedAt": "2026-10-12T15:41:35.854Z",
+  "target": "deployment",
+  "status": "ready_for_bounded_review",
+  "risk": "medium",
+  "scope": "proxmox/codex-dev: Add scoped source codex-dev-grok-cli (scorpion-labs, jxwalker/ariadne) to sources.json, write mode-600 sender config, run grok -p via activity_sender wrapper, deliver to https://ingest.scorpion-labs.com",
+  "approvalRef": "approval-2026-10-12T15-41-31-964Z",
+  "approvalStatus": "approved",
+  "authEvidenceRefs": [
+    "control/approvals/approval-2026-10-12T15-41-31-964Z.json"
+  ],
+  "evidenceRefs": [],
+  "dryRunCommand": "bash /home/james/ariadne-run/grok/dryrun.sh",
+  "proposedLiveCommand": "bash /home/james/ariadne-run/grok/apply.sh",
+  "postVerificationCommand": "bash /home/james/ariadne-run/grok/verify.sh",
+  "rollback": "proxmox/codex-dev: codex-dev: bash /home/james/ariadne-run/grok/rollback.sh",
+  "requiredGates": [
+    "bounded scope recorded",
+    "auth evidence reviewed",
+    "dry-run command reviewed",
+    "rollback command reviewed",
+    "human approval record approved",
+    "CodeRabbit or human review approval",
+    "post-action verification command defined",
+    "deployment target and rollback host verified"
+  ],
+  "execute": false
+}

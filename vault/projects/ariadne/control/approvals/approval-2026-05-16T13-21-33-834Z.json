@@ -7,11 +7,14 @@
   "target": "github",
   "action": "Enable mutation-capable PR adapter for a bounded test only after review gates pass.",
   "risk": "medium",
-  "status": "requested",
+  "status": "rejected",
   "reason": "Roadmap requires an explicit approval workflow before any mutation-capable adapter is enabled.",
   "rollback": "Keep live mutation disabled and continue using manual gh commands plus read-only snapshots.",
   "evidenceRefs": [
     "docs/roadmap.md",
     "docs/developer-guide.md"
-  ]
+  ],
+  "decidedAt": "2026-10-12T18:23:49.006Z",
+  "decisionBy": "james",
+  "decisionNotes": "Retired as superseded (James chat 19:19 BST 2026-10-12: 'Yes, retire both May plans'). GitHub merge adapter plan could not pass as written (placeholder PR, no post-verify); merges are done manually with CI+CodeRabbit gates. Re-plan only if automated merges are wanted (roadmap-draft)."
 }

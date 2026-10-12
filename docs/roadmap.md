@@ -1,5 +1,7 @@
 # Roadmap
 
+Current activity-reporting and orchestration priorities (Done / Now / Next / Later): see [activity-roadmap.md](activity-roadmap.md).
+
 ## Milestone 0: Trustworthy Intake
 
 Goal: preserve source artifacts, extract text where safe, and assemble compact dossiers.

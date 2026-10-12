@@ -1,0 +1,31 @@
+{
+  "schemaVersion": 1,
+  "id": "mutation-readiness-deployment-2026-10-12T15-32-36-775Z",
+  "project": "ariadne",
+  "generatedAt": "2026-10-12T15:32:36.775Z",
+  "target": "deployment",
+  "status": "ready_for_bounded_review",
+  "risk": "medium",
+  "scope": "proxmox/codex-dev: Back up DB/config/release/units, install 9782e98 package via repo installer, restart ariadne-activity; ~/workspaces/ariadne overlay archived not overwritten",
+  "approvalRef": "approval-2026-10-12T15-32-32-921Z",
+  "approvalStatus": "approved",
+  "authEvidenceRefs": [
+    "control/approvals/approval-2026-10-12T15-32-32-921Z.json"
+  ],
+  "evidenceRefs": [],
+  "dryRunCommand": "bash /home/james/ariadne-run/redeploy/dryrun.sh",
+  "proposedLiveCommand": "bash /home/james/ariadne-run/redeploy/apply.sh",
+  "postVerificationCommand": "bash /home/james/ariadne-run/redeploy/verify.sh",
+  "rollback": "proxmox/codex-dev: codex-dev: bash /home/james/ariadne-run/redeploy/rollback.sh",
+  "requiredGates": [
+    "bounded scope recorded",
+    "auth evidence reviewed",
+    "dry-run command reviewed",
+    "rollback command reviewed",
+    "human approval record approved",
+    "CodeRabbit or human review approval",
+    "post-action verification command defined",
+    "deployment target and rollback host verified"
+  ],
+  "execute": false
+}

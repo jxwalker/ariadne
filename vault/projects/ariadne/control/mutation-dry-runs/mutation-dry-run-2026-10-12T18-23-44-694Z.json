@@ -1,0 +1,18 @@
+{
+  "schemaVersion": 1,
+  "id": "mutation-dry-run-2026-10-12T18-23-44-694Z",
+  "project": "ariadne",
+  "planId": "mutation-readiness-deployment-2026-10-12T18-23-40-442Z",
+  "target": "deployment",
+  "startedAt": "2026-10-12T18:23:44.694Z",
+  "finishedAt": "2026-10-12T18:23:44.779Z",
+  "status": "passed",
+  "command": "bash /home/james/ariadne-run/retire-may/dryrun.sh",
+  "exitCode": 0,
+  "bufferExceeded": false,
+  "durationMs": 85,
+  "stdout": "approval-2026-05-16T13-21-33-834Z github requested\napproval-2026-05-18T14-53-53-213Z deployment requested\nd0fbc7d Merge pull request #161 from jxwalker/jxw/dashboard-insights\n",
+  "stderr": "",
+  "auditRef": "projects/ariadne/control/mutation-readiness-audit.json",
+  "execute": false
+}

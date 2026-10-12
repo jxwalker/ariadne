@@ -1,0 +1,18 @@
+{
+  "schemaVersion": 1,
+  "id": "mutation-dry-run-2026-10-12T15-40-00-058Z",
+  "project": "ariadne",
+  "planId": "mutation-readiness-deployment-2026-10-12T15-39-55-991Z",
+  "target": "deployment",
+  "startedAt": "2026-10-12T15:40:00.058Z",
+  "finishedAt": "2026-10-12T15:40:01.022Z",
+  "status": "passed",
+  "command": "bash /home/james/ariadne-run/webhook/dryrun.sh",
+  "exitCode": 0,
+  "bufferExceeded": false,
+  "durationMs": 964,
+  "stdout": "{\"admin\":true,\"full_name\":\"jxwalker/ariadne\"}\nexisting hooks to ingest: 0\ngithubSecretFile set: False\npublic github endpoint unsigned: 401\n",
+  "stderr": "",
+  "auditRef": "projects/ariadne/control/mutation-readiness-audit.json",
+  "execute": false
+}

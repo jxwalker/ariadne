@@ -1,0 +1,18 @@
+{
+  "schemaVersion": 1,
+  "id": "mutation-dry-run-2026-10-12T15-32-40-579Z",
+  "project": "ariadne",
+  "planId": "mutation-readiness-deployment-2026-10-12T15-32-36-775Z",
+  "target": "deployment",
+  "startedAt": "2026-10-12T15:32:40.579Z",
+  "finishedAt": "2026-10-12T15:32:42.355Z",
+  "status": "passed",
+  "command": "bash /home/james/ariadne-run/redeploy/dryrun.sh",
+  "exitCode": 0,
+  "bufferExceeded": false,
+  "durationMs": 1776,
+  "stdout": "origin/main = 9782e98\ndeployed: c8ac2d953402f1d26f9634deff2f5757e3675f45\n\nOK\nsame scripts/activity_backup.py\nsame scripts/activity_reconcile.py\nsame scripts/activity_sender.py\nsame scripts/activity_server.py\nsame scripts/activity_snapshot_import.py\nsame ariadne-activity-backup.service\nsame ariadne-activity-backup.timer\nsame ariadne-activity-import.service\nsame ariadne-activity-import.timer\nsame ariadne-activity-reconcile.service\nsame ariadne-activity-reconcile.timer\nsame ariadne-activity.service\n/dev/sda1       504G   31G  453G   7% /\n",
+  "stderr": "",
+  "auditRef": "projects/ariadne/control/mutation-readiness-audit.json",
+  "execute": false
+}

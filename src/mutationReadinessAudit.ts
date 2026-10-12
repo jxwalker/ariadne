@@ -15,6 +15,7 @@ export async function generateMutationReadinessAudit(input: {
     plans: plans.length,
     ready: checks.filter((check) => check.status === "passed").length,
     blocked: checks.filter((check) => check.status === "blocked").length,
+    retired: checks.filter((check) => check.status === "retired").length,
     approvalRequired: plans.filter((plan) => plan.status === "approval_required").length,
     approvalRejected: plans.filter((plan) => plan.status === "approval_rejected").length,
     missingEvidence: checks.reduce((count, check) => count + check.blockers.filter((item) => item.startsWith("missing evidence")).length, 0),
@@ -70,6 +71,20 @@ async function auditPlan(
   const warnings: string[] = [];
   const evidenceRefs = Array.from(new Set([...plan.authEvidenceRefs, ...plan.evidenceRefs]));
 
+  // A plan whose approval was later rejected or expired is closed: retired, not a pending blocker.
+  const decided = await currentApprovalStatus(vaultRoot, project, plan.approvalRef);
+  if (decided === "rejected" || decided === "expired") {
+    return {
+      planId: plan.id,
+      target: plan.target,
+      status: "retired",
+      blockers: [],
+      warnings: [`approval ${plan.approvalRef} is ${decided}; plan retired and excluded from readiness`],
+      evidenceRefs,
+      requiredGates: plan.requiredGates
+    };
+  }
+
   if (plan.execute !== false) {
     blockers.push("plan is executable; readiness plans must keep execute=false");
   }
@@ -117,6 +132,22 @@ async function auditPlan(
     evidenceRefs,
     requiredGates: plan.requiredGates
   };
+}
+
+async function currentApprovalStatus(
+  vaultRoot: string,
+  project: string,
+  approvalRef: string | undefined
+): Promise<string | undefined> {
+  if (!approvalRef || !/^approval-[A-Za-z0-9T:.-]+$/.test(approvalRef)) return undefined;
+  try {
+    const record = JSON.parse(
+      await fs.readFile(path.join(projectDir(vaultRoot, project), "control", "approvals", `${approvalRef}.json`), "utf8")
+    ) as { status?: unknown };
+    return typeof record.status === "string" ? record.status : undefined;
+  } catch {
+    return undefined;
+  }
 }
 
 async function missingEvidenceRefs(vaultRoot: string, project: string, refs: string[]): Promise<string[]> {
@@ -167,6 +198,7 @@ function renderAudit(audit: MutationReadinessAudit): string {
     `- Blocked: ${audit.summary.blocked}`,
     `- Approval required: ${audit.summary.approvalRequired}`,
     `- Approval rejected: ${audit.summary.approvalRejected}`,
+    `- Retired: ${audit.summary.retired ?? 0}`,
     `- Missing evidence: ${audit.summary.missingEvidence}`,
     `- Unsafe dry-runs: ${audit.summary.unsafeDryRuns}`,
     `- Executable plans: ${audit.summary.executablePlans}`,

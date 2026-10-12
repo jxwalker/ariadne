@@ -27,6 +27,8 @@ TITLES = {'approvals': 'Approvals', 'plans': 'Mutation-readiness plans',
           'executions': 'Executions and post-verification', 'readiness': 'Live-adapter readiness',
           'cutover': 'Live-adapter cutover'}
 PASS = {'approved', 'passed', 'ready', 'ready_for_adapter', 'ready_for_cutover', 'ready_for_bounded_review', 'success'}
+# Closed records (decided rejected/expired, or plans whose approval was) are history, not pending failures.
+CLOSED = {'rejected', 'expired', 'approval_rejected', 'retired'}
 FAIL = {'requested', 'rejected', 'expired', 'approval_required', 'approval_rejected', 'blocked',
         'failed', 'timed_out', 'post_verify_failed', 'post_verify_skipped', 'error', 'revoked'}
 # Conservative whole-field redaction: commands with credential references are not displayed either.
@@ -74,6 +76,7 @@ def evidence_time(record):
 
 
 def grade(state, at, threshold, clock):
+    if state in CLOSED: return 'closed'
     if at is None: return 'missing'
     if clock-at > threshold: return 'stale'
     return 'pass' if state in PASS else 'fail' if state in FAIL else 'missing'
@@ -150,11 +153,14 @@ def controls(store, registry, directories=(), at=None):
             current.setdefault(identity,r)
         for r in records:
             status=r.get('status')
+            if category=='plans':
+                decided=loaded['approvals'].get(r.get('approvalRef'),{}).get('status')
+                if decided in {'rejected','expired'}:status=r['status']='retired';r['approvalStatus']=decided
             if category=='executions' and status=='passed' and (r.get('liveExitCode')!=0 or r.get('liveBufferExceeded') or r.get('postVerify')!='passed'):
                 status='failed' if (r.get('liveExitCode') is not None and r.get('liveExitCode')!=0) or r.get('liveBufferExceeded') else 'post_verify_failed' if r.get('postVerify')=='failed' else 'empty'
             if category=='dryRuns' and status=='passed' and r.get('exitCode')!=0:status='failed' if r.get('exitCode') is not None else 'empty'
             r['controlStatus']=grade(status,r['at'],THRESHOLDS[category],at)
-            if status in FAIL:
+            if status in FAIL and r['controlStatus']!='closed':
                 historical=current.get(r.get('planId') or r['id']) is not r if category in {'dryRuns','executions'} else False
                 extra=f"; later record {current[r.get('planId') or r['id']]['id']} reports {current[r.get('planId') or r['id']].get('status')}" if historical else ''
                 context=''
@@ -165,8 +171,8 @@ def controls(store, registry, directories=(), at=None):
                     blockers=sum(len(c.get('blockers',[])) for c in checks if isinstance(c,dict) and isinstance(c.get('blockers',[]),list))
                     context=f'; {blocked} shown blocked checks/targets; {blockers} shown blockers'
                 callout(category,r['id'],f"{TITLES[category]}: record {r['id']} reports {status}{context}{extra}.",r['controlStatus'])
-        grades=[r['controlStatus'] for r in current.values()]
-        status=next((s for s in ['fail','missing','stale'] if s in grades),'pass') if grades else 'missing'
+        grades=[r['controlStatus'] for r in current.values() if r['controlStatus']!='closed']
+        status=next((s for s in ['fail','missing','stale'] if s in grades),'pass') if grades else 'pass' if current else 'missing'
         counts=Counter(r.get('status','unreported') for r in records)
         summary='; '.join(f'{number} {state}' for state,number in sorted(counts.items())) or 'No configured evidence records'
         if category in {'dryRuns','executions'} and records:summary+=f'; {len(current)} latest plan results'
