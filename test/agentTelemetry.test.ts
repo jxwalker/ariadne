@@ -14,7 +14,7 @@ it('renders pre-PR sessions and marks stale host evidence conservatively',async(
   await fs.writeFile(path.join(dir,'m5.json'),JSON.stringify(snapshot));
   let result=await generateConsoleHtml({project:'live',vaultRoot:vault,refreshData:true});
   let html=await fs.readFile(result.htmlPath,'utf8');
-  expect(html).toContain('Claude · working');expect(html).toContain('Wire &lt;upload&gt; flow');expect(html).toContain('No matching PR in collected evidence');expect(html).toContain('app/upload.ts');
+  expect(html).toContain('Claude · working');expect(html).not.toContain('Wire');expect(html).toContain('Read-only repository session');expect(html).not.toContain('http-equiv="refresh"');expect(html).toContain('No matching PR in collected evidence');expect(html).toContain('app/upload.ts');
   snapshot.collectedAt='2020-01-01T00:00:00Z';await fs.writeFile(path.join(dir,'m5.json'),JSON.stringify(snapshot));
   result=await generateConsoleHtml({project:'live',vaultRoot:vault,refreshData:true});html=await fs.readFile(result.htmlPath,'utf8');
   expect(html).toContain('Claude · stale');expect(html).not.toContain('Claude · working');

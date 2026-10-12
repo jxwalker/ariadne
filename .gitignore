@@ -28,3 +28,6 @@ vault/projects/*/infrastructure/runtime/
 # Python telemetry collector cache
 __pycache__/
 *.py[cod]
+
+# Worktree-local browser dependencies and private dashboard render evidence.
+.insights-check/

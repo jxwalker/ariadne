@@ -16,7 +16,7 @@ export async function generateConsoleHtml(input: {
   return { htmlPath, dataPath: dataResult?.jsonPath, data };
 }
 
-function renderConsole(data: ConsoleData): string {
+export function renderConsole(data: ConsoleData): string {
   const repositoryOnly = data.sources.length === 0 && data.tasks.length === 0;
   const latestRun = data.executionRuns.at(-1);
   const latestEvaluation = data.evaluations.at(-1);
@@ -198,7 +198,6 @@ function renderConsole(data: ConsoleData): string {
     "<style>",
     css(),
     "</style>",
-    repositoryOnly && (data.agentTelemetry?.length ?? 0) > 0 ? '<meta http-equiv="refresh" content="30">' : "",
     "</head>",
     "<body>",
     '<main class="shell">',
@@ -218,7 +217,7 @@ function renderConsole(data: ConsoleData): string {
     repositoryOnly ? `<span>${new Set(data.github.snapshots.map(s => s.repository)).size} repositories</span>` : `<span>${missingGates} missing gates</span>`,
     "</div>",
     "</section>",
-    (data.agentTelemetry?.length ?? 0) > 0 ? section("Live agents", liveAgents(data)) : "",
+    (data.agentTelemetry?.length ?? 0) > 0 ? `<details><summary>Live agents · collector evidence</summary>${section("Live agents", liveAgents(data))}</details>` : "",
     section("Repository activity", github(data)),
     data.sources.length === 0 && data.tasks.length === 0 ? '<details><summary>Orchestration evidence and controls</summary>' : "",
     workflowOverview(data.workflow),
@@ -304,7 +303,7 @@ function renderConsole(data: ConsoleData): string {
     "</section>",
     data.sources.length === 0 && data.tasks.length === 0 ? "</details>" : "",
     '<script type="application/json" id="console-data">',
-    escapeScriptJson(JSON.stringify(data)),
+    escapeScriptJson(JSON.stringify({ ...data, agentTelemetry: data.agentTelemetry?.map(snapshot => ({ ...snapshot, sessions: snapshot.sessions.map(session => ({ ...session, task: "Read-only repository session", update: undefined })) })) })),
     "</script>",
     "</main>",
     "</body>",
@@ -934,14 +933,14 @@ function deployment(data: ConsoleData): string {
 function liveAgents(data: ConsoleData): string {
   const snapshots = [...(data.agentTelemetry ?? [])].sort((a,b) => Number(b.status === "available" && b.sessions.some(s => s.status === "working")) - Number(a.status === "available" && a.sessions.some(s => s.status === "working")) || a.host.localeCompare(b.host));
   const now = Date.parse(data.generatedAt);
-  return '<p class="stamp">Session events from the connected machines · refreshed every 30 seconds. Includes work before a PR exists.</p><div class="agent-activity">' + snapshots.map(snapshot => {
+  return '<p class="stamp">Session events from the connected machines · collection timestamps shown below. Includes work before a PR exists.</p><div class="agent-activity">' + snapshots.map(snapshot => {
     const disconnected = snapshot.status !== "available" || now - Date.parse(snapshot.collectedAt) > 180_000;
     const sessions = [...snapshot.sessions].sort((a,b) => Number(b.status === "working") - Number(a.status === "working") || b.lastEventAt.localeCompare(a.lastEventAt));
     return `<article class="repo-card"><h3>${escapeHtml(snapshot.host)}</h3><p class="stamp">${disconnected ? "Connection stale or unavailable" : "Connected"} · collected ${escapeHtml(snapshot.collectedAt)}</p>${snapshot.sources.map(source => `<small>${escapeHtml(source.agent)}: ${source.status === "available" ? `${snapshot.sessions.filter(s => s.agent === source.agent).length} recent sessions` : escapeHtml(source.status.replaceAll("_", " "))}</small>`).join("<br>")}${sessions.length ? sessions.slice(0,12).map(session => {
       const stale = disconnected || (session.status === "working" && now - Date.parse(session.lastEventAt) > 180_000);
       const state = stale ? "stale" : session.status;
       const pr = session.branch ? data.github.snapshots.flatMap(s => s.repository === session.repository ? s.pullRequests : []).find(p => p.headRefName === session.branch && p.state === "OPEN") : undefined;
-      return `<div class="repo-work"><strong>${escapeHtml(session.agent)} · ${escapeHtml(state)}</strong><p>${escapeHtml(session.task)}</p>${session.update ? `<small>Latest update: ${escapeHtml(session.update)}</small>` : ""}<small>${escapeHtml(session.repository)}${session.branch ? ` · ${escapeHtml(session.branch)}` : ""} · ${pr ? `PR #${pr.number}` : "No matching PR in collected evidence"}</small><small>Last event ${escapeHtml(session.lastEventAt)} · ${escapeHtml(session.event)}${session.lastTool ? ` · tool: ${escapeHtml(session.lastTool)}` : ""}</small>${session.changedFiles.length ? `<small>Changed files: ${session.changedFiles.map(escapeHtml).join(", ")}</small>` : ""}<details><summary>Session evidence</summary><small>Session ${escapeHtml(session.id)} · source ${escapeHtml(session.source)}</small></details></div>`;
+      return `<div class="repo-work"><strong>${escapeHtml(session.agent)} · ${escapeHtml(state)}</strong><p>Read-only repository session</p><small>${escapeHtml(session.repository)}${session.branch ? ` · ${escapeHtml(session.branch)}` : ""} · ${pr ? `PR #${pr.number}` : "No matching PR in collected evidence"}</small><small>Last event ${escapeHtml(session.lastEventAt)} · ${escapeHtml(session.event)}${session.lastTool ? ` · tool: ${escapeHtml(session.lastTool)}` : ""}</small>${session.changedFiles.length ? `<small>Changed files: ${session.changedFiles.map(escapeHtml).join(", ")}</small>` : ""}<details><summary>Session evidence</summary><small>Session ${escapeHtml(session.id)} · source ${escapeHtml(session.source)}</small></details></div>`;
     }).join("") : (disconnected ? '<p>Agent activity unavailable until this machine connects.</p>' : '<p>No recent repository sessions on this machine.</p>')}</article>`;
   }).join("") + '</div>';
 }
@@ -965,7 +964,7 @@ function github(data: ConsoleData): string {
         const pending = pr.checks.filter(c => c.status === "pending").length;
         const failed = pr.checks.filter(c => c.status === "failed").length;
         const passed = pr.checks.filter(c => c.status === "passed").length;
-        return `<div class="repo-work"><strong>${link(pr.url, `#${pr.number} ${pr.title}`)}</strong><p>${escapeHtml(pr.isDraft ? "Draft" : "Open")} · ${escapeHtml(pr.reviewDecision || "Review not recorded")} · ${passed} passing / ${pending} pending / ${failed} failing checks</p><small>${escapeHtml(pr.author ?? "Author not recorded")} · ${escapeHtml(pr.headRefName ?? "Branch not recorded")} · updated ${escapeHtml(pr.updatedAt ?? "unknown")}</small>${pr.checks.filter(c => c.status === "pending" || c.status === "failed").map(c => `<p>${link(c.detailsUrl, `${c.name}: ${c.status}`)}</p>`).join("")}</div>`;
+        return `<div class="repo-work"><strong>${link(pr.url, `#${pr.number} ${pr.title}`)}</strong><p>${escapeHtml(pr.isDraft ? "Draft" : "Open")} · ${escapeHtml(pr.reviewDecision || "Review not recorded")} · ${passed} passing / ${pending} pending / ${failed} failing checks</p><small>${escapeHtml(pr.author ?? "Author not recorded")} · ${escapeHtml(pr.headRefName ?? "Branch not recorded")} · updated ${escapeHtml(pr.updatedAt ?? "unknown")}</small>${pending + failed ? `<details><summary>${pending + failed} pending or failed checks</summary>${pr.checks.filter(c => c.status === "pending" || c.status === "failed").map(c => `<p>${link(c.detailsUrl, `${c.name}: ${c.status}`)}</p>`).join("")}</details>` : ""}</div>`;
       }).join("") : '<p>No open PRs in this snapshot.</p>'}</article>`;
     }),
     '</div>'
@@ -994,7 +993,7 @@ function empty(message: string): string {
 }
 
 function logoMark(): string {
-  return '<img class="logo-mark" src="../../../../assets/ariadne-logo-square.png" alt="" aria-hidden="true">';
+  return '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" class="logo-mark" aria-hidden="true"><rect width="128" height="128" rx="24" fill="#1e2324"/><path d="M28 100 64 24l36 76" fill="none" stroke="#f7f8f8" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/><path d="M43 72h42" fill="none" stroke="#f7f8f8" stroke-width="10" stroke-linecap="round"/><path d="M32 98c22-8 28-24 37-44 6-13 12-23 27-28" fill="none" stroke="#9c6f2f" stroke-width="5" stroke-linecap="round"/><circle cx="32" cy="98" r="6" fill="#2f6f5e"/><circle cx="96" cy="26" r="6" fill="#9d3e35"/><path d="M24 24h18M86 24h18M24 104h18M86 104h18" fill="none" stroke="#697170" stroke-width="4" stroke-linecap="round"/></svg>';
 }
 
 function statusClass(value: string | undefined): string {
@@ -1668,7 +1667,7 @@ time {
 .repo-work details>summary { padding:6px 0; font-size:12px; }
 .repo-activity { display:grid; grid-template-columns:repeat(auto-fit,minmax(min(100%,420px),1fr)); gap:18px; }
 .repo-card { max-height:560px; overflow:auto; background:#ffffff; border:1px solid #d2d9d7; border-radius:14px; padding:20px; }
-.repo-work { padding:14px 0; border-top:1px solid #d2d9d7; }
+.repo-work { overflow-wrap:anywhere; padding:14px 0; border-top:1px solid #d2d9d7; }
 .repo-work p,.repo-work small { color:#41534d; line-height:1.5; margin:6px 0; display:block; }
 .repo-work a { color:#175e52; text-decoration:none; }
 .repo-work a:hover { text-decoration:underline; }

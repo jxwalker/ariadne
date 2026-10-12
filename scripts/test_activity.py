@@ -44,7 +44,7 @@ class ActivityTests(unittest.TestCase):
         with self.store.connect() as db:db.execute('UPDATE runs SET last=?',(time.time()-100,));db.execute('UPDATE events SET received=?',(time.time()-100,))
         snap=self.store.snapshot({'test':{},'cloud':{}});self.assertEqual(snap['runs'][0]['state'],'stale/unknown');self.assertEqual(snap['sources'][1]['state'],'never-connected')
     def test_validation_and_html(self):
-        e=event(); validate(e);self.accept(e);self.store.process();body=dashboard(self.store.snapshot({}));self.assertNotIn('<script>',body);self.assertIn('&lt;script&gt;',body)
+        e=event(); validate(e);self.accept(e);self.store.process();body=dashboard(self.store.snapshot({}));self.assertNotIn('<script>',body);self.assertNotIn('unsafe',body)
         for patch in [{'evidenceLinks':['javascript:alert(1)']},{'evidenceLinks':['https://user:pass@example.com']},{'evidenceLinks':['https://example.com/?access_token=secret']},{'evidenceLinks':['https://example.com/?X-Amz-Signature=signed']},{'summary':'a'*501},{'sequence':True},{'path':'/etc/passwd'},{'occurredAt':'2026-10-12'}]:
             with self.assertRaises(ValueError):validate(event()|patch)
     def test_restart_backup_restore(self):
@@ -129,6 +129,84 @@ class ActivityTests(unittest.TestCase):
         pr['state']='closed'
         with patch('activity_reconcile.pages',return_value=[[pr]]): reconcile(self.store,['jxwalker/ariadne'])
         with self.store.connect() as db: self.assertEqual(db.execute('SELECT count(*) FROM observation_history').fetchone()[0],2)
+    def fixture_run(self, run, times, kinds, source='test', product='Codex'):
+        for seq,(received,kind) in enumerate(zip(times,kinds)):
+            self.accept(event(kind,seq,run)|{'sourceId':source,'agent':event()['agent']|{'product':product},'sessionId':run,'location':{'kind':'machine','name':'Fixture host'}})
+            with self.store.connect() as db:db.execute('UPDATE events SET received=? WHERE id=?',(received,f'{run}-{seq}-{kind}'))
+        self.store.process()
+
+    def test_insights_deterministic_aggregates_and_privacy(self):
+        from activity_insights import project,page_runs
+        self.fixture_run('success',[100000,100060],['task.start','task.completed'])
+        self.fixture_run('failure',[100000,100300],['task.start','task.failed'],product='Claude Code')
+        self.fixture_run('interrupt',[100100,100200],['task.start','task.interrupted'])
+        self.fixture_run('snapshot',[100000,100300],['task.start','task.progress'],source='snapshot')
+        d=project(self.store,{'snapshot':{'provenance':'read-only local snapshot'}},'24h',100320)
+        m=d['metrics'];self.assertEqual(m['runs'],3);self.assertEqual(m['snapshotRuns'],1)
+        self.assertEqual(m['medianSeconds'],180);self.assertEqual(m['p90Seconds'],276)
+        self.assertAlmostEqual(m['activeHours'],460/3600);self.assertEqual(m['events'],8)
+        self.assertEqual(m['rates']['success'],1/3);self.assertEqual(m['outcomes']['unknown/interrupted'],1)
+        self.assertEqual(sum(map(sum,d['heatmap'])),3);self.assertEqual(sum(d['histogram']['counts']),2)
+        self.assertNotIn('unsafe',canonical(d));self.assertNotIn('onerror',canonical(d));self.assertNotIn('summary',canonical(d));self.assertNotIn('test-secret',canonical(d))
+        page=page_runs(d,{'pageSize':['1'],'agent':['Codex'],'stale':['show']})
+        self.assertEqual(page['total'],2);self.assertEqual(len(page['runs']),1)
+        with self.assertRaises(ValueError):project(self.store,{},'all',100320)
+        with self.assertRaises(ValueError):page_runs(d,{'page':['bad']})
+
+    def test_insights_correlation_stale_empty_and_range_boundary(self):
+        from activity_insights import project,page_runs
+        at=200000;start=at-86400
+        self.fixture_run('carry',[start-60,start+60],['task.start','task.completed'])
+        self.fixture_run('stale',[at-4000,at-3600],['task.start','heartbeat'])
+        self.fixture_run('session',[at-30,at-10],['task.start','heartbeat'],source='snapshot')
+        # Correlation uses session metadata, not coincidental branch or timing.
+        for seq,kind in enumerate(['task.start','heartbeat']):
+            e=event(kind,seq,'native')|{'sessionId':'session','agent':event()['agent']|{'product':'Codex CLI'}};self.accept(e)
+            with self.store.connect() as db:db.execute('UPDATE events SET received=? WHERE id=?',(at-20+seq*10,e['eventId']))
+        self.store.process()
+        registry={'snapshot':{'correlationHost':'M5','provenance':'read-only local snapshot'},'test':{'correlationHost':'M5'},'missing':{}}
+        d=project(self.store,registry,'24h',at)
+        self.assertEqual(len(d['runs']),3);self.assertEqual(d['metrics']['snapshotRuns'],0)
+        self.assertEqual(d['metrics']['events'],7);self.assertEqual(d['metrics']['medianSeconds'],120)
+        self.assertEqual(d['live'][0]['eventCount'],4);self.assertEqual(len(d['live']),1);self.assertTrue(any('30 minutes' in i for i in d['insights']))
+        self.assertEqual(page_runs(d,{})['total'],2)
+        empty=project(self.store,{},'24h',at+200000)
+        self.assertEqual(empty['metrics']['runs'],0);self.assertIsNone(empty['metrics']['medianSeconds']);self.assertIsNone(empty['metrics']['rates']['success'])
+
+    def test_insights_repository_evidence_dedup_and_streak(self):
+        from activity_insights import project
+        rows=[('push',{'commits':[{'id':'abc'},{'id':'abc'}]}),('pull_request',{'pull_request':{'number':7}}),('pull_request',{'pull_request':{'number':7}}),('check_run',{'check_run':{'id':1,'conclusion':'success'}}),('check_run',{'pages':[{'check_runs':[{'id':1,'conclusion':'success'}]}]}),('check_run',{'check_run':{'id':2,'conclusion':'failure'}}),('check_run',{'check_run':{'id':3,'conclusion':'failure'}})]
+        with self.store.connect() as db:
+            for i,(kind,body) in enumerate(rows):db.execute('INSERT INTO observations VALUES(?,?,?,?)',(str(i),'jxwalker/ariadne',1000+i,canonical({'kind':kind,'body':body})))
+        d=project(self.store,{},'24h',1100);r=d['repositories'][0]
+        self.assertEqual(r['commits'],1);self.assertEqual(r['prs'],1);self.assertEqual(r['checks'],3);self.assertEqual(r['passed'],1)
+        self.assertTrue(any('latest 2' in i for i in d['insights']))
+
+    def test_insights_terminal_duration_caps_and_association_privacy(self):
+        from activity_insights import project
+        self.fixture_run('terminal',[1000,1060,1300],['task.start','task.completed','heartbeat'])
+        with self.store.connect() as db:
+            e=json.loads(db.execute('SELECT envelope FROM runs').fetchone()[0]);e['pr']=7
+            db.execute('UPDATE runs SET envelope=?',(canonical(e),))
+            body={'kind':'pull_request','body':{'pull_request':{'number':7,'state':'open','body':'SECRET PROMPT','title':'PRIVATE','html_url':'https://github.com/jxwalker/ariadne/pull/7'}}}
+            db.execute('INSERT INTO observations VALUES(?,?,?,?)',('private','jxwalker/ariadne',1200,canonical(body)))
+        d=project(self.store,{},'24h',1310);self.assertEqual(d['metrics']['medianSeconds'],60)
+        self.assertEqual(d['runs'][0]['github'][0]['state'],'open');self.assertNotIn('SECRET',canonical(d));self.assertNotIn('PRIVATE',canonical(d))
+        with patch('activity_insights.MAX_RECORDS',2):self.assertTrue(project(self.store,{},'24h',1310)['truncated'])
+
+    def test_public_nginx_allowlist_excludes_insights(self):
+        import re
+        config=(pathlib.Path(__file__).resolve().parents[1]/'deployment/activity/public-ingestion.nginx.example').read_text()
+        locations=re.findall(r'location\s+([^{}]+)\{([^{}]*(?:\{[^{}]*\}[^{}]*)*)\}',config)
+        proxy=[(route,body) for route,body in locations if 'proxy_pass' in body]
+        self.assertEqual(len(proxy),1)
+        route,body=proxy[0];self.assertEqual(route.strip(),'~ ^/ingest/v1/(events|github)$')
+        self.assertIn('limit_except POST { deny all; }',body);self.assertIn('location / { return 404; }',config)
+        pattern=route.strip()[2:]
+        self.assertIsNotNone(re.fullmatch(pattern,'/ingest/v1/events'));self.assertIsNotNone(re.fullmatch(pattern,'/ingest/v1/github'))
+        for path in ['/api/insights','/api/runs','/api/sources','/api/activity','/','/assets/activity-dashboard.js','/ingest/v1/events/']:
+            self.assertIsNone(re.fullmatch(pattern,path))
+
     def test_http_boundaries(self):
         server=ThreadingHTTPServer(('127.0.0.1',0),Handler);server.app=self.app;thread=threading.Thread(target=server.serve_forever);thread.start();base=f'http://127.0.0.1:{server.server_port}'
         try:
@@ -143,8 +221,19 @@ class ActivityTests(unittest.TestCase):
             with urllib.request.urlopen(urllib.request.Request(base+'/ingest/v1/github',data=payload,headers=headers)) as r:self.assertEqual(r.status,202)
             with self.assertRaises(urllib.error.HTTPError) as ex:urllib.request.urlopen(urllib.request.Request(base+'/ingest/v1/github',data=payload+b' ',headers=headers))
             self.assertEqual(ex.exception.code,401)
+            self.store.process()
+            for route in ['/api/insights?range=24h','/api/runs?stale=show&snapshots=show','/api/sources','/api/activity']:
+                with urllib.request.urlopen(base+route) as r:
+                    projection=r.read().decode();self.assertNotIn('unsafe',projection);self.assertNotIn('test-secret',projection);self.assertNotIn('onerror',projection)
+            for route in ['/api/insights?range=forever','/api/runs?page=bad','/api/sources?'+('&x=y'*21)]:
+                with self.assertRaises(urllib.error.HTTPError) as ex:urllib.request.urlopen(base+route)
+                self.assertEqual(ex.exception.code,400)
+            self.app.config['consoleHtml']=str(self.root/'index.html')
+            (self.root/'index.html').write_text('<html><head><meta http-equiv="refresh" content="30"></head><body><main class="shell"><div class="repo-work"><strong>Codex</strong><p>SECRET PROMPT</p><small>Latest update: SECRET OUTPUT</small></div><script type="application/json" id="console-data">'+canonical({'agentTelemetry':[{'sessions':[{'task':'SECRET PROMPT','update':'SECRET OUTPUT'}]}]})+'</script></main></body></html>')
+            with urllib.request.urlopen(base+'/') as r:
+                page=r.read().decode();self.assertNotIn('SECRET',page);self.assertNotIn('http-equiv="refresh"',page);self.assertIn('script-src \'self\'',r.headers['Content-Security-Policy'])
             self.app.config['ingestOnly']=True
-            for route in ['/','/readyz','/healthz','/api/activity']:
+            for route in ['/','/readyz','/healthz','/api/activity','/api/insights?range=7d','/api/runs?page=1','/api/sources','/assets/activity-dashboard.js']:
                 with self.assertRaises(urllib.error.HTTPError) as ex: urllib.request.urlopen(base+route)
                 self.assertEqual(ex.exception.code,404)
         finally:server.shutdown();thread.join();server.server_close()

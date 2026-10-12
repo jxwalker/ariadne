@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """Private durable activity ingestion. Python 3.11+; no third-party dependencies."""
-import argparse, hashlib, hmac, html, json, os, pathlib, re, signal, sqlite3, threading, time
+import argparse, hashlib, hmac, json, os, pathlib, re, signal, sqlite3, threading, time
 from datetime import datetime, timezone
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from urllib.parse import urlsplit, parse_qs
@@ -238,42 +238,60 @@ class Handler(BaseHTTPRequestHandler):
         except Exception: self.reply(503,{'error':'unavailable'})
     def do_GET(self):
         if self.server.app.config.get('ingestOnly'): return self.reply(404,{'error':'route not found'})
-        if self.path=='/assets/ariadne-logo-square.png' and self.server.app.config.get('logoFile'):
-            raw=pathlib.Path(self.server.app.config['logoFile']).read_bytes();self.send_response(200);self.send_header('Content-Type','image/png');self.send_header('Content-Length',str(len(raw)));self.end_headers();self.wfile.write(raw);return
+        if self.path=='/assets/activity-dashboard.js':
+            raw=pathlib.Path(__file__).with_name('activity_dashboard.js').read_bytes()
+            self.send_response(200);self.send_header('Content-Type','application/javascript; charset=utf-8');self.send_header('Content-Length',str(len(raw)));self.send_header('X-Content-Type-Options','nosniff');self.end_headers();self.wfile.write(raw);return
+        if self.path=='/assets/ariadne-logo-square.png':
+            logo=self.server.app.config.get('logoFile')
+            if logo and pathlib.Path(logo).is_file():
+                raw=pathlib.Path(logo).read_bytes();self.send_response(200);self.send_header('Content-Type','image/png');self.send_header('Content-Length',str(len(raw)));self.end_headers();self.wfile.write(raw);return
+            return self.reply(404,{'error':'logo unavailable'})
         if self.path=='/healthz': return self.reply(200,{'status':'alive'})
         if self.path=='/readyz':
             try: self.server.app.sources(); self.server.app.store.snapshot({}); return self.reply(200,{'status':'ready'})
             except Exception: return self.reply(503,{'status':'unavailable'})
         # On private listener only. It MUST be behind a tailnet HTTPS proxy; never expose this listener publicly.
-        if self.path=='/api/activity': return self.reply(200,self.server.app.store.snapshot(self.server.app.sources()))
         route=urlsplit(self.path)
+        if len(route.query)>2048: return self.reply(400,{'error':'query too long'})
+        try: filters=parse_qs(route.query,max_num_fields=20)
+        except ValueError:return self.reply(400,{'error':'too many query fields'})
+        if route.path in {'/api/activity','/api/insights','/api/runs','/api/sources'}:
+            from activity_insights import project,page_runs,sources_view
+            try:
+                registry=self.server.app.sources()
+                if route.path=='/api/sources':return self.reply(200,{'sources':sources_view(self.server.app.store,registry,time.time())})
+                data=project(self.server.app.store,registry,filters.get('range',['24h'])[0])
+                if route.path=='/api/runs':return self.reply(200,page_runs(data,filters))
+                data['filters']={key:sorted({r[key] for r in data['runs']}) for key in ['repo','agent','machine','source','state']}
+                data['sourceLabels']={r['source']:r['sourceName'] for r in data['runs']}
+                data.pop('runs')
+                # Legacy API now uses the same prompt-free, metadata-only contract.
+                return self.reply(200,data)
+            except (BrokenPipeError,ConnectionResetError):return  # Tab closed during a metadata poll.
+            except ValueError:return self.reply(400,{'error':'invalid query'})
+            except Exception:return self.reply(503,{'error':'insights unavailable'})
         if route.path not in {'/','/scorpion-labs/console/'}: return self.reply(404,{'error':'route not found'})
-        data=self.server.app.store.snapshot(self.server.app.sources())
-        filters=parse_qs(route.query)
-        for key in ['repository','sourceId','taskId']:
-            if filters.get(key): data['runs']=[r for r in data['runs'] if r['event'].get(key)==filters[key][0]]
-        if filters.get('agent'): data['runs']=[r for r in data['runs'] if r['event']['agent']['product']==filters['agent'][0]]
-        if filters.get('location'): data['runs']=[r for r in data['runs'] if r['event'].get('location',{}).get('name')==filters['location'][0]]
         p=pathlib.Path(self.server.app.config['consoleHtml'])
         body=p.read_text() if p.exists() else '<html><head><title>Ariadne</title></head><body><h1>Ariadne</h1></body></html>'
         # Legacy task labels can be prompt-derived; suppress those excerpts on the new surface.
-        body=re.sub(r'(<div class="repo-work"><strong>.*?</strong>)<p>.*?</p>',r'\1<p>Read-only repository session</p>',body,flags=re.DOTALL)
-        body=body.replace('content="30"','content="10"')
-        if 'http-equiv="refresh"' not in body: body=body.replace('</head>','<meta http-equiv="refresh" content="10"></head>')
-        body=body.replace('<main class="shell">','<main class="shell">'+dashboard(data),1) if '<main class="shell">' in body else body.replace('</body>',dashboard(data)+'</body>')
-        raw=body.encode(); self.send_response(200); self.send_header('Content-Type','text/html; charset=utf-8'); self.send_header('Content-Length',str(len(raw))); self.send_header('Cache-Control','no-store'); self.send_header('X-Content-Type-Options','nosniff'); self.send_header('Content-Security-Policy',"default-src 'self'; script-src 'none'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; frame-ancestors 'none'"); self.end_headers(); self.wfile.write(raw)
+        body=re.sub(r'(<div class="repo-work"><strong>[^<]*</strong>)<p>.*?</p>',r'\1<p>Read-only repository session</p>',body,flags=re.DOTALL)
+        body=re.sub(r'<meta\s+http-equiv=[\"\']refresh[\"\'][^>]*>', '', body, flags=re.I)
+        body=re.sub(r'<small>Latest update:.*?</small>', '', body, flags=re.DOTALL)
+        def suppress_embedded(match):
+            try:
+                embedded=json.loads(match[2])
+                for snapshot in embedded.get('agentTelemetry',[]):
+                    for session in snapshot.get('sessions',[]):
+                        session['task']='Read-only repository session';session.pop('update',None)
+                return match[1]+canonical(embedded).replace('<','\\u003c')+match[3]
+            except (ValueError,TypeError,AttributeError):return ''
+        body=re.sub(r'(<script[^>]*id="console-data"[^>]*>)(.*?)(</script>)',suppress_embedded,body,flags=re.DOTALL)
+        body=body.replace('../../../../assets/ariadne-logo-square.png','/assets/ariadne-logo-square.png')
+        body=body.replace('<main class="shell">','<main class="shell">'+dashboard({}),1) if '<main class="shell">' in body else body.replace('</body>',dashboard({})+'</body>')
+        raw=body.encode(); self.send_response(200); self.send_header('Content-Type','text/html; charset=utf-8'); self.send_header('Content-Length',str(len(raw))); self.send_header('Cache-Control','no-store'); self.send_header('X-Content-Type-Options','nosniff'); self.send_header('Content-Security-Policy',"default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; frame-ancestors 'none'"); self.end_headers(); self.wfile.write(raw)
 
 def dashboard(data):
-    esc=lambda v:html.escape(str(v),quote=True)
-    source_names={s['sourceId']:s.get('name',s['sourceId']) for s in data['sources']}
-    health='<h3>Integration health</h3><table><thead><tr><th>Source</th><th>Last collection</th><th>State</th><th>Coverage / next action</th></tr></thead><tbody>'+''.join('<tr><td>'+esc(source_names.get(h['name'].removeprefix('snapshot:'),h['name']))+'</td><td>'+esc(datetime.fromtimestamp(h['at'],timezone.utc).isoformat())+'</td><td>'+esc(h['status'])+'</td><td>'+esc(h['detail'])+'</td></tr>' for h in data['health'])+'</tbody></table>'
-    rows=[]
-    for r in data['runs']:
-        e=r['event']; evidence='; '.join(esc(x['kind']+': '+str(x['state'])) for x in r['github']) or 'No matching independent GitHub evidence'
-        timeline=' '.join(esc(x['kind']+' #'+str(x['sequence'])) for x in reversed(r['timeline']))
-        links=' '.join('<a rel="noreferrer" href="'+esc(x)+'">Evidence link</a>' for x in e.get('evidenceLinks',[]) if safe_link(x))
-        rows.append('<tr>'+''.join('<td>'+v+'</td>' for v in [esc(e['repository']),esc(e['agent']['product']+' / '+source_names.get(e['sourceId'],e['sourceId'])),esc(e['label'])+'<br>'+esc(e['summary']),esc(r['state']),esc(e['branch'] if 'branch' in e else 'unassociated'),esc(datetime.fromtimestamp(r['lastReceipt'],timezone.utc).isoformat()),esc(e['taskId']+' / '+e['runId'])+'<br>'+esc(r['delivery'])+'<br>Correlated sources: '+esc(', '.join(r.get('correlatedSourceIds',[])))+'<br>Sequence gaps: '+esc(r['sequenceGaps']),evidence+'<br>'+timeline+'<br>'+links])+'</tr>')
-    return '<section id="durable-activity" style="padding:24px;overflow:auto"><h2>Durable agent activity</h2><form method="get"><label>Repository <input name="repository"></label> <label>Agent <input name="agent"></label> <label>Machine / cloud <input name="location"></label> <label>Source ID <input name="sourceId"></label> <label>Task <input name="taskId"></label> <button>Filter</button></form><p>Accepted private reports; completion never grants delivery approval. Refresh at most every 10 seconds.</p><p>'+esc(data['generatedAt'])+' · Queue backlog '+esc(data['queueBacklog'])+'</p><p>'+ ' · '.join(esc(s.get('name',s['sourceId'])+': '+s['state']+' / '+s.get('activity','unknown')) for s in data['sources'])+'</p><table><thead><tr>'+''.join('<th>'+s+'</th>' for s in ['Repository','Agent / source','Task / progress','Agent-reported state','Branch','Last accepted heartbeat/event','Task / run / receipt','Independent evidence / timeline'])+'</tr></thead><tbody>'+''.join(rows)+'</tbody></table>'+health+'</section>'
+    return pathlib.Path(__file__).with_name('activity_dashboard.html').read_text()
 
 def main():
     parser=argparse.ArgumentParser(); parser.add_argument('--config',required=True); parser.add_argument('--backup'); a=parser.parse_args()
