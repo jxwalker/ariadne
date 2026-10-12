@@ -5,6 +5,13 @@
   "snapshotDirectory": "/home/james/workspaces/ariadne/vault/projects/scorpion-labs/integrations/agents",
   "bind": "127.0.0.1",
   "port": 18095,
-  "githubRepositories": ["jxwalker/ariadne", "jxwalker/patent-studio", "jxwalker/openscorpion", "jxwalker/apcg-platform", "jxwalker/gad-demo"],
-  "snapshotSources": {}
+  "githubRepositories": [
+    "jxwalker/ariadne",
+    "jxwalker/patent-studio",
+    "jxwalker/openscorpion",
+    "jxwalker/apcg-platform",
+    "jxwalker/gad-demo"
+  ],
+  "snapshotSources": {},
+  "logoFile": "/home/james/workspaces/ariadne/assets/ariadne-logo-square.png"
 }

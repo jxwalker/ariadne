@@ -124,7 +124,9 @@ class Store:
                 evidence=[]
                 for o in db.execute('SELECT * FROM observations WHERE repo=? ORDER BY observed DESC LIMIT 200',(e['repository'],)):
                     obs=json.loads(o['body']); b=obs.get('body',{}); pr=b.get('pull_request',{}); branch=pr.get('head',{}).get('ref') or b.get('ref','').removeprefix('refs/heads/'); sha=pr.get('head',{}).get('sha') or b.get('after') or b.get('head_sha') or b.get('workflow_run',{}).get('head_sha') or b.get('check_run',{}).get('head_sha') or b.get('check_suite',{}).get('head_sha')
-                    if (e.get('pr') and e['pr']==(pr.get('number') or b.get('number'))) or (e.get('branch') and e['branch']==branch) or (e.get('commit') and e['commit']==sha):
+                    explicit_text='\n'.join(str(x) for x in [pr.get('body',''),b.get('issue',{}).get('body',''),b.get('comment',{}).get('body','')])
+                    explicit=(re.search(r'(?m)^Ariadne-Task: '+re.escape(e['taskId'])+r'\s*$',explicit_text) is not None or re.search(r'(?m)^Ariadne-Run: '+re.escape(e['runId'])+r'\s*$',explicit_text) is not None)
+                    if explicit or (e.get('pr') and e['pr']==(pr.get('number') or b.get('number'))) or (e.get('branch') and e['branch']==branch) or (e.get('commit') and e['commit']==sha):
                         evidence.append({'kind':obs['kind'],'observedAt':o['observed'],'association':'repository/branch/commit/PR reference; not agent authorship','state': ('; '.join(str(x.get('state') or x.get('conclusion') or x.get('status')) for page in b.get('pages',[]) for x in (page if isinstance(page,list) else page.get('check_runs',[]))) if b.get('pages') else None) or pr.get('state') or b.get('state') or b.get('workflow_run',{}).get('conclusion') or b.get('check_run',{}).get('conclusion'),'url':pr.get('html_url') if safe_link(pr.get('html_url')) else None})
                 timeline=[{'eventId':x['id'],'receivedAt':x['received_at'],'kind':json.loads(x['envelope'])['kind'],'sequence':json.loads(x['envelope'])['sequence']} for x in db.execute("SELECT * FROM events WHERE source=? AND json_extract(envelope,'$.runId')=? ORDER BY received DESC LIMIT 30",(r['source'],r['run']))]
                 runs.append({'event':e,'state':state,'lastReceipt':r['last'],'sequenceGaps':r['gaps'],'delivery':'accepted; agent report','github':evidence,'timeline':timeline})
@@ -144,7 +146,7 @@ class Store:
                 winner['timeline']=sorted(previous['timeline']+r['timeline'],key=lambda x:x['receivedAt'],reverse=True)[:30]
                 grouped[key]=winner
             runs=uncorrelated+list(grouped.values())
-            return {'generatedAt':now(),'runs':runs,'sources':[{'sourceId':s,'state':'revoked' if v.get('revoked') else 'never-connected' if s not in last else 'connected' if t-last[s]<=90 else 'stale','lastReceipt':last.get(s)} for s,v in sources.items()], 'queueBacklog':db.execute('SELECT (SELECT COUNT(*) FROM events WHERE processed=0)+(SELECT COUNT(*) FROM webhooks WHERE processed=0)').fetchone()[0], 'health':[dict(r) for r in db.execute('SELECT * FROM health')]}
+            return {'generatedAt':now(),'runs':runs,'sources':[{'sourceId':s,'activity':'actively working' if any(r['event']['sourceId']==s and r['state']=='working' for r in runs) else 'blocked' if any(r['event']['sourceId']==s and r['state']=='blocked' for r in runs) else 'idle/no active report', 'state':'revoked' if v.get('revoked') else 'never-connected' if s not in last else 'connected' if t-last[s]<=90 else 'stale','lastReceipt':last.get(s)} for s,v in sources.items()], 'queueBacklog':db.execute('SELECT (SELECT COUNT(*) FROM events WHERE processed=0)+(SELECT COUNT(*) FROM webhooks WHERE processed=0)').fetchone()[0], 'health':[dict(r) for r in db.execute('SELECT * FROM health')]}
     def backup(self,target):
         with self.connect() as db, sqlite3.connect(target,factory=ClosingConnection) as out: db.backup(out)
         os.chmod(target,0o600)
@@ -214,6 +216,8 @@ class Handler(BaseHTTPRequestHandler):
         except Exception: self.reply(503,{'error':'unavailable'})
     def do_GET(self):
         if self.server.app.config.get('ingestOnly'): return self.reply(404,{'error':'route not found'})
+        if self.path=='/assets/ariadne-logo-square.png' and self.server.app.config.get('logoFile'):
+            raw=pathlib.Path(self.server.app.config['logoFile']).read_bytes();self.send_response(200);self.send_header('Content-Type','image/png');self.send_header('Content-Length',str(len(raw)));self.end_headers();self.wfile.write(raw);return
         if self.path=='/healthz': return self.reply(200,{'status':'alive'})
         if self.path=='/readyz':
             try: self.server.app.sources(); self.server.app.store.snapshot({}); return self.reply(200,{'status':'ready'})
@@ -231,7 +235,7 @@ class Handler(BaseHTTPRequestHandler):
         body=p.read_text() if p.exists() else '<html><head><title>Ariadne</title></head><body><h1>Ariadne</h1></body></html>'
         body=body.replace('content="30"','content="10"')
         if 'http-equiv="refresh"' not in body: body=body.replace('</head>','<meta http-equiv="refresh" content="10"></head>')
-        body=body.replace('</body>',dashboard(data)+'</body>')
+        body=body.replace('</header>','</header>'+dashboard(data),1) if '</header>' in body else body.replace('</body>',dashboard(data)+'</body>')
         raw=body.encode(); self.send_response(200); self.send_header('Content-Type','text/html; charset=utf-8'); self.send_header('Content-Length',str(len(raw))); self.send_header('Cache-Control','no-store'); self.send_header('X-Content-Type-Options','nosniff'); self.send_header('Content-Security-Policy',"default-src 'self'; script-src 'none'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; frame-ancestors 'none'"); self.end_headers(); self.wfile.write(raw)
 
 def dashboard(data):
@@ -242,7 +246,7 @@ def dashboard(data):
         timeline=' '.join(esc(x['kind']+' #'+str(x['sequence'])) for x in reversed(r['timeline']))
         links=' '.join('<a rel="noreferrer" href="'+esc(x)+'">Evidence link</a>' for x in e.get('evidenceLinks',[]) if safe_link(x))
         rows.append('<tr>'+''.join('<td>'+v+'</td>' for v in [esc(e['repository']),esc(e['agent']['product']+' / '+e['sourceId']),esc(e['label'])+'<br>'+esc(e['summary']),esc(r['state']),esc(e['branch'] if 'branch' in e else 'unassociated'),esc(datetime.fromtimestamp(r['lastReceipt'],timezone.utc).isoformat()),esc(e['taskId']+' / '+e['runId'])+'<br>'+esc(r['delivery'])+'<br>Correlated sources: '+esc(', '.join(r.get('correlatedSourceIds',[])))+'<br>Sequence gaps: '+esc(r['sequenceGaps']),evidence+'<br>'+timeline+'<br>'+links])+'</tr>')
-    return '<section id="durable-activity" style="padding:24px;overflow:auto"><h2>Durable agent activity</h2><form method="get"><label>Repository <input name="repository"></label> <label>Agent <input name="agent"></label> <label>Source <input name="sourceId"></label> <label>Task <input name="taskId"></label> <button>Filter</button></form><p>Accepted private reports; completion never grants delivery approval. Refresh at most every 10 seconds.</p><p>'+esc(data['generatedAt'])+' · Queue backlog '+esc(data['queueBacklog'])+'</p><p>'+ ' · '.join(esc(s['sourceId']+': '+s['state']) for s in data['sources'])+'</p><table><thead><tr>'+''.join('<th>'+s+'</th>' for s in ['Repository','Agent / source','Task / progress','Agent-reported state','Branch','Last accepted heartbeat/event','Task / run / receipt','Independent evidence / timeline'])+'</tr></thead><tbody>'+''.join(rows)+'</tbody></table><p>Integration health: '+esc(canonical(data['health']))+'</p></section>'
+    return '<section id="durable-activity" style="padding:24px;overflow:auto"><h2>Durable agent activity</h2><form method="get"><label>Repository <input name="repository"></label> <label>Agent <input name="agent"></label> <label>Source <input name="sourceId"></label> <label>Task <input name="taskId"></label> <button>Filter</button></form><p>Accepted private reports; completion never grants delivery approval. Refresh at most every 10 seconds.</p><p>'+esc(data['generatedAt'])+' · Queue backlog '+esc(data['queueBacklog'])+'</p><p>'+ ' · '.join(esc(s['sourceId']+': '+s['state']+' / '+s.get('activity','unknown')) for s in data['sources'])+'</p><table><thead><tr>'+''.join('<th>'+s+'</th>' for s in ['Repository','Agent / source','Task / progress','Agent-reported state','Branch','Last accepted heartbeat/event','Task / run / receipt','Independent evidence / timeline'])+'</tr></thead><tbody>'+''.join(rows)+'</tbody></table><p>Integration health: '+esc(canonical(data['health']))+'</p></section>'
 
 def main():
     parser=argparse.ArgumentParser(); parser.add_argument('--config',required=True); parser.add_argument('--backup'); a=parser.parse_args()
