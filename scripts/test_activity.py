@@ -68,6 +68,12 @@ class ActivityTests(unittest.TestCase):
         self.store.process()
         self.assertEqual(delivered,[0,1]);self.assertEqual(self.store.snapshot({})['runs'][0]['state'],'working')
 
+    def test_empty_review_pages_do_not_inherit_pr_open_state(self):
+        self.accept(event()|{'pr':7});self.store.process()
+        body={'kind':'pull_request_review','body':{'pull_request':{'number':7,'state':'open','html_url':'https://github.com/jxwalker/ariadne/pull/7'},'pages':[[]]}}
+        with self.store.connect() as db:db.execute('INSERT INTO observations VALUES(?,?,?,?)',('reviews','jxwalker/ariadne',time.time(),canonical(body)))
+        self.assertEqual(self.store.snapshot({})['runs'][0]['github'][0]['state'],'no reviews')
+
     def test_hooks_spool_privacy_and_parent(self):
         c={'spool':str(self.root/'spool'),'sourceId':'test','agent':event()['agent'],'project':'ariadne','repository':'jxwalker/ariadne','workspace':str(self.root)}
         hook(c,{'hook_event_name':'Stop','session_id':'session','cwd':str(self.root),'prompt':'SECRET','tool_input':{'command':'secret'}})
