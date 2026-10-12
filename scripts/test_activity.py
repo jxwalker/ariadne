@@ -90,6 +90,19 @@ class ActivityTests(unittest.TestCase):
         config=self.app.config|{'snapshotDirectory':str(snapshots),'snapshotSources':{'approved-host':'test'},'githubRepositories':['jxwalker/ariadne'],'snapshotRunRefs':{run:{'branch':'verified-branch','pr':157}}};file=self.root/'server.json';file.write_text(json.dumps(config))
         with patch.object(sys,'argv',['import','--config',str(file)]):main()
         projection=self.store.snapshot({})['runs'][0]['event'];self.assertNotIn('SECRET',canonical(projection));self.assertEqual(projection['branch'],'verified-branch');self.assertEqual(projection['pr'],157)
+    def test_reference_match_before_display_limit_and_history(self):
+        self.accept(event()|{'branch':'feature'});self.store.process()
+        with self.store.connect() as db:
+            db.execute('INSERT INTO observations VALUES(?,?,?,?)',('match','jxwalker/ariadne',0,canonical({'kind':'pull_request','body':{'pull_request':{'number':1,'head':{'ref':'feature'},'state':'open'}}})))
+            for i in range(250): db.execute('INSERT INTO observations VALUES(?,?,?,?)',(str(i),'jxwalker/ariadne',time.time(),canonical({'kind':'pull_request','body':{'pull_request':{'number':i+2,'head':{'ref':'unrelated'},'state':'closed'}}})))
+        self.assertEqual(len(self.store.snapshot({})['runs'][0]['github']),1)
+        from unittest.mock import patch
+        from activity_reconcile import reconcile
+        pr={'number':1,'state':'open','head':{'ref':'unmatched','sha':'a'*40}}
+        with patch('activity_reconcile.pages',return_value=[[pr]]): reconcile(self.store,['jxwalker/ariadne'])
+        pr['state']='closed'
+        with patch('activity_reconcile.pages',return_value=[[pr]]): reconcile(self.store,['jxwalker/ariadne'])
+        with self.store.connect() as db: self.assertEqual(db.execute('SELECT count(*) FROM observation_history').fetchone()[0],2)
     def test_http_boundaries(self):
         server=ThreadingHTTPServer(('127.0.0.1',0),Handler);server.app=self.app;thread=threading.Thread(target=server.serve_forever);thread.start();base=f'http://127.0.0.1:{server.server_port}'
         try:

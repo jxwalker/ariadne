@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """Read-only paginated GitHub reconciliation using existing host gh auth. No token output."""
-import argparse,json,pathlib,subprocess,time
+import argparse,hashlib,json,pathlib,subprocess,time
 from activity_server import Store,canonical
 
 def pages(endpoint):
@@ -26,7 +26,10 @@ def reconcile(store,repositories):
                         raw=pages(f'repos/{repo}/{route}?per_page=100')
                         observations.append(('reconcile:'+kind+':'+repo+':'+str(pr['number']),{'kind':kind,'body':{'pull_request':pr,'pages':raw}}))
             with store.connect() as db:
-                for ident,body in observations: db.execute('INSERT OR REPLACE INTO observations VALUES(?,?,?,?)',(ident,repo,time.time(),canonical(body)))
+                for ident,body in observations:
+                    raw=canonical(body);version=ident+':'+hashlib.sha256(raw.encode()).hexdigest()
+                    db.execute('INSERT OR IGNORE INTO observation_history VALUES(?,?,?)',(version,time.time(),raw))
+                    db.execute('INSERT OR REPLACE INTO observations VALUES(?,?,?,?)',(ident,repo,time.time(),raw))
                 db.execute('INSERT OR REPLACE INTO health VALUES(?,?,?,?)',('github:'+repo,time.time(),'success','All PR pages collected; associated task review/check pages collected; no agent attribution'))
         except Exception:
             with store.connect() as db: db.execute('INSERT OR REPLACE INTO health VALUES(?,?,?,?)',('github:'+repo,time.time(),'error','Read-only API reconciliation failed; inspect host gh access/rate limits'))

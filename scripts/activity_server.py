@@ -61,10 +61,13 @@ class Store:
             CREATE TABLE IF NOT EXISTS rates(source TEXT, minute INTEGER, requests INTEGER, PRIMARY KEY(source,minute));
             CREATE TABLE IF NOT EXISTS migrations(version INTEGER PRIMARY KEY);
             INSERT OR IGNORE INTO migrations VALUES(1);
+            INSERT OR IGNORE INTO migrations VALUES(2);
+            CREATE TABLE IF NOT EXISTS observation_history(id TEXT PRIMARY KEY, observed REAL, body TEXT);
             CREATE TABLE IF NOT EXISTS events(id TEXT PRIMARY KEY, source TEXT, received REAL, received_at TEXT, raw BLOB, envelope TEXT, processed INTEGER DEFAULT 0);
             CREATE TABLE IF NOT EXISTS runs(source TEXT, run TEXT, task TEXT, seq INTEGER, state TEXT, last REAL, envelope TEXT, gaps INTEGER DEFAULT 0, PRIMARY KEY(source,run));
             CREATE TABLE IF NOT EXISTS webhooks(id TEXT PRIMARY KEY, kind TEXT, received REAL, raw BLOB, processed INTEGER DEFAULT 0);
             CREATE TABLE IF NOT EXISTS observations(id TEXT PRIMARY KEY, repo TEXT, observed REAL, body TEXT);
+            CREATE INDEX IF NOT EXISTS observation_repo ON observations(repo);
             CREATE TABLE IF NOT EXISTS health(name TEXT PRIMARY KEY, at REAL, status TEXT, detail TEXT);
             ''')
         os.chmod(self.path,0o600)
@@ -122,7 +125,15 @@ class Store:
                 e=json.loads(r['envelope']); state=r['state']
                 if state=='working' and t-r['last']>90: state='stale/unknown'
                 evidence=[]
-                for o in db.execute('SELECT * FROM observations WHERE repo=? ORDER BY observed DESC LIMIT 200',(e['repository'],)):
+                text_fields="COALESCE(json_extract(body,'$.body.pull_request.body'),'') || char(10) || COALESCE(json_extract(body,'$.body.issue.body'),'') || char(10) || COALESCE(json_extract(body,'$.body.comment.body'),'')"
+                match_fields=[("$.body.pull_request.number",e.get('pr')),("$.body.number",e.get('pr')),("$.body.pull_request.head.ref",e.get('branch')),("$.body.ref",'refs/heads/'+e['branch'] if e.get('branch') else None),("$.body.pull_request.head.sha",e.get('commit')),("$.body.after",e.get('commit')),("$.body.head_sha",e.get('commit')),("$.body.workflow_run.head_sha",e.get('commit')),("$.body.check_run.head_sha",e.get('commit')),("$.body.check_suite.head_sha",e.get('commit'))]
+                predicates=["json_extract(body,?)=?" for _ in match_fields]
+                params=[value for pair in match_fields for value in pair]
+                predicates += ["instr("+text_fields+",?)>0","instr("+text_fields+",?)>0"]
+                params += ['Ariadne-Task: '+e['taskId'],'Ariadne-Run: '+e['runId']]
+                query='SELECT * FROM observations WHERE repo=? AND ('+' OR '.join(predicates)+') ORDER BY observed DESC LIMIT 200'
+                # Limit display AFTER repository/reference filtering, never truncate the repository sample.
+                for o in db.execute(query,[e['repository']]+params):
                     obs=json.loads(o['body']); b=obs.get('body',{}); pr=b.get('pull_request',{}); branch=pr.get('head',{}).get('ref') or b.get('ref','').removeprefix('refs/heads/'); sha=pr.get('head',{}).get('sha') or b.get('after') or b.get('head_sha') or b.get('workflow_run',{}).get('head_sha') or b.get('check_run',{}).get('head_sha') or b.get('check_suite',{}).get('head_sha')
                     explicit_text='\n'.join(str(x) for x in [pr.get('body',''),b.get('issue',{}).get('body',''),b.get('comment',{}).get('body','')])
                     explicit=(re.search(r'(?m)^Ariadne-Task: '+re.escape(e['taskId'])+r'\s*$',explicit_text) is not None or re.search(r'(?m)^Ariadne-Run: '+re.escape(e['runId'])+r'\s*$',explicit_text) is not None)
