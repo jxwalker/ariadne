@@ -1,0 +1,12 @@
+[Unit]
+Description=Ariadne private durable activity API and console
+After=network-online.target
+[Service]
+ExecStart=/usr/bin/python3 %h/.local/lib/ariadne-activity/scripts/activity_server.py --config %h/.config/ariadne-activity/server.json
+Restart=on-failure
+RestartSec=2
+TimeoutStopSec=15
+UMask=0077
+NoNewPrivileges=true
+[Install]
+WantedBy=default.target
