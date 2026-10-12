@@ -23,6 +23,8 @@ class ActivityTests(unittest.TestCase):
         with self.assertRaises(PermissionError):self.app.authenticate(self.headers(raw2,nonce='new'),raw2,e)
         e['repository']='jxwalker/ariadne'
         with self.assertRaises(PermissionError):self.app.authenticate(self.headers(raw2),raw2,e)
+        leaked=e|{'summary':'test-secret'};leaked_raw=canonical(leaked).encode()
+        with self.assertRaises(PermissionError):self.app.authenticate(self.headers(leaked_raw,nonce='credential-leak'),leaked_raw,leaked)
         self.creds.write_text('{}')
         with self.assertRaises(PermissionError):self.app.authenticate(headers,raw,e)
     def test_duplicate_and_conflict(self):
@@ -41,7 +43,7 @@ class ActivityTests(unittest.TestCase):
         snap=self.store.snapshot({'test':{},'cloud':{}});self.assertEqual(snap['runs'][0]['state'],'stale/unknown');self.assertEqual(snap['sources'][1]['state'],'never-connected')
     def test_validation_and_html(self):
         e=event(); validate(e);self.accept(e);self.store.process();body=dashboard(self.store.snapshot({}));self.assertNotIn('<script>',body);self.assertIn('&lt;script&gt;',body)
-        for patch in [{'evidenceLinks':['javascript:alert(1)']},{'evidenceLinks':['https://user:pass@example.com']},{'summary':'a'*501},{'sequence':True},{'path':'/etc/passwd'},{'occurredAt':'2026-10-12'}]:
+        for patch in [{'evidenceLinks':['javascript:alert(1)']},{'evidenceLinks':['https://user:pass@example.com']},{'evidenceLinks':['https://example.com/?access_token=secret']},{'evidenceLinks':['https://example.com/?X-Amz-Signature=signed']},{'summary':'a'*501},{'sequence':True},{'path':'/etc/passwd'},{'occurredAt':'2026-10-12'}]:
             with self.assertRaises(ValueError):validate(event()|patch)
     def test_restart_backup_restore(self):
         self.accept(event()); self.store.process();backup=str(self.root/'backup.db');self.store.backup(backup); restored=Store(backup);self.assertEqual(restored.snapshot({})['runs'],self.store.snapshot({})['runs']);self.assertEqual(Store(self.root/'state.db').snapshot({})['runs'],self.store.snapshot({})['runs'])

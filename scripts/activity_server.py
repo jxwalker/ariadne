@@ -23,6 +23,9 @@ def bounded(value, limit):
 def safe_link(value):
     if not bounded(value,2048): return False
     u=urlsplit(value)
+    sensitive={'token','access_token','auth','authorization','password','secret','key','api_key','apikey','signature','credential'}
+    if any(k.lower() in sensitive or k.lower().startswith('x-amz-') for k in parse_qs(u.query)): return False
+    if re.search(r'(?:access_token|password|secret|api_key)=',u.fragment,re.I): return False
     return u.scheme=='https' and bool(u.hostname) and not u.username and not u.password and not any(c.isspace() for c in value)
 def validate(e):
     required={'schemaVersion','eventId','sourceId','agent','project','repository','taskId','runId','sequence','occurredAt','kind','label','summary'}
@@ -177,6 +180,7 @@ class App:
         if not re.fullmatch(r'\d{10}',ts) or abs(time.time()-int(ts))>300 or not ID.fullmatch(nonce): raise PermissionError('invalid signature time/nonce')
         expected=hmac.new(source['secret'].encode(),ts.encode()+b'\n'+nonce.encode()+b'\n'+raw,hashlib.sha256).hexdigest()
         if not hmac.compare_digest(expected,headers.get('X-Ariadne-Signature','')): raise PermissionError('invalid signature')
+        if source['secret'].encode() in raw: raise PermissionError('credential in event metadata')
         if e['project'] not in source['projects'] or e['repository'] not in source['repositories']: raise PermissionError('repository/project unauthorized')
         # Nonces are bound to a request digest and retained durably; retry identical bodies is safe.
         with self.store.connect() as db:
