@@ -38,7 +38,14 @@ def flush(c):
         except BlockingIOError: return
         state=spool/'.retry'; retry=json.loads(state.read_text()) if state.exists() else {'at':0,'attempt':0}
         if time.time()<retry['at']: return
-        files=sorted(spool.glob('*.json'),key=lambda p:p.stat().st_mtime)
+        # Filesystem timestamps can tie: preserve each run's producer order.
+        def order(path):
+            try:
+                event=json.loads(path.read_text())
+                return event['runId'],event['sequence']
+            except (OSError,ValueError,KeyError,TypeError):
+                return '~invalid',0
+        files=sorted(spool.glob('*.json'),key=order)
         for p in files[:100]:
             try:
                 receipt=deliver(c,p.read_bytes()); p.unlink(); retry={'at':0,'attempt':0}

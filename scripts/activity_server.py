@@ -148,7 +148,10 @@ class Store:
             for r in runs:
                 e=r['event']; registration=sources.get(e['sourceId'],{}); host=registration.get('correlationHost')
                 if not host or not e.get('sessionId'): uncorrelated.append(r);continue
-                key=(host,e['repository'],e['agent']['product'].lower(),e['sessionId'])
+                # Known display names for the same CLI; retain the original envelope.
+                product=e['agent']['product'].lower()
+                product={'claude code':'claude','codex cli':'codex'}.get(product,product)
+                key=(host,e['repository'],product,e['sessionId'])
                 previous=grouped.get(key)
                 if not previous: grouped[key]=r;r['correlatedSourceIds']=[e['sourceId']];continue
                 previous_registration=sources.get(previous['event']['sourceId'],{})
