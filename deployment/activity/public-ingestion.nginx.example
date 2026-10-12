@@ -1,0 +1,18 @@
+# TEMPLATE ONLY. Requires approved domain/provider and valid certificate before use.
+# Upstream must run activity_server.py with ingestOnly=true at loopback 18096.
+# Never proxy the private dashboard listener 18095 publicly.
+server {
+    listen 443 ssl;
+    server_name APPROVED_INGESTION_DOMAIN;
+    ssl_certificate /APPROVED_CERTIFICATE_PATH;
+    ssl_certificate_key /PROTECTED_KEY_PATH;
+    client_max_body_size 64k;
+    client_body_timeout 5s;
+    location ~ ^/ingest/v1/(events|github)$ {
+        limit_except POST { deny all; }
+        proxy_connect_timeout 2s;
+        proxy_read_timeout 5s;
+        proxy_pass http://127.0.0.1:18096;
+    }
+    location / { return 404; }
+}

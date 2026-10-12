@@ -16,9 +16,9 @@ JW-MBP runs `com.scorpionlabs.ariadne-agent-bridge` every 30 seconds, using `/op
 
 The VM runs `ariadne-agent-refresh.timer` every 30 seconds after the previous refresh completes. It collects its own Codex sessions, reads private incoming snapshots and regenerates the `scorpion-labs` console. The portfolio page refreshes every 30 seconds. GitHub collection still runs independently every five minutes. End-to-end latency can span two or three of these intervals.
 
-M5 (`jim_m5`, Tailscale 100.74.85.107) is identified but remains unconnected: existing-key SSH attempts were rejected, including through the VM. The bridge has an explicit unconfigured M5 entry and the console reports authentication required. It must not be called live M5 tracking until a valid login and permitted key are provided and the actual sessions are verified.
+M5 (`jim_m5`, Tailscale 100.74.85.107) is connected as verified from current VM receiver snapshots on 12 October 2026. JW-MBP and M5 have current repository sessions; codex-dev and claude-dev collectors are reachable with no recent repository sessions at that check. Connection status remains separate from task status. The read-only bridge and SSH configuration were preserved.
 
-To complete M5 connection, verify its login (`whoami` on that Mac), establish authorized SSH access, install the read-only `agent_telemetry.py` under an installer-owned path, then configure the M5 `sshTarget`, `python`, `collectorPath`, and (if needed) `jumpHost: codex-dev` in `bridge.json`. Preserve existing Claude/Codex settings. The bridge safely quotes installed paths including spaces. Never copy API tokens or raw agent logs.
+The optional durable API candidate is documented in [activity ingestion](activity-ingestion.md). Existing snapshot collection continues during migration. Native hooks are opt-in and capability checked; deployment/provider status is recorded in the private operator report.
 
 ## Operations
 
@@ -28,4 +28,4 @@ Stop only telemetry: disable the VM agent refresh timer and boot out the Mac bri
 
 ## Validation
 
-Five Python lifecycle/privacy/scope tests and two focused TypeScript integration tests pass, as do TypeScript check/build. The current live Codex turn was collected from its real session log and rendered on the VM before any matching PR. Claude's adapter is fixture-tested; a current M5 Claude session has not yet been verified because access is blocked.
+Five Python lifecycle/privacy/scope tests and two focused TypeScript integration tests pass, as do TypeScript check/build. The current live Codex turn was collected from its real session log and rendered on the VM before any matching PR. Claude's collector remains fixture-tested; source access is now verified. A real new Claude run still requires live evidence before claiming current activity.

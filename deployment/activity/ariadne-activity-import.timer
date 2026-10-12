@@ -1,0 +1,7 @@
+[Unit]
+Description=Import Ariadne telemetry every 10 seconds
+[Timer]
+OnBootSec=10
+OnUnitActiveSec=10
+[Install]
+WantedBy=timers.target

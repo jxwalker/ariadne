@@ -1,0 +1,7 @@
+[Unit]
+Description=Online private Ariadne activity database backup
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/python3 %h/.local/lib/ariadne-activity/scripts/activity_backup.py --config %h/.config/ariadne-activity/server.json
+UMask=0077
+NoNewPrivileges=true
