@@ -19,5 +19,9 @@ it('renders current PR provenance, check state and safe links without reference 
     expect(html).toContain('href="https://github.com/test/repo/pull/42"');
     expect(html).not.toContain('href="javascript:');
     expect(result.data.tasks).toHaveLength(0);
+    expect(html).toContain('Open populated controls dashboard');
+    expect(html).toContain('href="/api/controls"');
+    expect(html).toContain('<details data-visual-role="other-vault-metrics"><summary>Other vault metrics</summary>');
+    expect(html).not.toContain('<details><summary>Orchestration evidence and controls</summary>');
   } finally { await fs.rm(vaultRoot,{recursive:true,force:true}); }
 });

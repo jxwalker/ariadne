@@ -44,7 +44,7 @@ class ActivityTests(unittest.TestCase):
         with self.store.connect() as db:db.execute('UPDATE runs SET last=?',(time.time()-100,));db.execute('UPDATE events SET received=?',(time.time()-100,))
         snap=self.store.snapshot({'test':{},'cloud':{}});self.assertEqual(snap['runs'][0]['state'],'stale/unknown');self.assertEqual(snap['sources'][1]['state'],'never-connected')
     def test_validation_and_html(self):
-        e=event(); validate(e);self.accept(e);self.store.process();body=dashboard(self.store.snapshot({}));self.assertNotIn('<script>',body);self.assertIn('&lt;script&gt;',body)
+        e=event(); validate(e);self.accept(e);self.store.process();body=dashboard(self.store.snapshot({}));self.assertNotIn('<script>',body);self.assertNotIn('unsafe',body)
         for patch in [{'evidenceLinks':['javascript:alert(1)']},{'evidenceLinks':['https://user:pass@example.com']},{'evidenceLinks':['https://example.com/?access_token=secret']},{'evidenceLinks':['https://example.com/?X-Amz-Signature=signed']},{'summary':'a'*501},{'sequence':True},{'path':'/etc/passwd'},{'occurredAt':'2026-10-12'}]:
             with self.assertRaises(ValueError):validate(event()|patch)
     def test_restart_backup_restore(self):
@@ -129,6 +129,187 @@ class ActivityTests(unittest.TestCase):
         pr['state']='closed'
         with patch('activity_reconcile.pages',return_value=[[pr]]): reconcile(self.store,['jxwalker/ariadne'])
         with self.store.connect() as db: self.assertEqual(db.execute('SELECT count(*) FROM observation_history').fetchone()[0],2)
+    def fixture_run(self, run, times, kinds, source='test', product='Codex'):
+        for seq,(received,kind) in enumerate(zip(times,kinds)):
+            self.accept(event(kind,seq,run)|{'sourceId':source,'agent':event()['agent']|{'product':product},'sessionId':run,'location':{'kind':'machine','name':'Fixture host'}})
+            with self.store.connect() as db:db.execute('UPDATE events SET received=? WHERE id=?',(received,f'{run}-{seq}-{kind}'))
+        self.store.process()
+
+    def test_insights_deterministic_aggregates_and_privacy(self):
+        from activity_insights import project,page_runs
+        self.fixture_run('success',[100000,100060],['task.start','task.completed'])
+        self.fixture_run('failure',[100000,100300],['task.start','task.failed'],product='Claude Code')
+        self.fixture_run('interrupt',[100100,100200],['task.start','task.interrupted'])
+        self.fixture_run('snapshot',[100000,100300],['task.start','task.progress'],source='snapshot')
+        d=project(self.store,{'snapshot':{'provenance':'read-only local snapshot'}},'24h',100320)
+        m=d['metrics'];self.assertEqual(m['runs'],3);self.assertEqual(m['snapshotRuns'],1)
+        self.assertEqual(m['medianSeconds'],180);self.assertEqual(m['p90Seconds'],276)
+        self.assertAlmostEqual(m['activeHours'],460/3600);self.assertEqual(m['events'],8)
+        self.assertEqual(m['rates']['success'],1/3);self.assertEqual(m['outcomes']['unknown/interrupted'],1)
+        self.assertEqual(sum(map(sum,d['heatmap'])),3);self.assertEqual(sum(d['histogram']['counts']),2)
+        self.assertNotIn('unsafe',canonical(d));self.assertNotIn('onerror',canonical(d));self.assertNotIn('summary',canonical(d));self.assertNotIn('test-secret',canonical(d))
+        page=page_runs(d,{'pageSize':['1'],'agent':['Codex'],'stale':['show']})
+        self.assertEqual(page['total'],2);self.assertEqual(len(page['runs']),1)
+        with self.assertRaises(ValueError):project(self.store,{},'all',100320)
+        with self.assertRaises(ValueError):page_runs(d,{'page':['bad']})
+
+    def test_insights_correlation_stale_empty_and_range_boundary(self):
+        from activity_insights import project,page_runs
+        at=200000;start=at-86400
+        self.fixture_run('carry',[start-60,start+60],['task.start','task.completed'])
+        self.fixture_run('stale',[at-4000,at-3600],['task.start','heartbeat'])
+        self.fixture_run('session',[at-30,at-10],['task.start','heartbeat'],source='snapshot')
+        # Correlation uses session metadata, not coincidental branch or timing.
+        for seq,kind in enumerate(['task.start','heartbeat']):
+            e=event(kind,seq,'native')|{'sessionId':'session','agent':event()['agent']|{'product':'Codex CLI'}};self.accept(e)
+            with self.store.connect() as db:db.execute('UPDATE events SET received=? WHERE id=?',(at-20+seq*10,e['eventId']))
+        self.store.process()
+        registry={'snapshot':{'correlationHost':'M5','provenance':'read-only local snapshot'},'test':{'correlationHost':'M5'},'missing':{}}
+        d=project(self.store,registry,'24h',at)
+        self.assertEqual(len(d['runs']),3);self.assertEqual(d['metrics']['snapshotRuns'],0)
+        self.assertEqual(d['metrics']['events'],7);self.assertEqual(d['metrics']['medianSeconds'],120)
+        self.assertEqual(d['live'][0]['eventCount'],4);self.assertEqual(len(d['live']),1);self.assertTrue(any('30 minutes' in i for i in d['insights']))
+        self.assertEqual(page_runs(d,{})['total'],2)
+        empty=project(self.store,{},'24h',at+200000)
+        self.assertEqual(empty['metrics']['runs'],0);self.assertIsNone(empty['metrics']['medianSeconds']);self.assertIsNone(empty['metrics']['rates']['success'])
+
+    def test_insights_repository_evidence_dedup_and_streak(self):
+        from activity_insights import project
+        rows=[('push',{'commits':[{'id':'abc'},{'id':'abc'}]}),('pull_request',{'pull_request':{'number':7}}),('pull_request',{'pull_request':{'number':7}}),('check_run',{'check_run':{'id':1,'conclusion':'success'}}),('check_run',{'pages':[{'check_runs':[{'id':1,'conclusion':'success'}]}]}),('check_run',{'check_run':{'id':2,'conclusion':'failure'}}),('check_run',{'check_run':{'id':3,'conclusion':'failure'}})]
+        with self.store.connect() as db:
+            for i,(kind,body) in enumerate(rows):db.execute('INSERT INTO observations VALUES(?,?,?,?)',(str(i),'jxwalker/ariadne',1000+i,canonical({'kind':kind,'body':body})))
+        d=project(self.store,{},'24h',1100);r=d['repositories'][0]
+        self.assertEqual(r['commits'],1);self.assertEqual(r['prs'],1);self.assertEqual(r['checks'],3);self.assertEqual(r['passed'],1)
+        self.assertTrue(any('latest 2' in i for i in d['insights']))
+
+    def test_insights_terminal_duration_caps_and_association_privacy(self):
+        from activity_insights import project
+        self.fixture_run('terminal',[1000,1060,1300],['task.start','task.completed','heartbeat'])
+        with self.store.connect() as db:
+            e=json.loads(db.execute('SELECT envelope FROM runs').fetchone()[0]);e['pr']=7
+            db.execute('UPDATE runs SET envelope=?',(canonical(e),))
+            body={'kind':'pull_request','body':{'pull_request':{'number':7,'state':'open','body':'SECRET PROMPT','title':'PRIVATE','html_url':'https://github.com/jxwalker/ariadne/pull/7'}}}
+            db.execute('INSERT INTO observations VALUES(?,?,?,?)',('private','jxwalker/ariadne',1200,canonical(body)))
+        d=project(self.store,{},'24h',1310);self.assertEqual(d['metrics']['medianSeconds'],60)
+        self.assertEqual(d['runs'][0]['github'][0]['state'],'open');self.assertNotIn('SECRET',canonical(d));self.assertNotIn('PRIVATE',canonical(d))
+        with patch('activity_insights.MAX_RECORDS',2):self.assertTrue(project(self.store,{},'24h',1310)['truncated'])
+
+    def control_record(self, directory, category, ident, **values):
+        names={'approvals':'approvals','plans':'mutation-readiness','dryRuns':'mutation-dry-runs','executions':'mutation-executions'}
+        singleton={'audit':'mutation-readiness-audit.json','readiness':'live-adapter-readiness.json','cutover':'live-adapter-cutover-audit.json'}
+        p=directory/names[category]/(ident+'.json') if category in names else directory/singleton[category]
+        p.parent.mkdir(parents=True,exist_ok=True)
+        record={'schemaVersion':1,'id':ident,'project':'ariadne','target':'ingest','generatedAt':'2026-10-12T12:00:00Z','status':'passed'}|values
+        p.write_text(canonical(record));return p
+
+    def test_controls_states_history_and_cross_directory_precedence(self):
+        from activity_controls import controls
+        from activity_server import stamp
+        at=stamp('2026-10-12T13:00:00Z');first=self.root/'dev-control';second=self.root/'overlay-control'
+        self.control_record(first,'approvals','approved',status='approved',decisionBy='Operator',decidedAt='2026-10-12T12:00:00Z')
+        self.control_record(second,'approvals','approved',status='requested',generatedAt='2026-05-01T12:00:00Z')
+        self.control_record(first,'approvals','pending',status='requested')
+        self.control_record(first,'plans','old-plan',status='ready_for_bounded_review',generatedAt='2026-05-01T12:00:00Z')
+        self.control_record(first,'audit','audit',status='blocked',checks=[{'planId':'old-plan','status':'blocked','blockers':['Approval pending']}])
+        self.control_record(first,'dryRuns','dry-run',planId='ingest-plan',exitCode=0)
+        self.control_record(first,'executions','failed-ingest',planId='ingest-plan',status='failed',liveExitCode=1,finishedAt='2026-10-12T12:01:00Z')
+        self.control_record(first,'executions','passed-ingest',planId='ingest-plan',liveExitCode=0,postVerificationExitCode=0,finishedAt='2026-10-12T12:02:00Z',rollback='Restore previous release')
+        d=controls(self.store,{},[str(first),str(second)],at);rows={r['id']:r for r in d['controls']}
+        self.assertEqual(rows['approvals']['status'],'fail');self.assertEqual(rows['approvals']['recordCount'],2)
+        self.assertEqual(rows['plans']['status'],'stale');self.assertEqual(rows['audit']['status'],'fail')
+        self.assertTrue(any(c['recordId']=='old-plan' and 'age ' in c['message'] for c in d['callouts']))
+        self.assertEqual(rows['dryRuns']['status'],'pass');self.assertEqual(rows['executions']['status'],'pass')
+        self.assertEqual(rows['readiness']['status'],'missing');self.assertEqual(rows['executions']['recordCount'],2)
+        self.assertEqual(rows['executions']['records'][0]['postVerify'],'passed')
+        self.assertTrue(any(c['recordId']=='failed-ingest' and 'later record passed-ingest' in c['message'] for c in d['callouts']))
+        self.assertTrue(any(c['recordId']=='pending' for c in d['callouts']))
+        self.assertEqual(d['evidenceDirectories'][0]['state'],'read-only')
+
+    def test_controls_redact_secret_strings_and_drop_raw_fields(self):
+        from activity_controls import controls
+        directory=self.root/'controls'
+        self.control_record(directory,'executions','execution',planId='plan',liveExitCode=0,postVerificationExitCode=0,
+            liveCommand='curl -H "Authorization: Bearer DO_NOT_SHOW" https://example.com',
+            postVerificationCommand='node --check server.js',rollback='Restore previous release',
+            scope='api_key=DO_NOT_SHOW',liveStdout='PRIVATE OUTPUT',postVerificationStderr='PRIVATE ERROR',
+            env={'PASSWORD':'DO_NOT_SHOW'},apiKey='DO_NOT_SHOW')
+        self.control_record(directory,'approvals','approval',status='approved',decisionBy='Operator',
+            action='echo ghp_abcdefghijklmnop',rollback='echo opaque-value',scope='normal bounded scope')
+        d=controls(self.store,{'source':{'secret':'opaque-value'}},[str(directory)])
+        raw=canonical(d)
+        for forbidden in ['DO_NOT_SHOW','PRIVATE OUTPUT','PRIVATE ERROR','PASSWORD','opaque-value','ghp_abcdefghijklmnop','liveStdout','postVerificationStderr','apiKey']:
+            self.assertNotIn(forbidden,raw)
+        self.assertIn('[redacted sensitive material]',raw);self.assertIn('node --check server.js',raw)
+        self.assertIn('Restore previous release',raw);self.assertIn('Operator',raw)
+        from activity_controls import text
+        for value in ['curl --key HIDDEN https://example.com','key=HIDDEN','refreshKey: HIDDEN','JWT eyJabc.defghi.signature','PRIVATE_KEY=HIDDEN']:
+            self.assertEqual(text(value),'[redacted sensitive material]')
+
+    def test_controls_invalid_missing_timestamp_symlink_and_limits(self):
+        from activity_controls import controls
+        directory=self.root/'controls'
+        self.control_record(directory,'approvals','bad-clock',status='approved',generatedAt='not-a-date')
+        outside=self.root/'outside.json';outside.write_text('PRIVATE OUTSIDE')
+        (directory/'approvals'/'link.json').symlink_to(outside)
+        (directory/'approvals'/'broken.json').write_text('not-json SECRET')
+        (self.root/'linked-control').symlink_to(directory,target_is_directory=True)
+        d=controls(self.store,{},[str(directory),str(self.root/'absent'),'relative',str(self.root/'linked-control')])
+        row=next(r for r in d['controls'] if r['id']=='approvals');self.assertEqual(row['status'],'missing')
+        self.assertTrue(d['warnings']);self.assertNotIn('PRIVATE',canonical(d));self.assertNotIn('SECRET',canonical(d))
+        self.assertEqual([r['state'] for r in d['evidenceDirectories']],['read-only','missing','invalid','invalid'])
+        with patch('activity_controls.MAX_FILES',1):self.assertTrue(controls(self.store,{},[str(directory)])['truncated'])
+
+    def test_controls_sources_hosted_onboarding_and_receipt_coverage(self):
+        from activity_controls import controls
+        self.fixture_run('report',[1000,1100],['task.start','heartbeat'])
+        self.accept(event('task.start',0,'controlled')|{'sourceId':'grok-provider','agent':event()['agent']|{'product':'Grok'},'location':{'kind':'cloud','name':'Provider'}})
+        with self.store.connect() as db:db.execute('UPDATE events SET received=1100 WHERE source=?',('grok-provider',))
+        self.store.process()
+        registry={'test':{},'quiet':{},'revoked':{'revoked':True},'grok-provider':{'displayName':'Grok hosted'}}
+        d=controls(self.store,registry,[],1150);rows={r['id']:r for r in d['controls']}
+        self.assertEqual(rows['source:test']['status'],'pass');self.assertEqual(rows['source:quiet']['status'],'missing')
+        self.assertEqual(rows['source:revoked']['status'],'fail');self.assertIn('provider-pending',rows['source:grok-provider']['summary'])
+        receipts=rows['receipts']['records'][0];self.assertEqual(receipts['acceptedEvents'],3);self.assertIsNone(receipts['duplicateReceipts'])
+        self.accept(event('task.start',0,'production')|{'sourceId':'grok-provider','agent':event()['agent']|{'product':'Grok'},'location':{'kind':'cloud','name':'Provider'}})
+        with self.store.connect() as db:db.execute('UPDATE events SET received=1140 WHERE source=?',('grok-provider',))
+        self.store.process()
+        rows={r['id']:r for r in controls(self.store,registry,[],1150)['controls']}
+        self.assertEqual(rows['source:grok-provider']['status'],'pass');self.assertIn('hosted-event-observed',rows['source:grok-provider']['summary'])
+        stale=next(r for r in controls(self.store,registry,[],10000)['controls'] if r['id']=='source:test')
+        self.assertEqual(stale['status'],'stale')
+
+    def test_controls_webhooks_reconciliation_and_post_verify_failure(self):
+        from activity_controls import controls
+        from activity_server import stamp
+        at=stamp('2026-10-12T13:00:00Z')
+        directory=self.root/'controls'
+        self.control_record(directory,'executions','bad-verify',planId='plan',liveExitCode=0,postVerificationExitCode=1)
+        self.store.webhook('delivery','ping',b'{}')
+        with self.store.connect() as db:
+            db.execute('UPDATE webhooks SET received=1000')
+            db.execute('INSERT INTO health VALUES(?,?,?,?)',('github:owner/repo',1000,'success','Metadata collected'))
+            db.execute('INSERT INTO health VALUES(?,?,?,?)',('github:owner/failed',at-1,'error','Read-only API failed'))
+        d=controls(self.store,{},[str(directory)],at);rows={r['id']:r for r in d['controls']}
+        self.assertEqual(rows['reconciliation:owner/repo']['status'],'stale')
+        self.assertEqual(rows['reconciliation:owner/failed']['status'],'fail')
+        self.assertEqual(rows['webhooks']['records'][0]['count'],1)
+        self.assertEqual(rows['webhooks']['records'][0]['kinds'][0]['kind'],'ping')
+        self.assertEqual(rows['executions']['status'],'fail');self.assertEqual(rows['executions']['records'][0]['postVerify'],'failed')
+        self.assertTrue(any(c['recordId']=='bad-verify' for c in d['callouts']))
+
+    def test_public_nginx_allowlist_excludes_insights(self):
+        import re
+        config=(pathlib.Path(__file__).resolve().parents[1]/'deployment/activity/public-ingestion.nginx.example').read_text()
+        locations=re.findall(r'location\s+([^{}]+)\{([^{}]*(?:\{[^{}]*\}[^{}]*)*)\}',config)
+        proxy=[(route,body) for route,body in locations if 'proxy_pass' in body]
+        self.assertEqual(len(proxy),1)
+        route,body=proxy[0];self.assertEqual(route.strip(),'~ ^/ingest/v1/(events|github)$')
+        self.assertIn('limit_except POST { deny all; }',body);self.assertIn('location / { return 404; }',config)
+        pattern=route.strip()[2:]
+        self.assertIsNotNone(re.fullmatch(pattern,'/ingest/v1/events'));self.assertIsNotNone(re.fullmatch(pattern,'/ingest/v1/github'))
+        for path in ['/api/insights','/api/runs','/api/sources','/api/activity','/api/controls','/','/assets/activity-dashboard.js','/ingest/v1/events/']:
+            self.assertIsNone(re.fullmatch(pattern,path))
+
     def test_http_boundaries(self):
         server=ThreadingHTTPServer(('127.0.0.1',0),Handler);server.app=self.app;thread=threading.Thread(target=server.serve_forever);thread.start();base=f'http://127.0.0.1:{server.server_port}'
         try:
@@ -143,8 +324,23 @@ class ActivityTests(unittest.TestCase):
             with urllib.request.urlopen(urllib.request.Request(base+'/ingest/v1/github',data=payload,headers=headers)) as r:self.assertEqual(r.status,202)
             with self.assertRaises(urllib.error.HTTPError) as ex:urllib.request.urlopen(urllib.request.Request(base+'/ingest/v1/github',data=payload+b' ',headers=headers))
             self.assertEqual(ex.exception.code,401)
+            self.store.process()
+            for route in ['/api/insights?range=24h','/api/runs?stale=show&snapshots=show','/api/sources','/api/activity','/api/controls']:
+                with urllib.request.urlopen(base+route) as r:
+                    projection=r.read().decode();self.assertNotIn('unsafe',projection);self.assertNotIn('test-secret',projection);self.assertNotIn('onerror',projection)
+            for route in ['/api/insights?range=forever','/api/runs?page=bad','/api/sources?'+('&x=y'*21)]:
+                with self.assertRaises(urllib.error.HTTPError) as ex:urllib.request.urlopen(base+route)
+                self.assertEqual(ex.exception.code,400)
+            with urllib.request.urlopen(base+'/api/controls') as r:
+                controls_payload=json.load(r);self.assertEqual(controls_payload['schemaVersion'],1);self.assertTrue(controls_payload['controls']);self.assertIn('summary',controls_payload)
+            with self.assertRaises(urllib.error.HTTPError) as ex:urllib.request.urlopen(urllib.request.Request(base+'/api/controls',data=b'{}'))
+            self.assertEqual(ex.exception.code,404)
+            self.app.config['consoleHtml']=str(self.root/'index.html')
+            (self.root/'index.html').write_text('<html><head><meta http-equiv="refresh" content="30"></head><body><main class="shell"><div class="repo-work"><strong>Codex</strong><p>SECRET PROMPT</p><small>Latest update: SECRET OUTPUT</small></div><script type="application/json" id="console-data">'+canonical({'agentTelemetry':[{'sessions':[{'task':'SECRET PROMPT','update':'SECRET OUTPUT'}]}]})+'</script></main></body></html>')
+            with urllib.request.urlopen(base+'/') as r:
+                page=r.read().decode();self.assertNotIn('SECRET',page);self.assertNotIn('http-equiv="refresh"',page);self.assertIn('script-src \'self\'',r.headers['Content-Security-Policy'])
             self.app.config['ingestOnly']=True
-            for route in ['/','/readyz','/healthz','/api/activity']:
+            for route in ['/','/readyz','/healthz','/api/activity','/api/insights?range=7d','/api/runs?page=1','/api/sources','/api/controls','/assets/activity-dashboard.js']:
                 with self.assertRaises(urllib.error.HTTPError) as ex: urllib.request.urlopen(base+route)
                 self.assertEqual(ex.exception.code,404)
         finally:server.shutdown();thread.join();server.server_close()
