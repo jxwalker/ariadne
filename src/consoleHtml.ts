@@ -17,6 +17,7 @@ export async function generateConsoleHtml(input: {
 }
 
 function renderConsole(data: ConsoleData): string {
+  const repositoryOnly = data.sources.length === 0 && data.tasks.length === 0;
   const latestRun = data.executionRuns.at(-1);
   const latestEvaluation = data.evaluations.at(-1);
   const failedChecks = data.checks.filter((check) => check.status === "failed").length;
@@ -197,6 +198,7 @@ function renderConsole(data: ConsoleData): string {
     "<style>",
     css(),
     "</style>",
+    repositoryOnly && (data.agentTelemetry?.length ?? 0) > 0 ? '<meta http-equiv="refresh" content="30">' : "",
     "</head>",
     "<body>",
     '<main class="shell">',
@@ -206,16 +208,19 @@ function renderConsole(data: ConsoleData): string {
     logoMark(),
     '<p class="eyebrow">Ariadne Console</p>',
     "</div>",
-    `<h1>${escapeHtml(data.project)}</h1>`,
-    '<p class="lead">Vault-backed orchestration view.</p>',
+    `<h1>${repositoryOnly ? "Scorpion Labs" : escapeHtml(data.project)}</h1>`,
+    repositoryOnly ? '<p class="lead">Current repository work and CI activity.</p>' : '<p class="lead">Vault-backed orchestration view.</p>',
     `<p class="stamp">Last refreshed ${escapeHtml(data.generatedAt)}.</p>`,
     "</div>",
     '<div class="status-panel">',
-    '<span class="label">Merge readiness</span>',
-    `<strong class="status ${statusClass(data.summary.readinessStatus)}">${escapeHtml(data.summary.readinessStatus ?? "unknown")}</strong>`,
-    `<span>${missingGates} missing gates</span>`,
+    repositoryOnly ? '<span class="label">Evidence collection</span>' : '<span class="label">Merge readiness</span>',
+    repositoryOnly ? '<strong class="status">Read only</strong>' : `<strong class="status ${statusClass(data.summary.readinessStatus)}">${escapeHtml(data.summary.readinessStatus ?? "unknown")}</strong>`,
+    repositoryOnly ? `<span>${new Set(data.github.snapshots.map(s => s.repository)).size} repositories</span>` : `<span>${missingGates} missing gates</span>`,
     "</div>",
     "</section>",
+    (data.agentTelemetry?.length ?? 0) > 0 ? section("Live agents", liveAgents(data)) : "",
+    section("Repository activity", github(data)),
+    data.sources.length === 0 && data.tasks.length === 0 ? '<details><summary>Orchestration evidence and controls</summary>' : "",
     workflowOverview(data.workflow),
     '<section class="metrics" aria-label="Project metrics">',
     metric("Sources", data.summary.sources),
@@ -297,6 +302,7 @@ function renderConsole(data: ConsoleData): string {
     section("Artifacts", artifactList(data)),
     "</aside>",
     "</section>",
+    data.sources.length === 0 && data.tasks.length === 0 ? "</details>" : "",
     '<script type="application/json" id="console-data">',
     escapeScriptJson(JSON.stringify(data)),
     "</script>",
@@ -925,16 +931,45 @@ function deployment(data: ConsoleData): string {
   ].join("");
 }
 
+function liveAgents(data: ConsoleData): string {
+  const snapshots = [...(data.agentTelemetry ?? [])].sort((a,b) => Number(b.status === "available" && b.sessions.some(s => s.status === "working")) - Number(a.status === "available" && a.sessions.some(s => s.status === "working")) || a.host.localeCompare(b.host));
+  const now = Date.parse(data.generatedAt);
+  return '<p class="stamp">Session events from the connected machines · refreshed every 30 seconds. Includes work before a PR exists.</p><div class="agent-activity">' + snapshots.map(snapshot => {
+    const disconnected = snapshot.status !== "available" || now - Date.parse(snapshot.collectedAt) > 180_000;
+    const sessions = [...snapshot.sessions].sort((a,b) => Number(b.status === "working") - Number(a.status === "working") || b.lastEventAt.localeCompare(a.lastEventAt));
+    return `<article class="repo-card"><h3>${escapeHtml(snapshot.host)}</h3><p class="stamp">${disconnected ? "Connection stale or unavailable" : "Connected"} · collected ${escapeHtml(snapshot.collectedAt)}</p>${snapshot.sources.map(source => `<small>${escapeHtml(source.agent)}: ${source.status === "available" ? `${snapshot.sessions.filter(s => s.agent === source.agent).length} recent sessions` : escapeHtml(source.status.replaceAll("_", " "))}</small>`).join("<br>")}${sessions.length ? sessions.slice(0,12).map(session => {
+      const stale = disconnected || (session.status === "working" && now - Date.parse(session.lastEventAt) > 180_000);
+      const state = stale ? "stale" : session.status;
+      const pr = session.branch ? data.github.snapshots.flatMap(s => s.repository === session.repository ? s.pullRequests : []).find(p => p.headRefName === session.branch && p.state === "OPEN") : undefined;
+      return `<div class="repo-work"><strong>${escapeHtml(session.agent)} · ${escapeHtml(state)}</strong><p>${escapeHtml(session.task)}</p>${session.update ? `<small>Latest update: ${escapeHtml(session.update)}</small>` : ""}<small>${escapeHtml(session.repository)}${session.branch ? ` · ${escapeHtml(session.branch)}` : ""} · ${pr ? `PR #${pr.number}` : "No matching PR in collected evidence"}</small><small>Last event ${escapeHtml(session.lastEventAt)} · ${escapeHtml(session.event)}${session.lastTool ? ` · tool: ${escapeHtml(session.lastTool)}` : ""}</small>${session.changedFiles.length ? `<small>Changed files: ${session.changedFiles.map(escapeHtml).join(", ")}</small>` : ""}<details><summary>Session evidence</summary><small>Session ${escapeHtml(session.id)} · source ${escapeHtml(session.source)}</small></details></div>`;
+    }).join("") : (disconnected ? '<p>Agent activity unavailable until this machine connects.</p>' : '<p>No recent repository sessions on this machine.</p>')}</article>`;
+  }).join("") + '</div>';
+}
+
 function github(data: ConsoleData): string {
-  if (data.github.snapshots.length === 0) return empty("No GitHub snapshots are available.");
+  const latest = new Map<string, ConsoleData["github"]["snapshots"][number]>();
+  for (const snapshot of data.github.snapshots) {
+    const key = snapshot.repository ?? "Unknown repository";
+    if (!latest.has(key) || latest.get(key)!.importedAt < snapshot.importedAt) latest.set(key, snapshot);
+  }
+  if (latest.size === 0) return empty("No GitHub activity has been collected.");
+  const link = (url: string | undefined, label: string) => url && /^https:\/\/github\.com\//.test(url)
+    ? `<a href="${escapeHtml(url)}" target="_blank" rel="noopener noreferrer">${escapeHtml(label)}</a>`
+    : escapeHtml(label);
   return [
-    '<div class="infra">',
-    ...data.github.snapshots.slice(-4).map(
-      (snapshot) =>
-        `<div><strong>${escapeHtml(snapshot.repository ?? "unknown repository")}</strong><span>${escapeHtml(`${snapshot.summary.pullRequests} PRs / ${snapshot.summary.checks} checks`)}</span><small>${escapeHtml(`${snapshot.summary.passingChecks} passing / ${snapshot.summary.failingChecks} failing / ${snapshot.summary.pendingChecks} pending`)}</small></div>`
-    ),
-    "</div>"
-  ].join("");
+    '<p class="stamp">Read-only GitHub evidence · collection times shown below. Current PRs, branches, reviews and CI checks.</p>',
+    '<div class="repo-activity">',
+    ...[...latest.values()].map(snapshot => {
+      const open = snapshot.pullRequests.filter(pr => pr.state.toUpperCase() === "OPEN").sort((a,b) => (b.updatedAt ?? "").localeCompare(a.updatedAt ?? ""));
+      return `<article class="repo-card"><h3>${escapeHtml(snapshot.repository ?? "Unknown repository")}</h3><p class="stamp">Collected ${escapeHtml(snapshot.importedAt)} · ${open.length} open PRs in this snapshot</p>${open.length ? open.map(pr => {
+        const pending = pr.checks.filter(c => c.status === "pending").length;
+        const failed = pr.checks.filter(c => c.status === "failed").length;
+        const passed = pr.checks.filter(c => c.status === "passed").length;
+        return `<div class="repo-work"><strong>${link(pr.url, `#${pr.number} ${pr.title}`)}</strong><p>${escapeHtml(pr.isDraft ? "Draft" : "Open")} · ${escapeHtml(pr.reviewDecision || "Review not recorded")} · ${passed} passing / ${pending} pending / ${failed} failing checks</p><small>${escapeHtml(pr.author ?? "Author not recorded")} · ${escapeHtml(pr.headRefName ?? "Branch not recorded")} · updated ${escapeHtml(pr.updatedAt ?? "unknown")}</small>${pr.checks.filter(c => c.status === "pending" || c.status === "failed").map(c => `<p>${link(c.detailsUrl, `${c.name}: ${c.status}`)}</p>`).join("")}</div>`;
+      }).join("") : '<p>No open PRs in this snapshot.</p>'}</article>`;
+    }),
+    '</div>'
+  ].join("\n");
 }
 
 function gbrain(data: ConsoleData): string {
@@ -1123,13 +1158,14 @@ h1 {
 .workflow {
   display: grid;
   grid-template-columns: minmax(0, 1fr) minmax(300px, .42fr);
+  align-items: start;
   gap: 20px;
   padding: 22px 0;
   border-bottom: 1px solid var(--line);
 }
 .workflow-lanes {
   display: grid;
-  grid-template-columns: repeat(6, minmax(0, 1fr));
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   border: 1px solid var(--line);
   background: var(--panel);
 }
@@ -1628,6 +1664,16 @@ time {
   justify-content: space-between;
   gap: 16px;
 }
+.agent-activity { display:grid; grid-template-columns:repeat(auto-fit,minmax(min(100%,360px),1fr)); gap:18px; align-items:start; }
+.repo-work details>summary { padding:6px 0; font-size:12px; }
+.repo-activity { display:grid; grid-template-columns:repeat(auto-fit,minmax(min(100%,420px),1fr)); gap:18px; }
+.repo-card { max-height:560px; overflow:auto; background:#ffffff; border:1px solid #d2d9d7; border-radius:14px; padding:20px; }
+.repo-work { padding:14px 0; border-top:1px solid #d2d9d7; }
+.repo-work p,.repo-work small { color:#41534d; line-height:1.5; margin:6px 0; display:block; }
+.repo-work a { color:#175e52; text-decoration:none; }
+.repo-work a:hover { text-decoration:underline; }
+.repo-card h3 { margin-top:0; }
+details>summary { padding:20px; cursor:pointer; }
 .infra strong { display: block; margin-bottom: 4px; }
 .infra small { margin-top: 6px; line-height: 1.35; }
 .artifacts {

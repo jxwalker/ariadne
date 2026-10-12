@@ -24,3 +24,7 @@ vault/projects/*/infrastructure/infra-snapshot-live-local-*.md
 vault/projects/*/infrastructure/infra-snapshot-live-ssh-*.json
 vault/projects/*/infrastructure/infra-snapshot-live-ssh-*.md
 vault/projects/*/infrastructure/runtime/
+
+# Python telemetry collector cache
+__pycache__/
+*.py[cod]

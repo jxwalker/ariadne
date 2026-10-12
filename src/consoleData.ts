@@ -1,3 +1,4 @@
+import { readAgentTelemetry } from "./agentTelemetry.js";
 import fs from "node:fs/promises";
 import path from "node:path";
 import { writeJsonArtifact } from "./artifacts.js";
@@ -418,6 +419,7 @@ export async function collectConsoleData(vaultRoot: string, projectInput: string
     deployment: {
       snapshots: deploymentSnapshots
     },
+    agentTelemetry: await readAgentTelemetry(vaultRoot, project),
     github: {
       snapshots: githubSnapshots
     },

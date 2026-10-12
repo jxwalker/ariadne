@@ -1,0 +1,23 @@
+{
+  "schemaVersion": 1,
+  "eventId": "run-0-task.start",
+  "sourceId": "cloud-controlled-test",
+  "agent": {
+    "identity": "integration",
+    "product": "controlled test",
+    "version": "1"
+  },
+  "project": "ariadne",
+  "repository": "jxwalker/ariadne",
+  "taskId": "task",
+  "runId": "run",
+  "sequence": 0,
+  "occurredAt": "2026-10-12T12:00:00Z",
+  "kind": "task.start",
+  "label": "Controlled cloud integration test",
+  "summary": "Not Grok production activity",
+  "location": {
+    "kind": "cloud",
+    "name": "controlled client"
+  }
+}

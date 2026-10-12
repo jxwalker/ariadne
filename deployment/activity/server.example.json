@@ -1,0 +1,17 @@
+{
+  "database": "/home/james/.local/state/ariadne-activity/activity.db",
+  "credentials": "/home/james/.config/ariadne-activity/sources.json",
+  "consoleHtml": "/home/james/workspaces/ariadne/vault/projects/scorpion-labs/console/index.html",
+  "snapshotDirectory": "/home/james/workspaces/ariadne/vault/projects/scorpion-labs/integrations/agents",
+  "bind": "127.0.0.1",
+  "port": 18095,
+  "githubRepositories": [
+    "jxwalker/ariadne",
+    "jxwalker/patent-studio",
+    "jxwalker/openscorpion",
+    "jxwalker/apcg-platform",
+    "jxwalker/gad-demo"
+  ],
+  "snapshotSources": {},
+  "logoFile": "/home/james/workspaces/ariadne/assets/ariadne-logo-square.png"
+}

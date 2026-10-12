@@ -1,0 +1,8 @@
+[Unit]
+Description=Read-only paginated Ariadne GitHub reconciliation
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/python3 %h/.local/lib/ariadne-activity/scripts/activity_reconcile.py --config %h/.config/ariadne-activity/server.json
+TimeoutStartSec=1800
+UMask=0077
+NoNewPrivileges=true

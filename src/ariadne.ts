@@ -172,7 +172,7 @@ function usage(): string {
     "  ariadne e2e-smoke --project <project> [--target-url <url>] [--with-runtime-probe] [--runtime-canary] [--canary-endpoints <ollama,ds4-openai,lmstudio,atlas>] [--ollama-canary-model <id>] [--ds4-canary-model <id>] [--lmstudio-canary-model <id>] [--atlas-canary-model <id>] [--hermes-dashboard-url <url>] [--ollama-url <url>] [--ds4-url <url>] [--lmstudio-url <url>] [--atlas-url <url>] [--timeout-ms <ms>] [--width <px>] [--height <px>]",
     "  ariadne gbrain-export --project <project>",
     "  ariadne gbrain-report-import --project <project> --from <report.json>",
-    "  ariadne github-snapshot --project <project> (--from <snapshot.json> | --repo <owner/name> [--pr <number>] [--limit <number>])",
+    "  ariadne github-snapshot --project <project> (--from <snapshot.json> | --repo <owner/name> [--pr <number>] [--limit <number>] [--open])",
     "  ariadne github-mutation-plan --project <project> --repo <owner/name> --action <merge-pr|rerun-failed-run> [--pr <number>] [--run-id <id>] --auth-evidence <paths> [--approval <id|json>] [--risk <low|medium|high>] [--evidence <paths>] [--notes <text>]",
     "  ariadne sleep-record --project <project> --scope <scope> --summary <text> [--evidence <paths>] [--next <items>]",
     "  ariadne memory-proposal --project <project> --title <title> --proposal <text> [--evidence <paths>]",
@@ -709,6 +709,7 @@ async function main(): Promise<void> {
           vaultRoot,
           repository: requiredOption(parsed.options, "repo"),
           pullRequest,
+          onlyOpen: parsed.options.has("open"),
           limit
         });
     console.log(`GitHub snapshot: ${result.markdownPath}`);
