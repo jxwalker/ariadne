@@ -40,16 +40,25 @@ def percentile(values, fraction):
     values=sorted(values); index=(len(values)-1)*fraction; lo=math.floor(index);hi=math.ceil(index)
     return values[lo]+(values[hi]-values[lo])*(index-lo)
 
-def task_metadata(db, record, envelope, registration, state):
+OPAQUE=re.compile(r'[A-Fa-f0-9]{32,}|[A-Za-z0-9+/_=-]{40,}')
+
+def safe_text(value, secrets=(), limit=500):
+    """Whole-field redaction for agent-supplied text: known source secrets, credential words/prefixes, long opaque strings."""
+    from activity_controls import text as control_text, REDACTED
+    value=str(value or '')[:limit]
+    if OPAQUE.search(value): return REDACTED
+    return control_text(value,secrets) or ''
+
+def task_metadata(db, record, envelope, registration, state, secrets=()):
     """Operator-enrolled sources may show their own short task title and latest note.
 
     These are agent claims only; GitHub/review/CI/deploy evidence stays in separate fields.
     """
     if registration.get('displayTaskMetadata') is not True or registration.get('provenance')=='read-only local snapshot': return {}
     note=db.execute("SELECT json_extract(envelope,'$.kind') AS kind,json_extract(envelope,'$.summary') AS summary FROM events WHERE source=? AND json_extract(envelope,'$.runId')=? AND json_extract(envelope,'$.kind') IN ('task.progress','task.blocked','task.resumed','task.interrupted','task.failed','task.completed') ORDER BY json_extract(envelope,'$.sequence') DESC LIMIT 1",(record['source'],record['run'])).fetchone()
-    out={'title':str(envelope.get('label') or '')[:160],'claim':'agent-reported','note':None,'blocker':None}
+    out={'title':safe_text(envelope.get('label'),secrets,160),'claim':'agent-reported','note':None,'blocker':None}
     if note and note['summary']:
-        text=str(note['summary'])[:500]
+        text=safe_text(note['summary'],secrets,500)
         if note['kind']=='task.blocked' and state=='blocked': out['blocker']=text
         else: out['note']=text
     return out
@@ -57,6 +66,7 @@ def task_metadata(db, record, envelope, registration, state):
 def project(store, registry, range_key='24h', at=None):
     if range_key not in RANGES: raise ValueError('range must be 24h, 7d or 30d')
     at=time.time() if at is None else at; start=at-RANGES[range_key]*86400
+    secrets=tuple(v.get('secret') for v in registry.values() if isinstance(v,dict) and isinstance(v.get('secret'),str) and v.get('secret'))
     with store.connect() as db:
         # Select runs overlapping the range, then fetch their complete lifecycle, not just in-range starts.
         records=db.execute('SELECT * FROM runs WHERE last BETWEEN ? AND ? ORDER BY last DESC LIMIT ?', (start,at,10001)).fetchall()
@@ -81,7 +91,7 @@ def project(store, registry, range_key='24h', at=None):
             machine=reg.get('correlationHost') or e.get('location',{}).get('name') or 'Unspecified'
             snapshot=reg.get('provenance')=='read-only local snapshot'
             evidence=[{'kind':x['kind'],'sequence':x['sequence'],'at':t,'sourceName':source_name(r['source'],reg)} for t,x in events[-30:]]
-            meta=task_metadata(db,r,e,reg,state)
+            meta=task_metadata(db,r,e,reg,state,secrets)
             runs.append({**meta,'id':r['run'],'source':r['source'],'sourceName':source_name(r['source'],reg),'agent':agent,'machine':machine,'repo':e['repository'],'task':f"{agent} · {e['repository']}",'state':state,'outcome':outcome,'first':first,'last':r['last'],'duration':duration,'activeSeconds':active,'snapshot':snapshot,'gaps':r['gaps'],'branch':e.get('branch'),'commit':e.get('commit'),'pr':e.get('pr'),'eventCount':len(events),'evidence':evidence,'session':e.get('sessionId'),'host':reg.get('correlationHost')})
         # Same approved host/repo/product/session: native reports win over snapshot observations.
         grouped={};other=[]

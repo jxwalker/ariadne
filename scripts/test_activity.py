@@ -162,18 +162,39 @@ class ActivityTests(unittest.TestCase):
 
     def test_enrolled_source_task_metadata_is_opt_in_and_separate(self):
         from activity_insights import project
-        self.fixture_run('enrolled',[100000,100010],['task.start','task.progress'])
-        self.fixture_run('blocked',[100000,100010],['task.start','task.blocked'])
-        plain=project(self.store,{},'24h',100020)
+        for run,last,note in [('enrolled','task.progress','Tests passing; opening PR next'),('blocked','task.blocked','Waiting on CI runner')]:
+            for seq,kind in enumerate(['task.start',last]):
+                self.accept(event(kind,seq,run)|{'label':'Fix login form','summary':note,'sessionId':run,'location':{'kind':'cloud','name':'box'}})
+        self.store.process()
+        plain=project(self.store,{},'24h')
         self.assertTrue(all('title' not in r and 'note' not in r for r in plain['runs']))
-        d=project(self.store,{'test':{'displayTaskMetadata':True}},'24h',100020)
+        d=project(self.store,{'test':{'displayTaskMetadata':True}},'24h')
         runs={r['id']:r for r in d['runs']}
-        self.assertEqual(runs['enrolled']['title'],event('task.progress',1,'enrolled')['label'])
-        self.assertEqual(runs['enrolled']['note'],event('task.progress',1,'enrolled')['summary']);self.assertIsNone(runs['enrolled']['blocker'])
-        self.assertEqual(runs['blocked']['blocker'],event('task.blocked',1,'blocked')['summary']);self.assertIsNone(runs['blocked']['note'])
+        self.assertEqual(runs['enrolled']['title'],'Fix login form')
+        self.assertEqual(runs['enrolled']['note'],'Tests passing; opening PR next');self.assertIsNone(runs['enrolled']['blocker'])
+        self.assertEqual(runs['blocked']['blocker'],'Waiting on CI runner');self.assertIsNone(runs['blocked']['note'])
         self.assertEqual(runs['enrolled']['claim'],'agent-reported');self.assertIn('github',runs['enrolled'])
-        snap=project(self.store,{'test':{'displayTaskMetadata':True,'provenance':'read-only local snapshot'}},'24h',100020)
+        snap=project(self.store,{'test':{'displayTaskMetadata':True,'provenance':'read-only local snapshot'}},'24h')
         self.assertTrue(all('title' not in r for r in snap['runs']))
+        xss=project(self.store,{'test':{'displayTaskMetadata':True}},'24h')
+        self.assertNotIn('onerror',canonical(xss))
+
+    def test_enrolled_metadata_redacts_secrets_across_insights_and_runs(self):
+        from activity_insights import project,page_runs
+        known='9f'*32; leaks=[known,'ghp_'+'A1b2'*9,'github_pat_11ABCDEFG0123456789_abcdefghijklmnopqrstuvwxyz','sk-proj-'+'x9'*20,'xoxb-123456789012-abcdefABCDEF','AKIAIOSFODNN7EXAMPLE','eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIn0.c2ln','Bearer abc.def']
+        for i,leak in enumerate(leaks):
+            run=f'leak{i}'
+            for seq,(kind,label,summary) in enumerate([('task.start',f'Deploy {leak}','start'),('task.progress','Deploy',f'used {leak} for push')]):
+                self.accept(event(kind,seq,run)|{'label':label,'summary':summary,'sessionId':run,'location':{'kind':'cloud','name':'box'}})
+        self.accept(event('task.start',0,'benign')|{'label':'Fix login form','summary':'start','sessionId':'benign','location':{'kind':'cloud','name':'box'}})
+        self.accept(event('task.progress',1,'benign')|{'label':'Fix login form','summary':'Tests passing; opening PR next','sessionId':'benign','location':{'kind':'cloud','name':'box'}})
+        self.store.process()
+        reg={'test':{'secret':known,'displayTaskMetadata':True}}
+        d=project(self.store,reg,'24h');blob=canonical(d)+canonical(page_runs(d,{'stale':['show'],'pageSize':['100']}))+canonical(d['live'])
+        for leak in leaks: self.assertNotIn(leak,blob)
+        runs={r['id']:r for r in d['runs']}
+        self.assertEqual(runs['benign']['title'],'Fix login form');self.assertEqual(runs['benign']['note'],'Tests passing; opening PR next')
+        self.assertTrue(all(runs[f'leak{i}']['title']!=f'Deploy {l}' for i,l in enumerate(leaks)))
 
     def test_insights_correlation_stale_empty_and_range_boundary(self):
         from activity_insights import project,page_runs
