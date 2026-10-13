@@ -46,3 +46,16 @@ class MasterDashboard(unittest.TestCase):
                     with self.assertRaises(urllib.error.HTTPError) as error:urllib.request.urlopen(base+'/roadmaps')
                     self.assertEqual(error.exception.code,503)
             finally:server.shutdown();thread.join();server.server_close();app.store.close()
+
+    def test_split_api_inherits_only_child_criterion_records(self):
+        data={'nodes':[{'id':'child','body':{'splitFrom':'middle','criteria':[{'id':'c1'}]}},{'id':'middle','body':{'splitFrom':'original'}}],
+              'accepted':[{'work_id':'original','criterion_id':'c1'},{'work_id':'original','criterion_id':'sibling'}],
+              'acceptanceEvidence':[{'work_id':'original','criterion_id':'c1','kind':'ci'},{'work_id':'original','criterion_id':'sibling','kind':'ci'}],
+              'evidence':[{'id':'proof','work_id':'original','body':{'criterionId':'c1'}},{'id':'sibling-proof','work_id':'original','body':{'criterionId':'sibling'}}],
+              'history':[{'target':'original'},{'target':'middle'},{'target':'unrelated'}]}
+        for collection in ['accepted','acceptanceEvidence','evidence']:
+            result=api_page(data,{'collection':[collection],'id':['child']})
+            self.assertEqual(result['total'],1,collection)
+            self.assertEqual(result['items'][0]['work_id'],'original')
+        result=api_page(data,{'collection':['history'],'id':['child']})
+        self.assertEqual(result['total'],2)

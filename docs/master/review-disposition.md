@@ -84,3 +84,9 @@ bot transcription can create only a pending request. Fixed 4261991147 by requiri
 product/policy/decision/external root nodes to have no parent. Isolated approval
 validation tests and real-PG root-parent regression tests cover both changes.
 The earlier exact-return-path fix is superseded by the explicit supplied approval.
+
+
+Codex re-review at bddcdea9fc80ef5f72a0f1022ce9b93e48864151: fixed
+4262084788. API accepted/evidence/acceptanceEvidence/history filters now follow
+split ancestry, as the HTML view does. Inherited evidence is restricted to child
+criterion IDs; regression coverage includes nested splits and sibling exclusion.

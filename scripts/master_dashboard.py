@@ -125,6 +125,19 @@ def api_page(data,filters):
     records=data.get(collection,[])
     if filters.get('id'):
         target=filters['id'][0]
-        records=[r for r in records if target in [r.get('id'),r.get('target'),r.get('work_id'),r.get('baseline_id'),r.get('node_id')]]
+        lineage={target};criteria=set()
+        if collection in {'accepted','acceptanceEvidence','evidence','history'}:
+            nodes={n['id']:n for n in data.get('nodes',[])}
+            body=nodes.get(target,{}).get('body',{})
+            criteria={c['id'] for c in body.get('criteria',[])}
+            ancestor=body.get('splitFrom')
+            while ancestor and ancestor not in lineage:
+                lineage.add(ancestor);ancestor=nodes.get(ancestor,{}).get('body',{}).get('splitFrom')
+        def matches(record):
+            if target in [record.get('id'),record.get('target'),record.get('work_id'),record.get('baseline_id'),record.get('node_id')]:return True
+            if collection=='history':return record.get('target') in lineage
+            criterion=record.get('criterion_id',record.get('body',{}).get('criterionId'))
+            return collection in {'accepted','acceptanceEvidence','evidence'} and record.get('work_id') in lineage and criterion in criteria
+        records=[r for r in records if matches(r)]
     if filters.get('state'):records=[r for r in records if r.get('body',{}).get('state')==filters['state'][0]]
     return {'collection':collection,'items':records[offset:offset+limit],'total':len(records),'offset':offset,'limit':limit,'nextOffset':offset+limit if offset+limit<len(records) else None}
