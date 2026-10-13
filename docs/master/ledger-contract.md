@@ -85,3 +85,5 @@ harness telemetry: those remain in the Operations views until explicitly linked.
 Owner changes advance the work generation and return it to proposed. Evidence is bound to the generation at recording; a supplied stale generation is rejected, and earlier-generation proof cannot advance acceptance. Reference arrays must contain objects.
 
 Expired or invalid waivers retain immutable acceptance history, but do not satisfy dependencies. Readiness, activation, verification and acceptance recheck this dynamically. Waiver expiry must be finite. Phase 1 has no automatic renewal: James must govern replacement work/scope or a separately approved reconciliation flow.
+
+Hierarchy rollups separate current waivers from inactive (expired/invalid) waivers. Governed dry-run evidence is bound to the full readiness plan bytes; editing any field requires fresh reviewed dry-run evidence, and legacy unbound evidence cannot execute.

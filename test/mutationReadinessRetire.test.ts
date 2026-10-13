@@ -2,7 +2,10 @@ import fs from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
 import { createHash } from "node:crypto";
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
+import * as mutationCommands from "../src/mutationCommand.js";
+import { runMutationDryRun } from "../src/mutationDryRun.js";
+import { runMutationExecution } from "../src/mutationExecute.js";
 import { planMutationReadiness } from "../src/mutationReadiness.js";
 import { generateMutationReadinessAudit } from "../src/mutationReadinessAudit.js";
 
@@ -92,5 +95,36 @@ describe("mutation-readiness audit retirement", () => {
       expect(result.plan.approvalSha256).toBe(createHash("sha256").update(raw).digest("hex"));
       expect((await generateMutationReadinessAudit({ project: "ariadne", vaultRoot })).audit.checks[0].status).toBe("passed");
     } finally { await fs.rm(vaultRoot, { recursive: true, force: true }); }
+  });
+  it("rejects edited plans and unbound legacy dry runs before invoking any command", async () => {
+    const vaultRoot = await fs.mkdtemp(path.join(os.tmpdir(), "ariadne-plan-digest-"));
+    // Every command is mocked: this regression performs no shell/live action.
+    const command = vi.spyOn(mutationCommands, "execMutationCommand").mockResolvedValue({ stdout: "mocked", stderr: "", exitCode: 0, timedOut: false, bufferExceeded: false, durationMs: 1 });
+    try {
+      const dir = path.join(vaultRoot, "projects", "ariadne", "control", "approvals");
+      await fs.mkdir(dir, { recursive: true });
+      const id = "approval-2026-10-13T00-00-00-002Z";
+      await fs.writeFile(path.join(dir, `${id}.json`), JSON.stringify({ schemaVersion: 1, id, project: "ariadne", target: "deployment", status: "approved", action: "Isolated test scope", decisionBy: "James", decidedAt: "2026-10-13T00:00:00Z" }));
+      const auth = path.join(vaultRoot, "auth.md");
+      await fs.writeFile(auth, "Isolated test authorization");
+      const result = await planMutationReadiness({ project: "ariadne", vaultRoot, target: "deployment", risk: "high", scope: "Isolated test scope", approvalRef: id, authEvidenceRefs: [auth], evidenceRefs: [], dryRunCommand: "git status --short", proposedLiveCommand: "printf mocked-live", postVerificationCommand: "git status --short", rollback: "Isolated test rollback" });
+      const originalPlan = await fs.readFile(result.jsonPath);
+      const dryRun = await runMutationDryRun({ project: "ariadne", vaultRoot, plan: result.plan.id });
+      expect(dryRun.record.planSha256).toBe(createHash("sha256").update(originalPlan).digest("hex"));
+      expect(command).toHaveBeenCalledTimes(1);
+      for (const patch of [{ proposedLiveCommand: "printf changed-live" }, { postVerificationCommand: "printf changed-post" }, { scope: "Changed scope" }, { rollback: "Changed rollback" }, { notes: "Changed note" }]) {
+        await fs.writeFile(result.jsonPath, JSON.stringify({ ...result.plan, ...patch }));
+        await expect(runMutationExecution({ project: "ariadne", vaultRoot, plan: result.plan.id, confirmPlan: result.plan.id })).rejects.toThrow("matching the complete plan digest");
+        expect(command).toHaveBeenCalledTimes(1);
+      }
+      await fs.writeFile(result.jsonPath, originalPlan);
+      const { planSha256: _digest, ...legacy } = dryRun.record;
+      await fs.writeFile(dryRun.jsonPath, JSON.stringify(legacy));
+      await expect(runMutationExecution({ project: "ariadne", vaultRoot, plan: result.plan.id, confirmPlan: result.plan.id })).rejects.toThrow("matching the complete plan digest");
+      expect(command).toHaveBeenCalledTimes(1);
+      await fs.writeFile(dryRun.jsonPath, JSON.stringify(dryRun.record));
+      expect((await runMutationExecution({ project: "ariadne", vaultRoot, plan: result.plan.id, confirmPlan: result.plan.id })).record.status).toBe("passed");
+      expect(command).toHaveBeenCalledTimes(3);
+    } finally { command.mockRestore(); await fs.rm(vaultRoot, { recursive: true, force: true }); }
   });
 });

@@ -131,3 +131,12 @@ package. Its new prepare helper only writes local package artifacts; no
 provisioning stage is invoked by this assignment. Fixed 4262623947 by retaining
 state in work queue paging links. Tests cover metadata drift, unrelated operation
 approvals and filtered navigation.
+
+
+Codex re-review at 842772a6e9306a96cca831d15503551a1749d787: fixed
+4262788650. Dry-run evidence binds exact plan bytes; execution requires the same
+plan digest, and loaded plan bytes must match the audited bytes. Unbound legacy
+dry runs cannot execute. Fully mocked regression commands prove edited live/post/
+scope/rollback/notes fields are rejected before any command invocation. Fixed
+4262788662 by separating current and inactive waivers in every hierarchy rollup,
+including baseline cards; tests cover product, phase and milestone paths.

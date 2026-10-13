@@ -1,7 +1,7 @@
 import fs from "node:fs/promises";
 import path from "node:path";
 import { timestampFile, writeJsonArtifact, writeTextArtifact } from "./artifacts.js";
-import { clampCommandTimeout, execMutationCommand, readMutationPlan } from "./mutationCommand.js";
+import { clampCommandTimeout, execMutationCommand, readMutationPlanWithDigest } from "./mutationCommand.js";
 import { generateMutationReadinessAudit } from "./mutationReadinessAudit.js";
 import { projectDir, slugifyProject } from "./paths.js";
 import type { MutationDryRunRecord, MutationExecutionRecord } from "./types.js";
@@ -14,18 +14,19 @@ export async function runMutationExecution(input: {
   timeoutMs?: number;
 }): Promise<{ jsonPath: string; markdownPath: string; record: MutationExecutionRecord }> {
   const project = slugifyProject(input.project);
-  const plan = await readMutationPlan(input.vaultRoot, project, input.plan);
+  const loadedPlan = await readMutationPlanWithDigest(input.vaultRoot, project, input.plan);
+  const plan = loadedPlan.plan;
   if (input.confirmPlan !== plan.id) {
     throw new Error(`--confirm-plan must exactly match ${plan.id}.`);
   }
   const audit = await generateMutationReadinessAudit({ project, vaultRoot: input.vaultRoot });
   const auditCheck = audit.audit.checks.find((check) => check.planId === plan.id);
-  if (!auditCheck || auditCheck.status !== "passed") {
+  if (!auditCheck || auditCheck.status !== "passed" || auditCheck.planSha256 !== loadedPlan.sha256) {
     throw new Error(`Readiness plan ${plan.id} is not audit-passed.`);
   }
-  const dryRun = await latestPassedDryRun(input.vaultRoot, project, plan.id);
+  const dryRun = await latestPassedDryRun(input.vaultRoot, project, plan.id, loadedPlan.sha256);
   if (!dryRun) {
-    throw new Error(`Readiness plan ${plan.id} has no passed mutation dry-run evidence.`);
+    throw new Error(`Readiness plan ${plan.id} has no passed mutation dry-run evidence matching the complete plan digest.`);
   }
 
   const started = new Date();
@@ -95,7 +96,7 @@ export async function runMutationExecution(input: {
   return { jsonPath, markdownPath, record };
 }
 
-async function latestPassedDryRun(vaultRoot: string, project: string, planId: string): Promise<MutationDryRunRecord | undefined> {
+async function latestPassedDryRun(vaultRoot: string, project: string, planId: string, planSha256: string): Promise<MutationDryRunRecord | undefined> {
   const dir = path.join(projectDir(vaultRoot, project), "control", "mutation-dry-runs");
   let names: string[];
   try {
@@ -110,7 +111,7 @@ async function latestPassedDryRun(vaultRoot: string, project: string, planId: st
       .sort()
       .map(async (name) => JSON.parse(await fs.readFile(path.join(dir, name), "utf8")) as MutationDryRunRecord)
   );
-  return records.filter((record) => record.planId === planId && record.status === "passed").at(-1);
+  return records.filter((record) => record.schemaVersion === 1 && record.project === project && record.planId === planId && record.planSha256 === planSha256 && record.status === "passed").at(-1);
 }
 
 function renderRecord(record: MutationExecutionRecord): string {

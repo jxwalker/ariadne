@@ -6,7 +6,7 @@ class MasterDashboard(unittest.TestCase):
         portfolio=render(data,'/roadmaps',{})
         self.assertNotIn('<script>',portfolio);self.assertIn('&lt;script&gt;',portfolio)
         drill=render(data,'/roadmaps',{'node':['p']})
-        self.assertIn('0 evidence accepted · 0 waived (0 expired) mandatory criteria / 7 proposed criteria',drill)
+        self.assertIn('0 evidence accepted · 0 current waived (0 inactive/expired) mandatory criteria / 7 proposed criteria',drill)
         self.assertIn('Approved denominator: none',drill)
     def test_split_child_retains_selected_evidence(self):
         old={'id':'original','kind':'work','revision':7,'parent':None,'body':{'title':'original','state':'superseded','criteria':[{'id':'criterion','text':'outcome'}]}}
@@ -83,3 +83,12 @@ class MasterDashboard(unittest.TestCase):
         paging=[parse_qs(urlsplit(href).query) for href in parser.hrefs if 'offset=' in href]
         self.assertEqual(len(paging),2)
         self.assertTrue(all(query['state']==['active'] and query['limit']==['2'] for query in paging))
+
+    def test_hierarchy_rollups_separate_inactive_waivers(self):
+        data={'nodes':[{'id':'p','kind':'product','revision':1,'body':{'title':'Product'}},{'id':'b','kind':'baseline','parent':'p','revision':1,'body':{'title':'Baseline','state':'approved'}},{'id':'phase','kind':'phase','parent':'b','revision':1,'body':{'title':'Phase'}},{'id':'m','kind':'milestone','parent':'phase','revision':1,'body':{'title':'Milestone'}},{'id':'w','kind':'work','parent':'m','revision':1,'body':{'title':'Waived work','state':'accepted'},'waiverInactive':True}],
+              'progress':[{'baseline_id':'b','baseline_state':'approved','denominator':1,'accepted_criteria':0,'waived_criteria':1,'expired_waived_criteria':1}],
+              'scope':[{'baseline_id':'b','work_id':'w','criterion_id':'c'}],'accepted':[{'work_id':'w','criterion_id':'c','evidence_id':None}],'dependencies':[],'history':[],'evidence':[]}
+        for node in ['p','phase','m']:
+            result=render(data,'/roadmaps',{'node':[node]})
+            self.assertIn('0 current waived · 1 inactive (expired/invalid) waivers',result)
+        self.assertIn('0 current waived (1 inactive/expired)',render(data,'/roadmaps',{'node':['b']}))
