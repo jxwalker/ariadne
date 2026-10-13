@@ -1,5 +1,11 @@
 #!/bin/bash
 set -euo pipefail
+PREPARED_PACKAGE=$(cd -- "$(dirname "$0")" && pwd -P)
+PREPARED_REPO=${ARIADNE_MASTER_REPO:-/home/james/workspaces/ariadne-master}
+PREPARED_HEAD=${1:?Supply the exact reviewed repository head}
+[[ "$PREPARED_HEAD" =~ ^[a-f0-9]{40}$ && $(git -C "$PREPARED_REPO" rev-parse HEAD) == "$PREPARED_HEAD" ]] || { echo 'Reviewed repository head mismatch' >&2; exit 1; }
+[[ ! -e "$PREPARED_PACKAGE/source-hashes.txt" ]] || { echo 'Use a fresh package; never replace a planned manifest' >&2; exit 1; }
+printf '%s\n' "$PREPARED_HEAD" > "$PREPARED_PACKAGE/HEAD_SHA"
 source "$(dirname "$0")/common.sh"
 stage
 OPERATOR_CONFIG=${ARIADNE_OPERATOR_CONFIG:?Supply the reviewed operator identity and Mac allowlist file}

@@ -7,7 +7,7 @@ VAULT="$PKG/vault"
 STAGE=${1:?plan|dry-run|execute}
 cd "$REPO"
 HEAD_SHA=$(cat "$PKG/HEAD_SHA")
-[[ "$HEAD_SHA" =~ ^[a-f0-9]{40}$ && $(git rev-parse HEAD) == "$HEAD_SHA" ]]
+[[ "$HEAD_SHA" =~ ^[a-f0-9]{40}$ && $(git rev-parse HEAD) == "$HEAD_SHA" ]] || { echo 'Reviewed repository head mismatch' >&2; exit 1; }
 DIGEST=$(/usr/bin/sha256sum "$PKG/source-hashes.txt" | cut -d ' ' -f1)
 [[ "$DIGEST" =~ ^[a-f0-9]{64}$ ]]
 CHECK_COMMAND="printf '%s\\n' '$DIGEST  $PKG/source-hashes.txt' | /usr/bin/sha256sum --check --status && /usr/bin/sha256sum --check --status '$PKG/source-hashes.txt'"

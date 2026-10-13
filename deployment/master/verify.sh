@@ -7,7 +7,7 @@ python3 - "$PKG/operator-actions.json" "$HOME/.config/ariadne-activity/server.js
 import json,pathlib,sys
 assert json.loads(pathlib.Path(sys.argv[1]).read_text())==json.loads(pathlib.Path(sys.argv[2]).read_text())['operatorActions']
 PYOPERATOR
-[[ $(curl -fsS http://127.0.0.1:18095/api/operator-session) == '{"canRespond": false}' ]]
+curl -fsS http://127.0.0.1:18095/api/operator-session | python3 -c 'import json,sys; assert json.load(sys.stdin)=={"canRespond":False}'
 [[ $(curl -s -o /dev/null -w '%{http_code}' -H 'Content-Type: application/json' --data '{}' http://127.0.0.1:18095/api/operator-response) == 401 ]]
 for unit in ariadne-activity ariadne-master-pg ariadne-ingest-proxy ariadne-ingest-tunnel; do systemctl --user is-active "$unit"; done
 for endpoint in /readyz / /api/operating /api/runs /api/sources /api/controls /roadmaps /work /api/master; do

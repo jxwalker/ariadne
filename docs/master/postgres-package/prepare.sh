@@ -4,7 +4,7 @@ set -euo pipefail
 source "$(dirname "$0")/common.sh"
 REPO=/home/james/workspaces/ariadne-master
 HEAD_SHA=${1:?exact reviewed repository head}
-[[ "$HEAD_SHA" =~ ^[a-f0-9]{40}$ && $(git -C "$REPO" rev-parse HEAD) == "$HEAD_SHA" ]]
+[[ "$HEAD_SHA" =~ ^[a-f0-9]{40}$ && $(git -C "$REPO" rev-parse HEAD) == "$HEAD_SHA" ]] || { echo 'Reviewed repository head mismatch' >&2; exit 1; }
 [[ ! -e "$PKG/source-hashes.txt" ]]
 printf '%s\n' "$HEAD_SHA" > "$PKG/HEAD_SHA"
 python3 - "$PKG" <<'PY'

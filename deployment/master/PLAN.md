@@ -11,7 +11,8 @@ Merge is separately gated on the exact current head, actual checks and review fi
 
 Expected deployed commit: 2039065d8d9a70983d3470db05adc0db94afea6d
 
-Prepare a fresh package from the exact reviewed Git revision. Copy physical installed
+Run prepare.sh <exact-reviewed-head> in a fresh package; the entrypoint validates the
+checkout and records HEAD_SHA before sourcing package helpers. Copy physical installed
 dependencies, compile the staged canonical runner, validate internal dependency links,
 run isolated PostgreSQL contract tests and read-only service/role/API checks. Bind
 all staged bytes, imports, scripts, HEAD_SHA, this plan and protected operator-actions

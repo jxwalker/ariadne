@@ -74,3 +74,26 @@ class PackageHelpers(unittest.TestCase):
             with self.assertRaises(ValueError):module.validate(record,head,digest,'master')
             with self.assertRaises(ValueError):module.validate(record|{'action':f'Master phase 1 exact-head deployment: {head}; manifest {digest}'},head,digest,'postgres-provision')
             with self.assertRaises(ValueError):module.validate(record,'c'*40,digest,'postgres-provision')
+
+    def test_prepare_bootstraps_missing_head_and_rejects_mismatch(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root=pathlib.Path(tmp);head='a'*40
+            (root/'prepare.sh').write_text((ROOT/'deployment/master/prepare.sh').read_text())
+            (root/'common.sh').write_text('test -f "'+str(root/'HEAD_SHA')+'"; stage(){ exit 88; };\n')
+            fake=root/'fake';fake.mkdir()
+            (fake/'git').write_text('#!/bin/sh\nprintf "%s\\n" "'+head+'"\n');(fake/'git').chmod(0o700)
+            env={**os.environ,'PATH':str(fake)+':'+os.environ['PATH'],'ARIADNE_MASTER_REPO':str(root)}
+            mismatch=subprocess.run(['bash',str(root/'prepare.sh'),'b'*40],env=env,capture_output=True)
+            self.assertNotEqual(mismatch.returncode,0);self.assertFalse((root/'HEAD_SHA').exists())
+            correct=subprocess.run(['bash',str(root/'prepare.sh'),head],env=env,capture_output=True)
+            self.assertEqual(correct.returncode,88,correct.stderr)
+            self.assertEqual((root/'HEAD_SHA').read_text().strip(),head)
+
+    def test_session_verifier_accepts_real_compact_serialization(self):
+        import re
+        script=(ROOT/'deployment/master/verify.sh').read_text()
+        command=re.search(r"python3 -c '([^']+)'",script).group(1)
+        from activity_server import canonical
+        for data,expected in [({'canRespond':False},0),({'canRespond':True},1)]:
+            result=subprocess.run(['python3','-c',command],input=canonical(data),capture_output=True,text=True)
+            self.assertEqual(result.returncode,expected)
