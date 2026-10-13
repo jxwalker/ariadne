@@ -48,6 +48,12 @@ class OperatingTests(unittest.TestCase):
         d={'id':'choose-runner','recipient':'james','question':'Use the dedicated runner?','options':['Use existing','Prepare a new VM'],'blocking':True}
         self.send('decision.requested',decision=d);self.assertEqual(len(self.read()['needsYou']),1)
         self.send('decision.resolved',seq=1,decision={'id':'choose-runner','recipient':'james','resolution':'Use existing'});self.assertEqual(self.read()['needsYou'],[])
+    def test_decision_can_discuss_access_without_exposing_credential_values(self):
+        d={'id':'access','recipient':'james','question':'May I use the existing SSH key to finish the repository deployment?','recommendation':'Use the existing authorized SSH key','options':['Authorize the existing SSH key','Leave blocked'],'blocking':True}
+        self.send('decision.requested',decision=d);text=canonical(self.read());self.assertIn('existing SSH key',text)
+        token='ghp_'+'A1b2'*9
+        self.send('decision.requested',seq=1,decision=dict(d,question='Use '+token+' to proceed'))
+        self.assertNotIn(token,canonical(self.read()))
     def test_old_decision_arriving_late_cannot_reopen(self):
         d={'id':'choice','recipient':'james','question':'Choose?','blocking':True}
         self.send('decision.resolved',seq=1,decision={'id':'choice','recipient':'james','resolution':'Chosen'})

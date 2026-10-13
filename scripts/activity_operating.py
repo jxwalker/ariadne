@@ -2,11 +2,12 @@
 
 Raw evidence stays in SQLite. This API returns only bounded, redacted operational fields.
 """
-import hashlib,json,math,time
+import hashlib,json,math,time,re
 from collections import Counter,defaultdict
 from datetime import datetime,timezone
 from activity_server import stamp,safe_link
 from activity_insights import project,safe_text,percentile,sources_view
+from activity_controls import REDACTED
 
 MAX_ROWS=50000
 ELIGIBLE={'success','failure','timed_out','startup_failure','action_required'}
@@ -14,6 +15,13 @@ DEFAULT_CI={'CI','Build','Tests','Validate','Activity validation','Security','Su
 DEFAULT_CD={'Deploy UAT','Promote UAT to Production','APCG Deploy — Staging','APCG Deploy — Evaluation','Release'}
 DEFAULT_REVIEW={'Grok PR Review','AI review','Running Copilot Code Review'}
 DEFAULT_OPERATIONS={'Production Uptime','CI Repair Fan-out','Main CI Freshness','UAT Disk Health','Release Train Freshness','Backup Health','Weekly SLO Baseline','SLO Incident Reconciliation','Backup Restore Drill','APCG Re-pin Drift','APCG Operations Cadence Evidence','Engine drift','Main Red Alert'}
+DECISION_CREDENTIAL=re.compile(r'(?i)(?:gh[pousr]_[a-z0-9]+|github_pat_[a-z0-9_]+|sk-(?:proj-)?[a-z0-9_-]{16,}|xox[baprs]-[a-z0-9-]+|AKIA[A-Z0-9]{12,}|AIza[a-z0-9_-]+|-----BEGIN|eyJ[a-z0-9_-]+\.[a-z0-9_-]+\.|\bBearer\s+\S+|(?:api[_ -]?key|token|password|passwd|secret|authorization|credential)\s*[:=]\s*\S+|[a-f0-9]{32,}|[a-z0-9+/_=-]{40,})')
+def decision_text(value,secrets=(),limit=500):
+    value=str(value or '')[:limit]
+    # A question about an SSH key or a token is useful context, not a credential value.
+    # Keep control/command redaction conservative; this narrowly applies to deliberate decision prose.
+    if DECISION_CREDENTIAL.search(value) or any(s and s in value for s in secrets):return REDACTED
+    return value
 def workflow_role(run,policy=None):
     name=run.get('name') or 'Unnamed workflow';policy=policy or {}
     for role,names in [('ci',DEFAULT_CI),('cd',DEFAULT_CD),('review',DEFAULT_REVIEW),('operations',DEFAULT_OPERATIONS)]:
@@ -131,7 +139,8 @@ def operating(store,registry,config,params=None,at=None):
     aliases={s.lower() for s in config.get('operatorAliases',['james','jxwalker'])}
     ev=evidence(store);needs=[];blocked=[];insights=[];work=[];pr_rows=[];repo_rows=[]
     def action(ident,title,reason,owner,repo,since,next_step,url=None,kind='review',priority=2,**extra):
-        return {'id':ident,'title':clean(title,160),'reason':clean(reason),'owner':clean(owner,128),'repo':repo,'since':since,'nextStep':clean(next_step,300),'url':link(url),'kind':kind,'priority':priority,**extra}
+        redact=(lambda v,n=500:decision_text(v,secrets,n)) if kind=='explicit-decision' else clean
+        return {'id':ident,'title':redact(title,160),'reason':redact(reason),'owner':clean(owner,128),'repo':repo,'since':since,'nextStep':redact(next_step,300),'url':link(url),'kind':kind,'priority':priority,**extra}
     # Current work and unresolved decisions are not hidden by a historical performance window.
     run_data=project(store,registry,'30d',at,include_github=False)
     run_keys={(r['source'],r['id']):r for r in run_data['runs']}
@@ -166,7 +175,7 @@ def operating(store,registry,config,params=None,at=None):
             if key in decisions:continue
             decisions[key]=True
             if e['kind']!='decision.requested' or e['repository'] not in active_repos or d.get('recipient','').lower() not in aliases or reg.get('displayTaskMetadata') is not True or test_run(e,reg) or reg.get('provenance')=='read-only local snapshot' or reg.get('revoked'):continue
-            needs.append(action(stable('decision',*key),e['label'],d['question'],d['recipient'],e['repository'],ts(e['occurredAt']) or row['received'],d.get('recommendation') or 'Open the request and choose one of the supplied options.',d.get('url'),kind='explicit-decision',priority=0 if d['blocking'] else 2,options=[clean(v,160) for v in d.get('options',[])],requestId=d['id'],source=clean(reg.get('displayName') or row['source'],128)))
+            needs.append(action(stable('decision',*key),e['label'],d['question'],d['recipient'],e['repository'],ts(e['occurredAt']) or row['received'],d.get('recommendation') or 'Open the request and choose one of the supplied options.',d.get('url'),kind='explicit-decision',priority=0 if d['blocking'] else 2,options=[decision_text(v,secrets,160) for v in d.get('options',[])],requestId=d['id'],source=clean(reg.get('displayName') or row['source'],128)))
     for repo in active_repos:
         pipeline_data=pipeline(repo,ev,start,at,config.get('workflowPolicies',{}).get(repo));open_prs=[];merged=0;opened=0;merged_trend=Counter()
         for key in ['workflows','automation','runners']:
