@@ -172,6 +172,8 @@ class ActivityTests(unittest.TestCase):
         self.assertEqual(runs['enrolled']['note'],event('task.progress',1,'enrolled')['summary']);self.assertIsNone(runs['enrolled']['blocker'])
         self.assertEqual(runs['blocked']['blocker'],event('task.blocked',1,'blocked')['summary']);self.assertIsNone(runs['blocked']['note'])
         self.assertEqual(runs['enrolled']['claim'],'agent-reported');self.assertIn('github',runs['enrolled'])
+        snap=project(self.store,{'test':{'displayTaskMetadata':True,'provenance':'read-only local snapshot'}},'24h',100020)
+        self.assertTrue(all('title' not in r for r in snap['runs']))
 
     def test_insights_correlation_stale_empty_and_range_boundary(self):
         from activity_insights import project,page_runs

@@ -45,7 +45,7 @@ def task_metadata(db, record, envelope, registration, state):
 
     These are agent claims only; GitHub/review/CI/deploy evidence stays in separate fields.
     """
-    if registration.get('displayTaskMetadata') is not True: return {}
+    if registration.get('displayTaskMetadata') is not True or registration.get('provenance')=='read-only local snapshot': return {}
     note=db.execute("SELECT json_extract(envelope,'$.kind') AS kind,json_extract(envelope,'$.summary') AS summary FROM events WHERE source=? AND json_extract(envelope,'$.runId')=? AND json_extract(envelope,'$.kind') IN ('task.progress','task.blocked','task.resumed','task.interrupted','task.failed','task.completed') ORDER BY json_extract(envelope,'$.sequence') DESC LIMIT 1",(record['source'],record['run'])).fetchone()
     out={'title':str(envelope.get('label') or '')[:160],'claim':'agent-reported','note':None,'blocker':None}
     if note and note['summary']:
