@@ -44,6 +44,14 @@ def scoped_replies(event):
     return json.loads(p.stdout)
 
 
+def resolved_decisions():
+    from master_dashboard import PSQL
+    import os,pathlib,subprocess
+    p=subprocess.run([PSQL,'-XqAt','-v','ON_ERROR_STOP=1','-h',str(pathlib.Path.home()/'.local/state/ariadne-master-pg/socket'),'-p','55432','-U','ariadne_master','-d','ariadne_master'],input='SELECT master.operator_resolved();',text=True,capture_output=True,timeout=5,env={'PATH':os.defpath,'HOME':str(pathlib.Path.home()),'PGPASSFILE':'/dev/null'})
+    if p.returncode:raise RuntimeError('Decision ledger unavailable')
+    return json.loads(p.stdout)
+
+
 def decision_id(source, repository, request):
     key = json.dumps([source, repository, request], separators=(',', ':'))
     return 'decision:operator:' + hashlib.sha256(key.encode()).hexdigest()[:48]
@@ -123,7 +131,7 @@ class OperatorActions:
             login = self.identity(headers, client)
         except PermissionError:
             return {'canRespond': False}
-        self.read()  # A session is not actionable while the durable ledger is unavailable.
+        (resolved_decisions() if self.read is snapshot else self.read())  # Fail closed if the ledger is unavailable.
         token, now = secrets.token_urlsafe(32), time.time()
         with self.lock:
             self.sessions = {k: v for k, v in self.sessions.items() if v[1] > now}

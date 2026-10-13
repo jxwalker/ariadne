@@ -35,7 +35,7 @@ GRANT CONNECT ON DATABASE ariadne_master TO ariadne_master;
 REVOKE ALL ON SCHEMA public FROM PUBLIC, ariadne_master;
 REVOKE ALL ON SCHEMA master FROM ariadne_master;
 GRANT USAGE ON SCHEMA master TO ariadne_master;
-GRANT EXECUTE ON FUNCTION master.command(text,jsonb),master.snapshot(),master.operator_replies(text,text,text) TO ariadne_master;
+GRANT EXECUTE ON FUNCTION master.command(text,jsonb),master.snapshot(),master.operator_replies(text,text,text),master.operator_resolved() TO ariadne_master;
 SQL
 # Existing role only; peer map is limited to this one OS user and database.
 python3 - "$PGROOT/data" <<'PY'

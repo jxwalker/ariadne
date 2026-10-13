@@ -383,8 +383,8 @@ class Handler(BaseHTTPRequestHandler):
                     if app.config.get('operatorActions',{}).get('enabled'):
                         try:
                             from activity_decisions import hide_answered
-                            from master_dashboard import snapshot
-                            data=hide_answered(data,snapshot())
+                            from activity_decisions import resolved_decisions
+                            data=hide_answered(data,resolved_decisions())
                         except Exception:pass  # Keep operational evidence visible when the ledger is unavailable.
                     return self.reply(200,data)
                 from activity_controls import controls

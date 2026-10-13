@@ -301,6 +301,12 @@ CREATE FUNCTION master.operator_replies(source_id text,repo text,run text) RETUR
   ORDER BY (body->>'resolvedAt')::timestamptz DESC,body->>'commandId' DESC LIMIT 50
  ) latest;
 $$;
+CREATE INDEX resolved_decision_lookup ON master.nodes(id) WHERE kind='decision' AND body->>'state'='resolved';
+CREATE FUNCTION master.operator_resolved() RETURNS jsonb LANGUAGE sql STABLE SECURITY DEFINER SET search_path=pg_catalog,master AS $$
+ SELECT jsonb_build_object(
+  'nodes',coalesce((SELECT jsonb_agg(jsonb_build_object('id',id,'kind',kind,'body',jsonb_build_object('state','resolved','origin',body->>'origin','sourceId',body->>'sourceId','repository',body->>'repository','runId',body->>'runId','requestId',body->>'requestId','requestRevision',body->>'requestRevision','resolution',body->>'resolution','resolvedBy',body->>'resolvedBy','resolvedAt',body->>'resolvedAt','commandId',body->>'commandId'))) FROM master.nodes WHERE kind='decision' AND body->>'state'='resolved'),'[]'),
+  'aliases',coalesce((SELECT jsonb_agg(a) FROM master.aliases a JOIN master.nodes n ON n.id=a.node_id WHERE n.kind='decision' AND n.body->>'state'='resolved'),'[]'));
+$$;
 REVOKE ALL ON SCHEMA master FROM PUBLIC;
 REVOKE ALL ON ALL TABLES IN SCHEMA master FROM PUBLIC;
 REVOKE ALL ON ALL FUNCTIONS IN SCHEMA master FROM PUBLIC;
