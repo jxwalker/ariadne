@@ -163,6 +163,7 @@ BEGIN
    UPDATE master.nodes SET body=b,revision=revision+1 WHERE id=target;
   ELSIF op='resolve' THEN
    IF actor<>'james' OR old.kind NOT IN ('external','decision') OR coalesce(c->>'resolution','')='' THEN RAISE EXCEPTION 'operator resolution required'; END IF;
+   IF old.kind='decision' AND old.body->>'state'='resolved' THEN RAISE EXCEPTION 'decision already resolved; use a new decision ID'; END IF;
    UPDATE master.nodes SET body=body||CASE WHEN old.kind='decision' AND jsonb_typeof(c->'response')='object' THEN c->'response' ELSE '{}'::jsonb END||jsonb_build_object('state','resolved','resolution',c->>'resolution','resolvedBy',actor,'resolvedAt',now()),revision=revision+1 WHERE id=target;
   ELSIF op='transition' THEN
    IF old.kind<>'work' OR c->>'state' IS NULL OR c->>'state' NOT IN ('ready','active','verification','blocked','waiting','parked','cancelled') THEN RAISE EXCEPTION 'invalid transition'; END IF;

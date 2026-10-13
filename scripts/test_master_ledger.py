@@ -298,6 +298,16 @@ class LedgerContract(unittest.TestCase):
         self.assertEqual(entry['before_state']['body']['waiver']['expiresAt'],expiry)
         self.assertEqual(entry['after_state']['body']['waiver']['expiresAt'],renewed)
 
+    def test_resolved_decision_cannot_be_overwritten_but_exact_retry_is_safe(self):
+        p='decision'+uuid.uuid4().hex[:10];cid=str(uuid.uuid4())
+        self.ok('create',p,kind='decision',body={'title':'Stable choice','state':'open'})
+        self.ok('resolve',p,1,commandId=cid,resolution='Operator only')
+        self.assertEqual(self.cmd('resolve',p,1,commandId=cid,resolution='Operator only')['revision'],2)
+        self.assertFalse(self.cmd('resolve',p,2,resolution='Enable agents',response={'origin':'operator-dashboard'})['ok'])
+        node=self.sql("SELECT to_jsonb(n) FROM master.nodes n WHERE id='%s';"%p,database='ledger_test')
+        self.assertEqual(node['revision'],2);self.assertEqual(node['body']['resolution'],'Operator only')
+        self.assertNotIn('origin',node['body'])
+
     def test_append_only(self):
         with self.assertRaises(AssertionError):self.sql('DELETE FROM master.journal;',database='ledger_test')
 

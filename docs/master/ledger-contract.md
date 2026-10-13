@@ -85,3 +85,5 @@ harness telemetry: those remain in the Operations views until explicitly linked.
 Owner changes advance the work generation and return it to proposed. Evidence is bound to the generation at recording; a supplied stale generation is rejected, and earlier-generation proof cannot advance acceptance. Reference arrays must contain objects.
 
 Expired or invalid waivers retain immutable acceptance history, but do not satisfy dependencies. Readiness, activation, verification and acceptance recheck this dynamically. Waiver expiry must be finite. Phase 1 has no automatic renewal. James may issue an explicit `renew-waiver` command for an expired waiver, with its expected revision, reason, risk and finite future expiry. It changes only current waiver terms and records before/after journal evidence; accepted criteria, candidate and selected evidence remain immutable, and verified progress is not increased. Replacement work/scope remains available when real re-verification is required.
+
+Resolved decision IDs are immutable in the canonical command API. Exact command retries stay idempotent; an amended question or decision must use a new ID and retain its earlier history.
