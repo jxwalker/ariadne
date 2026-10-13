@@ -229,13 +229,13 @@ BEGIN
    END LOOP;
    UPDATE master.nodes SET revision=revision+1,body=body||jsonb_build_object('state','accepted','acceptedBy',actor,'acceptanceCommand',cid,'acceptanceMode',CASE WHEN op='override' THEN 'waiver' ELSE 'evidence' END,'waiver',CASE WHEN op='override' THEN jsonb_build_object('reason',c->>'reason','risk',c->>'risk','expiresAt',c->>'expiresAt','criteria',c->'waivedCriteria') ELSE NULL END) WHERE id=target;
   ELSIF op='renew-waiver' THEN
-   IF actor<>'james' OR old.kind<>'work' OR old.body->>'state'<>'accepted' OR old.body->>'acceptanceMode'<>'waiver'
-      OR NOT master.waiver_inactive(old) THEN RAISE EXCEPTION 'operator renewal of expired waiver required'; END IF;
+   IF actor<>'james' OR old.kind<>'work' OR old.body->>'state' IS DISTINCT FROM 'accepted' OR old.body->>'acceptanceMode' IS DISTINCT FROM 'waiver'
+      OR jsonb_typeof(old.body->'waiver') IS DISTINCT FROM 'object' OR NOT master.waiver_inactive(old) THEN RAISE EXCEPTION 'operator renewal of expired waiver required'; END IF;
    IF length(btrim(coalesce(c->>'reason','')))=0 OR length(btrim(coalesce(c->>'risk','')))=0
       OR c->>'expiresAt' IS NULL OR NOT isfinite((c->>'expiresAt')::timestamptz)
       OR (c->>'expiresAt')::timestamptz<=now() THEN RAISE EXCEPTION 'renewal requires explicit reason risk finite future expiry'; END IF;
    UPDATE master.nodes SET revision=revision+1,
-    body=body||jsonb_build_object('waiver',body->'waiver'||jsonb_build_object('reason',c->>'reason','risk',c->>'risk','expiresAt',c->>'expiresAt','renewedBy',actor,'renewedAt',now(),'renewalCommand',cid),
+    body=body||jsonb_build_object('waiver',body->'waiver'||jsonb_build_object('reason',c->>'reason','risk',c->>'risk','expiresAt',c->>'expiresAt','renewedBy',actor,'renewedAt',now(),'renewalCommand',cid,'criteria',(SELECT jsonb_agg(x->>'id') FROM jsonb_array_elements(old.body->'criteria') x)),
                                  'waiverRenewalCount',coalesce((body->>'waiverRenewalCount')::integer,0)+1)
     WHERE id=target;
    -- Existing accepted criteria/evidence/candidate remain immutable. Journal captures both waiver terms.
@@ -268,9 +268,9 @@ CREATE VIEW master.progress AS
  SELECT n.id baseline_id,n.body->>'state' baseline_state,count(s.criterion_id) denominator,
  count(a.criterion_id) FILTER (WHERE a.evidence_id IS NOT NULL) accepted_criteria,
  count(a.criterion_id) FILTER (WHERE a.evidence_id IS NULL) waived_criteria,
- count(a.criterion_id) FILTER (WHERE a.evidence_id IS NULL AND (c.payload->>'expiresAt')::timestamptz<=now()) expired_waived_criteria FROM master.nodes n
+ count(a.criterion_id) FILTER (WHERE a.evidence_id IS NULL AND master.waiver_inactive(waiver_owner)) expired_waived_criteria FROM master.nodes n
  LEFT JOIN master.scope s ON s.baseline_id=n.id LEFT JOIN master.accepted a ON a.criterion_id=s.criterion_id
- LEFT JOIN master.commands c ON c.id=a.command_id
+ LEFT JOIN master.nodes waiver_owner ON waiver_owner.id=s.work_id
  WHERE n.kind='baseline' GROUP BY n.id;
 CREATE FUNCTION master.snapshot() RETURNS jsonb LANGUAGE sql STABLE SECURITY DEFINER SET search_path=pg_catalog,master AS $$
  SELECT jsonb_build_object(
