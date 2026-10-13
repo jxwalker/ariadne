@@ -126,16 +126,26 @@ class LedgerContract(unittest.TestCase):
             for kind in ['ci','runtime']:
                 rev=self.ok('evidence',w,rev,evidence={'id':str(uuid.uuid4()),'kind':kind,'criterionId':criterion,'candidate':'a'*40,'policy':p+'policy','status':'passed','synthetic':False,'sha256':'a'*64,'observedAt':self.sql('SELECT to_jsonb(now());',database='ledger_test'),'uri':'https://example.invalid/proof'})
         rev=self.ok('accept',w,rev)
+        self.ok('dependencies',p+'x',1,dependencies=[w])
         # Two mandatory criteria remain two commitments after split and revision.
         before=self.sql("SELECT to_jsonb(p) FROM master.progress p WHERE baseline_id='%s';"%(p+'b'),database='ledger_test')
         self.assertFalse(self.cmd('split',w,rev,children=[{'id':p+'s1','title':'one','criteria':[{'id':p+'wc'}]},{'id':p+'s2','title':'two','criteria':[{'id':p+'new'}]}])['ok'])
         self.ok('split',w,rev,children=[{'id':p+'s1','title':'one','criteria':[{'id':p+'wc'}]},{'id':p+'s2','title':'two','criteria':[{'id':p+'wc2'}]}])
         self.assertEqual(before,self.sql("SELECT to_jsonb(p) FROM master.progress p WHERE baseline_id='%s';"%(p+'b'),database='ledger_test'))
+        self.assertEqual(self.sql("SELECT master.blockers('%s');"%(p+'x'),database='ledger_test'),[])
+        self.ok('transition',p+'x',3,state='ready')
+        for child in [p+'s1',p+'s2']:
+            self.assertEqual(self.sql("SELECT to_jsonb(count(*)) FROM master.journal WHERE target='%s';"%child,database='ledger_test'),1)
         self.ok('create',p+'b2',kind='baseline',parent=p,body={'title':'revision v2','state':'proposed','previousBaseline':p+'b'})
         self.ok('scope',p+'b2',1,scope=[{'workId':p+'s1','criterionId':p+'wc'},{'workId':p+'x','criterionId':p+'xc'},{'workId':p+'s2','criterionId':p+'wc2'}],scopeDiff={'split':w,'denominatorDelta':0})
         after=self.sql("SELECT to_jsonb(p) FROM master.progress p WHERE baseline_id='%s';"%(p+'b2'),database='ledger_test')
         self.assertEqual(before['denominator'],after['denominator'])
         self.assertEqual((before['accepted_criteria'],after['accepted_criteria']),(2,2))
+
+    def test_scope_product_boundary(self):
+        a=self.fixture();b=self.fixture()
+        self.ok('create',a+'b2',kind='baseline',parent=a,body={'title':'revision','state':'proposed'})
+        self.assertFalse(self.cmd('scope',a+'b2',1,scope=[{'workId':b+'w','criterionId':b+'wc'}],scopeDiff={})['ok'])
 
     def test_partial_scope_cannot_ready_or_accept(self):
         p=self.fixture(two_criteria=True);w=p+'w'

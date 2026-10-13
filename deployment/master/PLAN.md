@@ -1,14 +1,14 @@
 # Bounded phase 1 application deployment
 
 Install a CI-green, reviewed PR head without merging. Stage from exact Git revision;
-compile and execute the immutable staged canonical runner, verify hashes, real isolated PostgreSQL tests, least-privilege role and existing operations.
+compile and execute the immutable staged canonical runner, copy and hash installed dependencies and their internal symlinks, verify hashes, real isolated PostgreSQL tests, least-privilege role and existing operations.
 Keep all evidence under ~/ariadne-run/master-p1; use its own vault, never ariadne-dev.
 
 Scope: migrate the existing local PG17 ledger; add the approved james-to-ariadne_master
 Unix peer map; transfer database ownership to james and grant only connection/function access; execute only reviewed real draft imports through the canonical runner;
 install activity_server.py, master_dashboard.py, operating_dashboard.html into existing
 activity service; update its deployment marker and restart only ariadne-activity.
-No new listener, tailnet/public/ACL/firewall changes, agent credentials, system package
+Each candidate uses a separate immutable deployment package path; never overwrite an earlier plan package. No new listener, tailnet/public/ACL/firewall changes, agent credentials, system package
 install, external system writes, repository plan overwrite, or PR merge.
 
 Before execution back up the complete existing scripts, marker, peer configurations and

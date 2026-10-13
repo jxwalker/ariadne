@@ -1,7 +1,7 @@
 #!/bin/bash
 set -euo pipefail
 umask 077
-PKG="$HOME/ariadne-run/master-p1/deploy"
+PKG=$(cd -- "$(dirname "${BASH_SOURCE[0]}")" && pwd -P)
 REPO=/home/james/workspaces/ariadne-master
 EVIDENCE="$HOME/ariadne-run/master-p1"
 LIVE="$HOME/.local/lib/ariadne-activity"

@@ -38,7 +38,7 @@ CREATE FUNCTION master.command(actor text, c jsonb) RETURNS jsonb LANGUAGE plpgs
  SET search_path=pg_catalog,master AS $$
 DECLARE old master.nodes; prior master.commands; b jsonb; r jsonb; op text:=c->>'op';
  target text:=c->>'target'; cid text:=c->>'commandId'; dep text; criterion jsonb; e master.evidence;
- scope_entry jsonb; child jsonb; child_criteria jsonb; split_ids text[]; next_revision integer; before_state jsonb; error_text text;
+ scope_entry jsonb; affected master.nodes; child jsonb; child_criteria jsonb; split_ids text[]; next_revision integer; before_state jsonb; error_text text;
 BEGIN
  -- One lock serializes commands including graph and baseline changes. Reads do not lock.
  PERFORM pg_advisory_xact_lock(20261013,1);
@@ -108,6 +108,13 @@ BEGIN
     INSERT INTO master.nodes(id,kind,parent,revision,body) VALUES(child->>'id','work',old.parent,1,
       old.body||jsonb_build_object('title',child->>'title','criteria',child_criteria,'splitFrom',target,'state',CASE WHEN old.body->>'state'='accepted' THEN 'accepted' ELSE 'proposed' END));
     INSERT INTO master.dependencies SELECT child->>'id',dependency_id FROM master.dependencies WHERE work_id=target;
+    INSERT INTO master.journal(command_id,actor,target,before_state,after_state,result) SELECT cid,actor,child->>'id',NULL,to_jsonb(n),'{"ok":true,"effect":"split child"}' FROM master.nodes n WHERE n.id=child->>'id';
+   END LOOP;
+   FOR affected IN SELECT n.* FROM master.nodes n JOIN master.dependencies d ON d.work_id=n.id WHERE d.dependency_id=target LOOP
+    DELETE FROM master.dependencies WHERE work_id=affected.id AND dependency_id=target;
+    INSERT INTO master.dependencies SELECT affected.id,ch->>'id' FROM jsonb_array_elements(c->'children') ch ON CONFLICT DO NOTHING;
+    UPDATE master.nodes SET revision=revision+1 WHERE id=affected.id;
+    INSERT INTO master.journal(command_id,actor,target,before_state,after_state,result) SELECT cid,actor,affected.id,to_jsonb(affected),to_jsonb(n),'{"ok":true,"effect":"split dependency replacement"}' FROM master.nodes n WHERE n.id=affected.id;
    END LOOP;
    UPDATE master.nodes SET revision=revision+1,body=body||jsonb_build_object('state','superseded','splitChildren',c->'children') WHERE id=target;
   ELSIF op='dependencies' THEN
@@ -137,7 +144,7 @@ BEGIN
    IF old.kind<>'baseline' OR old.body->>'state'<>'proposed' THEN RAISE EXCEPTION 'approved baseline scope immutable'; END IF;
    DELETE FROM master.scope WHERE baseline_id=target;
    FOR scope_entry IN SELECT * FROM jsonb_array_elements(c->'scope') LOOP
-    IF NOT EXISTS(SELECT 1 FROM master.nodes w WHERE w.id=scope_entry->>'workId' AND w.kind='work' AND w.body->'criteria' @> jsonb_build_array(jsonb_build_object('id',scope_entry->>'criterionId')))
+    IF NOT EXISTS(SELECT 1 FROM master.nodes w JOIN master.nodes m ON m.id=w.parent JOIN master.nodes ph ON ph.id=m.parent JOIN master.nodes wb ON wb.id=ph.parent JOIN master.nodes bl ON bl.id=target WHERE wb.parent=bl.parent AND w.id=scope_entry->>'workId' AND w.kind='work' AND w.body->'criteria' @> jsonb_build_array(jsonb_build_object('id',scope_entry->>'criterionId')))
       THEN RAISE EXCEPTION 'unknown scope criterion'; END IF;
     INSERT INTO master.scope VALUES(target,scope_entry->>'criterionId',scope_entry->>'workId');
    END LOOP;
