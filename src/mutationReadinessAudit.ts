@@ -1,5 +1,6 @@
 import fs from "node:fs/promises";
 import path from "node:path";
+import { createHash } from "node:crypto";
 import { writeJsonArtifact, writeTextArtifact } from "./artifacts.js";
 import { projectDir, slugifyProject } from "./paths.js";
 import type { MutationReadinessAudit, MutationReadinessPlan } from "./types.js";
@@ -72,7 +73,8 @@ async function auditPlan(
   const evidenceRefs = Array.from(new Set([...plan.authEvidenceRefs, ...plan.evidenceRefs]));
 
   // A plan whose approval was later rejected or expired is closed: retired, not a pending blocker.
-  const decided = await currentApprovalStatus(vaultRoot, project, plan.approvalRef);
+  const currentApproval = await currentApprovalRecord(vaultRoot, project, plan.approvalRef);
+  const decided = currentApproval?.status;
   if (decided === "rejected" || decided === "expired") {
     return {
       planId: plan.id,
@@ -85,6 +87,9 @@ async function auditPlan(
     };
   }
 
+  if (!plan.approvalSha256 || currentApproval?.sha256 !== plan.approvalSha256) {
+    blockers.push("current approval record digest is missing or changed");
+  }
   if (decided !== "approved") {
     blockers.push(`current approval record is ${decided ?? "missing"}`);
   }
@@ -138,17 +143,16 @@ async function auditPlan(
   };
 }
 
-async function currentApprovalStatus(
+async function currentApprovalRecord(
   vaultRoot: string,
   project: string,
   approvalRef: string | undefined
-): Promise<string | undefined> {
+): Promise<{ status?: string; sha256: string } | undefined> {
   if (!approvalRef || !/^approval-[A-Za-z0-9T:.-]+$/.test(approvalRef)) return undefined;
   try {
-    const record = JSON.parse(
-      await fs.readFile(path.join(projectDir(vaultRoot, project), "control", "approvals", `${approvalRef}.json`), "utf8")
-    ) as { status?: unknown };
-    return typeof record.status === "string" ? record.status : undefined;
+    const raw = await fs.readFile(path.join(projectDir(vaultRoot, project), "control", "approvals", `${approvalRef}.json`));
+    const record = JSON.parse(raw.toString("utf8")) as { status?: unknown };
+    return { status: typeof record.status === "string" ? record.status : undefined, sha256: createHash("sha256").update(raw).digest("hex") };
   } catch {
     return undefined;
   }

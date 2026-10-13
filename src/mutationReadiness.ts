@@ -1,5 +1,6 @@
 import fs from "node:fs/promises";
 import path from "node:path";
+import { createHash } from "node:crypto";
 import { timestampFile, writeJsonArtifact, writeTextArtifact } from "./artifacts.js";
 import { projectDir, slugifyProject } from "./paths.js";
 import type { ApprovalRecord, MutationReadinessPlan } from "./types.js";
@@ -21,7 +22,8 @@ export async function planMutationReadiness(input: {
 }): Promise<{ jsonPath: string; markdownPath: string; plan: MutationReadinessPlan }> {
   const project = slugifyProject(input.project);
   const generatedAt = new Date();
-  const approval = input.approvalRef ? await readApproval(input.vaultRoot, project, input.approvalRef) : undefined;
+  const loadedApproval = input.approvalRef ? await readApproval(input.vaultRoot, project, input.approvalRef) : undefined;
+  const approval = loadedApproval?.record;
   const matchingApproval = approval?.target === input.target ? approval : undefined;
   await assertEvidenceFilesExist(input.vaultRoot, project, input.authEvidenceRefs, "auth evidence");
   const plan: MutationReadinessPlan = {
@@ -35,6 +37,7 @@ export async function planMutationReadiness(input: {
     scope: input.scope,
     approvalRef: matchingApproval?.id,
     approvalStatus: matchingApproval?.status,
+    approvalSha256: matchingApproval ? loadedApproval?.sha256 : undefined,
     authEvidenceRefs: input.authEvidenceRefs,
     evidenceRefs: input.evidenceRefs,
     dryRunCommand: input.dryRunCommand,
@@ -72,15 +75,16 @@ export function mutationTargetOption(value: string): MutationReadinessPlan["targ
   throw new Error("--target must be github, deployment, hermes-cron, openscorpion, gsd2, notebooklm, or generic.");
 }
 
-async function readApproval(vaultRoot: string, project: string, approval: string): Promise<ApprovalRecord> {
+async function readApproval(vaultRoot: string, project: string, approval: string): Promise<{ record: ApprovalRecord; sha256: string }> {
   const approvalPath = approval.endsWith(".json")
     ? path.resolve(approval)
     : path.join(projectDir(vaultRoot, project), "control", "approvals", `${approval}.json`);
-  const record = JSON.parse(await fs.readFile(approvalPath, "utf8")) as ApprovalRecord;
+  const raw = await fs.readFile(approvalPath);
+  const record = JSON.parse(raw.toString("utf8")) as ApprovalRecord;
   if (record.project !== project) {
     throw new Error(`Approval ${record.id} belongs to ${record.project}, not ${project}.`);
   }
-  return record;
+  return { record, sha256: createHash("sha256").update(raw).digest("hex") };
 }
 
 function readinessStatus(approval: ApprovalRecord | undefined): MutationReadinessPlan["status"] {
@@ -167,6 +171,7 @@ function renderPlan(plan: MutationReadinessPlan): string {
     `Generated: ${plan.generatedAt}`,
     `Execute: ${plan.execute}`,
     plan.approvalRef ? `Approval: ${plan.approvalRef} (${plan.approvalStatus ?? "unknown"})` : "Approval: missing",
+    plan.approvalSha256 ? `Approval record SHA-256: ${plan.approvalSha256}` : "Approval record SHA-256: missing",
     "",
     "## Scope",
     "",

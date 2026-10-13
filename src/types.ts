@@ -386,6 +386,7 @@ export interface MutationReadinessPlan {
   risk: "low" | "medium" | "high";
   scope: string;
   approvalRef?: string;
+  approvalSha256?: string;
   approvalStatus?: ApprovalRecord["status"];
   authEvidenceRefs: string[];
   evidenceRefs: string[];

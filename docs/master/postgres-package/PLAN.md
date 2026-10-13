@@ -46,3 +46,14 @@ be reconstructed from reviewed setup. Restore-as-owner is suitable for isolated
 verification, not a production grant/owner migration. Retention, failure alerting,
 off-host encrypted copy and better-than-daily RPO are cutover prerequisites.
 Only static checks were run in Phase 0; do not run this package now.
+
+Historical provisioning package only; the FIX ONLY / FREEZE assignment does not
+invoke it. A fresh isolated package needs `prepare.sh <exact-reviewed-head>` to
+record every script/helper/unit/plan input and HEAD_SHA. No manifest regeneration
+is allowed after an approval or plan exists. Approval action must be exactly
+`Master PostgreSQL provision: <head>; manifest <source-manifest-sha256>`, recorded
+separately by the operator in the package-local canonical vault. Other deployment
+approvals cannot authorize provisioning. Dry-run, live and post-verification plan
+commands embed the literal reviewed manifest digest and verify it plus every
+package input before any script is invoked. Never run this provisioning flow over
+an existing native cluster; its dry-run rejects that state.
