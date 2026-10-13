@@ -1,0 +1,31 @@
+{
+  "schemaVersion": 1,
+  "id": "mutation-readiness-deployment-2026-10-13T06-20-47-965Z",
+  "project": "ariadne",
+  "generatedAt": "2026-10-13T06:20:47.965Z",
+  "target": "deployment",
+  "status": "ready_for_bounded_review",
+  "risk": "medium",
+  "scope": "proxmox/codex-dev: Append codex-dev id_ed25519_lab.pub to claude-dev authorized_keys (done from JW-MBP with backup); verify codex-dev->claude-dev SSH with pinned host key",
+  "approvalRef": "approval-2026-10-13T06-20-41-561Z",
+  "approvalStatus": "approved",
+  "authEvidenceRefs": [
+    "control/approvals/approval-2026-10-13T06-20-41-561Z.json"
+  ],
+  "evidenceRefs": [],
+  "dryRunCommand": "bash /home/james/ariadne-run/claude-dev-key/dryrun.sh",
+  "proposedLiveCommand": "bash /home/james/ariadne-run/claude-dev-key/apply.sh",
+  "postVerificationCommand": "bash /home/james/ariadne-run/claude-dev-key/verify.sh",
+  "rollback": "proxmox/codex-dev: codex-dev: bash /home/james/ariadne-run/claude-dev-key/rollback.sh",
+  "requiredGates": [
+    "bounded scope recorded",
+    "auth evidence reviewed",
+    "dry-run command reviewed",
+    "rollback command reviewed",
+    "human approval record approved",
+    "CodeRabbit or human review approval",
+    "post-action verification command defined",
+    "deployment target and rollback host verified"
+  ],
+  "execute": false
+}

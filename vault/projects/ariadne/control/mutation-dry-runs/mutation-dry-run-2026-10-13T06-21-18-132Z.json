@@ -1,0 +1,18 @@
+{
+  "schemaVersion": 1,
+  "id": "mutation-dry-run-2026-10-13T06-21-18-132Z",
+  "project": "ariadne",
+  "planId": "mutation-readiness-deployment-2026-10-13T06-21-11-965Z",
+  "target": "deployment",
+  "startedAt": "2026-10-13T06:21:18.132Z",
+  "finishedAt": "2026-10-13T06:21:18.780Z",
+  "status": "passed",
+  "command": "bash /home/james/ariadne-run/bridge-retire/dryrun.sh",
+  "exitCode": 0,
+  "bufferExceeded": false,
+  "durationMs": 648,
+  "stdout": "pinned claude-dev key: ssh-ed25519\nclaude-dev collector present\nM5 collector present\ncollector compiles\nactive\n",
+  "stderr": "",
+  "auditRef": "projects/ariadne/control/mutation-readiness-audit.json",
+  "execute": false
+}

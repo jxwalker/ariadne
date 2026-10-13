@@ -1,0 +1,17 @@
+{
+  "schemaVersion": 1,
+  "id": "approval-2026-10-13T07-14-52-343Z",
+  "project": "ariadne",
+  "requestedAt": "2026-10-13T07:14:52.343Z",
+  "requestedBy": "ariadne-bot",
+  "target": "deployment",
+  "action": "deploy-360ef0b-ops",
+  "risk": "high",
+  "status": "approved",
+  "reason": "Deploy PR #163 (360ef0b): collector connectivity, private alerts, event-driven freshness, encrypted backups/retention tooling (keep-all default)",
+  "rollback": "bash /home/james/ariadne-run/ops-deploy/rollback.sh",
+  "evidenceRefs": [],
+  "decidedAt": "2026-10-13T07:14:54.667Z",
+  "decisionBy": "james",
+  "decisionNotes": "James approved 12 Oct 21:58 BST: do everything you can without needing the test"
+}

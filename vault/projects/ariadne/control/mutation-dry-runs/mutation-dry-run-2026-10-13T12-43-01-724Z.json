@@ -1,0 +1,18 @@
+{
+  "schemaVersion": 1,
+  "id": "mutation-dry-run-2026-10-13T12-43-01-724Z",
+  "project": "ariadne",
+  "planId": "mutation-readiness-deployment-2026-10-13T12-42-57-851Z",
+  "target": "deployment",
+  "startedAt": "2026-10-13T12:43:01.724Z",
+  "finishedAt": "2026-10-13T12:43:01.783Z",
+  "status": "passed",
+  "command": "bash /home/james/ariadne-run/names-nobox/dryrun.sh",
+  "exitCode": 0,
+  "bufferExceeded": false,
+  "durationMs": 59,
+  "stdout": "{'box-scorpion-build-bot': ('Scorpion Build Bot (box)', 'Scorpion Build Bot'), 'box-scorpion-verifier': ('Scorpion Verifier (box)', 'Scorpion Verifier'), 'box-patent-studio-ui-bot': ('Patent Studio UI Bot (box)', 'Patent Studio UI Bot'), 'box-ariadne-bot': ('Ariadne Bot (box)', 'Ariadne Bot')}\n",
+  "stderr": "",
+  "auditRef": "projects/ariadne/control/mutation-readiness-audit.json",
+  "execute": false
+}

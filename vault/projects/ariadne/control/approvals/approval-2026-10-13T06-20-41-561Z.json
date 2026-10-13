@@ -1,0 +1,17 @@
+{
+  "schemaVersion": 1,
+  "id": "approval-2026-10-13T06-20-41-561Z",
+  "project": "ariadne",
+  "requestedAt": "2026-10-13T06:20:41.561Z",
+  "requestedBy": "ariadne-bot",
+  "target": "deployment",
+  "action": "claude-dev: authorize codex-dev lab key (append-only) for VM-side remote collection",
+  "risk": "high",
+  "status": "approved",
+  "reason": "James chat 2026-10-12 21:58 BST: do everything you can without needing the test",
+  "rollback": "bash /home/james/ariadne-run/claude-dev-key/rollback.sh",
+  "evidenceRefs": [],
+  "decidedAt": "2026-10-13T06:20:44.685Z",
+  "decisionBy": "james",
+  "decisionNotes": "Recorded by Ariadne Bot from James chat 21:58 BST 2026-10-12 (do everything you can without needing the test); Tailscale check approved 07:20 BST 13 Oct."
+}

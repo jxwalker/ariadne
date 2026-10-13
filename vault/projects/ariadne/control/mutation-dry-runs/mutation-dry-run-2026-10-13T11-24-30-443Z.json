@@ -1,0 +1,18 @@
+{
+  "schemaVersion": 1,
+  "id": "mutation-dry-run-2026-10-13T11-24-30-443Z",
+  "project": "ariadne",
+  "planId": "mutation-readiness-deployment-2026-10-13T11-24-26-641Z",
+  "target": "deployment",
+  "startedAt": "2026-10-13T11:24:30.443Z",
+  "finishedAt": "2026-10-13T11:24:30.669Z",
+  "status": "passed",
+  "command": "bash /home/james/ariadne-run/names-display/dryrun.sh",
+  "exitCode": 0,
+  "bufferExceeded": false,
+  "durationMs": 226,
+  "stdout": "dry-ok\n",
+  "stderr": "",
+  "auditRef": "projects/ariadne/control/mutation-readiness-audit.json",
+  "execute": false
+}

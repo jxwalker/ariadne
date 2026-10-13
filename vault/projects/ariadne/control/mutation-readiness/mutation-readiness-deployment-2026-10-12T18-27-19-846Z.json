@@ -1,0 +1,31 @@
+{
+  "schemaVersion": 1,
+  "id": "mutation-readiness-deployment-2026-10-12T18-27-19-846Z",
+  "project": "ariadne",
+  "generatedAt": "2026-10-12T18:27:19.846Z",
+  "target": "deployment",
+  "status": "ready_for_bounded_review",
+  "risk": "medium",
+  "scope": "proxmox/codex-dev: Back up release; install activity_controls.py from feadc20; restart ariadne-activity",
+  "approvalRef": "approval-2026-10-12T18-27-15-222Z",
+  "approvalStatus": "approved",
+  "authEvidenceRefs": [
+    "control/approvals/approval-2026-10-12T18-27-15-222Z.json"
+  ],
+  "evidenceRefs": [],
+  "dryRunCommand": "bash /home/james/ariadne-run/controls-closed/dryrun.sh",
+  "proposedLiveCommand": "bash /home/james/ariadne-run/controls-closed/apply.sh",
+  "postVerificationCommand": "bash /home/james/ariadne-run/controls-closed/verify.sh",
+  "rollback": "proxmox/codex-dev: codex-dev: bash /home/james/ariadne-run/controls-closed/rollback.sh",
+  "requiredGates": [
+    "bounded scope recorded",
+    "auth evidence reviewed",
+    "dry-run command reviewed",
+    "rollback command reviewed",
+    "human approval record approved",
+    "CodeRabbit or human review approval",
+    "post-action verification command defined",
+    "deployment target and rollback host verified"
+  ],
+  "execute": false
+}

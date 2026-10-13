@@ -1,0 +1,31 @@
+{
+  "schemaVersion": 1,
+  "id": "mutation-readiness-deployment-2026-10-13T10-49-55-196Z",
+  "project": "ariadne",
+  "generatedAt": "2026-10-13T10:49:55.196Z",
+  "target": "deployment",
+  "status": "ready_for_bounded_review",
+  "risk": "medium",
+  "scope": "proxmox/codex-dev: codex-dev ariadne sources.json: add box-scorpion-build-bot, box-scorpion-verifier, box-patent-studio-ui-bot, box-ariadne-bot",
+  "approvalRef": "approval-2026-10-13T10-49-49-447Z",
+  "approvalStatus": "approved",
+  "authEvidenceRefs": [
+    "control/approvals/approval-2026-10-13T10-49-49-447Z.json"
+  ],
+  "evidenceRefs": [],
+  "dryRunCommand": "bash /home/james/ariadne-run/enrol-bots/dryrun.sh",
+  "proposedLiveCommand": "bash /home/james/ariadne-run/enrol-bots/apply.sh",
+  "postVerificationCommand": "bash /home/james/ariadne-run/enrol-bots/verify.sh",
+  "rollback": "proxmox/codex-dev: codex-dev: bash /home/james/ariadne-run/enrol-bots/rollback.sh",
+  "requiredGates": [
+    "bounded scope recorded",
+    "auth evidence reviewed",
+    "dry-run command reviewed",
+    "rollback command reviewed",
+    "human approval record approved",
+    "CodeRabbit or human review approval",
+    "post-action verification command defined",
+    "deployment target and rollback host verified"
+  ],
+  "execute": false
+}

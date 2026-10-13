@@ -1,0 +1,17 @@
+{
+  "schemaVersion": 1,
+  "id": "approval-2026-10-13T12-42-53-993Z",
+  "project": "ariadne",
+  "requestedAt": "2026-10-13T12:42:53.993Z",
+  "requestedBy": "ariadne-bot",
+  "target": "deployment",
+  "action": "drop-box-display-names",
+  "risk": "high",
+  "status": "approved",
+  "reason": "Drop (box) suffix from the four enrolled bot displayName values",
+  "rollback": "bash /home/james/ariadne-run/names-nobox/rollback.sh",
+  "evidenceRefs": [],
+  "decidedAt": "2026-10-13T12:42:55.925Z",
+  "decisionBy": "james",
+  "decisionNotes": "James approved in chat 13:42 BST 13 Oct: drop the box names commit, push merge everything"
+}
