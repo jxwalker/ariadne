@@ -174,6 +174,8 @@ class ActivityTests(unittest.TestCase):
         self.assertEqual(runs['enrolled']['note'],'Tests passing; opening PR next');self.assertIsNone(runs['enrolled']['blocker'])
         self.assertEqual(runs['blocked']['blocker'],'Waiting on CI runner');self.assertIsNone(runs['blocked']['note'])
         self.assertEqual(runs['enrolled']['claim'],'agent-reported');self.assertIn('github',runs['enrolled'])
+        named=project(self.store,{'test':{'displayTaskMetadata':True,'displayName':'Ariadne Bot (box)'}},'24h')
+        self.assertTrue(all(r['sourceName']=='Ariadne Bot (box)' and r['title'] for r in named['runs']))
         snap=project(self.store,{'test':{'displayTaskMetadata':True,'provenance':'read-only local snapshot'}},'24h')
         self.assertTrue(all('title' not in r for r in snap['runs']))
         xss=project(self.store,{'test':{'displayTaskMetadata':True}},'24h')
