@@ -35,7 +35,9 @@ done
 pg_isready -q -d postgres
 psql -X -v ON_ERROR_STOP=1 -d postgres <<'SQL'
 CREATE ROLE ariadne_master LOGIN NOSUPERUSER NOCREATEDB NOCREATEROLE NOREPLICATION;
-CREATE DATABASE ariadne_master OWNER ariadne_master;
+CREATE DATABASE ariadne_master OWNER james;
+REVOKE ALL ON DATABASE ariadne_master FROM PUBLIC;
+GRANT CONNECT ON DATABASE ariadne_master TO ariadne_master;
 REVOKE ALL ON DATABASE ariadne_master FROM PUBLIC;
 SQL
 # LOGIN has no password yet: TCP application access remains fail-closed.

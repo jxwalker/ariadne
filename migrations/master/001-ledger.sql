@@ -16,12 +16,15 @@ CREATE TABLE master.scope(baseline_id text NOT NULL REFERENCES master.nodes(id),
  work_id text NOT NULL REFERENCES master.nodes(id), PRIMARY KEY(baseline_id,criterion_id));
 CREATE TABLE master.accepted(work_id text NOT NULL REFERENCES master.nodes(id), criterion_id text NOT NULL,
  evidence_id text REFERENCES master.evidence(id), command_id text NOT NULL, PRIMARY KEY(work_id,criterion_id), UNIQUE(criterion_id));
+CREATE TABLE master.acceptance_evidence(work_id text NOT NULL REFERENCES master.nodes(id), criterion_id text NOT NULL, kind text NOT NULL, evidence_id text NOT NULL REFERENCES master.evidence(id), command_id text NOT NULL, PRIMARY KEY(work_id,criterion_id,kind));
 CREATE TABLE master.commands(id text PRIMARY KEY, actor text NOT NULL, payload jsonb NOT NULL, result jsonb NOT NULL, at timestamptz NOT NULL DEFAULT now());
 CREATE TABLE master.journal(sequence bigint GENERATED ALWAYS AS IDENTITY PRIMARY KEY, command_id text NOT NULL,
  actor text NOT NULL, target text NOT NULL, before_state jsonb, after_state jsonb, result jsonb NOT NULL, at timestamptz NOT NULL DEFAULT now());
 CREATE TABLE master.outbox(sequence bigint GENERATED ALWAYS AS IDENTITY PRIMARY KEY, command_id text NOT NULL UNIQUE,
  body jsonb NOT NULL, at timestamptz NOT NULL DEFAULT now());
 CREATE FUNCTION master.immutable() RETURNS trigger LANGUAGE plpgsql AS $$ BEGIN RAISE EXCEPTION 'append-only'; END $$;
+CREATE TRIGGER accepted_immutable BEFORE UPDATE OR DELETE ON master.accepted FOR EACH ROW EXECUTE FUNCTION master.immutable();
+CREATE TRIGGER acceptance_evidence_immutable BEFORE UPDATE OR DELETE ON master.acceptance_evidence FOR EACH ROW EXECUTE FUNCTION master.immutable();
 CREATE TRIGGER journal_immutable BEFORE UPDATE OR DELETE ON master.journal FOR EACH ROW EXECUTE FUNCTION master.immutable();
 CREATE TRIGGER command_immutable BEFORE UPDATE OR DELETE ON master.commands FOR EACH ROW EXECUTE FUNCTION master.immutable();
 CREATE TRIGGER import_immutable BEFORE UPDATE OR DELETE ON master.imports FOR EACH ROW EXECUTE FUNCTION master.immutable();
@@ -124,7 +127,7 @@ BEGIN
    IF old.body->>'state' IN ('accepted','cancelled','superseded') THEN RAISE EXCEPTION 'terminal work'; END IF;
    IF c->>'state' IN ('ready','active','verification') THEN
     IF master.blockers(target)<>'[]'::jsonb THEN RAISE EXCEPTION 'dependencies unresolved or unaccepted'; END IF;
-    IF NOT EXISTS(SELECT 1 FROM master.scope s JOIN master.nodes bl ON bl.id=s.baseline_id WHERE bl.body->>'state'='approved' AND old.body->'criteria' @> jsonb_build_array(jsonb_build_object('id',s.criterion_id))) THEN RAISE EXCEPTION 'scope not approved'; END IF;
+    IF NOT EXISTS(SELECT 1 FROM master.nodes bl WHERE bl.kind='baseline' AND bl.body->>'state'='approved' AND NOT EXISTS(SELECT 1 FROM jsonb_array_elements(old.body->'criteria') criterion WHERE NOT EXISTS(SELECT 1 FROM master.scope s WHERE s.baseline_id=bl.id AND s.criterion_id=criterion->>'id'))) THEN RAISE EXCEPTION 'scope not approved'; END IF;
    END IF;
    IF c->>'state'='active' AND old.body->>'state'<>'ready' OR c->>'state'='verification' AND old.body->>'state'<>'active' THEN RAISE EXCEPTION 'invalid lifecycle order'; END IF;
    b:=old.body||jsonb_build_object('state',c->>'state');
@@ -150,7 +153,7 @@ BEGIN
    UPDATE master.nodes SET revision=revision+1 WHERE id=target;
   ELSIF op IN ('accept','override') THEN
    IF old.kind<>'work' OR old.body->>'state'<>'verification' OR master.blockers(target)<>'[]'::jsonb THEN RAISE EXCEPTION 'not eligible for acceptance'; END IF;
-   IF NOT EXISTS(SELECT 1 FROM master.scope s JOIN master.nodes bl ON bl.id=s.baseline_id WHERE bl.body->>'state'='approved' AND old.body->'criteria' @> jsonb_build_array(jsonb_build_object('id',s.criterion_id))) THEN RAISE EXCEPTION 'scope not approved'; END IF;
+   IF NOT EXISTS(SELECT 1 FROM master.nodes bl WHERE bl.kind='baseline' AND bl.body->>'state'='approved' AND NOT EXISTS(SELECT 1 FROM jsonb_array_elements(old.body->'criteria') criterion WHERE NOT EXISTS(SELECT 1 FROM master.scope s WHERE s.baseline_id=bl.id AND s.criterion_id=criterion->>'id'))) THEN RAISE EXCEPTION 'scope not approved'; END IF;
    SELECT body INTO b FROM master.nodes WHERE id=old.body->>'policy' AND kind='policy';
    FOR criterion IN SELECT * FROM jsonb_array_elements(old.body->'criteria') LOOP
     FOR dep IN SELECT jsonb_array_elements_text(b->'requiredKinds') LOOP
@@ -163,6 +166,7 @@ BEGIN
       AND (ev.body->>'observedAt')::timestamptz >= now()-make_interval(secs=>(b->>'maxAgeSeconds')::integer)
       ORDER BY ev.recorded_at DESC LIMIT 1;
      IF NOT FOUND AND op='accept' THEN RAISE EXCEPTION 'missing stale unrelated or synthetic required evidence: % %',criterion->>'id',dep; END IF;
+     IF FOUND THEN INSERT INTO master.acceptance_evidence VALUES(target,criterion->>'id',dep,e.id,cid); END IF;
     END LOOP;
     IF op='override' AND (c->>'risk' IS NULL OR (c->>'expiresAt')::timestamptz <= now() OR c->>'expiresAt' IS NULL OR NOT (c->'waivedCriteria' ? (criterion->>'id'))) THEN RAISE EXCEPTION 'override requires explicit criteria risk expiry'; END IF;
     INSERT INTO master.accepted VALUES(target,criterion->>'id',CASE WHEN op='accept' THEN e.id END,cid);
@@ -206,6 +210,7 @@ CREATE FUNCTION master.snapshot() RETURNS jsonb LANGUAGE sql STABLE SECURITY DEF
  'scope',coalesce((SELECT jsonb_agg(s) FROM master.scope s),'[]'),
  'progress',coalesce((SELECT jsonb_agg(p) FROM master.progress p),'[]'),
  'accepted',coalesce((SELECT jsonb_agg(a) FROM master.accepted a),'[]'),
+ 'acceptanceEvidence',coalesce((SELECT jsonb_agg(a) FROM master.acceptance_evidence a),'[]'),
  'evidence',coalesce((SELECT jsonb_agg(e) FROM master.evidence e),'[]'),
  'imports',coalesce((SELECT jsonb_agg(i) FROM master.imports i),'[]'),
  'history',coalesce((SELECT jsonb_agg(j ORDER BY sequence) FROM master.journal j),'[]'));

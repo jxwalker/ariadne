@@ -15,6 +15,10 @@ cp -a "$PGROOT/data/pg_hba.conf" "$PGROOT/data/pg_ident.conf" "$B/"
 printf '%s\n' "$B" > "$PKG/last-backup"
 psql -X -v ON_ERROR_STOP=1 -f "$PKG/stage/migrations/master/001-ledger.sql"
 psql -X -v ON_ERROR_STOP=1 <<'SQL'
+ALTER DATABASE ariadne_master OWNER TO james;
+REVOKE ALL ON DATABASE ariadne_master FROM PUBLIC, ariadne_master;
+GRANT CONNECT ON DATABASE ariadne_master TO ariadne_master;
+REVOKE ALL ON SCHEMA public FROM PUBLIC, ariadne_master;
 REVOKE ALL ON SCHEMA master FROM ariadne_master;
 GRANT USAGE ON SCHEMA master TO ariadne_master;
 GRANT EXECUTE ON FUNCTION master.command(text,jsonb),master.snapshot() TO ariadne_master;
@@ -28,8 +32,8 @@ hba.write_text('local ariadne_master ariadne_master peer map=ariadne_master\n'+h
 PY
 pg_ctl -D "$PGROOT/data" reload
 # Canonical runner delegates to the same SQL command API used in contracts.
-cd "$REPO"
-npm run -s ariadne -- ledger-command --project ariadne --file "$PKG/import-commands.json" > "$PKG/import-results.json"
+cd "$PKG/stage"
+node dist/src/ariadne.js ledger-command --project ariadne --file "$PKG/import-commands.json" > "$PKG/import-results.json"
 python3 - "$PKG/import-results.json" <<'PY'
 import json,pathlib,sys
 # npm -s emits only the runner JSON.

@@ -14,6 +14,8 @@ done
 [[ $(psql -XAt -c "SELECT count(*) FROM master.baselines WHERE body->>'state'='approved'") == 0 ]]
 [[ $(psql -XAt -c "SELECT count(*) FROM pg_hba_file_rules WHERE error IS NOT NULL") == 0 ]]
 [[ $(psql -XAt -c "SELECT count(*) FROM pg_authid WHERE rolname='ariadne_master' AND NOT rolsuper AND NOT rolcreatedb AND rolpassword IS NULL") == 1 ]]
+[[ $(psql -XAt -c "SELECT pg_get_userbyid(datdba) FROM pg_database WHERE datname='ariadne_master'") == james ]]
+if psql -X -U ariadne_master -c 'CREATE SCHEMA should_not_be_allowed;' >/dev/null 2>&1; then echo 'schema permission boundary failed';exit 1;fi
 if psql -X -U ariadne_master -c 'DELETE FROM master.journal;' >/dev/null 2>&1; then echo 'permission boundary failed';exit 1;fi
 ss -H -ltn > "$PKG/listeners.after"
 python3 - "$PKG" <<'PY'

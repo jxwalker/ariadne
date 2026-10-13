@@ -69,7 +69,8 @@ class LedgerContract(unittest.TestCase):
         self.assertTrue(any(r.get('error')=='revision conflict' for r in results))
 
     def test_application_role_transport(self):
-        self.sql("CREATE ROLE ariadne_master LOGIN; GRANT USAGE ON SCHEMA master TO ariadne_master; GRANT EXECUTE ON FUNCTION master.command(text,jsonb),master.snapshot() TO ariadne_master;",database='ledger_test',raw=True)
+        self.sql("CREATE ROLE ariadne_master LOGIN; REVOKE ALL ON DATABASE ledger_test FROM PUBLIC; GRANT CONNECT ON DATABASE ledger_test TO ariadne_master; REVOKE ALL ON SCHEMA public FROM PUBLIC; GRANT USAGE ON SCHEMA master TO ariadne_master; GRANT EXECUTE ON FUNCTION master.command(text,jsonb),master.snapshot() TO ariadne_master;",database='ledger_test',raw=True)
+        with self.assertRaises(AssertionError):self.sql('SET SESSION AUTHORIZATION ariadne_master; CREATE SCHEMA forbidden;',database='ledger_test',raw=True)
         with self.assertRaises(AssertionError):self.sql('SET SESSION AUTHORIZATION ariadne_master; DELETE FROM master.journal;',database='ledger_test',raw=True)
         with self.assertRaises(AssertionError):self.sql("SET SESSION AUTHORIZATION ariadne_master; SELECT master.command('agent:bot','{\"commandId\":\"transport-test\",\"target\":\"unknown\"}');",database='ledger_test',raw=True)
         result=self.sql('SET SESSION AUTHORIZATION ariadne_master; SELECT jsonb_typeof(master.snapshot());',database='ledger_test',raw=True)
@@ -97,6 +98,8 @@ class LedgerContract(unittest.TestCase):
         progress=self.sql("SELECT to_jsonb(p) FROM master.progress p WHERE baseline_id='%s';"%(p+'b'),database='ledger_test')
         self.assertEqual((progress['accepted_criteria'],progress['denominator']),(1,2))
         self.assertFalse(self.cmd('scope',p+'b',3,scope=[],scopeDiff={})['ok'])
+        linked=self.sql("SELECT to_jsonb(count(*)) FROM master.acceptance_evidence WHERE work_id='%s';"%w,database='ledger_test')
+        self.assertEqual(linked,2)
     def test_restart_backup_restore_history(self):
         p=self.fixture();self.ok('update',p+'w',1,patch={'nextAction':'persist this'})
         before=self.sql('SELECT master.snapshot();',database='ledger_test')
@@ -127,6 +130,14 @@ class LedgerContract(unittest.TestCase):
         self.ok('scope',p+'b2',1,scope=[{'workId':p+'s1','criterionId':p+'wc'},{'workId':p+'x','criterionId':p+'xc'},{'workId':p+'s2','criterionId':p+'wc2'}],scopeDiff={'split':w,'denominatorDelta':0})
         after=self.sql("SELECT to_jsonb(p) FROM master.progress p WHERE baseline_id='%s';"%(p+'b2'),database='ledger_test')
         self.assertEqual(before['denominator'],after['denominator'])
+
+    def test_partial_scope_cannot_ready_or_accept(self):
+        p=self.fixture(two_criteria=True);w=p+'w'
+        # Deliberately create a baseline covering only one of this work's outcomes.
+        self.sql("DELETE FROM master.scope WHERE baseline_id='%s' AND criterion_id='%s';"%(p+'b',p+'wc2'),database='ledger_test',raw=True)
+        self.assertFalse(self.cmd('transition',w,1,state='ready')['ok'])
+        self.sql("UPDATE master.nodes SET body=body||'{\"state\":\"verification\"}' WHERE id='%s';"%w,database='ledger_test',raw=True)
+        self.assertIn('scope not approved',self.cmd('accept',w,1)['error'])
 
     def test_append_only(self):
         with self.assertRaises(AssertionError):self.sql('DELETE FROM master.journal;',database='ledger_test')
