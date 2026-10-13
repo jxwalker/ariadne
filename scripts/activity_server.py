@@ -314,6 +314,15 @@ class Handler(BaseHTTPRequestHandler):
         if len(route.query)>2048: return self.reply(400,{'error':'query too long'})
         try: filters=parse_qs(route.query,max_num_fields=20)
         except ValueError:return self.reply(400,{'error':'too many query fields'})
+        if route.path in {'/roadmaps','/work','/api/master'}:
+            from master_dashboard import snapshot,render
+            try:
+                data=snapshot()
+                if route.path=='/api/master':return self.reply(200,data)
+                raw=render(data,route.path,filters).encode()
+                self.send_response(200);self.send_header('Content-Type','text/html; charset=utf-8');self.send_header('Content-Length',str(len(raw)));self.send_header('Cache-Control','no-store');self.send_header('X-Content-Type-Options','nosniff');self.send_header('Content-Security-Policy',"default-src 'none'; style-src 'unsafe-inline'; frame-ancestors 'none'");self.end_headers();self.wfile.write(raw);return
+            except (BrokenPipeError,ConnectionResetError):return
+            except Exception:return self.reply(503,{'error':'ledger unavailable'})
         if route.path in {'/api/activity','/api/insights','/api/runs','/api/sources','/api/controls','/api/alerts','/api/operating'}:
             from activity_insights import project,page_runs,sources_view
             try:
