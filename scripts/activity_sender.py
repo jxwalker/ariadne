@@ -64,8 +64,18 @@ def hook(c,data):
     if not session or not run: return
     enqueue(c,kind,run,c.get('taskId',session),summary={'Stop':'Response stopped; task completion unknown','PostToolUseFailure':'Tool error observed; task state remains independent'}.get(name,name),parent=session if name.startswith('Subagent') else None,session=session)
 
+def overrides(c,a):
+    """Per-task title, repository and later branch/SHA/PR association. The server still enforces source scope."""
+    c=dict(c)
+    if a.repository:
+        if a.repository not in c.get('repositories',[c['repository']]): raise ValueError('repository outside configured scope')
+        c['repository']=a.repository
+    for k in ('label','branch','commit','pr'):
+        if getattr(a,k) is not None: c[k]=getattr(a,k)
+    return c
+
 def main():
-    p=argparse.ArgumentParser(); p.add_argument('--config',required=True); p.add_argument('mode',choices=['hook','flush','worker','event','run']); p.add_argument('--kind',default='task.progress'); p.add_argument('--run-id'); p.add_argument('--task-id'); p.add_argument('--summary',default=''); argv=sys.argv[1:]; split=argv.index('--') if '--' in argv else len(argv); a=p.parse_args(argv[:split]); a.command=argv[split+1:]; c=config(a.config)
+    p=argparse.ArgumentParser(); p.add_argument('--config',required=True); p.add_argument('mode',choices=['hook','flush','worker','event','run']); p.add_argument('--kind',default='task.progress'); p.add_argument('--run-id'); p.add_argument('--task-id'); p.add_argument('--summary',default=''); [p.add_argument(f) for f in ('--label','--repository','--branch','--commit')]; p.add_argument('--pr',type=int); argv=sys.argv[1:]; split=argv.index('--') if '--' in argv else len(argv); a=p.parse_args(argv[:split]); a.command=argv[split+1:]; c=config(a.config); c=overrides(c,a)
     if a.mode=='hook':
         try: hook(c,json.loads(sys.stdin.read(65537)))
         except Exception: pass

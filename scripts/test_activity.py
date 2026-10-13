@@ -1,6 +1,6 @@
 import hashlib,hmac,json,pathlib,tempfile,time,unittest,threading,urllib.request,urllib.error
 from activity_server import App,Store,validate,dashboard,canonical,ThreadingHTTPServer,Handler
-from activity_sender import enqueue,hook,flush
+from activity_sender import enqueue,hook,flush,overrides
 from unittest.mock import patch
 import os
 
@@ -152,6 +152,13 @@ class ActivityTests(unittest.TestCase):
         self.assertEqual(page['total'],2);self.assertEqual(len(page['runs']),1)
         with self.assertRaises(ValueError):project(self.store,{},'all',100320)
         with self.assertRaises(ValueError):page_runs(d,{'page':['bad']})
+
+    def test_sender_overrides_respect_configured_repository_scope(self):
+        import argparse
+        c={'repository':'jxwalker/a','repositories':['jxwalker/a','jxwalker/b']}
+        a=argparse.Namespace(repository='jxwalker/b',label='Fix login',branch='x',commit=None,pr=12)
+        o=overrides(c,a);self.assertEqual((o['repository'],o['label'],o['branch'],o['pr']),('jxwalker/b','Fix login','x',12));self.assertNotIn('commit',o);self.assertEqual(c['repository'],'jxwalker/a')
+        with self.assertRaises(ValueError):overrides(c,argparse.Namespace(repository='jxwalker/c',label=None,branch=None,commit=None,pr=None))
 
     def test_enrolled_source_task_metadata_is_opt_in_and_separate(self):
         from activity_insights import project
