@@ -1,0 +1,775 @@
+{
+  "observed": "2026-10-13",
+  "commit": "cd002395ba92f5d8bb0d026e6b1dc9ff472bc4e1",
+  "truncated": false,
+  "paths": [
+    {
+      "path": ".planning/CANONICAL.md",
+      "blob_sha": "4e4d8ea818c0a1b9410b25c2b03d4d6d598bf9ba"
+    },
+    {
+      "path": ".planning/STATE.md",
+      "blob_sha": "c89e14aa621a61d5e799bc5aabfa5cf0edc08352"
+    },
+    {
+      "path": ".planning/archive/legacy-plans/MILESTONES.md",
+      "blob_sha": "19566e591b25706bf11343475d0dd29ae540db5f"
+    },
+    {
+      "path": ".planning/archive/legacy-plans/ROADMAP.md",
+      "blob_sha": "8dc19e935f74ac6a79217818f9f55cd04d5afdc1"
+    },
+    {
+      "path": ".planning/archive/milestones/AGENT-HANDOFF-PRD-SPEC.md",
+      "blob_sha": "ba0fb82b4b724544a4590ad5226bc1200723b317"
+    },
+    {
+      "path": ".planning/archive/milestones/DURABLE-AI-JOBS-CLEANUP.md",
+      "blob_sha": "74107401359e7b76a1732b2c90f35c596c24ae81"
+    },
+    {
+      "path": ".planning/archive/milestones/FILING-INVENTOR-READINESS.md",
+      "blob_sha": "451e8063c6c83bc49ad0e967449cbccb53677579"
+    },
+    {
+      "path": ".planning/archive/milestones/FORMAL-DRAWING-ROUTING.md",
+      "blob_sha": "57efcde62a495d356704a82d642b3f80c61c3ba3"
+    },
+    {
+      "path": ".planning/archive/milestones/FORMAL-PATENT-ARTIFACT-GUARDRAILS.md",
+      "blob_sha": "548039142bc743500846b7d1be81a89a28dc8b4a"
+    },
+    {
+      "path": ".planning/archive/milestones/IA-CONSOLIDATION-PROPOSAL.md",
+      "blob_sha": "c282e3974570d99a30f412c2feac8f6ffdafead7"
+    },
+    {
+      "path": ".planning/archive/milestones/MVP-UX-CONSOLIDATION-PR.md",
+      "blob_sha": "5ef6ec2faad53cbff7dcb70ad2fcd04c606b2cd1"
+    },
+    {
+      "path": ".planning/archive/milestones/NORTH-STAR-UI-IMPLEMENTATION-THROUGH-2026-08-05.md",
+      "blob_sha": "8b97a8b6161fef31e87ff4ae2e00db5998b1ff55"
+    },
+    {
+      "path": ".planning/archive/milestones/NOTEBOOK-SCOPED-SOURCES-PLAN.md",
+      "blob_sha": "6b958f644f755497ce77d00f0a28957c680fe206"
+    },
+    {
+      "path": ".planning/archive/milestones/REFINE-CLAIM-ANALYSIS-IA.md",
+      "blob_sha": "cda0dfffa4fd6878b5bd86fd1cb0b3cdd37f917f"
+    },
+    {
+      "path": ".planning/archive/milestones/UAT3-RESEARCH-LOOP-PLAN.md",
+      "blob_sha": "295e2800e9417616d98306f2e2365efca74056c4"
+    },
+    {
+      "path": ".planning/archive/milestones/UX-IA-FULL-REDUNDANCY-AUDIT.md",
+      "blob_sha": "513498291de152938b08bd139e58d7662fa432a5"
+    },
+    {
+      "path": ".planning/archive/milestones/UX-IA-REDUNDANCY-CLEANUP.md",
+      "blob_sha": "e7a07463f2be1914ed5d6f605344b1713a5838cf"
+    },
+    {
+      "path": ".planning/archive/milestones/UX-LIFECYCLE-RECOVERY.md",
+      "blob_sha": "ab931397f4fe6b904978b7f36f39a1e5635b4cee"
+    },
+    {
+      "path": ".planning/archive/milestones/UX-RELIABILITY-HARDENING-PLAN.md",
+      "blob_sha": "5e64c82592258f21905d29791dbbb10dc48b0496"
+    },
+    {
+      "path": ".planning/archive/milestones/UX-SPINE-CORRECTION-PASS.md",
+      "blob_sha": "7fcd6794b74d462f92b71e308e5effd8b4b38185"
+    },
+    {
+      "path": ".planning/archive/milestones/WHITE-PAPER-DIAGRAM-QUALITY.md",
+      "blob_sha": "060336cc3fe82b6928991ea79cde731ef1164434"
+    },
+    {
+      "path": ".planning/archive/milestones/v2.0-MILESTONE-AUDIT.md",
+      "blob_sha": "a9a93670d9eb6236e7f523537639fb58dace2bfa"
+    },
+    {
+      "path": ".planning/archive/milestones/v2.0-REQUIREMENTS.md",
+      "blob_sha": "13b79519126c9de45144849e0958f790abfe1dfb"
+    },
+    {
+      "path": ".planning/archive/milestones/v2.0-ROADMAP.md",
+      "blob_sha": "d1bf969ddad7cf5ca40338a9ff6bf5fdc8389fd0"
+    },
+    {
+      "path": ".planning/archive/milestones/v3.0-MILESTONE-AUDIT.md",
+      "blob_sha": "a854665a0c7f41f7301b2a0b52f439aee7be530a"
+    },
+    {
+      "path": ".planning/archive/milestones/v3.0-REQUIREMENTS.md",
+      "blob_sha": "ee0258bbff93b1b8570feaa79fde046c676047d9"
+    },
+    {
+      "path": ".planning/archive/milestones/v3.0-ROADMAP.md",
+      "blob_sha": "e876e64083cf1f40fcae38ec2397ee2a9239aa46"
+    },
+    {
+      "path": ".planning/archive/milestones/v3.1-MILESTONE-AUDIT.md",
+      "blob_sha": "b162943900019539abe8197781052ba652d4e7aa"
+    },
+    {
+      "path": ".planning/archive/milestones/v3.1-REQUIREMENTS.md",
+      "blob_sha": "55f2888d3e84a4715ad3b1c8fa5319e08fe80eef"
+    },
+    {
+      "path": ".planning/archive/milestones/v3.1-ROADMAP.md",
+      "blob_sha": "292be709fba3ac387674f366f919facb8e47909d"
+    },
+    {
+      "path": ".planning/archive/milestones/v3.1-phases/26-golden-output-fixtures-gate/26-01-PLAN.md",
+      "blob_sha": "cc07cf3fc3d13fb05c3db853a31f36dc1ff8ffa1"
+    },
+    {
+      "path": ".planning/archive/milestones/v3.1-phases/26-golden-output-fixtures-gate/26-01-SUMMARY.md",
+      "blob_sha": "ffa73aa300e4c3f7537ed27096f5b349621612fb"
+    },
+    {
+      "path": ".planning/archive/milestones/v3.1-phases/26-golden-output-fixtures-gate/26-02-PLAN.md",
+      "blob_sha": "892428beee9da766803ffd72e567ee1f3206cce8"
+    },
+    {
+      "path": ".planning/archive/milestones/v3.1-phases/26-golden-output-fixtures-gate/26-02-SUMMARY.md",
+      "blob_sha": "893f1c5a0723d7f1d62e01a49579e552d0bc2ae4"
+    },
+    {
+      "path": ".planning/archive/milestones/v3.1-phases/26-golden-output-fixtures-gate/26-03-PLAN.md",
+      "blob_sha": "922bc4fbc8a7bb6e1e074d7a16a2c46273a4f8a1"
+    },
+    {
+      "path": ".planning/archive/milestones/v3.1-phases/26-golden-output-fixtures-gate/26-03-SUMMARY.md",
+      "blob_sha": "5eb21105e74545ead9dcf95652abc0300042082c"
+    },
+    {
+      "path": ".planning/archive/milestones/v3.1-phases/26-golden-output-fixtures-gate/26-CONTEXT.md",
+      "blob_sha": "7959e1c4934ca593c04a3ca09880fb5e59e09326"
+    },
+    {
+      "path": ".planning/archive/milestones/v3.1-phases/26-golden-output-fixtures-gate/26-SUMMARY.md",
+      "blob_sha": "d25697712d78093a0c060cd1ef06047f80dcca20"
+    },
+    {
+      "path": ".planning/archive/milestones/v3.1-phases/27-model-catalog-function-registry-bindings-schema/27-01-PLAN.md",
+      "blob_sha": "b3ebdf574506f1591a05d5d7f23cb9d58cc99795"
+    },
+    {
+      "path": ".planning/archive/milestones/v3.1-phases/27-model-catalog-function-registry-bindings-schema/27-02-PLAN.md",
+      "blob_sha": "e61bf861db6ab001fb97109db2a84d0183fba61f"
+    },
+    {
+      "path": ".planning/archive/milestones/v3.1-phases/27-model-catalog-function-registry-bindings-schema/27-03-PLAN.md",
+      "blob_sha": "0e79e338cd7f13c977eb64efc27b42feef3c0b18"
+    },
+    {
+      "path": ".planning/archive/milestones/v3.1-phases/27-model-catalog-function-registry-bindings-schema/27-04-PLAN.md",
+      "blob_sha": "848eea8f465fae5019a4044568eaafdf21287b36"
+    },
+    {
+      "path": ".planning/archive/milestones/v3.1-phases/27-model-catalog-function-registry-bindings-schema/27-CONTEXT.md",
+      "blob_sha": "9e581fb989fc863668c0c735b0ca346151884f9f"
+    },
+    {
+      "path": ".planning/archive/milestones/v3.1-phases/27-model-catalog-function-registry-bindings-schema/27-SUMMARY.md",
+      "blob_sha": "7e8b062a06caae08612f8fa05be270c3659a88a2"
+    },
+    {
+      "path": ".planning/archive/milestones/v3.1-phases/28-resolver-capability-enforcement-and-rollback-flag/28-01-PLAN.md",
+      "blob_sha": "f8616013d78ac0822553f7ede67bf4521b03e2b2"
+    },
+    {
+      "path": ".planning/archive/milestones/v3.1-phases/28-resolver-capability-enforcement-and-rollback-flag/28-02-PLAN.md",
+      "blob_sha": "427c6e55a61f078decbf34727e9eed5701725ac4"
+    },
+    {
+      "path": ".planning/archive/milestones/v3.1-phases/28-resolver-capability-enforcement-and-rollback-flag/28-03-PLAN.md",
+      "blob_sha": "426590603d829d45745dc04bb98d2ab6752f7e6f"
+    },
+    {
+      "path": ".planning/archive/milestones/v3.1-phases/28-resolver-capability-enforcement-and-rollback-flag/28-04-PLAN.md",
+      "blob_sha": "b22e64d32dee82dde18661991198e6b1e5143049"
+    },
+    {
+      "path": ".planning/archive/milestones/v3.1-phases/28-resolver-capability-enforcement-and-rollback-flag/28-CONTEXT.md",
+      "blob_sha": "6dffa6938dd16f9e5bb6ab8a8679558a6b52687e"
+    },
+    {
+      "path": ".planning/archive/milestones/v3.1-phases/28-resolver-capability-enforcement-and-rollback-flag/28-SUMMARY.md",
+      "blob_sha": "ac396e3439da06a2dc9f2b12c08075c4802b0e8d"
+    },
+    {
+      "path": ".planning/archive/milestones/v3.1-phases/29-pilot-refactor-patent-reviewer-provider-adapters/29-01-PLAN.md",
+      "blob_sha": "474d8c15b2249a494541675cf5203e6e809fd62c"
+    },
+    {
+      "path": ".planning/archive/milestones/v3.1-phases/29-pilot-refactor-patent-reviewer-provider-adapters/29-02-PLAN.md",
+      "blob_sha": "fdc03bdbdf1ce1aa2eea6568114d89762c04e0ae"
+    },
+    {
+      "path": ".planning/archive/milestones/v3.1-phases/29-pilot-refactor-patent-reviewer-provider-adapters/29-03-PLAN.md",
+      "blob_sha": "e24e9438ca8e56f6f1de0787f9846aff31639134"
+    },
+    {
+      "path": ".planning/archive/milestones/v3.1-phases/29-pilot-refactor-patent-reviewer-provider-adapters/29-CONTEXT.md",
+      "blob_sha": "0a141b638d80bf2dfc4d074e67f438166995c89e"
+    },
+    {
+      "path": ".planning/archive/milestones/v3.1-phases/29-pilot-refactor-patent-reviewer-provider-adapters/29-SUMMARY.md",
+      "blob_sha": "b12e6d50ddf15c511a422c4f4d211187f24c6cc1"
+    },
+    {
+      "path": ".planning/archive/milestones/v3.1-phases/30-mechanical-refactor-audit-trail-and-key-rotation/30-01-PLAN.md",
+      "blob_sha": "93a88b08e190057b1986cba862e27efed9e451f4"
+    },
+    {
+      "path": ".planning/archive/milestones/v3.1-phases/30-mechanical-refactor-audit-trail-and-key-rotation/30-01-SUMMARY.md",
+      "blob_sha": "01d3630b9919b1c29c6aaeab3f2958c035482aab"
+    },
+    {
+      "path": ".planning/archive/milestones/v3.1-phases/30-mechanical-refactor-audit-trail-and-key-rotation/30-02-PLAN.md",
+      "blob_sha": "8fbe6dceb7d00c282e71fcbce3993c02be056412"
+    },
+    {
+      "path": ".planning/archive/milestones/v3.1-phases/30-mechanical-refactor-audit-trail-and-key-rotation/30-02-SUMMARY.md",
+      "blob_sha": "bc14d91aa6cf9c45438c5ac4488386ad4d1de55b"
+    },
+    {
+      "path": ".planning/archive/milestones/v3.1-phases/30-mechanical-refactor-audit-trail-and-key-rotation/30-03-PLAN.md",
+      "blob_sha": "625daff6715119ecba90b487d4b7d7b1af308909"
+    },
+    {
+      "path": ".planning/archive/milestones/v3.1-phases/30-mechanical-refactor-audit-trail-and-key-rotation/30-03-SUMMARY.md",
+      "blob_sha": "b22d9fabe14785e218fa14d723fdecca53c71b0b"
+    },
+    {
+      "path": ".planning/archive/milestones/v3.1-phases/30-mechanical-refactor-audit-trail-and-key-rotation/30-04-PLAN.md",
+      "blob_sha": "fcccca68f4e9cff1e294ca1a57d75796598830aa"
+    },
+    {
+      "path": ".planning/archive/milestones/v3.1-phases/30-mechanical-refactor-audit-trail-and-key-rotation/30-04-SUMMARY.md",
+      "blob_sha": "830443b81235c650d7ff8a9f982ce98c58c62663"
+    },
+    {
+      "path": ".planning/archive/milestones/v3.1-phases/30-mechanical-refactor-audit-trail-and-key-rotation/30-05-PLAN.md",
+      "blob_sha": "167f52a08a78a29de151e1e7329f2c395500ef35"
+    },
+    {
+      "path": ".planning/archive/milestones/v3.1-phases/30-mechanical-refactor-audit-trail-and-key-rotation/30-05-SUMMARY.md",
+      "blob_sha": "60f0c7b0fa99d335203dd5f106b5e807d4c6cedb"
+    },
+    {
+      "path": ".planning/archive/milestones/v3.1-phases/30-mechanical-refactor-audit-trail-and-key-rotation/30-06-PLAN.md",
+      "blob_sha": "d0870ec51c5d1524a45a0239387327713964900b"
+    },
+    {
+      "path": ".planning/archive/milestones/v3.1-phases/30-mechanical-refactor-audit-trail-and-key-rotation/30-06-SUMMARY.md",
+      "blob_sha": "cb0b01dedcd5a11e318d9e1e8c570e5585beddfe"
+    },
+    {
+      "path": ".planning/archive/milestones/v3.1-phases/30-mechanical-refactor-audit-trail-and-key-rotation/30-07-PLAN.md",
+      "blob_sha": "f462b78c137c1e4e3adfa828530188b5d480f8f4"
+    },
+    {
+      "path": ".planning/archive/milestones/v3.1-phases/30-mechanical-refactor-audit-trail-and-key-rotation/30-07-SUMMARY.md",
+      "blob_sha": "d0f27fab134df1e6a0769cd666f8769352a7b270"
+    },
+    {
+      "path": ".planning/archive/milestones/v3.1-phases/30-mechanical-refactor-audit-trail-and-key-rotation/30-08-PLAN.md",
+      "blob_sha": "e5e3bae22597417723d0c78a3b75940a27ccf567"
+    },
+    {
+      "path": ".planning/archive/milestones/v3.1-phases/30-mechanical-refactor-audit-trail-and-key-rotation/30-CONTEXT.md",
+      "blob_sha": "70103fa87ee3eb5924f0e79cda8ae3770d90f33d"
+    },
+    {
+      "path": ".planning/archive/milestones/v3.1-phases/30-mechanical-refactor-audit-trail-and-key-rotation/30-SUMMARY.md",
+      "blob_sha": "31d93cfbaa56901eb7a4e17dfe74f32084a7e613"
+    },
+    {
+      "path": ".planning/archive/milestones/v3.1-phases/31-ai-config-rest-api/31-01-PLAN.md",
+      "blob_sha": "c899e3574fd997b03afc3c08374574e3dd765474"
+    },
+    {
+      "path": ".planning/archive/milestones/v3.1-phases/31-ai-config-rest-api/31-02-PLAN.md",
+      "blob_sha": "236615e99b356a45092d92de6fb795e4d8303068"
+    },
+    {
+      "path": ".planning/archive/milestones/v3.1-phases/31-ai-config-rest-api/31-03-PLAN.md",
+      "blob_sha": "6ffe5035130f8d38043f0d657c0665b95b5050fc"
+    },
+    {
+      "path": ".planning/archive/milestones/v3.1-phases/31-ai-config-rest-api/31-CONTEXT.md",
+      "blob_sha": "3bf47e1158f0962d6e9726a69375ce1fd7038653"
+    },
+    {
+      "path": ".planning/archive/milestones/v3.1-phases/31-ai-config-rest-api/31-SUMMARY.md",
+      "blob_sha": "3308c6f0540c3108f55db6baf9ce5f9b06b317ff"
+    },
+    {
+      "path": ".planning/archive/milestones/v3.1-phases/32-settings-ai-ui-keys-models-tabs/32-01-PLAN.md",
+      "blob_sha": "8662785142dd3d065a3fbb044cec6b1e19450548"
+    },
+    {
+      "path": ".planning/archive/milestones/v3.1-phases/32-settings-ai-ui-keys-models-tabs/32-02-PLAN.md",
+      "blob_sha": "6200b5be7af7aac9b86254d957b23ff854283bcd"
+    },
+    {
+      "path": ".planning/archive/milestones/v3.1-phases/32-settings-ai-ui-keys-models-tabs/32-03-PLAN.md",
+      "blob_sha": "2e6e5f4b024e40b4ec886b33dff41d9873cef9f8"
+    },
+    {
+      "path": ".planning/archive/milestones/v3.1-phases/32-settings-ai-ui-keys-models-tabs/32-04-PLAN.md",
+      "blob_sha": "be311df81d53299c40ba81da42994b121f9c703f"
+    },
+    {
+      "path": ".planning/archive/milestones/v3.1-phases/32-settings-ai-ui-keys-models-tabs/32-CONTEXT.md",
+      "blob_sha": "548777323ea9bc1895f578956731ae3305fd71a6"
+    },
+    {
+      "path": ".planning/archive/milestones/v3.1-phases/32-settings-ai-ui-keys-models-tabs/32-SUMMARY.md",
+      "blob_sha": "4b327e06e16b0dc3e1c39d5176f17aa5b64716b6"
+    },
+    {
+      "path": ".planning/archive/milestones/v4.0-PROPOSAL.md",
+      "blob_sha": "5802b68094326cc905709553190cd6ee00c1b645"
+    },
+    {
+      "path": ".planning/archive/milestones/v5.0-PROPOSAL.md",
+      "blob_sha": "6c8004f572588c2a1ea15576947b08973c08bfe0"
+    },
+    {
+      "path": ".planning/archive/milestones/v5.0-THEME-F-DATA.md",
+      "blob_sha": "9ce0d9f5791605472597d259eda9f9601d7d2b0c"
+    },
+    {
+      "path": ".planning/archive/reference/mvp-milestones/MVP-COMPLETION-AUDIT.md",
+      "blob_sha": "0e94402200051df63392347a04d99815e15e6bcc"
+    },
+    {
+      "path": ".planning/archive/reference/mvp-milestones/MVP-RELEASE-EVIDENCE.md",
+      "blob_sha": "5eb5331109f6a360d582c096998450d5fe3f17fa"
+    },
+    {
+      "path": ".planning/archive/reference/mvp-milestones/MVP-TEST-STRATEGY.md",
+      "blob_sha": "7ae47d4a50dce7c96db086546b7619765eb64849"
+    },
+    {
+      "path": ".planning/archive/reference/mvp-milestones/RELEASABLE-MVP-GOALS.md",
+      "blob_sha": "d06cdfcb599faeaf93dd1976f1e6da8281302dbf"
+    },
+    {
+      "path": ".planning/milestones/NORTH-STAR-UI-IMPLEMENTATION.md",
+      "blob_sha": "b323176e7570636165de68c136c62461497d626d"
+    },
+    {
+      "path": ".planning/milestones/README.md",
+      "blob_sha": "b077dc9d0503ee92e08b7569c8c7906d400e2156"
+    },
+    {
+      "path": "docs/archive/delivery/1/prd.md",
+      "blob_sha": "9c49b9c08c4585484b3c2fdb3bf4b45bc503813e"
+    },
+    {
+      "path": "docs/archive/delivery/2/prd.md",
+      "blob_sha": "aa9f7fb9982eb98ab93ca4094366f25bd6929765"
+    },
+    {
+      "path": "docs/archive/delivery/3/prd.md",
+      "blob_sha": "620adbdae066ff42a2f22b23c500e600b40ff590"
+    },
+    {
+      "path": "docs/archive/delivery/4/prd.md",
+      "blob_sha": "b71f02b7ed2120c559fc72f2bb71bcf5602e00e4"
+    },
+    {
+      "path": "docs/archive/delivery/5/prd.md",
+      "blob_sha": "f4be28d12517cfdcce0161c1c1fe4efe0920e86a"
+    },
+    {
+      "path": "docs/archive/delivery/6/prd.md",
+      "blob_sha": "905f1f3a56653dda79571aa47858942bee0fde9a"
+    },
+    {
+      "path": "docs/archive/delivery/7/prd.md",
+      "blob_sha": "6d3b75459870485e67f9a68826dd64108256fdd6"
+    },
+    {
+      "path": "docs/archive/delivery/8/prd.md",
+      "blob_sha": "2d586e6b252bfc048ff7ae067103c405bb48caf8"
+    },
+    {
+      "path": "docs/archive/delivery/backlog.md",
+      "blob_sha": "6f0be59034e5408168cc0ca58280c5e70ab085a5"
+    },
+    {
+      "path": "docs/archive/handoff/2026-07-15-research-paper-mvp.md",
+      "blob_sha": "4b3d1a094149f7323d52925e07c73305c80e40cb"
+    },
+    {
+      "path": "docs/archive/handoff/2026-07-15-ux-audit-and-jobs.md",
+      "blob_sha": "a9cb5c0782f7b8fb852c7df9c90d9198fe62a19d"
+    },
+    {
+      "path": "docs/delivery/BRIEF-1/prd.md",
+      "blob_sha": "7cd9e015d47aa6d46c9d425f87babdbac40fcec1"
+    },
+    {
+      "path": "docs/delivery/BRIEF-2/prd.md",
+      "blob_sha": "181de0de3f7371f6917eb3fdf13c6a8f3de4794b"
+    },
+    {
+      "path": "docs/delivery/BRIEF-3/prd.md",
+      "blob_sha": "9277f35fde25230e80a1400a2dafbf5583ca3522"
+    },
+    {
+      "path": "docs/delivery/BRIEF-4/prd.md",
+      "blob_sha": "bcb9aeceb4864dc5e3f8b3c32052316532a9391e"
+    },
+    {
+      "path": "docs/delivery/BRIEF-5/prd.md",
+      "blob_sha": "cb5d1946e588f8d41563924a932bea65f321b818"
+    },
+    {
+      "path": "docs/delivery/BRIEF-6/prd.md",
+      "blob_sha": "49b0eda7acb6dfe278e7dad18caaa6f87a87062b"
+    },
+    {
+      "path": "docs/delivery/BRIEF-8/prd.md",
+      "blob_sha": "0cad540caee0e78dbd60f58029b6683e77c20a9d"
+    },
+    {
+      "path": "docs/delivery/CLR-0/prd.md",
+      "blob_sha": "3236663640a8a29d15cf53030143ddbca6a9e40a"
+    },
+    {
+      "path": "docs/delivery/CLR-1/prd.md",
+      "blob_sha": "5ff49d729018ebe569fdeb26a2015bf1cb3678e0"
+    },
+    {
+      "path": "docs/delivery/CLR-17/prd.md",
+      "blob_sha": "4488cfd33931c686bf76cde26b63b3ab2ae864c1"
+    },
+    {
+      "path": "docs/delivery/CLR-20/prd.md",
+      "blob_sha": "ab294c2d5a8dc2fa035dacbc2b855dacb840eb7b"
+    },
+    {
+      "path": "docs/delivery/CLR-23/prd.md",
+      "blob_sha": "fc12247fcec410415e55f5326fd742c30c17418f"
+    },
+    {
+      "path": "docs/delivery/CLR-34/prd.md",
+      "blob_sha": "82385e2820013891a4e81a174e15d431d370a6dd"
+    },
+    {
+      "path": "docs/delivery/CLR-35/prd.md",
+      "blob_sha": "e23dc35a8ba98bf29efbb3f76995a311c6f50c32"
+    },
+    {
+      "path": "docs/delivery/CLR-36/prd.md",
+      "blob_sha": "4f218659d033374e20b2d073afa002d271f6a505"
+    },
+    {
+      "path": "docs/delivery/CLR-37/prd.md",
+      "blob_sha": "8968500857756a6457e4b71344c00730b43e9887"
+    },
+    {
+      "path": "docs/delivery/CLR-38/prd.md",
+      "blob_sha": "6cc82476dd3c7491101b63f10f8e077f3ef2f403"
+    },
+    {
+      "path": "docs/delivery/CLR-39/prd.md",
+      "blob_sha": "a42ccc2a06a4e7f77c61448c8e142f3a6ecd8879"
+    },
+    {
+      "path": "docs/delivery/CLR-8/prd.md",
+      "blob_sha": "3caeccaef3f56c4a59a95d7c52c145df69f740b5"
+    },
+    {
+      "path": "docs/delivery/CLR/FANOUT.md",
+      "blob_sha": "325535a4c95bdd411d19bfb041136beb7be4b652"
+    },
+    {
+      "path": "docs/delivery/CLR/TEST_PLAN.md",
+      "blob_sha": "6d7c1cfb540c8b6b3720dc60b8d9c45b76184baa"
+    },
+    {
+      "path": "docs/delivery/CRAFT-1/prd.md",
+      "blob_sha": "7a82019b2a55c0b27751d2c4100170e611e978f2"
+    },
+    {
+      "path": "docs/delivery/CRAFT-10/prd.md",
+      "blob_sha": "6833a7b73eb54295302cfec8ff925e10448c8e20"
+    },
+    {
+      "path": "docs/delivery/CRAFT-11/prd.md",
+      "blob_sha": "409f8fc61d159b8370775476ff70c3c05fd9ce22"
+    },
+    {
+      "path": "docs/delivery/CRAFT-12/prd.md",
+      "blob_sha": "ebe5ea80bb53403212b4ded548f2140ccfd3a57e"
+    },
+    {
+      "path": "docs/delivery/CRAFT-13/prd.md",
+      "blob_sha": "886ae1c2f13f09f46634433357b6f38aa1177a18"
+    },
+    {
+      "path": "docs/delivery/CRAFT-14/prd.md",
+      "blob_sha": "b6f835e283755832a054c605d717610a3b84eb5e"
+    },
+    {
+      "path": "docs/delivery/CRAFT-15/prd.md",
+      "blob_sha": "ec3004276ed1080531876c4353848086c43185b7"
+    },
+    {
+      "path": "docs/delivery/CRAFT-16/prd.md",
+      "blob_sha": "4671c81ce8eaaa4ab85d690e82507279190bbad6"
+    },
+    {
+      "path": "docs/delivery/CRAFT-17/prd.md",
+      "blob_sha": "fabc7996423a04e66075765b8b41096c9c2a1262"
+    },
+    {
+      "path": "docs/delivery/CRAFT-18/prd.md",
+      "blob_sha": "94e7ce19cd5e99b0f7232a0b3110d476bf3ad865"
+    },
+    {
+      "path": "docs/delivery/CRAFT-19/prd.md",
+      "blob_sha": "928c62f824bd9a72447651fccc2eeb6e1d6a299a"
+    },
+    {
+      "path": "docs/delivery/CRAFT-2/prd.md",
+      "blob_sha": "639b8a1d7e2fc50ab6eaa35e4084e3fad02f15c6"
+    },
+    {
+      "path": "docs/delivery/CRAFT-3/prd.md",
+      "blob_sha": "c9a4f90815e38376e9b702a43ecdee8c0f6a6882"
+    },
+    {
+      "path": "docs/delivery/CRAFT-4/prd.md",
+      "blob_sha": "e946c03a2476427f142b9f38cf48bf4986d5e6e8"
+    },
+    {
+      "path": "docs/delivery/CRAFT-5/prd.md",
+      "blob_sha": "8e5788198e3d7038d2857b746118a9fa82c857b0"
+    },
+    {
+      "path": "docs/delivery/CRAFT-6/prd.md",
+      "blob_sha": "b6dd3efd7836909a220a86068badafa89d75ddda"
+    },
+    {
+      "path": "docs/delivery/CRAFT-7/prd.md",
+      "blob_sha": "b126f4013e114d06745154e44739df31fa83be95"
+    },
+    {
+      "path": "docs/delivery/CRAFT-8/prd.md",
+      "blob_sha": "fe9f3d06567ccedae4b26ff5112efa36c97958ae"
+    },
+    {
+      "path": "docs/delivery/CRAFT-9/prd.md",
+      "blob_sha": "f42dc9628cccb39f302122693cc6b466560be13a"
+    },
+    {
+      "path": "docs/delivery/CRAFT/FANOUT.md",
+      "blob_sha": "966040cc6b925d33b945b7b7dc9685418ab1c021"
+    },
+    {
+      "path": "docs/delivery/CRAFT/TEST_PLAN.md",
+      "blob_sha": "fc16af726f3d9721b189a9e5ea4d12c6b97103d3"
+    },
+    {
+      "path": "docs/delivery/CREATE-1/prd.md",
+      "blob_sha": "0fa5ce67630b2522d0b44121daa0e5e367eb6405"
+    },
+    {
+      "path": "docs/delivery/HELP-1/prd.md",
+      "blob_sha": "e5e78a62643c651edc094c8c326fa1f4db8568cf"
+    },
+    {
+      "path": "docs/delivery/HELP-2/prd.md",
+      "blob_sha": "4956de4981cbe6c06e3e00b8ba4c841cc3af7e9c"
+    },
+    {
+      "path": "docs/delivery/HELP-3/prd.md",
+      "blob_sha": "df6dfcb3be7adb6b06a7e44d4e2071c4305bff3f"
+    },
+    {
+      "path": "docs/delivery/HELP-4/prd.md",
+      "blob_sha": "c3b29a0f86445be53fbd895121714b7a6bc3b552"
+    },
+    {
+      "path": "docs/delivery/HELP-5/prd.md",
+      "blob_sha": "bd74f789f50f888a1b353f8f629ec30bf2786184"
+    },
+    {
+      "path": "docs/delivery/HELP-6/prd.md",
+      "blob_sha": "a2f7ea011bc066ad20702c239754287df9fdb797"
+    },
+    {
+      "path": "docs/delivery/HELP-7/prd.md",
+      "blob_sha": "cb0cde32c9c017b46ce8972aa4742f7738b0b473"
+    },
+    {
+      "path": "docs/delivery/LAST-MILE/LM-0/prd.md",
+      "blob_sha": "92ce9da00ed6c45a35750b5e2288d4635bc4cf3c"
+    },
+    {
+      "path": "docs/delivery/LAST-MILE/LM-1/prd.md",
+      "blob_sha": "9ed0d94129bbe132a2829b3d36553d62a9b77405"
+    },
+    {
+      "path": "docs/delivery/LAST-MILE/LM-2/prd.md",
+      "blob_sha": "98b95076e6e1fcb745eb57bc37a4fcb7891e72a1"
+    },
+    {
+      "path": "docs/delivery/LAST-MILE/LM-3/prd.md",
+      "blob_sha": "962358c58f7281fcfa6b0940d956811c762347d6"
+    },
+    {
+      "path": "docs/delivery/LAST-MILE/LM-4/prd.md",
+      "blob_sha": "6e371397e1f811b44d146a5bf076a30c4238612e"
+    },
+    {
+      "path": "docs/delivery/LAST-MILE/LM-5/prd.md",
+      "blob_sha": "f3049c0afc9dbbfb1a6ac16a62749cf5e5317c59"
+    },
+    {
+      "path": "docs/delivery/LAST-MILE/LM-6/prd.md",
+      "blob_sha": "9b3615e7e2e3d23c89eccbe6c369bcfd0c5eeb41"
+    },
+    {
+      "path": "docs/delivery/LAST-MILE/LM-7/prd.md",
+      "blob_sha": "cae57c8ad7941dcba093f1975d8e67378bcb837c"
+    },
+    {
+      "path": "docs/delivery/LAST-MILE/LM-8/prd.md",
+      "blob_sha": "442050fa5276395b2704920a268feb84c31358fb"
+    },
+    {
+      "path": "docs/delivery/PROS-1/prd.md",
+      "blob_sha": "ef6be83d7dc6730fd1428818e9a41a66d7d500b0"
+    },
+    {
+      "path": "docs/delivery/PROS-10/prd.md",
+      "blob_sha": "ce6dae60ac5023ec00117c54d77663a3930927a9"
+    },
+    {
+      "path": "docs/delivery/PROS-11/prd.md",
+      "blob_sha": "7e56c341202a5af2d362f9ad82c21bfd41a97cf7"
+    },
+    {
+      "path": "docs/delivery/PROS-12/prd.md",
+      "blob_sha": "51244c3c7ead0b5c363e9bca7d6801b11fb7bacf"
+    },
+    {
+      "path": "docs/delivery/PROS-13/prd.md",
+      "blob_sha": "f42ae76b6b3d5741dc1015e84e2aa03d1f2bcb4a"
+    },
+    {
+      "path": "docs/delivery/PROS-14/prd.md",
+      "blob_sha": "6c276753e97b236ffd6fd4c8f7405a404804e457"
+    },
+    {
+      "path": "docs/delivery/PROS-15/prd.md",
+      "blob_sha": "ac5d896ab6a07bf92d2476e01cc2722e7752b1f5"
+    },
+    {
+      "path": "docs/delivery/PROS-2/prd.md",
+      "blob_sha": "e43f3e0d5e4a7f902f8ca7ab1ac499313e8b6f57"
+    },
+    {
+      "path": "docs/delivery/PROS-3/prd.md",
+      "blob_sha": "e15808bf128a7d5555f424bae925782f98d46145"
+    },
+    {
+      "path": "docs/delivery/PROS-4/prd.md",
+      "blob_sha": "3140eda92097ac5c9bf610d58821aaf1d315f16b"
+    },
+    {
+      "path": "docs/delivery/PROS-5/prd.md",
+      "blob_sha": "5609fc0acde937260b9f1bfaf469acc4bcbcb24a"
+    },
+    {
+      "path": "docs/delivery/PROS-6/prd.md",
+      "blob_sha": "80e6b8e9b1ce5d04c9693c08c7ebb2f867889c34"
+    },
+    {
+      "path": "docs/delivery/PROS-7/prd.md",
+      "blob_sha": "3edef40e509581c786904f8c951b6a7e85d09a84"
+    },
+    {
+      "path": "docs/delivery/PROS-8/prd.md",
+      "blob_sha": "1a9acadb0167231572627fdb2bcfe2d622ba1e85"
+    },
+    {
+      "path": "docs/delivery/PROS-9/prd.md",
+      "blob_sha": "7ec741c38a75c56e1f12cf166d74d0ff0d970055"
+    },
+    {
+      "path": "docs/delivery/PROS/FANOUT.md",
+      "blob_sha": "844f9caf30f353f2c74f42e5fd5c5b1f2efb6730"
+    },
+    {
+      "path": "docs/delivery/backlog.md",
+      "blob_sha": "3dcb3ab6fdce34cf67b7c5091fb63a25c208010b"
+    },
+    {
+      "path": "docs/delivery/brief-backlog.md",
+      "blob_sha": "942a3288a5d1cc68d0b4f8eb7a34e202a6982eb6"
+    },
+    {
+      "path": "docs/delivery/clr-backlog.md",
+      "blob_sha": "a0209a9958e1c5c931424288a9b8e43a957153f5"
+    },
+    {
+      "path": "docs/delivery/craft-backlog.md",
+      "blob_sha": "63e1d8544e1360de0900e98d7faf2e3f8bc75695"
+    },
+    {
+      "path": "docs/delivery/create-backlog.md",
+      "blob_sha": "03f8a06c1a4c3eb3449f8ac78e0efda9d5a0f14e"
+    },
+    {
+      "path": "docs/delivery/last-mile-backlog.md",
+      "blob_sha": "dfac0f761917b28d1ca917a29f758bf9dcc1a7da"
+    },
+    {
+      "path": "docs/delivery/pros-backlog.md",
+      "blob_sha": "91463778af1082785368bd42cec352b9d56fd344"
+    },
+    {
+      "path": "docs/delivery/sec-backlog.md",
+      "blob_sha": "59719bfb486defaa4188da31fa9a18b6ed0ba311"
+    },
+    {
+      "path": "docs/operations/CODING_MACHINE_FANOUT.md",
+      "blob_sha": "68218b979dc9f226bee03c3c3ae6b4f0d9d9b858"
+    },
+    {
+      "path": "docs/operations/ci-runners-handoff.md",
+      "blob_sha": "441c00675a35f8c44390b24f421fc9d068ac0869"
+    },
+    {
+      "path": "docs/stage-0/prompt-model-eval-inventory.md",
+      "blob_sha": "55afed0691f3d6267059e6a17dda2faeb551761e"
+    },
+    {
+      "path": "docs/stage-0/stage-1-runtime-backlog.md",
+      "blob_sha": "3b9ee79029e16141e47503a89157f4f6ad3671a8"
+    },
+    {
+      "path": "docs/technical/EVIDENCE_LEDGER_TEST_PLAN.md",
+      "blob_sha": "04b0d6a6c76aeedca469570c9a8a8acf256c5225"
+    },
+    {
+      "path": "frontend/content/help/stage-handoff.md",
+      "blob_sha": "1c86092ebcc3647aea641f82ecad4ca958b18eb4"
+    }
+  ]
+}

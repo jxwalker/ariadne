@@ -1,0 +1,110 @@
+{
+  "observed": "2026-10-13",
+  "path": "~/.config/ariadne-activity/sources.json",
+  "sources": [
+    {
+      "id": "snapshot-0cec2644c2fa81c0",
+      "repositories": [
+        "jxwalker/ariadne",
+        "jxwalker/patent-studio",
+        "jxwalker/openscorpion",
+        "jxwalker/apcg-platform",
+        "jxwalker/gad-demo"
+      ]
+    },
+    {
+      "id": "snapshot-d6a88dce93f9b452",
+      "repositories": [
+        "jxwalker/ariadne",
+        "jxwalker/patent-studio",
+        "jxwalker/openscorpion",
+        "jxwalker/apcg-platform",
+        "jxwalker/gad-demo"
+      ]
+    },
+    {
+      "id": "snapshot-e924f2af8a850d2e",
+      "repositories": [
+        "jxwalker/ariadne",
+        "jxwalker/patent-studio",
+        "jxwalker/openscorpion",
+        "jxwalker/apcg-platform",
+        "jxwalker/gad-demo"
+      ]
+    },
+    {
+      "id": "snapshot-fef98ee212345b32",
+      "repositories": [
+        "jxwalker/ariadne",
+        "jxwalker/patent-studio",
+        "jxwalker/openscorpion",
+        "jxwalker/apcg-platform",
+        "jxwalker/gad-demo"
+      ]
+    },
+    {
+      "id": "cloud-controlled-test",
+      "repositories": [
+        "jxwalker/ariadne"
+      ]
+    },
+    {
+      "id": "grok-hosted-pending",
+      "repositories": [
+        "jxwalker/ariadne",
+        "jxwalker/patent-studio",
+        "jxwalker/openscorpion",
+        "jxwalker/apcg-platform",
+        "jxwalker/gad-demo"
+      ]
+    },
+    {
+      "id": "codex-dev-live-claude",
+      "repositories": [
+        "jxwalker/ariadne"
+      ]
+    },
+    {
+      "id": "codex-dev-live-codex",
+      "repositories": [
+        "jxwalker/ariadne"
+      ]
+    },
+    {
+      "id": "codex-dev-grok-cli",
+      "repositories": [
+        "jxwalker/ariadne"
+      ]
+    },
+    {
+      "id": "box-scorpion-build-bot",
+      "repositories": [
+        "jxwalker/openscorpion",
+        "jxwalker/apcg-platform",
+        "jxwalker/apcg-engine",
+        "jxwalker/apcg-verifier",
+        "jxwalker/apcg-ui",
+        "jxwalker/scorpion-eval"
+      ]
+    },
+    {
+      "id": "box-scorpion-verifier",
+      "repositories": [
+        "jxwalker/openscorpion",
+        "jxwalker/apcg-platform"
+      ]
+    },
+    {
+      "id": "box-patent-studio-ui-bot",
+      "repositories": [
+        "jxwalker/patent-studio"
+      ]
+    },
+    {
+      "id": "box-ariadne-bot",
+      "repositories": [
+        "jxwalker/ariadne"
+      ]
+    }
+  ]
+}

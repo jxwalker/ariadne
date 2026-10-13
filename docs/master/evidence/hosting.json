@@ -1,0 +1,105 @@
+{
+  "observed": "2026-10-13",
+  "data": {
+    "disk": {
+      "command": [
+        "df",
+        "-h",
+        "/home/james"
+      ],
+      "exit": 0,
+      "stdout": "Filesystem      Size  Used Avail Use% Mounted on\n/dev/sda1       504G   47G  438G  10% /\n",
+      "stderr": ""
+    },
+    "backups": {
+      "command": [
+        "du",
+        "-sh",
+        "/home/james/ariadne-backups"
+      ],
+      "exit": 0,
+      "stdout": "2.5G\t/home/james/ariadne-backups\n",
+      "stderr": ""
+    },
+    "backup-directories": {
+      "command": [
+        "ls",
+        "-1",
+        "/home/james/ariadne-backups"
+      ],
+      "exit": 0,
+      "stdout": "activity-20261012T122611Z\nactivity-20261012T153245Z\nactivity-update-20261012T123649Z\nactivity-update-20261012T124030Z\nactivity-update-20261012T124735Z\nactivity-update-20261012T130705Z\nlocal-live-20261012T135405Z\nlocal-live-fix-20261012T140403Z\nlocal-live-fix-20261012T141016Z\npre-360ef0b-20261013T081503\npre-9782e98-20261012T163244\npre-d0fbc7d-20261012T185235\npre-enrol-bots-20261013T115004\npre-enrol-display-20261013T115737\npre-feadc20-20261012T192727\npre-names-display-20261013T122432\npre-names-nobox-20261013T134303\n",
+      "stderr": ""
+    },
+    "docker": {
+      "command": [
+        "docker",
+        "--version"
+      ],
+      "exit": 0,
+      "stdout": "Docker version 26.1.5+dfsg1, build a72d7cd\n",
+      "stderr": ""
+    },
+    "containers": {
+      "command": [
+        "docker",
+        "ps",
+        "--format",
+        "{{.Names}}\t{{.Image}}\t{{.Ports}}"
+      ],
+      "exit": 0,
+      "stdout": "scorpion-showcase-control-1\tscorpion-showcase-control:1dc040c4\t8080/tcp, 50051/tcp, 127.0.0.1:18091->8090/tcp\nscorpion-showcase-redis-1\tredis:7-alpine\t6379/tcp\nscorpion-showcase-router-1\tscorpion-showcase-router:1dc040c4\t8090/tcp, 50051/tcp, 127.0.0.1:18093->8080/tcp\nscorpion-showcase-ollama-1\tollama/ollama\t11434/tcp\nscorpion-showcase-postgres-1\tpostgres:16-alpine\t5432/tcp\n",
+      "stderr": ""
+    },
+    "postgres-processes": {
+      "command": [
+        "ps",
+        "-C",
+        "postgres",
+        "-o",
+        "pid,comm"
+      ],
+      "exit": 0,
+      "stdout": "    PID COMMAND\n   1225 postgres\n   1355 postgres\n   1356 postgres\n   1359 postgres\n   1360 postgres\n   1361 postgres\n 416940 postgres\n 448369 postgres\n",
+      "stderr": ""
+    },
+    "host-listener": {
+      "command": [
+        "ss",
+        "-ltn",
+        "( sport = :5432 or sport = :55432 or sport = :55433 )"
+      ],
+      "exit": 0,
+      "stdout": "State Recv-Q Send-Q Local Address:Port Peer Address:Port\n",
+      "stderr": ""
+    },
+    "postgres-version": {
+      "command": [
+        "/usr/lib/postgresql/17/bin/postgres",
+        "--version"
+      ],
+      "exit": 127,
+      "stderr": "Executable absent",
+      "stdout": ""
+    },
+    "client-version": {
+      "command": [
+        "psql",
+        "--version"
+      ],
+      "exit": 0,
+      "stdout": "psql (PostgreSQL) 17.11 (Debian 17.11-0+deb13u1)\n",
+      "stderr": ""
+    },
+    "host-cluster-tool": {
+      "command": [
+        "bash",
+        "-c",
+        "command -v pg_lsclusters || true"
+      ],
+      "exit": 0,
+      "stdout": "",
+      "stderr": ""
+    }
+  }
+}

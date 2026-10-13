@@ -1,0 +1,147 @@
+{
+  "observed": "2026-10-13",
+  "refs": {
+    "pr169": "03dd67778ce5ef7b37089b79957b13526d70c829",
+    "main": "d9aacc455ffe5c78698efbbad469f0f8f446b387",
+    "marker": "b5c6a9f5b424fd25258f9188012645b85202cd37",
+    "sender": "8a186225d1b96be4238f127fa924d94239fcf1e8"
+  },
+  "files": [
+    {
+      "path": "/home/james/.local/lib/ariadne-activity/scripts/activity_alerts.py",
+      "sha256": "8799fb2ce5cf51eaaa8614f8c065367246ab040b6ee0f826936996b4135cdfe8",
+      "pr169": "match",
+      "main": "match",
+      "marker": "match",
+      "sender": "match"
+    },
+    {
+      "path": "/home/james/.local/lib/ariadne-activity/scripts/activity_backup.py",
+      "sha256": "dbfdc49386f7df0050fb8985d08a13b96b662076d99364de5a773e2f7f002edf",
+      "pr169": "match",
+      "main": "match",
+      "marker": "match",
+      "sender": "match"
+    },
+    {
+      "path": "/home/james/.local/lib/ariadne-activity/scripts/activity_controls.py",
+      "sha256": "d7eaa7266851ad466c0e6567696cb3b5ddee458a29d162d2f0f4bbaf91f5afef",
+      "pr169": "match",
+      "main": "different",
+      "marker": "different",
+      "sender": "match"
+    },
+    {
+      "path": "/home/james/.local/lib/ariadne-activity/scripts/activity_dashboard.html",
+      "sha256": "9a15a463791d6ba3e2ad56835d7e8cecefc2f92d4182680bc11863cd5badc5d1",
+      "pr169": "match",
+      "main": "match",
+      "marker": "match",
+      "sender": "match"
+    },
+    {
+      "path": "/home/james/.local/lib/ariadne-activity/scripts/activity_dashboard.js",
+      "sha256": "d0ebed1a1d430be11140165a25e38a59e80dbe0546e5f20decbd79d652e910b4",
+      "pr169": "match",
+      "main": "match",
+      "marker": "match",
+      "sender": "match"
+    },
+    {
+      "path": "/home/james/.local/lib/ariadne-activity/scripts/activity_insights.py",
+      "sha256": "c491d2ae0c3423218e5bc61b6e1d918750f2d87e69ea749feefe450dea4c1134",
+      "pr169": "match",
+      "main": "different",
+      "marker": "different",
+      "sender": "match"
+    },
+    {
+      "path": "/home/james/.local/lib/ariadne-activity/scripts/activity_machine_probe.py",
+      "sha256": "498b200ea356f93e0784acacbf359a06f4a799bd009cc30a14da08d584e7ff93",
+      "pr169": "match",
+      "main": "absent",
+      "marker": "absent",
+      "sender": "match"
+    },
+    {
+      "path": "/home/james/.local/lib/ariadne-activity/scripts/activity_operating.py",
+      "sha256": "d028f4bc908d33f32763cc8f179a4beac7a5e5c2ba97887402bf4f3e688ac14f",
+      "pr169": "match",
+      "main": "absent",
+      "marker": "absent",
+      "sender": "different"
+    },
+    {
+      "path": "/home/james/.local/lib/ariadne-activity/scripts/activity_operations_collect.py",
+      "sha256": "477e476fd1379e49060b392ce1590cc547b3894b53440e3d423571395d4b8d5a",
+      "pr169": "match",
+      "main": "absent",
+      "marker": "absent",
+      "sender": "match"
+    },
+    {
+      "path": "/home/james/.local/lib/ariadne-activity/scripts/activity_reconcile.py",
+      "sha256": "86a0621368c20c9213642fe900ecbea68fbf15cdac908650ad8805cf583accc3",
+      "pr169": "match",
+      "main": "match",
+      "marker": "match",
+      "sender": "match"
+    },
+    {
+      "path": "/home/james/.local/lib/ariadne-activity/scripts/activity_sender.py",
+      "sha256": "a24b539f5b85c3735b43228123721618ebdda220d71b938f508883fc755308dd",
+      "pr169": "match",
+      "main": "different",
+      "marker": "different",
+      "sender": "match"
+    },
+    {
+      "path": "/home/james/.local/lib/ariadne-activity/scripts/activity_server.py",
+      "sha256": "47318d5b8039eb946dc746d91fb2057d77b1ba4c975656e38e3969a304655263",
+      "pr169": "match",
+      "main": "different",
+      "marker": "different",
+      "sender": "match"
+    },
+    {
+      "path": "/home/james/.local/lib/ariadne-activity/scripts/activity_server.py.bak-20261012-175935",
+      "sha256": "99c01b132876e95d14b276473927757f2428d6c5e18ee5b7c13dc9d18561264d",
+      "pr169": "absent",
+      "main": "absent",
+      "marker": "absent",
+      "sender": "absent"
+    },
+    {
+      "path": "/home/james/.local/lib/ariadne-activity/scripts/activity_snapshot_import.py",
+      "sha256": "0743a5dc3f3afc6a6bdfc4ea576ca021bafa6dfb5ff0f96000aedf67fce99875",
+      "pr169": "match",
+      "main": "different",
+      "marker": "different",
+      "sender": "match"
+    },
+    {
+      "path": "/home/james/.local/lib/ariadne-activity/scripts/agent_telemetry.py",
+      "sha256": "7a9f1c4e22d4868abb3bca5e8a4ef0abf379f78c9c0b9231e73f3cf30d491b05",
+      "pr169": "match",
+      "main": "different",
+      "marker": "different",
+      "sender": "match"
+    },
+    {
+      "path": "/home/james/.local/lib/ariadne-activity/scripts/operating_dashboard.html",
+      "sha256": "51de016de5cfe57ba6b5ba64e44dc4e156332e7e3cab6c00f0c6933357af6caf",
+      "pr169": "match",
+      "main": "absent",
+      "marker": "absent",
+      "sender": "match"
+    },
+    {
+      "path": "/home/james/.local/lib/ariadne-activity/scripts/operating_dashboard.js",
+      "sha256": "516cb09ce7fbdb0658d7c3eb53eae6d9b304675b561bc92dbab08f7389c0b5e9",
+      "pr169": "match",
+      "main": "absent",
+      "marker": "absent",
+      "sender": "match"
+    }
+  ]
+}

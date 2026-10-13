@@ -1,0 +1,225 @@
+{
+  "observed": "2026-10-13",
+  "units": [
+    {
+      "command": [
+        "systemctl",
+        "--user",
+        "is-active",
+        "ariadne-activity-backup.service"
+      ],
+      "exit": 3,
+      "stdout": "inactive\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "systemctl",
+        "--user",
+        "is-active",
+        "ariadne-activity-backup.timer"
+      ],
+      "exit": 0,
+      "stdout": "active\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "systemctl",
+        "--user",
+        "is-active",
+        "ariadne-activity-import.service"
+      ],
+      "exit": 3,
+      "stdout": "inactive\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "systemctl",
+        "--user",
+        "is-active",
+        "ariadne-activity-import.timer"
+      ],
+      "exit": 0,
+      "stdout": "active\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "systemctl",
+        "--user",
+        "is-active",
+        "ariadne-activity-reconcile.service"
+      ],
+      "exit": 3,
+      "stdout": "activating\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "systemctl",
+        "--user",
+        "is-active",
+        "ariadne-activity-reconcile.timer"
+      ],
+      "exit": 0,
+      "stdout": "active\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "systemctl",
+        "--user",
+        "is-active",
+        "ariadne-activity.service"
+      ],
+      "exit": 0,
+      "stdout": "active\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "systemctl",
+        "--user",
+        "is-active",
+        "ariadne-agent-refresh.service"
+      ],
+      "exit": 3,
+      "stdout": "inactive\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "systemctl",
+        "--user",
+        "is-active",
+        "ariadne-agent-refresh.timer"
+      ],
+      "exit": 0,
+      "stdout": "active\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "systemctl",
+        "--user",
+        "is-active",
+        "ariadne-console.service"
+      ],
+      "exit": 0,
+      "stdout": "active\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "systemctl",
+        "--user",
+        "is-active",
+        "ariadne-ingest-proxy.service"
+      ],
+      "exit": 0,
+      "stdout": "active\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "systemctl",
+        "--user",
+        "is-active",
+        "ariadne-ingest-tunnel.service"
+      ],
+      "exit": 0,
+      "stdout": "active\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "systemctl",
+        "--user",
+        "is-active",
+        "ariadne-operations-machines.service"
+      ],
+      "exit": 3,
+      "stdout": "inactive\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "systemctl",
+        "--user",
+        "is-active",
+        "ariadne-operations-machines.timer"
+      ],
+      "exit": 0,
+      "stdout": "active\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "systemctl",
+        "--user",
+        "is-active",
+        "ariadne-operations-pipeline.service"
+      ],
+      "exit": 3,
+      "stdout": "inactive\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "systemctl",
+        "--user",
+        "is-active",
+        "ariadne-operations-pipeline.timer"
+      ],
+      "exit": 0,
+      "stdout": "active\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "systemctl",
+        "--user",
+        "is-active",
+        "ariadne-refresh.service"
+      ],
+      "exit": 3,
+      "stdout": "inactive\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "systemctl",
+        "--user",
+        "is-active",
+        "ariadne-refresh.timer"
+      ],
+      "exit": 0,
+      "stdout": "active\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "systemctl",
+        "--user",
+        "is-active",
+        "ariadne-remote-collect.service"
+      ],
+      "exit": 3,
+      "stdout": "inactive\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "systemctl",
+        "--user",
+        "is-active",
+        "ariadne-remote-collect.timer"
+      ],
+      "exit": 0,
+      "stdout": "active\n",
+      "stderr": ""
+    }
+  ]
+}

@@ -1,0 +1,246 @@
+--- d9aacc455ffe5c78698efbbad469f0f8f446b387/scripts/activity_controls.py
++++ /home/james/.local/lib/ariadne-activity/scripts/activity_controls.py
+@@ -7,7 +7,7 @@
+ from collections import Counter
+ 
+ from activity_server import stamp
+-from activity_insights import source_name, product, hosted_sources
++from activity_insights import source_name, product, hosted_sources, machine_sources
+ 
+ MAX_FILES = 1000
+ MAX_BYTES = 1024 * 1024
+@@ -217,6 +217,7 @@
+         tables={r[0] for r in db.execute("SELECT name FROM sqlite_master WHERE type='table'")}
+         # Metadata evidence of a scoped hosted provider source; controlled reports never establish onboarding.
+         hosted=hosted_sources(db)
++        native_grok=machine_sources(db)
+         for ident,registration in registry.items():
+             safe_id=text(ident,secrets);name=text(source_name(ident,registration),secrets)
+             e=events.get(ident,{});receipt=e.get('last');snapshot=snapshots.get(ident) if registration.get('provenance')=='read-only local snapshot' else None
+@@ -224,7 +225,7 @@
+             if registration.get('correlationHost') and not registration.get('displayName'):
+                 prefix='Collector' if registration.get('provenance')=='read-only local snapshot' else product(e.get('products') or ident)
+                 name=text(prefix+' on '+source_name(ident,registration),secrets)
+-            provider='grok' in ident.lower()
++            provider='grok' in ident.lower() and ident not in native_grok
+             state='revoked' if revoked else 'provider-pending' if provider and ident not in hosted else 'never-connected' if last is None else 'connected' if snapshot and at-last<=THRESHOLDS['sources'] else 'quiet' if snapshot else 'registered'
+             status='fail' if revoked else 'missing' if state in {'provider-pending','never-connected'} else grade('success',last,THRESHOLDS['sources'],at)
+             ref='source:'+safe_id if safe_id!=REDACTED else 'source:registered-'+hashlib.sha256(ident.encode()).hexdigest()[:12]
+--- d9aacc455ffe5c78698efbbad469f0f8f446b387/scripts/activity_insights.py
++++ /home/james/.local/lib/ariadne-activity/scripts/activity_insights.py
+@@ -22,9 +22,12 @@
+     # Controlled/test reports do not establish provider onboarding.
+     return {r['source'] for r in db.execute("SELECT DISTINCT source FROM events WHERE json_extract(envelope,'$.location.kind')='cloud' AND lower(json_extract(envelope,'$.agent.product')) LIKE '%grok%' AND lower(source) NOT LIKE '%test%' AND lower(source) NOT LIKE '%controlled%' AND lower(json_extract(envelope,'$.runId')) NOT LIKE '%test%' AND lower(json_extract(envelope,'$.runId')) NOT LIKE '%controlled%' AND lower(json_extract(envelope,'$.taskId')) NOT LIKE '%test%' AND lower(json_extract(envelope,'$.taskId')) NOT LIKE '%controlled%' AND lower(json_extract(envelope,'$.label')) NOT LIKE '%controlled%'")}
+ 
++def machine_sources(db):
++    return {r['source'] for r in db.execute("SELECT DISTINCT source FROM events WHERE json_extract(envelope,'$.location.kind')='machine' AND lower(json_extract(envelope,'$.agent.product')) LIKE '%grok%' AND lower(json_extract(envelope,'$.label')) NOT LIKE '%test%'")}
++
+ def sources_view(store, registry, at):
+     with store.connect() as db:
+-        hosted=hosted_sources(db)
++        hosted=hosted_sources(db)|machine_sources(db)
+         latest={r['source']:r['last'] for r in db.execute('SELECT source, MAX(received) AS last FROM events GROUP BY source')}
+         snapshot_sessions={}
+         for r in db.execute("SELECT name,at,detail FROM health WHERE name LIKE 'snapshot:%' AND status='connected'"):
+@@ -63,7 +66,7 @@
+         else: out['note']=text
+     return out
+ 
+-def project(store, registry, range_key='24h', at=None):
++def project(store, registry, range_key='24h', at=None, include_github=True):
+     if range_key not in RANGES: raise ValueError('range must be 24h, 7d or 30d')
+     at=time.time() if at is None else at; start=at-RANGES[range_key]*86400
+     secrets=tuple(v.get('secret') for v in registry.values() if isinstance(v,dict) and isinstance(v.get('secret'),str) and v.get('secret'))
+@@ -119,7 +122,7 @@
+         breakdown={key:[{'name':name,'runs':n} for name,n in Counter(r[key] for r in native).most_common()] for key in ['agent','machine','repo']}
+         repositories={}; associations=defaultdict(list)
+         # Latest reconciliation snapshots avoid counting repeated polls as new PRs or CI runs.
+-        observations=db.execute('SELECT repo,observed,body FROM observations WHERE observed BETWEEN ? AND ? ORDER BY observed DESC LIMIT ?', (start,at,MAX_RECORDS+1))
++        observations=db.execute('SELECT repo,observed,body FROM observations WHERE observed BETWEEN ? AND ? ORDER BY observed DESC LIMIT ?', (start,at,MAX_RECORDS+1)) if include_github else []
+         for index,row in enumerate(observations):
+             if index>=MAX_RECORDS:truncated=True;break
+             repo=row['repo'];item=repositories.setdefault(repo,{'repo':repo,'commits':set(),'prs':set(),'checks':{},'observations':0})
+--- d9aacc455ffe5c78698efbbad469f0f8f446b387/scripts/activity_sender.py
++++ /home/james/.local/lib/ariadne-activity/scripts/activity_sender.py
+@@ -11,7 +11,7 @@
+     if not c['endpoint'].startswith('https://'): raise ValueError('HTTPS required')
+     return c
+ 
+-def enqueue(c,kind,run,task,summary='',parent=None,session=None):
++def enqueue(c,kind,run,task,summary='',parent=None,session=None,operating=None):
+     spool=pathlib.Path(c['spool']); spool.mkdir(parents=True,exist_ok=True,mode=0o700)
+     with open(spool/'.lock','a') as lock:
+         fcntl.flock(lock,fcntl.LOCK_EX)
+@@ -23,6 +23,8 @@
+             if k in c: e[k]=c[k]
+         if parent: e['parentRunId']=parent
+         if session: e['sessionId']=session
++        if operating:
++            e['schemaVersion']=2;e.update(operating)
+         validate(e); p=spool/(e['eventId']+'.json'); p.write_text(canonical(e)); os.chmod(p,0o600)
+         return e
+ 
+@@ -75,7 +77,7 @@
+     return c
+ 
+ def main():
+-    p=argparse.ArgumentParser(); p.add_argument('--config',required=True); p.add_argument('mode',choices=['hook','flush','worker','event','run']); p.add_argument('--kind',default='task.progress'); p.add_argument('--run-id'); p.add_argument('--task-id'); p.add_argument('--summary',default=''); [p.add_argument(f) for f in ('--label','--repository','--branch','--commit')]; p.add_argument('--pr',type=int); argv=sys.argv[1:]; split=argv.index('--') if '--' in argv else len(argv); a=p.parse_args(argv[:split]); a.command=argv[split+1:]; c=config(a.config); c=overrides(c,a)
++    p=argparse.ArgumentParser(); p.add_argument('--config',required=True); p.add_argument('mode',choices=['hook','flush','worker','event','run']); p.add_argument('--kind',default='task.progress'); p.add_argument('--run-id'); p.add_argument('--task-id'); p.add_argument('--summary',default=''); [p.add_argument(f) for f in ('--label','--repository','--branch','--commit','--stage','--next-step','--blocker-category','--owner','--classification','--decision-file')]; p.add_argument('--pr',type=int); argv=sys.argv[1:]; split=argv.index('--') if '--' in argv else len(argv); a=p.parse_args(argv[:split]); a.command=argv[split+1:]; c=config(a.config); c=overrides(c,a)
+     if a.mode=='hook':
+         try: hook(c,json.loads(sys.stdin.read(65537)))
+         except Exception: pass
+@@ -84,7 +86,10 @@
+     if a.mode=='worker':
+         while True: flush(c); time.sleep(2)
+     run=a.run_id or str(uuid.uuid4()); task=a.task_id or run
+-    if a.mode=='event': enqueue(c,a.kind,run,task,a.summary); flush(c); return
++    if a.mode=='event':
++        metadata={key:getattr(a,name) for key,name in [('stage','stage'),('nextStep','next_step'),('blockerCategory','blocker_category'),('owner','owner'),('classification','classification')] if getattr(a,name) is not None}
++        if a.decision_file:metadata['decision']=json.loads(pathlib.Path(a.decision_file).read_text())
++        enqueue(c,a.kind,run,task,a.summary,operating=metadata); flush(c); return
+     command=a.command[1:] if a.command[:1]==['--'] else a.command
+     if not command: p.error('runner requires command after --')
+     enqueue(c,'task.start',run,task,'Runner started'); proc=subprocess.Popen(command); interrupted=False
+--- d9aacc455ffe5c78698efbbad469f0f8f446b387/scripts/activity_server.py
++++ /home/james/.local/lib/ariadne-activity/scripts/activity_server.py
+@@ -6,6 +6,8 @@
+ from urllib.parse import urlsplit, parse_qs
+ 
+ KINDS = {'task.start','task.progress','heartbeat','task.blocked','task.resumed','task.interrupted','task.completed','task.failed','session.start','session.end','subagent.start','subagent.end'}
++OPERATING_KINDS = KINDS | {'decision.requested','decision.resolved'}
++OPERATING_FIELDS = {'stage','nextStep','blockerCategory','owner','decision','classification'}
+ TERMINAL = {'agent-reported completion','agent-reported failure'}
+ FIELDS = {'schemaVersion','eventId','sourceId','agent','project','repository','taskId','runId','parentRunId','sequence','occurredAt','kind','label','summary','location','branch','commit','pr','evidenceLinks','sessionId'}
+ ID = re.compile(r'^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$')
+@@ -29,8 +31,26 @@
+     return u.scheme=='https' and bool(u.hostname) and not u.username and not u.password and not any(c.isspace() for c in value)
+ def validate(e):
+     required={'schemaVersion','eventId','sourceId','agent','project','repository','taskId','runId','sequence','occurredAt','kind','label','summary'}
+-    if not isinstance(e,dict) or not required<=e.keys() or e.keys()-FIELDS: raise ValueError('unknown or missing fields')
+-    if e['schemaVersion']!=1 or type(e['schemaVersion']) is not int or e['kind'] not in KINDS: raise ValueError('unsupported version/kind')
++    if not isinstance(e,dict) or not required<=e.keys(): raise ValueError('unknown or missing fields')
++    version=e['schemaVersion']
++    if type(version) is not int or version not in {1,2} or e['kind'] not in (KINDS if version==1 else OPERATING_KINDS): raise ValueError('unsupported version/kind')
++    if e.keys()-(FIELDS if version==1 else FIELDS|OPERATING_FIELDS): raise ValueError('unknown fields')
++    if version==2:
++        for k,limit in [('stage',80),('nextStep',300),('owner',128)]:
++            if k in e and not bounded(e[k],limit): raise ValueError('invalid operating metadata')
++        if 'classification' in e and e['classification'] not in {'work','test'}: raise ValueError('invalid classification')
++        if 'blockerCategory' in e and e['blockerCategory'] not in {'decision','ci','review','dependency','access','network','capacity','telemetry','other'}: raise ValueError('invalid blocker category')
++        if e['kind'].startswith('decision.'):
++            d=e.get('decision');allowed={'id','recipient','question','options','recommendation','blocking','url','resolution'}
++            required_decision={'id','recipient','question','blocking'} if e['kind']=='decision.requested' else {'id','recipient','resolution'}
++            if not isinstance(d,dict) or not required_decision<=d.keys() or d.keys()-allowed: raise ValueError('invalid decision')
++            if not isinstance(d['id'],str) or not ID.fullmatch(d['id']) or not bounded(d['recipient'],128): raise ValueError('invalid decision identity')
++            for k,limit in [('question',500),('recommendation',300),('resolution',300)]:
++                if k in d and not bounded(d[k],limit): raise ValueError('invalid decision text')
++            if 'blocking' in d and type(d['blocking']) is not bool: raise ValueError('invalid blocking flag')
++            if 'options' in d and (not isinstance(d['options'],list) or not 1<=len(d['options'])<=5 or not all(bounded(v,160) for v in d['options'])): raise ValueError('invalid decision options')
++            if 'url' in d and not safe_link(d['url']): raise ValueError('unsafe decision link')
++        elif 'decision' in e: raise ValueError('decision requires decision lifecycle kind')
+     for k in ['eventId','sourceId','taskId','runId','project']:
+         if not isinstance(e[k],str) or not ID.fullmatch(e[k]): raise ValueError('invalid identity')
+     for k in ['parentRunId','sessionId']:
+@@ -206,6 +226,7 @@
+ class App:
+     def __init__(self,config):
+         self.config=config; self.store=Store(config['database']); self.stop=threading.Event(); self.rates={}
++        self.operating_cache={};self.operating_lock=threading.Lock()
+     def sources(self):
+         # Reload protected credentials on every request for immediate revocation/rotation.
+         p=pathlib.Path(self.config['credentials'])
+@@ -275,7 +296,7 @@
+     def do_GET(self):
+         if self.server.app.config.get('ingestOnly'): return self.reply(404,{'error':'route not found'})
+         if self.path=='/assets/activity-dashboard.js':
+-            raw=pathlib.Path(__file__).with_name('activity_dashboard.js').read_bytes()
++            raw=pathlib.Path(__file__).with_name('operating_dashboard.js').read_bytes()
+             self.send_response(200);self.send_header('Content-Type','application/javascript; charset=utf-8');self.send_header('Content-Length',str(len(raw)));self.send_header('X-Content-Type-Options','nosniff');self.end_headers();self.wfile.write(raw);return
+         if self.path=='/assets/ariadne-logo-square.png':
+             logo=self.server.app.config.get('logoFile')
+@@ -293,10 +314,21 @@
+         if len(route.query)>2048: return self.reply(400,{'error':'query too long'})
+         try: filters=parse_qs(route.query,max_num_fields=20)
+         except ValueError:return self.reply(400,{'error':'too many query fields'})
+-        if route.path in {'/api/activity','/api/insights','/api/runs','/api/sources','/api/controls','/api/alerts'}:
++        if route.path in {'/api/activity','/api/insights','/api/runs','/api/sources','/api/controls','/api/alerts','/api/operating'}:
+             from activity_insights import project,page_runs,sources_view
+             try:
+                 registry=self.server.app.sources()
++                if route.path=='/api/operating':
++                    from activity_operating import operating
++                    app=self.server.app;key=(filters.get('range',['7d'])[0],filters.get('repo',[''])[0],hashlib.sha256(canonical(registry).encode()).hexdigest())
++                    with app.operating_lock:
++                        cached=app.operating_cache.get(key)
++                        if cached is None or time.time()-cached[0]>10:
++                            data=operating(app.store,registry,app.config,filters)
++                            if len(app.operating_cache)>20:app.operating_cache.clear()
++                            app.operating_cache[key]=(time.time(),data)
++                        else:data=cached[1]
++                    return self.reply(200,data)
+                 from activity_controls import controls
+                 if route.path=='/api/alerts':
+                     from activity_alerts import evaluate
+@@ -316,28 +348,13 @@
+             except ValueError:return self.reply(400,{'error':'invalid query'})
+             except Exception:return self.reply(503,{'error':'insights unavailable'})
+         if route.path not in {'/','/scorpion-labs/console/'}: return self.reply(404,{'error':'route not found'})
+-        p=pathlib.Path(self.server.app.config['consoleHtml'])
+-        body=p.read_text() if p.exists() else '<html><head><title>Ariadne</title></head><body><h1>Ariadne</h1></body></html>'
+-        # Legacy task labels can be prompt-derived; suppress those excerpts on the new surface.
+-        body=re.sub(r'(<div class="repo-work"><strong>[^<]*</strong>)<p>.*?</p>',r'\1<p>Read-only repository session</p>',body,flags=re.DOTALL)
+-        body=re.sub(r'<meta\s+http-equiv=[\"\']refresh[\"\'][^>]*>', '', body, flags=re.I)
+-        body=re.sub(r'<small>Latest update:.*?</small>', '', body, flags=re.DOTALL)
+-        def suppress_embedded(match):
+-            try:
+-                embedded=json.loads(match[2])
+-                for snapshot in embedded.get('agentTelemetry',[]):
+-                    for session in snapshot.get('sessions',[]):
+-                        session['task']='Read-only repository session';session.pop('update',None)
+-                return match[1]+canonical(embedded).replace('<','\\u003c')+match[3]
+-            except (ValueError,TypeError,AttributeError):return ''
+-        body=re.sub(r'(<script[^>]*id="console-data"[^>]*>)(.*?)(</script>)',suppress_embedded,body,flags=re.DOTALL)
+-        body=body.replace('../../../../assets/ariadne-logo-square.png','/assets/ariadne-logo-square.png')
+-        body=body.replace('<main class="shell">','<main class="shell">'+dashboard({}),1) if '<main class="shell">' in body else body.replace('</body>',dashboard({})+'</body>')
++        # One canonical operating surface; legacy generated console stays on disk for rollback.
++        body='<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Ariadne · Operations</title></head><body>'+dashboard({})+'</body></html>'
+         body=body.replace('</head>', '<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 32 32%22%3E%3Ctext y=%2226%22 font-size=%2228%22%3EA%3C/text%3E%3C/svg%3E"></head>')
+         raw=body.encode(); self.send_response(200); self.send_header('Content-Type','text/html; charset=utf-8'); self.send_header('Content-Length',str(len(raw))); self.send_header('Cache-Control','no-store'); self.send_header('X-Content-Type-Options','nosniff'); self.send_header('Content-Security-Policy',"default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; frame-ancestors 'none'"); self.end_headers(); self.wfile.write(raw)
+ 
+ def dashboard(data):
+-    return pathlib.Path(__file__).with_name('activity_dashboard.html').read_text()
++    return pathlib.Path(__file__).with_name('operating_dashboard.html').read_text()
+ 
+ def main():
+     parser=argparse.ArgumentParser(); parser.add_argument('--config',required=True); parser.add_argument('--backup'); a=parser.parse_args()
+--- d9aacc455ffe5c78698efbbad469f0f8f446b387/scripts/activity_snapshot_import.py
++++ /home/james/.local/lib/ariadne-activity/scripts/activity_snapshot_import.py
+@@ -14,6 +14,12 @@
+             if snap['status']!='available' or time.time()-collected>90:continue
+             source=c.get('snapshotSources',{}).get(host)
+             if not source:continue
++            machine=snap.get('machine')
++            if isinstance(machine,dict) and machine.get('host')==host and machine.get('status')=='available':
++                body=canonical({'kind':'machine_snapshot','body':machine})
++                with store.connect() as db:
++                    db.execute('INSERT OR REPLACE INTO observations VALUES(?,?,?,?)',('machine:'+host,'_fleet',collected,body))
++                    db.execute('INSERT OR IGNORE INTO observation_history VALUES(?,?,?)',('machine:'+host+':'+str(int(collected)),collected,body))
+             with store.connect() as db: db.execute('INSERT OR REPLACE INTO health VALUES(?,?,?,?)',('snapshot:'+source,collected,'connected',str(len(snap.get('sessions',[])))+' recent sessions'))
+             for s in snap.get('sessions',[]):
+                 repo=s['repository'];repo=repo if '/' in repo else 'jxwalker/'+repo
+--- d9aacc455ffe5c78698efbbad469f0f8f446b387/scripts/agent_telemetry.py
++++ /home/james/.local/lib/ariadne-activity/scripts/agent_telemetry.py
+@@ -130,7 +130,12 @@
+         sources.append({'agent':'Claude','status':'available','method':'read-only session lifecycle and tool names'})
+     else:sources.append({'agent':'Claude','status':'not_installed','method':'No local session store'})
+     sessions.sort(key=lambda s:s['lastEventAt'],reverse=True)
+-    return {'schemaVersion':1,'host':host,'collectedAt':dt.datetime.fromtimestamp(now,dt.timezone.utc).isoformat(),'status':'available','sources':sources,'sessions':sessions[:30]}
++    result={'schemaVersion':1,'host':host,'collectedAt':dt.datetime.fromtimestamp(now,dt.timezone.utc).isoformat(),'status':'available','sources':sources,'sessions':sessions[:30]}
++    try:
++        from activity_machine_probe import collect as machine_collect
++        result['machine']=machine_collect(host,'mac' if __import__('platform').system()=='Darwin' else 'vm')
++    except (ImportError,OSError,ValueError):pass
++    return result
+ 
+ if __name__=='__main__':
+     parser=argparse.ArgumentParser();parser.add_argument('--host',default=socket.gethostname());parser.add_argument('--config');args=parser.parse_args()

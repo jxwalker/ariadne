@@ -1,0 +1,359 @@
+{
+  "observed": "2026-10-13",
+  "commit": "d9aacc455ffe5c78698efbbad469f0f8f446b387",
+  "truncated": false,
+  "paths": [
+    {
+      "path": "benchmarks/source-packs/realistic/sources/sketch-handoff.md",
+      "blob_sha": "32d75c75f788f3dbb6e4f0325cd8ec40c35fd5b2"
+    },
+    {
+      "path": "docs/activity-roadmap.md",
+      "blob_sha": "72e1eed604fdd13f9b74a61367a179873d721511"
+    },
+    {
+      "path": "docs/evaluation.md",
+      "blob_sha": "856e2548441c22fade6c58914f797ad1200f7870"
+    },
+    {
+      "path": "docs/roadmap.md",
+      "blob_sha": "f3325833e162f19551713250fdca0ff31bd58292"
+    },
+    {
+      "path": "vault/projects/ariadne/control/live-adapter-operator-evidence-queue.md",
+      "blob_sha": "b0882ce529b76047231ff4d929fcef4efe2f531b"
+    },
+    {
+      "path": "vault/projects/ariadne/control/roadmap-completion-audit.json",
+      "blob_sha": "ad2ce3fae0ae09537d342dce7edfb46128df9cbb"
+    },
+    {
+      "path": "vault/projects/ariadne/control/roadmap-completion-audit.md",
+      "blob_sha": "a0618ba6e4d38578077194fcdc032229c27c577d"
+    },
+    {
+      "path": "vault/projects/ariadne/control/roadmap-control-refresh.json",
+      "blob_sha": "ecd228b01c1ad96f8e4910c05404b18c03e296be"
+    },
+    {
+      "path": "vault/projects/ariadne/control/roadmap-control-refresh.md",
+      "blob_sha": "ec97f8ff775b7c57c15b372eabbe7d9655fc8fe2"
+    },
+    {
+      "path": "vault/projects/ariadne/evaluation/artifact-checks.json",
+      "blob_sha": "7190458757b113064db445ce0103e73f8f4c997d"
+    },
+    {
+      "path": "vault/projects/ariadne/evaluation/artifact-checks.md",
+      "blob_sha": "9b0284e584fa1645c156c3aa7c2e2642ede89764"
+    },
+    {
+      "path": "vault/projects/ariadne/evaluation/behavior-checks.json",
+      "blob_sha": "bc0d3039cd4273cd4f96aca2627fbdb409d043f9"
+    },
+    {
+      "path": "vault/projects/ariadne/evaluation/behavior-checks.md",
+      "blob_sha": "eb943c4537c9e05a9fbfea7ca9f5e34571901146"
+    },
+    {
+      "path": "vault/projects/ariadne/evaluation/evaluation-2026-05-16T12-00-29-610Z.json",
+      "blob_sha": "07d9bd65820bb1d1da758ae3fc6013ea79346dca"
+    },
+    {
+      "path": "vault/projects/ariadne/evaluation/evaluation-2026-05-16T12-00-29-610Z.md",
+      "blob_sha": "166e6456cd1920ac52cb60eaf2d75ea4a11b5100"
+    },
+    {
+      "path": "vault/projects/ariadne/evaluation/evaluation-plan.json",
+      "blob_sha": "94c87edbeb64168c47e4faa51da1e023a6f271f9"
+    },
+    {
+      "path": "vault/projects/ariadne/evaluation/evaluation-plan.md",
+      "blob_sha": "98f7789fd687989f7a47fcc96def039095d12eb9"
+    },
+    {
+      "path": "vault/projects/ariadne/evaluation/evaluation-trends.json",
+      "blob_sha": "83db744f71481c7fd284f71c2fa4b7c08bfc3acb"
+    },
+    {
+      "path": "vault/projects/ariadne/evaluation/evaluation-trends.md",
+      "blob_sha": "ccc2b20085572125dd7e22de522cc3ca6d92250f"
+    },
+    {
+      "path": "vault/projects/ariadne/evaluation/usage-report.json",
+      "blob_sha": "b7b190c0914ef51a6466c34a42e67e6edaed6793"
+    },
+    {
+      "path": "vault/projects/ariadne/evaluation/usage-report.md",
+      "blob_sha": "8773ea320e51e1f1008417b6879d3b98920660fe"
+    },
+    {
+      "path": "vault/projects/ariadne/gsd/roadmap.json",
+      "blob_sha": "b98348b7bd12f7e4a1b1d11669e981b7cf0da596"
+    },
+    {
+      "path": "vault/projects/ariadne/requirements/PRD.md",
+      "blob_sha": "cbf5eb229fecef8d695cf2ce3c7297d5e72264dc"
+    },
+    {
+      "path": "vault/projects/ariadne/requirements/ambiguities.md",
+      "blob_sha": "64ecc93d1160eab09b6d664ce8b2bc8333f06259"
+    },
+    {
+      "path": "vault/projects/ariadne/requirements/prd.json",
+      "blob_sha": "3ee07942a17b6cb4dc66c9307064a97d6af2450a"
+    },
+    {
+      "path": "vault/projects/bench-smoke/evaluation/artifact-checks.json",
+      "blob_sha": "04d7ce6ce8ae80fe9277deefad578f427e8a969b"
+    },
+    {
+      "path": "vault/projects/bench-smoke/evaluation/artifact-checks.md",
+      "blob_sha": "37694ee0ce7b6b8d7901beedd333f37f3632398b"
+    },
+    {
+      "path": "vault/projects/bench-smoke/evaluation/behavior-checks.json",
+      "blob_sha": "0a2f4f2d2df256e8683125c106954ae9c133da15"
+    },
+    {
+      "path": "vault/projects/bench-smoke/evaluation/behavior-checks.md",
+      "blob_sha": "6256bbbf04bf71f98c9794f84ac88fd22d2c9dfc"
+    },
+    {
+      "path": "vault/projects/bench-smoke/evaluation/benchmark-run-smoke-2026-05-16T18-29-06-696Z.json",
+      "blob_sha": "0d0a4452402be6d98e2487b026b150cbf1c04c07"
+    },
+    {
+      "path": "vault/projects/bench-smoke/evaluation/benchmark-run-smoke-2026-05-16T18-29-06-696Z.md",
+      "blob_sha": "6ecd57e91811588f9852feef7669887fb85cd3a7"
+    },
+    {
+      "path": "vault/projects/bench-smoke/evaluation/evaluation-plan.json",
+      "blob_sha": "6da4bc3caaa5806cf087760c0d972e64f0041c1b"
+    },
+    {
+      "path": "vault/projects/bench-smoke/evaluation/evaluation-plan.md",
+      "blob_sha": "2790af62f538147324ace9f34f06607e8da3e988"
+    },
+    {
+      "path": "vault/projects/bench-smoke/gsd/roadmap.json",
+      "blob_sha": "fedf07d6c6850da5970c7eeb2db6b2f24fa8329d"
+    },
+    {
+      "path": "vault/projects/bench-smoke/requirements/PRD.md",
+      "blob_sha": "aee23d0fb4bb182bcb408a73734817d78f9db43a"
+    },
+    {
+      "path": "vault/projects/bench-smoke/requirements/ambiguities.md",
+      "blob_sha": "1afcde1bc4965bf0323610946f8bcab192171579"
+    },
+    {
+      "path": "vault/projects/bench-smoke/requirements/prd.json",
+      "blob_sha": "653f12bea01ea48ec0711d2dc83ab0f6fcdc9661"
+    },
+    {
+      "path": "vault/projects/e2e-local-realistic/evaluation/artifact-checks.json",
+      "blob_sha": "0094252cc56facaa3e6cd5cfa4158302e6e0d02d"
+    },
+    {
+      "path": "vault/projects/e2e-local-realistic/evaluation/artifact-checks.md",
+      "blob_sha": "4dddce75a8c7595626493dbad3c204739db6453d"
+    },
+    {
+      "path": "vault/projects/e2e-local-realistic/evaluation/behavior-checks.json",
+      "blob_sha": "35a954cea85f24b2eb71206f24617541b7ae21df"
+    },
+    {
+      "path": "vault/projects/e2e-local-realistic/evaluation/behavior-checks.md",
+      "blob_sha": "c4502ae7e30ac4813cdb50ecc7462283fed3c63b"
+    },
+    {
+      "path": "vault/projects/e2e-local-realistic/evaluation/benchmark-run-realistic-2026-05-17T10-45-17-863Z.json",
+      "blob_sha": "2f2541deeb9ccc16be09c44c5c5dc2d9ab682b43"
+    },
+    {
+      "path": "vault/projects/e2e-local-realistic/evaluation/benchmark-run-realistic-2026-05-17T10-45-17-863Z.md",
+      "blob_sha": "a2ad2383f3cf8c9568116f9bbdd73b74ad97cbab"
+    },
+    {
+      "path": "vault/projects/e2e-local-realistic/evaluation/evaluation-plan.json",
+      "blob_sha": "e136befbd8972903d50033778ea9747c9ce754ca"
+    },
+    {
+      "path": "vault/projects/e2e-local-realistic/evaluation/evaluation-plan.md",
+      "blob_sha": "e91ed2ca1faf430d5bd2179839fdc8767055352c"
+    },
+    {
+      "path": "vault/projects/e2e-local-realistic/evaluation/local-runtime-e2e-summary.md",
+      "blob_sha": "233821fe20c64eecb466284499d6262cb743e73d"
+    },
+    {
+      "path": "vault/projects/e2e-local-realistic/evaluation/usage-report.json",
+      "blob_sha": "5f4076913ec93e260b7c0e2b85a81fcd66968081"
+    },
+    {
+      "path": "vault/projects/e2e-local-realistic/evaluation/usage-report.md",
+      "blob_sha": "c3bcec66262aff240ee329885c90654172ac9564"
+    },
+    {
+      "path": "vault/projects/e2e-local-realistic/gsd/roadmap.json",
+      "blob_sha": "c20d9abdc284c90913358341b87071055f1afac0"
+    },
+    {
+      "path": "vault/projects/e2e-local-realistic/requirements/PRD.md",
+      "blob_sha": "482d9e74a6c9eef354e6489f4498e1c32e319f70"
+    },
+    {
+      "path": "vault/projects/e2e-local-realistic/requirements/ambiguities.md",
+      "blob_sha": "a319237df503372fd2c7d1d4ac97680e0118d066"
+    },
+    {
+      "path": "vault/projects/e2e-local-realistic/requirements/notebooklm-import.json",
+      "blob_sha": "2f9298ee827e705e0a1e955ba334974984c0df49"
+    },
+    {
+      "path": "vault/projects/e2e-local-realistic/requirements/notebooklm-import.md",
+      "blob_sha": "e0b28b0995c04e1d5efed37f3eacee3d8cd84dbe"
+    },
+    {
+      "path": "vault/projects/e2e-local-realistic/requirements/prd.json",
+      "blob_sha": "8d04542c7ff0bad88709cefe604c3d6ef81e319f"
+    },
+    {
+      "path": "vault/projects/e2e-local-smoke/evaluation/artifact-checks.json",
+      "blob_sha": "f8e273d82affe63ac0a547c78c556c0142788348"
+    },
+    {
+      "path": "vault/projects/e2e-local-smoke/evaluation/artifact-checks.md",
+      "blob_sha": "ce5a64172815dff9c7808fdcda228760997cb179"
+    },
+    {
+      "path": "vault/projects/e2e-local-smoke/evaluation/behavior-checks.json",
+      "blob_sha": "ecf7506eb7b1b02eaaead2ffed6bb60f04dffe49"
+    },
+    {
+      "path": "vault/projects/e2e-local-smoke/evaluation/behavior-checks.md",
+      "blob_sha": "0656975ca987f0bd4960e0e7a20147002bf186d9"
+    },
+    {
+      "path": "vault/projects/e2e-local-smoke/evaluation/benchmark-run-smoke-2026-05-17T10-45-17-841Z.json",
+      "blob_sha": "47e64b73762e221317b4319c2a2e6ca9c6b29edf"
+    },
+    {
+      "path": "vault/projects/e2e-local-smoke/evaluation/benchmark-run-smoke-2026-05-17T10-45-17-841Z.md",
+      "blob_sha": "12f28b4713f2c8593ebc1a88152afa08c668661d"
+    },
+    {
+      "path": "vault/projects/e2e-local-smoke/evaluation/evaluation-plan.json",
+      "blob_sha": "3873d7047d3a266ecb1fbd45aec262a2bb3223f5"
+    },
+    {
+      "path": "vault/projects/e2e-local-smoke/evaluation/evaluation-plan.md",
+      "blob_sha": "09e7cacd73bfe82d5e79ae4154876c577e66906b"
+    },
+    {
+      "path": "vault/projects/e2e-local-smoke/gsd/roadmap.json",
+      "blob_sha": "fb2f1c0d45248a1d8de26db67b49e666dfeb5dbc"
+    },
+    {
+      "path": "vault/projects/e2e-local-smoke/requirements/PRD.md",
+      "blob_sha": "82b882cac3ca4c361ab752d71f5b53cddcaf77fa"
+    },
+    {
+      "path": "vault/projects/e2e-local-smoke/requirements/ambiguities.md",
+      "blob_sha": "bac2e541fce409d30f4207aeeb079926ace0c5a1"
+    },
+    {
+      "path": "vault/projects/e2e-local-smoke/requirements/prd.json",
+      "blob_sha": "1a6107475a31a41bb0ad95a9584e1e5bbe3f25b6"
+    },
+    {
+      "path": "vault/projects/e2e-local-stress-alpha/evaluation/artifact-checks.json",
+      "blob_sha": "99c86b5e67d7e76e576326f6f272f9ac59424d84"
+    },
+    {
+      "path": "vault/projects/e2e-local-stress-alpha/evaluation/artifact-checks.md",
+      "blob_sha": "847c233e5528c059d9ad3646bf952b0fb65e015b"
+    },
+    {
+      "path": "vault/projects/e2e-local-stress-alpha/evaluation/behavior-checks.json",
+      "blob_sha": "47da9b67fc7033c31be79b61bcca92f7d4a11f13"
+    },
+    {
+      "path": "vault/projects/e2e-local-stress-alpha/evaluation/behavior-checks.md",
+      "blob_sha": "6c8ab606041f1515896e2dc025d1fc00d99c9d6a"
+    },
+    {
+      "path": "vault/projects/e2e-local-stress-alpha/evaluation/evaluation-plan.json",
+      "blob_sha": "91315b73863e0800572387a37bef81049fa956bd"
+    },
+    {
+      "path": "vault/projects/e2e-local-stress-alpha/evaluation/evaluation-plan.md",
+      "blob_sha": "510df4373c52a37951780114d6369212cf89d7dc"
+    },
+    {
+      "path": "vault/projects/e2e-local-stress-alpha/gsd/roadmap.json",
+      "blob_sha": "1913c591911f05a6e8be9da3f33eb0ef3f6bc186"
+    },
+    {
+      "path": "vault/projects/e2e-local-stress-alpha/requirements/PRD.md",
+      "blob_sha": "5e9314cfa8a932a9e49b5b1f411926e1ba057334"
+    },
+    {
+      "path": "vault/projects/e2e-local-stress-alpha/requirements/ambiguities.md",
+      "blob_sha": "3662fc97b7e5a4ec35c0be6b208dffefac6779aa"
+    },
+    {
+      "path": "vault/projects/e2e-local-stress-alpha/requirements/prd.json",
+      "blob_sha": "c272c77bc70f67e031de7125605283b0cc5b45fc"
+    },
+    {
+      "path": "vault/projects/e2e-local-stress-beta/evaluation/artifact-checks.json",
+      "blob_sha": "1a7a243a3c333c893b1ce8dd8ee7a46a25326185"
+    },
+    {
+      "path": "vault/projects/e2e-local-stress-beta/evaluation/artifact-checks.md",
+      "blob_sha": "78649458b9b42bd2aff9014fcd8f4219033d4055"
+    },
+    {
+      "path": "vault/projects/e2e-local-stress-beta/evaluation/behavior-checks.json",
+      "blob_sha": "70ab105924d0a7a37c6ff48828f09ad54b7c446d"
+    },
+    {
+      "path": "vault/projects/e2e-local-stress-beta/evaluation/behavior-checks.md",
+      "blob_sha": "ea6d6a4f816e39bbdd1c3e6bef1d30a53a663e06"
+    },
+    {
+      "path": "vault/projects/e2e-local-stress-beta/evaluation/evaluation-plan.json",
+      "blob_sha": "60c2415bfea0c37e3ec69cf5b2f5bd546bc275c6"
+    },
+    {
+      "path": "vault/projects/e2e-local-stress-beta/evaluation/evaluation-plan.md",
+      "blob_sha": "16bedf394576814dced02d0a8651fbeb357db29d"
+    },
+    {
+      "path": "vault/projects/e2e-local-stress-beta/gsd/roadmap.json",
+      "blob_sha": "4322c714cf96e1c4eb491459175b8ba57150a58d"
+    },
+    {
+      "path": "vault/projects/e2e-local-stress-beta/requirements/PRD.md",
+      "blob_sha": "7943dd256cdc24c950b9774b28b677b9e693886e"
+    },
+    {
+      "path": "vault/projects/e2e-local-stress-beta/requirements/ambiguities.md",
+      "blob_sha": "43f134dd1968a50a1a11fe27beb92c6d1bd0531d"
+    },
+    {
+      "path": "vault/projects/e2e-local-stress-beta/requirements/prd.json",
+      "blob_sha": "bc16ca99b4db8166c7cc5690c6580c10ba10d86b"
+    },
+    {
+      "path": "vault/projects/e2e-local-stress/evaluation/benchmark-run-stress-2026-05-17T10-45-17-890Z.json",
+      "blob_sha": "65174c22e595871232974ad79426a3c86ce693ae"
+    },
+    {
+      "path": "vault/projects/e2e-local-stress/evaluation/benchmark-run-stress-2026-05-17T10-45-17-890Z.md",
+      "blob_sha": "c8b67fbb3a66232e24382b7a312a1e7c8b2657e5"
+    }
+  ]
+}
