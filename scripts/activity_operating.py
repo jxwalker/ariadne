@@ -185,9 +185,22 @@ def operating(store,registry,config,params=None,at=None):
                 blocked.append(action(stable('unknown',row['source'],row['run']),title,'Execution freshness is unknown; this is not proof that the task is stuck.',owner,r['repo'],r['last'],'Inspect the source or contact the owning bot before restarting or reassigning.',pr_url,kind='telemetry',priority=4))
         # Resolve only an exact source/request identity; another source cannot close it.
         decisions={}
-        # Order by parsed source time in Python: SQLite julianday() cannot parse every ISO form validate() accepts.
-        lifecycle=[(json.loads(r['envelope']),r) for r in db.execute("SELECT source,envelope,received FROM events WHERE json_extract(envelope,'$.kind') IN ('decision.requested','decision.resolved') ORDER BY received DESC LIMIT 5000")]
-        lifecycle.sort(key=lambda p:(ts(p[0]['occurredAt']) or p[1]['received'],p[0]['sequence']),reverse=True)
+        # Select current state across the complete lifecycle before any UI/output bound.
+        # The same Python parser handles every ISO form accepted by validate().
+        db.create_function('ariadne_decision_time',2,lambda stamp,received:ts(stamp) or received,deterministic=True)
+        lifecycle=[(json.loads(r['envelope']),r) for r in db.execute("""
+            WITH current_decisions AS (
+                SELECT source,envelope,received,
+                  row_number() OVER (
+                    PARTITION BY source,json_extract(envelope,'$.repository'),json_extract(envelope,'$.decision.id')
+                    ORDER BY ariadne_decision_time(json_extract(envelope,'$.occurredAt'),received) DESC,
+                             json_extract(envelope,'$.sequence') DESC,received DESC,id DESC
+                  ) AS position
+                FROM events
+                WHERE json_extract(envelope,'$.kind') IN ('decision.requested','decision.resolved')
+            )
+            SELECT source,envelope,received FROM current_decisions WHERE position=1
+        """)]
         for e,row in lifecycle:
             d=e.get('decision',{});key=(row['source'],e['repository'],d.get('id'));reg=registry.get(row['source'],{})
             if key in decisions:continue

@@ -118,6 +118,18 @@ class OperatingTests(unittest.TestCase):
         self.assertIsNone(row['cpuPercent']);self.assertIsNone(row['diskPercent']);self.assertEqual(row['pressure'],{'memory_full':1.5})
         self.assertEqual([t['name'] for t in row['temperatures']],['CPU']);self.assertIsNone(row['vms'][0]['mem']);self.assertEqual(row['services'],[{'name':'svc','state':'active'}])
         self.assertNotIn('<',canonical(row))
+    def test_unresolved_question_survives_large_decision_history(self):
+        original=self.send('decision.requested',decision={'id':'old-choice','recipient':'james','question':'Still needs an answer','blocking':True})
+        rows=[]
+        for i in range(5001):
+            e=copy.deepcopy(original);e.update(eventId='history-'+str(i),sequence=i+1,kind='decision.resolved',decision={'id':'closed-'+str(i),'recipient':'james','resolution':'Already answered'})
+            validate(e);encoded=canonical(e);rows.append((e['eventId'],'test',self.at+i*0.001,e['occurredAt'],encoded.encode(),encoded))
+        with self.store.connect() as db:
+            db.executemany('INSERT INTO events(id,source,received,received_at,raw,envelope) VALUES(?,?,?,?,?,?)',rows)
+        self.assertEqual([a['requestId'] for a in self.read()['needsYou']],['old-choice'])
+        self.send('decision.resolved',seq=5002,decision={'id':'old-choice','recipient':'james','resolution':'Chosen'})
+        self.assertEqual(self.read()['needsYou'],[])
+
     def test_basic_format_resolution_time_still_orders_decisions(self):
         d={'id':'choice','recipient':'james','question':'Choose?','blocking':True}
         self.send('decision.requested',decision=d)
