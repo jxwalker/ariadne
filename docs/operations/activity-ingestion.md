@@ -2,6 +2,14 @@
 
 Python 3.11+ standard library, SQLite WAL with `synchronous=FULL`. No pip packages or container images are required by this service. Existing Node console generation and read-only collectors remain separate. `ariadne` remains the canonical TypeScript runner.
 
+### Database concurrency and readiness
+
+Migration 3 adds indexes for event lifecycle, queue, receipt and observation queries without deleting or rewriting evidence. Each Store keeps an anchor connection open so WAL is not repeatedly checkpointed/removed between requests. Existing initialized stores do not repeat schema DDL. Call `Store.close()` when an embedded client is finished; the supervised server closes it during shutdown.
+
+GitHub reconciliation commits at most 25 observations per transaction and yields between batches for other SQLite producers. Network requests stay outside transactions. Empty projection queues do not acquire a writer lock. Write connections retain FULL durability and a 30-second busy timeout; this is a fallback alongside shorter transactions, not a substitute for them.
+
+`/readyz` checks protected source configuration and a bounded read-only schema/event query with a 250 ms SQLite busy timeout. It does not build a full activity/evidence projection. Integration health and reconciliation freshness remain separate dashboard evidence. Run `python3 -m unittest discover -s scripts -p 'test_activity*.py'` to exercise HTTP readiness under an active writer, concurrent event producers, migration preservation and ingestion during reconciliation.
+
 ## Contract and authentication
 
 [Producer schema](../../schemas/activity-event-v1.json) and [controlled cloud example](../../examples/activity/task-start.json). Server receipt timestamp is assigned on acceptance and returned as `receivedAt`; never accept producer-selected receipt times. Raw validated bytes and canonical envelope remain in private SQLite, never full transcripts. Extra fields, sender-selected commands/paths, non-HTTPS evidence links, credential-bearing URLs, malformed timestamps, oversized labels and payloads are rejected. Changed filenames in legacy console are observations, not authorship.

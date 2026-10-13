@@ -13,7 +13,7 @@ class ActivityTests(unittest.TestCase):
     def setUp(self):
         self.tmp=tempfile.TemporaryDirectory(); self.root=pathlib.Path(self.tmp.name); self.creds=self.root/'creds'; self.creds.write_text(json.dumps({'test':{'secret':'test-secret','projects':['ariadne'],'repositories':['jxwalker/ariadne']}})); self.creds.chmod(0o600)
         self.app=App({'database':str(self.root/'state.db'),'credentials':str(self.creds),'consoleHtml':str(self.root/'index.html')}); self.store=self.app.store
-    def tearDown(self): self.tmp.cleanup()
+    def tearDown(self): self.store.close(); self.tmp.cleanup()
     def accept(self,e): validate(e); return self.store.accept(e,canonical(e).encode())
     def headers(self,raw,ts=None,nonce='nonce'):
         ts=str(ts or int(time.time())); return {'X-Ariadne-Source':'test','X-Ariadne-Timestamp':ts,'X-Ariadne-Nonce':nonce,'X-Ariadne-Signature':hmac.new(b'test-secret',ts.encode()+b'\n'+nonce.encode()+b'\n'+raw,hashlib.sha256).hexdigest()}
