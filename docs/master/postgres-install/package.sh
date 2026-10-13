@@ -15,6 +15,8 @@ dryrun)
   ;;
 apply)
   test "${ARIADNE_CONFIRMED_PLAN:-}" = master-p1-package
+  mkdir -p "$E"
+  ss -ltnH > "$E/listeners.before"
   bash "$0" dryrun
   # Back up only non-secret files being changed; these paths must be absent.
   printf '%s\n' 'createcluster.conf: absent' 'policy-rc.d: absent' 'postgresql.service override: absent' > "$E/config.before"

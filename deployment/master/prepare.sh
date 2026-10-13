@@ -6,7 +6,9 @@ stage
 cp -a "$REPO/node_modules" "$PKG/stage/node_modules"
 "$PKG/stage/node_modules/.bin/tsc" -p "$PKG/stage/tsconfig.json"
 # Read-only live checks. No migration, imports, units, credentials or service restart.
-[[ $(cat "$LIVE/DEPLOYED_COMMIT") == 2039065* ]]
+EXPECTED_DEPLOYED_COMMIT=$(sed -n 's/^Expected deployed commit: //p' "$PKG/PLAN.md")
+[[ "$EXPECTED_DEPLOYED_COMMIT" =~ ^[a-f0-9]{40}$ ]]
+[[ $(cat "$LIVE/DEPLOYED_COMMIT") == "$EXPECTED_DEPLOYED_COMMIT" ]]
 [[ $(id -un) == james ]]
 [[ $(psql -XAt -c "SELECT rolname||':'||rolsuper||':'||rolcreatedb||':'||(rolpassword IS NULL) FROM pg_authid WHERE rolname='ariadne_master'") == 'ariadne_master:false:false:true' ]]
 [[ $(psql -XAt -c "SELECT count(*) FROM pg_namespace WHERE nspname='master'") == 0 ]]

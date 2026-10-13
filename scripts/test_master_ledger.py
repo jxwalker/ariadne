@@ -158,6 +158,44 @@ class LedgerContract(unittest.TestCase):
         self.sql("UPDATE master.nodes SET body=body||'{\"state\":\"verification\"}' WHERE id='%s';"%w,database='ledger_test',raw=True)
         self.assertIn('scope not approved',self.cmd('accept',w,1)['error'])
 
+    def test_excluded_import_scope(self):
+        from master_import import compile_import
+        commands=compile_import()
+        excluded={c['target']:c['body']['scopeExclusion'] for c in commands if c.get('body',{}).get('scopeExclusion')}
+        self.assertEqual(len(excluded),4)
+        scoped={e['workId'] for c in commands if c['op']=='scope' for e in c['scope']}
+        self.assertFalse(set(excluded)&scoped)
+        self.assertEqual(excluded['work:openscorpion:quota'],'Deferred by DEC-002 A')
+
+    def test_resolution_dependencies_cancellation_and_blocker_age(self):
+        p=self.fixture();w=p+'w'
+        self.assertFalse(self.cmd('transition',w,1,actor='agent:bot',state='cancelled')['ok'])
+        rev=self.ok('transition',w,1,state='blocked')
+        body=self.sql("SELECT body FROM master.nodes WHERE id='%s';"%w,database='ledger_test')
+        self.assertRegex(body['blockerSince'],r'T.*Z$')
+        rev=self.ok('update',w,rev,patch={'blocker':None})
+        body=self.sql("SELECT body FROM master.nodes WHERE id='%s';"%w,database='ledger_test')
+        self.assertNotIn('blockerSince',body)
+        rev=self.ok('transition',w,rev,state='ready')
+        self.ok('create',p+'gap',kind='external',body={'title':'gap'})
+        rev=self.ok('dependencies',w,rev,dependencies=[p+'gap'])
+        self.assertEqual(self.sql("SELECT body->'state' FROM master.nodes WHERE id='%s';"%w,database='ledger_test'),'proposed')
+        self.assertFalse(self.cmd('resolve',p+'gap',1,actor='agent:bot',resolution='proof obtained')['ok'])
+        self.ok('resolve',p+'gap',1,resolution='proof obtained')
+        self.assertEqual(self.sql("SELECT master.blockers('%s');"%w,database='ledger_test'),[])
+        rev=self.ok('transition',w,rev,state='ready',via='ariadne-bot/codex')
+        self.assertEqual(self.sql("SELECT to_jsonb(j) FROM master.journal j WHERE target='%s' ORDER BY sequence DESC LIMIT 1;"%w,database='ledger_test')['via'],'ariadne-bot/codex')
+
+    def test_waiver_progress_and_expiry(self):
+        p=self.fixture();w=p+'w';rev=1
+        for state in ['ready','active','verification']:rev=self.ok('transition',w,rev,state=state)
+        expiry=self.sql("SELECT to_jsonb(now()+interval '1 day');",database='ledger_test')
+        self.ok('override',w,rev,waivedCriteria=[p+'wc'],risk='operator risk',expiresAt=expiry)
+        progress=self.sql("SELECT to_jsonb(p) FROM master.progress p WHERE baseline_id='%s';"%(p+'b'),database='ledger_test')
+        self.assertEqual((progress['accepted_criteria'],progress['waived_criteria']),(0,1))
+        body=self.sql("SELECT body FROM master.nodes WHERE id='%s';"%w,database='ledger_test')
+        self.assertEqual(body['acceptanceMode'],'waiver');self.assertEqual(body['waiver']['expiresAt'],expiry)
+
     def test_append_only(self):
         with self.assertRaises(AssertionError):self.sql('DELETE FROM master.journal;',database='ledger_test')
 

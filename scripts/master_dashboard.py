@@ -2,6 +2,7 @@
 All writes go through the canonical ariadne command API and local peer authentication.
 """
 import html, json, os, pathlib, subprocess
+from functools import lru_cache
 from datetime import datetime, timezone
 from urllib.parse import urlencode
 
@@ -24,31 +25,37 @@ def render(data,route,filters):
     def source(n):
         s=n['body'].get('source',{})
         return esc(s.get('repository','Assignment'))+' · '+esc(s.get('path','No source path'))+' · observed '+esc(s.get('observed_at'))
+    children_by_parent={}
+    for n in nodes.values():children_by_parent.setdefault(n.get('parent'),[]).append(n['id'])
+    @lru_cache(None)
     def descendant_ids(id):
         result={id}
-        for child in nodes.values():
-            if child.get('parent')==id:result|=descendant_ids(child['id'])
+        for child in children_by_parent.get(id,[]):result.update(descendant_ids(child))
         return result
     def denominator(n):
         descendants=descendant_ids(n['id']);counts=[]
-        accepted={a['criterion_id'] for a in data.get('accepted',[])}
+        accepted={a['criterion_id'] for a in data.get('accepted',[]) if a.get('evidence_id')}
+        waived={a['criterion_id'] for a in data.get('accepted',[]) if not a.get('evidence_id')}
         for baseline,p in progress.items():
             entries=[s for s in data.get('scope',[]) if s['baseline_id']==baseline and s['work_id'] in descendants]
             if entries:
                 ids={s['criterion_id'] for s in entries}
-                counts.append(str(len(ids&accepted))+' accepted / '+str(len(ids))+' '+esc(p['baseline_state'])+' criteria · '+esc(baseline))
+                counts.append(str(len(ids&accepted))+' evidence accepted · '+str(len(ids&waived))+' waived / '+str(len(ids))+' '+esc(p['baseline_state'])+' criteria · '+esc(baseline))
         return ''.join('<p class="count">'+c+'</p>' for c in counts) or '<p>No scoped criterion denominator recorded</p>'
     def card(n):
         href=link('/work',id=n['id']) if n['kind']=='work' else link('/roadmaps',node=n['id'])
         b=n['body'];parts=[f'<article><h3><a href="{href}">{title(n)}</a></h3><p>{esc(n["kind"])} · revision {n["revision"]} · {esc(b.get("state","sourced draft"))}</p>']
         if n['kind']=='baseline':
             p=progress.get(n['id'],{'accepted_criteria':0,'denominator':0})
-            parts.append(f'<p class="count">{p["accepted_criteria"]} accepted mandatory criteria / {p["denominator"]} {"approved" if b.get("state")=="approved" else "proposed"} criteria</p>')
+            parts.append(f'<p class="count">{p["accepted_criteria"]} evidence accepted · {p.get("waived_criteria",0)} waived ({p.get("expired_waived_criteria",0)} expired) mandatory criteria / {p["denominator"]} {"approved" if b.get("state")=="approved" else "proposed"} criteria</p>')
             parts.append('<p>Approved denominator: '+(str(p['denominator']) if b.get('state')=='approved' else 'none — awaiting James')+'</p><details><summary>Scope diff</summary><pre>'+esc(json.dumps(b.get('scopeDiff',{}),indent=2))+'</pre></details>')
         if n['kind'] in ('product','phase','milestone'):parts.append(denominator(n))
         if n['kind']=='work':
             parts.append(f'<p>Owner: {esc(b.get("owner"))} · {source(n)}</p><p>Source claim: {esc(b.get("sourceStatus"))}</p><p>Next: {esc(b.get("nextAction"))}</p>')
-            parts.append('<p>PR attribution: '+('linked' if b.get('refs') else 'pre-PR / unattributed')+'</p>')
+            parts.append('<p>PR attribution: '+('explicit reference' if any(r.get('kind')=='github_pr' and r.get('url') and not r.get('classification') for r in b.get('refs',[])) else 'mentioned in source text, unverified' if b.get('refs') else 'pre-PR / unattributed')+'</p>')
+            if b.get('scopeExclusion'):parts.append('<p>Excluded from baseline commitments: '+esc(b['scopeExclusion'])+'</p>')
+            if b.get('waiver'):parts.append('<p class="blocked">WAIVER · expiry '+esc(b['waiver'].get('expiresAt'))+'</p><pre>'+esc(json.dumps(b['waiver']))+'</pre>')
+            if b.get('dependencyProvenance'):parts.append('<p>Dependencies: '+esc(json.dumps(b['dependencyProvenance']))+'</p>')
             if n.get('blockers'):parts.append('<p class="blocked">Dependencies: '+esc(json.dumps(n['blockers']))+'</p>')
             if b.get('blockerSince'):parts.append('<p>Blocker age: '+age(b['blockerSince'])+'</p>')
         parts.append('</article>');return ''.join(parts)
@@ -80,8 +87,12 @@ def render(data,route,filters):
             if j['target'] in lineage:body+='<article><p>'+esc(j['at'])+' · '+esc(j['actor'])+' · '+esc(j['command_id'])+'</p><pre>'+esc(json.dumps(j,indent=2))+'</pre></article>'
     elif route=='/work':
         body+='<h1>Work queues</h1><p>Authoritative state, source claims and unattributed observations stay visible. Draft scope cannot be ready.</p>'
+        offset=max(0,int(filters.get('offset',['0'])[0]));limit=min(100,max(1,int(filters.get('limit',['50'])[0])))
+        eligible=[n for n in nodes.values() if n['kind']=='work' and (not filters.get('state') or n['body'].get('state')==filters['state'][0])]
+        visible={n['id'] for n in eligible[offset:offset+limit]}
+        body+='<p>'+str(len(eligible))+' items · <a href="'+link('/work',offset=max(0,offset-limit),limit=limit)+'">Previous</a> · <a href="'+link('/work',offset=offset+limit,limit=limit)+'">Next</a></p>'
         for state in ['ready','active','verification','blocked','waiting','parked','proposed','accepted','cancelled','superseded']:
-            work=[n for n in nodes.values() if n['kind']=='work' and n['body'].get('state')==state]
+            work=[n for n in nodes.values() if n['id'] in visible and n['body'].get('state')==state]
             body+=f'<details {"open" if state in ["active","blocked","proposed"] else ""}><summary>{esc(state.title())} · {len(work)}</summary><div class="grid">'+''.join(card(n) for n in work)+'</div></details>'
     else:
         selected=nodes.get(filters.get('node',[''])[0]);body+='<h1>Roadmaps</h1>'
@@ -103,3 +114,17 @@ def render(data,route,filters):
     return page(body)
 def page(body):
     return '<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Ariadne · Master portfolio</title><style>body{font:16px system-ui;background:#f5f7fa;color:#172b38;max-width:1240px;margin:auto;padding:24px}header,nav{display:flex;gap:24px;align-items:center;margin-bottom:24px}.brand{font-size:28px;font-weight:bold}a{color:#155973}h1{font-size:30px}h2{margin-top:32px}h3{margin-top:0;font-size:18px}article{background:white;border:1px solid #cdd8df;border-radius:10px;padding:18px;margin-bottom:14px;overflow-wrap:anywhere;min-width:0}.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}.count{font-size:20px;font-weight:600}pre{white-space:pre-wrap;overflow-wrap:anywhere;font-size:13px;background:#edf2f6;padding:14px}summary{cursor:pointer;padding:16px;font-weight:600}.blocked{color:#913b25}@media(max-width:700px){body{padding:14px}.grid{grid-template-columns:1fr}header{align-items:flex-start;flex-direction:column;gap:4px}nav{gap:18px}h1{font-size:24px}}</style></head><body>'+body+'</body></html>'
+
+
+def api_page(data,filters):
+    """Bounded collection API; detailed records require explicit collection and target filters."""
+    collection=filters.get('collection',['nodes'])[0]
+    allowed={'nodes','history','evidence','imports','progress','accepted','acceptanceEvidence','scope','dependencies','aliases'}
+    if collection not in allowed:raise ValueError('invalid collection')
+    offset=max(0,int(filters.get('offset',['0'])[0]));limit=min(100,max(1,int(filters.get('limit',['50'])[0])))
+    records=data.get(collection,[])
+    if filters.get('id'):
+        target=filters['id'][0]
+        records=[r for r in records if target in [r.get('id'),r.get('target'),r.get('work_id'),r.get('baseline_id'),r.get('node_id')]]
+    if filters.get('state'):records=[r for r in records if r.get('body',{}).get('state')==filters['state'][0]]
+    return {'collection':collection,'items':records[offset:offset+limit],'total':len(records),'offset':offset,'limit':limit,'nextOffset':offset+limit if offset+limit<len(records) else None}

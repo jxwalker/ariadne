@@ -3,7 +3,7 @@
 set -euo pipefail
 source "$(dirname "$0")/common.sh"
 VAULT="$EVIDENCE/vault"
-NOTES='James 2026-10-13 16:29 BST "PostgreSQL is the recommended ledger; use the existing VM unless evidence requires another arrangement. Prepare and execute necessary changes through the existing bounded, authorized deployment path."'
+NOTES='Bot transcription; source pointer: deployment/master/PLAN.md#authorization-source. James 2026-10-13 16:29 BST "PostgreSQL is the recommended ledger; use the existing VM unless evidence requires another arrangement. Prepare and execute necessary changes through the existing bounded, authorized deployment path."'
 cd "$REPO"
 run() { npm run -s ariadne -- "$@" --vault "$VAULT" --project ariadne; }
 # Preparation is read-only to live systems. Bind the manifest digest into the immutable plan text.
@@ -19,7 +19,7 @@ p=pathlib.Path(sys.argv[1])/'projects/ariadne/control/approvals'
 print(max(p.glob('*.json'),key=lambda x:x.stat().st_mtime))
 PY
 )
- run approval-decision --approval "$APPROVAL" --status approved --by 'James (recorded assignment approval; transcribed)' --notes "$NOTES"
+ run approval-decision --approval "$APPROVAL" --status approved --by 'Ariadne Bot (transcription of James brief, not a James-authored act)' --notes "$NOTES"
  run mutation-readiness --target deployment --risk high --scope "ARIADNE-MASTER-PILOT-20261013-P01: exact reviewed head $HEAD_SHA; migrate existing ledger, harden DB ownership, local peer map, sourced draft imports, three activity view files + marker; restart only activity; no new access/listener" --approval "$APPROVAL" --auth-evidence "$EVIDENCE/AUTHORIZATION2.md" --dry-run "$CHECK_COMMAND && bash $PKG/dryrun.sh" --live-command "$CHECK_COMMAND && env ARIADNE_MASTER_DEPLOY=confirmed bash $PKG/apply.sh" --post-verify "$CHECK_COMMAND && bash $PKG/verify.sh" --rollback "Separately audited: env ARIADNE_MASTER_ROLLBACK=confirmed bash $PKG/rollback.sh" --notes "$NOTES; all deployment scope/backup/rollback details in reviewed deployment/master/PLAN.md"
  ;;
 audit) run mutation-readiness-audit ;;

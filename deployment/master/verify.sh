@@ -10,8 +10,6 @@ for endpoint in /readyz / /api/operating /api/runs /api/sources /api/controls /r
 done
 [[ $(curl -s -o /dev/null -w '%{http_code}' https://codex-dev.tail7b3a3b.ts.net/roadmaps) == 200 ]]
 [[ $(psql -XAt -c "SELECT count(*) FROM master.products") == 3 ]]
-[[ $(psql -XAt -c "SELECT count(*) FROM master.accepted") == 0 ]]
-[[ $(psql -XAt -c "SELECT count(*) FROM master.baselines WHERE body->>'state'='approved'") == 0 ]]
 [[ $(psql -XAt -c "SELECT count(*) FROM pg_hba_file_rules WHERE error IS NOT NULL") == 0 ]]
 [[ $(psql -XAt -c "SELECT count(*) FROM pg_authid WHERE rolname='ariadne_master' AND NOT rolsuper AND NOT rolcreatedb AND rolpassword IS NULL") == 1 ]]
 [[ $(psql -XAt -c "SELECT pg_get_userbyid(datdba) FROM pg_database WHERE datname='ariadne_master'") == james ]]

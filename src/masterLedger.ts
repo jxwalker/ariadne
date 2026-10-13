@@ -16,10 +16,14 @@ export function ledgerQuery(sql: string): unknown {
 }
 export function ledgerCommand(payload: unknown): unknown {
   if (userInfo().username !== "james") throw new Error("Phase 1 ledger writes are operator-only");
-  const json = JSON.stringify(payload).replaceAll("'", "''");
-  return ledgerQuery(Array.isArray(payload)
-    ? `SELECT jsonb_agg(master.command('james', value) ORDER BY ord) FROM jsonb_array_elements('${json}'::jsonb) WITH ORDINALITY AS c(value,ord);`
-    : `SELECT master.command('james', '${json}'::jsonb);`);
+  // This is attribution, not a credential boundary: every process under uid james is operator-equivalent.
+  const attributed = (value: unknown) => ({ ...(value as Record<string, unknown>), via: process.env.ARIADNE_LEDGER_VIA || 'ariadne/operator-cli' });
+  const execute = (value: unknown) => {
+    const json = JSON.stringify(attributed(value)).replaceAll("'", "''");
+    return ledgerQuery(`SELECT master.command('james', '${json}'::jsonb);`);
+  };
+  // Ordered, individually committed commands; a rejected command does not undo earlier results.
+  return Array.isArray(payload) ? payload.map(execute) : execute(payload);
 }
 export async function runLedger(command: string, file?: string): Promise<void> {
   if (command === "ledger-view") console.log(JSON.stringify(ledgerQuery("SELECT master.snapshot();"), null, 2));

@@ -12,6 +12,7 @@ def compile_import():
     pr_facts=json.loads((MASTER/'evidence/referenced-prs.json').read_text())
     dependency_commands=[]
     def command(op,target,**kw):
+        if op=='dependencies':kw['dependencyProvenance']={'classification':'inferred','reason':'Parsed source ordering or pilot heuristic; operator confirmation required','source':next((c['body'].get('source') for c in reversed(commands) if c.get('target')==target and c.get('body')),None)}
         c=dict(op=op,target=target,expectedRevision=revisions.get(target,0),reason='Sourced draft import; outcome Done claims remain unverified',**kw)
         c['commandId']='P1-'+hashlib.sha256(json.dumps(c,sort_keys=True).encode()).hexdigest()[:48]
         commands.append(c);revisions[target]=revisions.get(target,0)+1
@@ -29,14 +30,18 @@ def compile_import():
         cs=criteria or [{'id':criterion,'text':goal}]
         node(id,'work',title,milestone,goal=goal,owner='unassigned',policy='policy:source-draft:v1',criteria=cs,state='proposed',source=meta,sourceStatus=status,verification='unverified',nextAction='Freeze candidate and obtain policy evidence; reconcile source assertion',requirements=[goal],refs=[],**body)
         numbers={int(n) for n in re.findall(r'#(\d+)',title+' '+goal+' '+status)}
-        commands[-1]['body']['refs']=[{'kind':'github_pr','source':'Phase 0 GitHub snapshot; observation only','observed_at':fact['observed_at'],**fact['data']} for fact in pr_facts if fact.get('repo')==meta.get('repository') and fact.get('data',{}).get('number') in numbers]
+        commands[-1]['body']['refs']=[{'kind':'github_pr','classification':'mentioned in source text, unverified','source':'Phase 0 GitHub snapshot; observation only','observed_at':fact['observed_at'],**fact['data']} for fact in pr_facts if fact.get('repo')==meta.get('repository') and fact.get('data',{}).get('number') in numbers]
         explicit=re.search(r'(?:WAIT|Follows|After)\s+((?:CRAFT|PROS|CREATE|HELP|LM|SEC|BRIEF|CLR)-[A-Z0-9-]+(?:[^.;]*))',goal)
         if explicit:
             ids=re.findall(r'\b(?:CRAFT|PROS|CREATE|HELP|LM|SEC|BRIEF|CLR)-[A-Z0-9-]+\b',explicit[1])
             dependency_commands.append((id,['work:patent:'+x for x in ids if 'work:patent:'+x!=id]))
         command_alias=commands[-1];command_alias['aliases']=[{'source':meta.get('repository','assignment'),'alias':body.get('sourceAlias',id)}]
         command_alias['commandId']='P1-'+hashlib.sha256(json.dumps({k:v for k,v in command_alias.items() if k!='commandId'},sort_keys=True).encode()).hexdigest()[:48]
-        scope[baseline].extend({'workId':id,'criterionId':x['id']} for x in cs)
+        excluded=body.get('scopeDisposition') or ('Cancelled in source' if re.match(r'^cancelled|^canceled',status,re.I) else None)
+        if excluded:
+            commands[-1]['body']['scopeExclusion']=excluded
+            commands[-1]['commandId']='P1-'+hashlib.sha256(json.dumps({k:v for k,v in commands[-1].items() if k!='commandId'},sort_keys=True).encode()).hexdigest()[:48]
+        else:scope[baseline].extend({'workId':id,'criterionId':x['id']} for x in cs)
     def product(slug,title):
         p='product:'+slug;b='baseline:'+slug+':v1'
         node(p,'product',title,repository='jxwalker/'+slug)

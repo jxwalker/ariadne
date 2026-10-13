@@ -10,7 +10,8 @@ import json,pathlib,sys
 for name,target in json.loads(pathlib.Path(sys.argv[1]).read_text()).items():
  p=pathlib.Path(name);assert p.is_symlink() and str(p.readlink())==target,'dependency symlink changed'
 PYLINK
-[[ $(psql -XAt -c "SELECT count(*) FROM pg_namespace WHERE nspname='master'") == 0 ]]
+
+if [[ -f "$PKG/last-backup" ]]; then B=$(cat "$PKG/last-backup"); else
 B="$HOME/ariadne-backups/master-p1-pre-$(date -u +%Y%m%dT%H%M%SZ)"
 mkdir -p "$B"
 pg_dump -Fc --no-owner --no-acl -f "$B/ledger-before.dump"
@@ -18,7 +19,12 @@ cp -a "$LIVE/scripts" "$B/scripts"
 cp -a "$LIVE/DEPLOYED_COMMIT" "$B/DEPLOYED_COMMIT"
 cp -a "$PGROOT/data/pg_hba.conf" "$PGROOT/data/pg_ident.conf" "$B/"
 printf '%s\n' "$B" > "$PKG/last-backup"
-psql -X -v ON_ERROR_STOP=1 -f "$PKG/stage/migrations/master/001-ledger.sql"
+fi
+if [[ $(psql -XAt -c "SELECT count(*) FROM pg_namespace WHERE nspname='master'") == 0 ]]; then
+ psql -X -v ON_ERROR_STOP=1 -f "$PKG/stage/migrations/master/001-ledger.sql"
+else
+ [[ $(psql -XAt -c "SELECT count(*) FROM master.migrations WHERE version=1") == 1 ]]
+fi
 psql -X -v ON_ERROR_STOP=1 <<'SQL'
 ALTER DATABASE ariadne_master OWNER TO james;
 REVOKE ALL ON DATABASE ariadne_master FROM PUBLIC, ariadne_master;
@@ -32,13 +38,15 @@ SQL
 python3 - "$PGROOT/data" <<'PY'
 import pathlib,sys
 root=pathlib.Path(sys.argv[1]);hba=root/'pg_hba.conf';ident=root/'pg_ident.conf'
-ident.write_text(ident.read_text()+'\nariadne_master james ariadne_master\n')
-hba.write_text('local ariadne_master ariadne_master peer map=ariadne_master\n'+hba.read_text())
+mapping='ariadne_master james ariadne_master'
+rule='local ariadne_master ariadne_master peer map=ariadne_master'
+if mapping not in ident.read_text().splitlines():ident.write_text(ident.read_text()+'\n'+mapping+'\n')
+if rule not in hba.read_text().splitlines():hba.write_text(rule+'\n'+hba.read_text())
 PY
 pg_ctl -D "$PGROOT/data" reload
 # Canonical runner delegates to the same SQL command API used in contracts.
 cd "$PKG/stage"
-env -u NODE_OPTIONS -u NODE_PATH node dist/src/ariadne.js ledger-command --project ariadne --file "$PKG/import-commands.json" > "$PKG/import-results.json"
+env -u NODE_OPTIONS -u NODE_PATH ARIADNE_LEDGER_VIA=ariadne-bot/codex node dist/src/ariadne.js ledger-command --project ariadne --file "$PKG/import-commands.json" > "$PKG/import-results.json"
 python3 - "$PKG/import-results.json" <<'PY'
 import json,pathlib,sys
 # npm -s emits only the runner JSON.

@@ -315,10 +315,12 @@ class Handler(BaseHTTPRequestHandler):
         try: filters=parse_qs(route.query,max_num_fields=20)
         except ValueError:return self.reply(400,{'error':'too many query fields'})
         if route.path in {'/roadmaps','/work','/api/master'}:
-            from master_dashboard import snapshot,render
+            from master_dashboard import snapshot,render,api_page
             try:
                 data=snapshot()
-                if route.path=='/api/master':return self.reply(200,data)
+                if route.path=='/api/master':
+                    try:return self.reply(200,api_page(data,filters))
+                    except ValueError:return self.reply(400,{'error':'invalid master filter'})
                 raw=render(data,route.path,filters).encode()
                 self.send_response(200);self.send_header('Content-Type','text/html; charset=utf-8');self.send_header('Content-Length',str(len(raw)));self.send_header('Cache-Control','no-store');self.send_header('X-Content-Type-Options','nosniff');self.send_header('Content-Security-Policy',"default-src 'none'; style-src 'unsafe-inline'; frame-ancestors 'none'");self.end_headers();self.wfile.write(raw);return
             except (BrokenPipeError,ConnectionResetError):return

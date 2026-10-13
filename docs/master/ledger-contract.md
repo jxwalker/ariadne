@@ -52,3 +52,32 @@ Validation: `python3 -m unittest discover -s scripts -p 'test_master*.py'` uses 
 socket-only PostgreSQL cluster. No live ledger or other project checkout is used. CI must
 have PostgreSQL server binaries; missing binaries are reported as a skip locally and are
 an explicit deployment verification prerequisite.
+
+### Phase 1 same-uid limitation and attribution
+
+Any process running as uid `james` is operator-equivalent, including bots,
+adapters and harnesses. Peer authentication is an OS-user boundary; it does not
+separate James from agents under that uid. The uid can also use operator database
+access. Phase 1 provisions no agent credentials. Phase 2 adds distinct agent
+identities and capabilities. `ARIADNE_LEDGER_VIA` records the actual delegation
+chain (for example `ariadne-bot/codex`); commands and journal retain actor `james`
+and `via`. This is honest attribution, not a security control.
+
+`resolve` is an operator-only command for decision answers and external gap
+resolutions, with a required resolution and journalled reason. Inferred imported
+dependencies require operator confirmation. Waivers are separately counted from
+evidence-backed accepted criteria, and retain reason, risk and expiry. Expired
+waivers remain immutable historical records and are explicitly counted as expired;
+expiry does not erase history or manufacture evidence.
+
+Rejected command IDs retain their rejection: corrected payloads need new IDs.
+Batches run in input order and are not atomic: rejected commands do not undo
+successful earlier commands. Evidence hashes, URIs and synthetic flags remain
+operator attestations, not independently verified claims. The imported DEC-001/2/3
+resolutions preserve source assertions and require operator confirmation.
+
+The paginated `/api/master` defaults to 50 nodes, with `collection`, `id`, `state`,
+`offset` and `limit` (maximum 100). Work queues are paginated. The read transport
+still assembles a complete local snapshot before filtering; database-side paging
+is a future scaling improvement. Master work state does not infer interruption or
+harness telemetry: those remain in the Operations views until explicitly linked.
