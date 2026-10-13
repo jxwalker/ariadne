@@ -81,3 +81,5 @@ The paginated `/api/master` defaults to 50 nodes, with `collection`, `id`, `stat
 still assembles a complete local snapshot before filtering; database-side paging
 is a future scaling improvement. Master work state does not infer interruption or
 harness telemetry: those remain in the Operations views until explicitly linked.
+
+Owner changes advance the work generation and return it to proposed. Evidence is bound to the generation at recording; a supplied stale generation is rejected, and earlier-generation proof cannot advance acceptance. Reference arrays must contain objects.

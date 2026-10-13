@@ -74,7 +74,8 @@ BEGIN
     IF EXISTS(SELECT 1 FROM jsonb_array_elements(b->'criteria') x WHERE coalesce(x->>'id','')='' OR coalesce(x->>'text','')='') THEN RAISE EXCEPTION 'criterion id and text required'; END IF;
     IF EXISTS(SELECT 1 FROM master.nodes w, jsonb_array_elements(w.body->'criteria') x, jsonb_array_elements(b->'criteria') y WHERE w.kind='work' AND x->>'id'=y->>'id') THEN RAISE EXCEPTION 'criterion identity already exists; use split'; END IF;
     IF (SELECT count(DISTINCT x->>'id') FROM jsonb_array_elements(b->'criteria') x)<>jsonb_array_length(b->'criteria') THEN RAISE EXCEPTION 'duplicate criterion'; END IF;
-    b:=b||'{"state":"proposed"}';
+    IF b ? 'refs' AND (jsonb_typeof(b->'refs') IS DISTINCT FROM 'array' OR EXISTS(SELECT 1 FROM jsonb_array_elements(b->'refs') ref WHERE jsonb_typeof(ref) IS DISTINCT FROM 'object')) THEN RAISE EXCEPTION 'refs must be an array of objects'; END IF;
+    b:=b||'{"state":"proposed","generation":1}';
    END IF;
    IF c->>'kind'='baseline' THEN b:=b||'{"state":"proposed"}'; END IF;
    IF c->>'kind'='external' THEN
@@ -102,7 +103,11 @@ BEGIN
    IF actor<>'james' AND c->'patch' ?| ARRAY['owner','candidate','requirements','refs'] THEN RAISE EXCEPTION 'permission denied'; END IF;
    IF old.body->>'state'='accepted' THEN RAISE EXCEPTION 'accepted work immutable'; END IF;
    IF c->'patch' ? 'candidate' AND coalesce(c->'patch'->>'candidate','') !~ '^[a-f0-9]{40}$' THEN RAISE EXCEPTION 'invalid candidate revision'; END IF;
+   IF c->'patch' ? 'refs' AND (jsonb_typeof(c->'patch'->'refs') IS DISTINCT FROM 'array' OR EXISTS(SELECT 1 FROM jsonb_array_elements(c->'patch'->'refs') ref WHERE jsonb_typeof(ref) IS DISTINCT FROM 'object')) THEN RAISE EXCEPTION 'refs must be an array of objects'; END IF;
    b:=old.body||(c->'patch');
+   IF c->'patch' ? 'owner' AND c->'patch'->>'owner' IS DISTINCT FROM old.body->>'owner' THEN
+    b:=b||jsonb_build_object('generation',coalesce((old.body->>'generation')::integer,1)+1,'state','proposed');
+   END IF;
    IF c->'patch' ? 'blocker' THEN
     IF coalesce(c->'patch'->>'blocker','')='' THEN b:=b-ARRAY['blocker','blockerSince'];
     ELSIF old.body->>'blockerSince' IS NULL THEN b:=b||jsonb_build_object('blockerSince',to_char(now() AT TIME ZONE 'UTC','YYYY-MM-DD"T"HH24:MI:SS.MS"Z"')); END IF;
@@ -180,6 +185,8 @@ BEGIN
    IF old.kind<>'work' THEN RAISE EXCEPTION 'evidence requires work'; END IF;
    b:=c->'evidence';
    IF b->>'id' IS NULL OR b->>'kind' NOT IN ('agent_run','github_pr','ci','merge','deploy','eval','runtime','review','document') OR b->>'uri' IS NULL THEN RAISE EXCEPTION 'invalid evidence'; END IF;
+   IF b ? 'generation' AND b->>'generation' IS DISTINCT FROM coalesce(old.body->>'generation','1') THEN RAISE EXCEPTION 'evidence generation mismatch'; END IF;
+   b:=b||jsonb_build_object('generation',coalesce((old.body->>'generation')::integer,1));
    INSERT INTO master.evidence VALUES(b->>'id',target,b,now());
    UPDATE master.nodes SET revision=revision+1 WHERE id=target;
   ELSIF op IN ('accept','override') THEN
@@ -194,6 +201,7 @@ BEGIN
      SELECT * INTO e FROM master.evidence ev WHERE ev.work_id=target
       AND ev.body->>'kind'=dep AND ev.body->>'criterionId'=criterion->>'id'
       AND ev.body->>'candidate'=old.body->>'candidate' AND old.body->>'candidate' IS NOT NULL
+      AND ev.body->>'generation'=coalesce(old.body->>'generation','1')
       AND ev.body->>'policy'=old.body->>'policy' AND ev.body->>'status'='passed'
       AND ev.body->'synthetic'='false'::jsonb AND ev.body->>'sha256' ~ '^[a-f0-9]{64}$'
       AND (ev.body->>'observedAt')::timestamptz <= now()
@@ -241,15 +249,15 @@ CREATE VIEW master.progress AS
  WHERE n.kind='baseline' GROUP BY n.id;
 CREATE FUNCTION master.snapshot() RETURNS jsonb LANGUAGE sql STABLE SECURITY DEFINER SET search_path=pg_catalog,master AS $$
  SELECT jsonb_build_object(
- 'nodes',coalesce((SELECT jsonb_agg(to_jsonb(n)||jsonb_build_object('blockers',master.blockers(n.id))) FROM master.nodes n),'[]'),
- 'aliases',coalesce((SELECT jsonb_agg(a) FROM master.aliases a),'[]'),
- 'dependencies',coalesce((SELECT jsonb_agg(d) FROM master.dependencies d),'[]'),
- 'scope',coalesce((SELECT jsonb_agg(s) FROM master.scope s),'[]'),
- 'progress',coalesce((SELECT jsonb_agg(p) FROM master.progress p),'[]'),
- 'accepted',coalesce((SELECT jsonb_agg(a) FROM master.accepted a),'[]'),
- 'acceptanceEvidence',coalesce((SELECT jsonb_agg(a) FROM master.acceptance_evidence a),'[]'),
- 'evidence',coalesce((SELECT jsonb_agg(e) FROM master.evidence e),'[]'),
- 'imports',coalesce((SELECT jsonb_agg(i) FROM master.imports i),'[]'),
+ 'nodes',coalesce((SELECT jsonb_agg(to_jsonb(n)||jsonb_build_object('blockers',master.blockers(n.id)) ORDER BY n.id) FROM master.nodes n),'[]'),
+ 'aliases',coalesce((SELECT jsonb_agg(a ORDER BY a.source,a.alias) FROM master.aliases a),'[]'),
+ 'dependencies',coalesce((SELECT jsonb_agg(d ORDER BY d.work_id,d.dependency_id) FROM master.dependencies d),'[]'),
+ 'scope',coalesce((SELECT jsonb_agg(s ORDER BY s.baseline_id,s.criterion_id) FROM master.scope s),'[]'),
+ 'progress',coalesce((SELECT jsonb_agg(p ORDER BY p.baseline_id) FROM master.progress p),'[]'),
+ 'accepted',coalesce((SELECT jsonb_agg(a ORDER BY a.work_id,a.criterion_id) FROM master.accepted a),'[]'),
+ 'acceptanceEvidence',coalesce((SELECT jsonb_agg(a ORDER BY a.work_id,a.criterion_id,a.kind) FROM master.acceptance_evidence a),'[]'),
+ 'evidence',coalesce((SELECT jsonb_agg(e ORDER BY e.id) FROM master.evidence e),'[]'),
+ 'imports',coalesce((SELECT jsonb_agg(i ORDER BY i.id) FROM master.imports i),'[]'),
  'history',coalesce((SELECT jsonb_agg(j ORDER BY sequence) FROM master.journal j),'[]'));
 $$;
 REVOKE ALL ON SCHEMA master FROM PUBLIC;

@@ -17,7 +17,7 @@ request)
  ;;
 plan)
  APPROVAL=${2:?Supply a separately recorded operator-approved JSON record for this exact head and manifest}
- python3 "$PKG/check-approval.py" "$APPROVAL" "$HEAD_SHA" "$DIGEST"
+ python3 "$PKG/check-approval.py" "$APPROVAL" "$HEAD_SHA" "$DIGEST" "$VAULT"
  run mutation-readiness --target deployment --risk high --scope "ARIADNE-MASTER-PILOT-20261013-P01: exact reviewed head $HEAD_SHA; migrate existing ledger, harden DB ownership, local peer map, sourced draft imports, three activity view files + marker; restart only activity; no new access/listener" --approval "$APPROVAL" --auth-evidence "$EVIDENCE/AUTHORIZATION2.md" --dry-run "$CHECK_COMMAND && bash $PKG/dryrun.sh" --live-command "$CHECK_COMMAND && env ARIADNE_MASTER_DEPLOY=confirmed bash $PKG/apply.sh" --post-verify "$CHECK_COMMAND && bash $PKG/verify.sh" --rollback "Separately audited: env ARIADNE_MASTER_ROLLBACK=confirmed bash $PKG/rollback.sh" --notes "$NOTES; all deployment scope/backup/rollback details in reviewed deployment/master/PLAN.md"
  ;;
 audit) run mutation-readiness-audit ;;

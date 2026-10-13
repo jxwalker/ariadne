@@ -85,6 +85,10 @@ async function auditPlan(
     };
   }
 
+  if (decided !== "approved") {
+    blockers.push(`current approval record is ${decided ?? "missing"}`);
+  }
+
   if (plan.execute !== false) {
     blockers.push("plan is executable; readiness plans must keep execute=false");
   }

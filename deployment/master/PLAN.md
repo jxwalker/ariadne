@@ -65,3 +65,5 @@ head/digest action; it rejects bot-authored decisions and mismatched packages.
 No request, decision, readiness plan or execution is invoked during FREEZE.
 This is a procedural gate, not cryptographic authentication: the phase 1 same-uid
 operator-equivalence limitation still applies.
+
+The supplied approval must be at its canonical package-vault approvals path; audit blocks missing or no-longer-approved current records. External approval files are rejected.

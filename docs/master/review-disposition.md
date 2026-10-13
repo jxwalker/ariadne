@@ -90,3 +90,14 @@ Codex re-review at bddcdea9fc80ef5f72a0f1022ce9b93e48864151: fixed
 4262084788. API accepted/evidence/acceptanceEvidence/history filters now follow
 split ancestry, as the HTML view does. Inherited evidence is restricted to child
 criterion IDs; regression coverage includes nested splits and sibling exclusion.
+
+
+Codex re-review at 01a9d15be6c6a01c31c44da434f6b4d3235bba9f: fixed
+4262178331 by requiring canonical vault approvals and blocking missing/nonapproved
+current records at mutation-readiness audit. Fixed 4262178349 by advancing owner
+generation and demoting on reassignment; evidence is generation-bound. Fixed
+4262178364 by validating refs as arrays of objects on create/update. Regression
+tests cover approval disappearance/status changes, locations, generation changes,
+stale evidence and malformed refs. No live mutation executes during testing.
+
+The expanded owner-generation test exposed unordered snapshot arrays during dump/restore equality checks. Snapshot collections are now ordered by stable keys, also making API pagination deterministic. The existing real-PG restart/restore regression verifies it.

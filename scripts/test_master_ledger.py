@@ -219,6 +219,26 @@ class LedgerContract(unittest.TestCase):
                 self.assertFalse(self.cmd('create',target,kind=kind,parent=parent,body=body)['ok'])
             self.ok('create',target,kind=kind,body=body)
 
+    def test_owner_generation_and_reference_validation(self):
+        p=self.fixture();w=p+'w';rev=1
+        for refs in ['bad',{'url':'x'},[None],['bad']]:
+            self.assertFalse(self.cmd('update',w,rev,patch={'refs':refs})['ok'])
+            self.assertFalse(self.cmd('create',p+'badrefs',kind='work',parent=p+'m',body={'goal':'test','policy':p+'policy','criteria':[{'id':p+'badc','text':'test'}],'refs':refs})['ok'])
+        for state in ['ready','active','verification']:rev=self.ok('transition',w,rev,state=state)
+        def proof(kind,generation=None):
+            result={'id':str(uuid.uuid4()),'kind':kind,'criterionId':p+'wc','candidate':'a'*40,'policy':p+'policy','status':'passed','synthetic':False,'sha256':'a'*64,'observedAt':self.sql('SELECT to_jsonb(now());',database='ledger_test'),'uri':'https://example.invalid/proof'}
+            if generation is not None:result['generation']=generation
+            return result
+        for kind in ['ci','runtime']:rev=self.ok('evidence',w,rev,evidence=proof(kind))
+        rev=self.ok('update',w,rev,patch={'owner':'agent:new'})
+        body=self.sql("SELECT body FROM master.nodes WHERE id='%s';"%w,database='ledger_test')
+        self.assertEqual((body['generation'],body['state']),(2,'proposed'))
+        for state in ['ready','active','verification']:rev=self.ok('transition',w,rev,state=state)
+        self.assertFalse(self.cmd('accept',w,rev)['ok'])
+        self.assertFalse(self.cmd('evidence',w,rev,evidence=proof('ci',1))['ok'])
+        for kind in ['ci','runtime']:rev=self.ok('evidence',w,rev,evidence=proof(kind))
+        self.ok('accept',w,rev)
+
     def test_append_only(self):
         with self.assertRaises(AssertionError):self.sql('DELETE FROM master.journal;',database='ledger_test')
 
