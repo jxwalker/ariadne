@@ -274,6 +274,7 @@ async function main(): Promise<void> {
   }
 
   if (["ledger-command", "ledger-view"].includes(parsed.command)) {
+    if (project !== "ariadne") throw new Error("Ledger commands require --project ariadne");
     await runLedger(parsed.command, optionString(parsed.options, "file", "") || undefined);
     return;
   }
