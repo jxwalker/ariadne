@@ -33,7 +33,7 @@ CREATE FUNCTION master.node_state(n master.nodes) RETURNS jsonb LANGUAGE sql STA
  SELECT to_jsonb(n)||jsonb_build_object('dependencies',coalesce((SELECT jsonb_agg(dependency_id ORDER BY dependency_id) FROM master.dependencies WHERE work_id=n.id),'[]'));
 $$;
 CREATE FUNCTION master.blockers(w text) RETURNS jsonb LANGUAGE sql STABLE SET search_path=pg_catalog,master AS $$
- SELECT coalesce(jsonb_agg(jsonb_build_object('id',d.dependency_id,'state',coalesce(n.body->>'state','unresolved'))),'[]')
+ SELECT coalesce(jsonb_agg(jsonb_build_object('id',d.dependency_id,'state',coalesce(n.body->>'state','unresolved')) ORDER BY d.dependency_id),'[]')
  FROM master.dependencies d LEFT JOIN master.nodes n ON n.id=d.dependency_id
  WHERE d.work_id=w AND (n.id IS NULL OR n.kind NOT IN ('work','external') OR (n.kind='work' AND n.body->>'state' IS DISTINCT FROM 'accepted') OR (n.kind='external' AND n.body->>'state' IS DISTINCT FROM 'resolved'));
 $$;
