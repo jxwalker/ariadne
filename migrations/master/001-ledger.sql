@@ -29,6 +29,9 @@ CREATE TRIGGER journal_immutable BEFORE UPDATE OR DELETE ON master.journal FOR E
 CREATE TRIGGER command_immutable BEFORE UPDATE OR DELETE ON master.commands FOR EACH ROW EXECUTE FUNCTION master.immutable();
 CREATE TRIGGER import_immutable BEFORE UPDATE OR DELETE ON master.imports FOR EACH ROW EXECUTE FUNCTION master.immutable();
 CREATE TRIGGER evidence_immutable BEFORE UPDATE OR DELETE ON master.evidence FOR EACH ROW EXECUTE FUNCTION master.immutable();
+CREATE FUNCTION master.node_state(n master.nodes) RETURNS jsonb LANGUAGE sql STABLE SET search_path=pg_catalog,master AS $$
+ SELECT to_jsonb(n)||jsonb_build_object('dependencies',coalesce((SELECT jsonb_agg(dependency_id ORDER BY dependency_id) FROM master.dependencies WHERE work_id=n.id),'[]'));
+$$;
 CREATE FUNCTION master.blockers(w text) RETURNS jsonb LANGUAGE sql STABLE SET search_path=pg_catalog,master AS $$
  SELECT coalesce(jsonb_agg(jsonb_build_object('id',d.dependency_id,'state',coalesce(n.body->>'state','unresolved'))),'[]')
  FROM master.dependencies d LEFT JOIN master.nodes n ON n.id=d.dependency_id
@@ -38,7 +41,7 @@ CREATE FUNCTION master.command(actor text, c jsonb) RETURNS jsonb LANGUAGE plpgs
  SET search_path=pg_catalog,master AS $$
 DECLARE old master.nodes; prior master.commands; b jsonb; r jsonb; op text:=c->>'op';
  target text:=c->>'target'; cid text:=c->>'commandId'; dep text; criterion jsonb; e master.evidence;
- scope_entry jsonb; affected master.nodes; child jsonb; child_criteria jsonb; split_ids text[]; next_revision integer; before_state jsonb; error_text text;
+ scope_entry jsonb; affected master.nodes; child jsonb; child_criteria jsonb; split_ids text[]; next_revision integer; before_state jsonb; affected_before jsonb; error_text text;
 BEGIN
  -- One lock serializes commands including graph and baseline changes. Reads do not lock.
  PERFORM pg_advisory_xact_lock(20261013,1);
@@ -53,7 +56,7 @@ BEGIN
   RETURN '{"ok":false,"error":"command ID payload conflict"}';
  END IF;
  SELECT * INTO old FROM master.nodes WHERE id=target;
- before_state:=CASE WHEN old.id IS NOT NULL THEN to_jsonb(old) END;
+ before_state:=CASE WHEN old.id IS NOT NULL THEN master.node_state(old) END;
  BEGIN
   IF c->>'reason' IS NULL OR length(c->>'reason')=0 THEN RAISE EXCEPTION 'reason required'; END IF;
   IF coalesce((c->>'expectedRevision')::integer,-1)<>coalesce(old.revision,0) THEN RAISE EXCEPTION 'revision conflict'; END IF;
@@ -114,13 +117,14 @@ BEGIN
     INSERT INTO master.nodes(id,kind,parent,revision,body) VALUES(child->>'id','work',old.parent,1,
       old.body||jsonb_build_object('title',child->>'title','criteria',child_criteria,'splitFrom',target,'state',CASE WHEN old.body->>'state'='accepted' THEN 'accepted' ELSE 'proposed' END));
     INSERT INTO master.dependencies SELECT child->>'id',dependency_id FROM master.dependencies WHERE work_id=target;
-    INSERT INTO master.journal(command_id,actor,via,target,before_state,after_state,result) SELECT cid,actor,c->>'via',child->>'id',NULL,to_jsonb(n),'{"ok":true,"effect":"split child"}' FROM master.nodes n WHERE n.id=child->>'id';
+    INSERT INTO master.journal(command_id,actor,via,target,before_state,after_state,result) SELECT cid,actor,c->>'via',child->>'id',NULL,master.node_state(n),'{"ok":true,"effect":"split child"}' FROM master.nodes n WHERE n.id=child->>'id';
    END LOOP;
    FOR affected IN SELECT n.* FROM master.nodes n JOIN master.dependencies d ON d.work_id=n.id WHERE d.dependency_id=target LOOP
+    affected_before:=master.node_state(affected);
     DELETE FROM master.dependencies WHERE work_id=affected.id AND dependency_id=target;
     INSERT INTO master.dependencies SELECT affected.id,ch->>'id' FROM jsonb_array_elements(c->'children') ch ON CONFLICT DO NOTHING;
     UPDATE master.nodes SET revision=revision+1 WHERE id=affected.id;
-    INSERT INTO master.journal(command_id,actor,via,target,before_state,after_state,result) SELECT cid,actor,c->>'via',affected.id,to_jsonb(affected),to_jsonb(n),'{"ok":true,"effect":"split dependency replacement"}' FROM master.nodes n WHERE n.id=affected.id;
+    INSERT INTO master.journal(command_id,actor,via,target,before_state,after_state,result) SELECT cid,actor,c->>'via',affected.id,affected_before,master.node_state(n),'{"ok":true,"effect":"split dependency replacement"}' FROM master.nodes n WHERE n.id=affected.id;
    END LOOP;
    UPDATE master.nodes SET revision=revision+1,body=body||jsonb_build_object('state','superseded','splitChildren',c->'children') WHERE id=target;
   ELSIF op='dependencies' THEN
@@ -215,7 +219,7 @@ BEGIN
  END;
  INSERT INTO master.commands VALUES(cid,actor,c,r,now());
  INSERT INTO master.journal(command_id,actor,via,target,before_state,after_state,result)
-  SELECT cid,actor,c->>'via',target,before_state,to_jsonb(n),r FROM (SELECT 1) x LEFT JOIN master.nodes n ON n.id=target;
+  SELECT cid,actor,c->>'via',target,before_state,master.node_state(n),r FROM (SELECT 1) x LEFT JOIN master.nodes n ON n.id=target;
  INSERT INTO master.outbox(command_id,body) VALUES(cid,jsonb_build_object('target',target,'result',r));
  RETURN r;
 END $$;

@@ -73,3 +73,5 @@ Codex re-review at a7647432781d915bffe232385ca359c7d59c7db5: fixed
 (unrelated waiver criteria). Policy kinds must be supported, unique strings;
 waiver lists must match exactly the work's criterion IDs. Real PG tests reject
 malformed kinds, extra/duplicate/null waiver IDs and retain a valid override.
+
+Claude 170 finding 14: dependency IDs are now captured in command journal before/after state, including incoming split rewiring; a real-PG regression checks the old and new edge sets.
