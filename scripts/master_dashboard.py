@@ -24,6 +24,10 @@ def age(value):
     except (ValueError,TypeError):return 'Unknown blocker age'
 def render(data,route,filters):
     nodes={n['id']:n for n in data['nodes']};progress={p['baseline_id']:p for p in data['progress']}
+    accepted={a['criterion_id'] for a in data.get('accepted',[]) if a.get('evidence_id')}
+    waived_rows=[a for a in data.get('accepted',[]) if not a.get('evidence_id')]
+    inactive_waived={a['criterion_id'] for a in waived_rows if nodes.get(a['work_id'],{}).get('waiverInactive',True)}
+    current_waived={a['criterion_id'] for a in waived_rows}-inactive_waived
     def title(n):return esc(n['body'].get('title',n['id']))
     def source(n):
         s=n['body'].get('source',{})
@@ -38,20 +42,21 @@ def render(data,route,filters):
         return result
     def denominator(n):
         descendants=descendant_ids(n['id']);counts=[]
-        accepted={a['criterion_id'] for a in data.get('accepted',[]) if a.get('evidence_id')}
-        waived={a['criterion_id'] for a in data.get('accepted',[]) if not a.get('evidence_id')}
         for baseline,p in progress.items():
             entries=[s for s in data.get('scope',[]) if s['baseline_id']==baseline and s['work_id'] in descendants]
             if entries:
                 ids={s['criterion_id'] for s in entries}
-                counts.append(str(len(ids&accepted))+' evidence accepted · '+str(len(ids&waived))+' waived / '+str(len(ids))+' '+esc(p['baseline_state'])+' criteria · '+esc(baseline))
+                counts.append(str(len(ids&accepted))+' evidence accepted · '+str(len(ids&current_waived))+' current waived · '+str(len(ids&inactive_waived))+' inactive (expired/invalid) waivers / '+str(len(ids))+' '+esc(p['baseline_state'])+' criteria · '+esc(baseline))
         return ''.join('<p class="count">'+c+'</p>' for c in counts) or '<p>No scoped criterion denominator recorded</p>'
     def card(n):
         href=link('/work',id=n['id']) if n['kind']=='work' else link('/roadmaps',node=n['id'])
         b=n['body'];refs=[r for r in sequence(b.get('refs')) if isinstance(r,dict)];parts=[f'<article><h3><a href="{href}">{title(n)}</a></h3><p>{esc(n["kind"])} · revision {n["revision"]} · {esc(b.get("state","sourced draft"))}</p>']
         if n['kind']=='baseline':
             p=progress.get(n['id'],{'accepted_criteria':0,'denominator':0})
-            parts.append(f'<p class="count">{p["accepted_criteria"]} evidence accepted · {p.get("waived_criteria",0)} waived ({p.get("expired_waived_criteria",0)} expired) mandatory criteria / {p["denominator"]} {"approved" if b.get("state")=="approved" else "proposed"} criteria</p>')
+            scope_ids={s['criterion_id'] for s in data.get('scope',[]) if s['baseline_id']==n['id']}
+            inactive=len(scope_ids&inactive_waived) if scope_ids else p.get('expired_waived_criteria',0)
+            current=max(0,p.get('waived_criteria',0)-inactive)
+            parts.append(f'<p class="count">{p["accepted_criteria"]} evidence accepted · {current} current waived ({inactive} inactive/expired) mandatory criteria / {p["denominator"]} {"approved" if b.get("state")=="approved" else "proposed"} criteria</p>')
             parts.append('<p>Approved denominator: '+(str(p['denominator']) if b.get('state')=='approved' else 'none — awaiting James')+'</p><details><summary>Scope diff</summary><pre>'+esc(json.dumps(b.get('scopeDiff',{}),indent=2))+'</pre></details>')
         if n['kind'] in ('product','phase','milestone'):parts.append(denominator(n))
         if n['kind']=='work':

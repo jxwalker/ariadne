@@ -154,3 +154,21 @@ idempotency, source isolation and cache overlay in addition to the ledger contra
 Private HTTP tests cover unauthorized actors, stale versions, conflicting/double submissions
 and public-ingest denial. The three roadmap imports remain proposed and source claims remain
 unverified until their scope and acceptance evidence are approved.
+
+Codex re-review at 842772a6e9306a96cca831d15503551a1749d787: fixed
+4262788650. Dry-run evidence binds exact plan bytes; execution requires the same
+plan digest, and loaded plan bytes must match the audited bytes. Unbound legacy
+dry runs cannot execute. Fully mocked regression commands prove edited live/post/
+scope/rollback/notes fields are rejected before any command invocation. Fixed
+4262788662 by separating current and inactive waivers in every hierarchy rollup,
+including baseline cards; tests cover product, phase and milestone paths.
+
+
+Codex re-review at 9a63bd2700b540ea57442fbf86ca1ba984c9bbd7: fixed
+4263026265. Stored dry-run success requires exit 0, no timeout/signal/buffer
+failure and execute=false. Execution then re-runs the audited read-only validation,
+uses its actual current result and rechecks plan bytes/current approval immediately
+before any live command. Fully mocked tests cover forged success fields and current
+validation failure without any shell/live action. Cryptographic isolation from a
+malicious process under the same uid remains the explicitly documented phase-2
+identity limitation; writable historical JSON is not treated as execution authority.

@@ -67,3 +67,5 @@ existing operating/ingestion paths and unchanged listeners. Browser verification
 actual Mac access, hierarchy and response controls. Draft baselines are reviewable
 roadmaps, not adopted scope or accepted delivery. Off-host backup remains a separately
 deferred operator decision, not an invented destination in this package.
+
+Execution binds the exact readiness-plan bytes to dry-run evidence, independently repeats the current read-only validation and rechecks plan bytes and approval before any live command. Stored success status alone cannot authorize execution.
