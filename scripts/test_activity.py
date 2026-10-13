@@ -153,6 +153,19 @@ class ActivityTests(unittest.TestCase):
         with self.assertRaises(ValueError):project(self.store,{},'all',100320)
         with self.assertRaises(ValueError):page_runs(d,{'page':['bad']})
 
+    def test_enrolled_source_task_metadata_is_opt_in_and_separate(self):
+        from activity_insights import project
+        self.fixture_run('enrolled',[100000,100010],['task.start','task.progress'])
+        self.fixture_run('blocked',[100000,100010],['task.start','task.blocked'])
+        plain=project(self.store,{},'24h',100020)
+        self.assertTrue(all('title' not in r and 'note' not in r for r in plain['runs']))
+        d=project(self.store,{'test':{'displayTaskMetadata':True}},'24h',100020)
+        runs={r['id']:r for r in d['runs']}
+        self.assertEqual(runs['enrolled']['title'],event('task.progress',1,'enrolled')['label'])
+        self.assertEqual(runs['enrolled']['note'],event('task.progress',1,'enrolled')['summary']);self.assertIsNone(runs['enrolled']['blocker'])
+        self.assertEqual(runs['blocked']['blocker'],event('task.blocked',1,'blocked')['summary']);self.assertIsNone(runs['blocked']['note'])
+        self.assertEqual(runs['enrolled']['claim'],'agent-reported');self.assertIn('github',runs['enrolled'])
+
     def test_insights_correlation_stale_empty_and_range_boundary(self):
         from activity_insights import project,page_runs
         at=200000;start=at-86400

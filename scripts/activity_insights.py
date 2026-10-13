@@ -40,6 +40,20 @@ def percentile(values, fraction):
     values=sorted(values); index=(len(values)-1)*fraction; lo=math.floor(index);hi=math.ceil(index)
     return values[lo]+(values[hi]-values[lo])*(index-lo)
 
+def task_metadata(db, record, envelope, registration, state):
+    """Operator-enrolled sources may show their own short task title and latest note.
+
+    These are agent claims only; GitHub/review/CI/deploy evidence stays in separate fields.
+    """
+    if registration.get('displayTaskMetadata') is not True: return {}
+    note=db.execute("SELECT json_extract(envelope,'$.kind') AS kind,json_extract(envelope,'$.summary') AS summary FROM events WHERE source=? AND json_extract(envelope,'$.runId')=? AND json_extract(envelope,'$.kind') IN ('task.progress','task.blocked','task.resumed','task.interrupted','task.failed','task.completed') ORDER BY json_extract(envelope,'$.sequence') DESC LIMIT 1",(record['source'],record['run'])).fetchone()
+    out={'title':str(envelope.get('label') or '')[:160],'claim':'agent-reported','note':None,'blocker':None}
+    if note and note['summary']:
+        text=str(note['summary'])[:500]
+        if note['kind']=='task.blocked' and state=='blocked': out['blocker']=text
+        else: out['note']=text
+    return out
+
 def project(store, registry, range_key='24h', at=None):
     if range_key not in RANGES: raise ValueError('range must be 24h, 7d or 30d')
     at=time.time() if at is None else at; start=at-RANGES[range_key]*86400
@@ -67,7 +81,8 @@ def project(store, registry, range_key='24h', at=None):
             machine=reg.get('correlationHost') or e.get('location',{}).get('name') or 'Unspecified'
             snapshot=reg.get('provenance')=='read-only local snapshot'
             evidence=[{'kind':x['kind'],'sequence':x['sequence'],'at':t,'sourceName':source_name(r['source'],reg)} for t,x in events[-30:]]
-            runs.append({'id':r['run'],'source':r['source'],'sourceName':source_name(r['source'],reg),'agent':agent,'machine':machine,'repo':e['repository'],'task':f"{agent} · {e['repository']}",'state':state,'outcome':outcome,'first':first,'last':r['last'],'duration':duration,'activeSeconds':active,'snapshot':snapshot,'gaps':r['gaps'],'branch':e.get('branch'),'commit':e.get('commit'),'pr':e.get('pr'),'eventCount':len(events),'evidence':evidence,'session':e.get('sessionId'),'host':reg.get('correlationHost')})
+            meta=task_metadata(db,r,e,reg,state)
+            runs.append({**meta,'id':r['run'],'source':r['source'],'sourceName':source_name(r['source'],reg),'agent':agent,'machine':machine,'repo':e['repository'],'task':f"{agent} · {e['repository']}",'state':state,'outcome':outcome,'first':first,'last':r['last'],'duration':duration,'activeSeconds':active,'snapshot':snapshot,'gaps':r['gaps'],'branch':e.get('branch'),'commit':e.get('commit'),'pr':e.get('pr'),'eventCount':len(events),'evidence':evidence,'session':e.get('sessionId'),'host':reg.get('correlationHost')})
         # Same approved host/repo/product/session: native reports win over snapshot observations.
         grouped={};other=[]
         for r in runs:
