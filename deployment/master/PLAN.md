@@ -69,3 +69,5 @@ roadmaps, not adopted scope or accepted delivery. Off-host backup remains a sepa
 deferred operator decision, not an invented destination in this package.
 
 Execution binds the exact readiness-plan bytes to dry-run evidence, independently repeats the current read-only validation and rechecks plan bytes and approval before any live command. Stored success status alone cannot authorize execution.
+
+A retry validates the migration source digest recorded atomically in version 1, this package’s original backup and the old/this-head application marker. Repeat validation accepts an unready service only in that assessed partial state; every endpoint must be ready after replay. A different or unbound schema needs separate reconciliation. SQLite migration 4 adds a partial decision-lifecycle index and preserves all raw events.

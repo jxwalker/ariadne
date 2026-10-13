@@ -118,6 +118,22 @@ class OperatingTests(unittest.TestCase):
         self.assertIsNone(row['cpuPercent']);self.assertIsNone(row['diskPercent']);self.assertEqual(row['pressure'],{'memory_full':1.5})
         self.assertEqual([t['name'] for t in row['temperatures']],['CPU']);self.assertIsNone(row['vms'][0]['mem']);self.assertEqual(row['services'],[{'name':'svc','state':'active'}])
         self.assertNotIn('<',canonical(row))
+    def test_decision_projection_uses_partial_index_and_upgrades_v3(self):
+        with self.store.connect() as db:
+            db.execute('DROP INDEX events_decision_lifecycle');db.execute('PRAGMA user_version=3')
+        self.store.close();self.store=Store(pathlib.Path(self.tmp.name)/'activity.db')
+        from unittest.mock import patch
+        statements=[]
+        original=self.store.connect
+        def traced():
+            db=original();db.set_trace_callback(statements.append);return db
+        with patch.object(self.store,'connect',side_effect=traced):self.read()
+        query=next(q for q in statements if 'WITH per_run_decisions' in q)
+        with self.store.connect() as db:
+            self.assertEqual(db.execute('PRAGMA user_version').fetchone()[0],4)
+            plan=[row['detail'] for row in db.execute('EXPLAIN QUERY PLAN '+query)]
+        self.assertTrue(any('USING INDEX events_decision_lifecycle' in row for row in plan),plan)
+
     def test_resolution_sequence_survives_producer_clock_rollback(self):
         self.send('decision.requested',decision={'id':'choice','recipient':'james','question':'Choose?','blocking':True})
         self.send('decision.resolved',seq=1,decision={'id':'choice','recipient':'james','resolution':'Chosen'})

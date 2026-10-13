@@ -92,7 +92,7 @@ class ContentionTests(unittest.TestCase):
         try:
             with migrated.connect() as db:
                 self.assertEqual(bytes(db.execute('SELECT raw FROM events').fetchone()[0]),raw)
-                self.assertEqual(db.execute('PRAGMA user_version').fetchone()[0],3)
+                self.assertEqual(db.execute('PRAGMA user_version').fetchone()[0],4)
             self.assertTrue(migrated.ready())
         finally:migrated.close()
 

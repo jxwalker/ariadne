@@ -112,6 +112,17 @@ class Store:
             PRAGMA user_version=3;
             COMMIT;
             ''')
+        if self._keeper.execute('PRAGMA user_version').fetchone()[0]<4:
+            self._keeper.executescript("""
+            BEGIN IMMEDIATE;
+            CREATE INDEX IF NOT EXISTS events_decision_lifecycle ON events(
+                source,json_extract(envelope,'$.repository'),json_extract(envelope,'$.decision.id'),
+                json_extract(envelope,'$.runId'),json_extract(envelope,'$.sequence') DESC,received DESC,id DESC)
+                WHERE json_extract(envelope,'$.kind') IN ('decision.requested','decision.resolved');
+            INSERT OR IGNORE INTO migrations VALUES(4);
+            PRAGMA user_version=4;
+            COMMIT;
+            """)
         os.chmod(self.path,0o600)
     def close(self):
         self._finalize()

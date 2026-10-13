@@ -109,3 +109,20 @@ class PackageHelpers(unittest.TestCase):
             result=subprocess.run(['bash','-c','source "$1"; stage','test',str(root/'common.sh')],env=env,capture_output=True)
             self.assertNotEqual(result.returncode,0);self.assertFalse(log.exists())
             self.assertEqual((root/'stage/obsolete.py').read_text(),'retained failed-preparation evidence')
+
+    def test_partial_retry_requires_same_migration_and_preapply_backup(self):
+        import importlib.util
+        spec=importlib.util.spec_from_file_location('partial_state',ROOT/'deployment/master/check-state.py')
+        module=importlib.util.module_from_spec(spec);spec.loader.exec_module(module)
+        with tempfile.TemporaryDirectory() as tmp:
+            root=pathlib.Path(tmp);pkg=root/'package';pkg.mkdir();backups=root/'backups';backup=backups/'master-p1-pre-fixture';backup.mkdir(parents=True)
+            (backup/'scripts').mkdir();(backup/'ledger-before.dump').write_text('isolated backup fixture');(backup/'DEPLOYED_COMMIT').write_text('old')
+            self.assertEqual(module.validate(pkg,backups,'old','old','new',0,'','digest'),'initial')
+            with self.assertRaises(ValueError):module.validate(pkg,backups,'old','old','new',1,'digest','digest')
+            (pkg/'last-backup').write_text(str(backup))
+            for marker in ['old','new']:
+                self.assertEqual(module.validate(pkg,backups,marker,'old','new',1,'digest','digest'),'partial')
+            for marker,source in [('other','digest'),('old','wrong')]:
+                with self.assertRaises(ValueError):module.validate(pkg,backups,marker,'old','new',1,source,'digest')
+            (backup/'DEPLOYED_COMMIT').write_text('unrelated')
+            with self.assertRaises(ValueError):module.validate(pkg,backups,'old','old','new',1,'digest','digest')

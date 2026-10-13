@@ -196,7 +196,7 @@ def operating(store,registry,config,params=None,at=None):
                     PARTITION BY source,json_extract(envelope,'$.repository'),json_extract(envelope,'$.decision.id'),json_extract(envelope,'$.runId')
                     ORDER BY json_extract(envelope,'$.sequence') DESC,received DESC,id DESC
                   ) AS run_position
-                FROM events
+                FROM events INDEXED BY events_decision_lifecycle
                 WHERE json_extract(envelope,'$.kind') IN ('decision.requested','decision.resolved')
             ), current_decisions AS (
                 SELECT source,envelope,received,

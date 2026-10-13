@@ -1,6 +1,6 @@
 BEGIN;
 CREATE SCHEMA IF NOT EXISTS master;
-CREATE TABLE IF NOT EXISTS master.migrations(version integer PRIMARY KEY, installed_at timestamptz NOT NULL DEFAULT now());
+CREATE TABLE IF NOT EXISTS master.migrations(version integer PRIMARY KEY, installed_at timestamptz NOT NULL DEFAULT now(), source_sha text CHECK(source_sha IS NULL OR source_sha ~ '^[a-f0-9]{64}$'));
 CREATE TABLE master.nodes(
  id text PRIMARY KEY CHECK (id ~ '^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$'),
  kind text NOT NULL CHECK(kind IN ('product','baseline','phase','milestone','work','policy','decision','external')),
@@ -289,5 +289,5 @@ $$;
 REVOKE ALL ON SCHEMA master FROM PUBLIC;
 REVOKE ALL ON ALL TABLES IN SCHEMA master FROM PUBLIC;
 REVOKE ALL ON ALL FUNCTIONS IN SCHEMA master FROM PUBLIC;
-INSERT INTO master.migrations VALUES(1);
+INSERT INTO master.migrations(version,source_sha) VALUES(1,current_setting('ariadne.migration_sha',true));
 COMMIT;

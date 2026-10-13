@@ -308,6 +308,14 @@ class LedgerContract(unittest.TestCase):
         self.assertEqual(node['revision'],2);self.assertEqual(node['body']['resolution'],'Operator only')
         self.assertNotIn('origin',node['body'])
 
+    def test_migration_records_bound_source_in_same_transaction(self):
+        import hashlib
+        name='bound_'+uuid.uuid4().hex[:10];source=(ROOT/'migrations/master/001-ledger.sql').read_text()
+        digest=hashlib.sha256(source.encode()).hexdigest()
+        self.sql('CREATE DATABASE '+name+';',raw=True)
+        self.sql("SELECT set_config('ariadne.migration_sha','%s',false);"%digest+source,database=name,raw=True)
+        self.assertEqual(self.sql('SELECT to_jsonb(source_sha) FROM master.migrations WHERE version=1;',database=name),digest)
+
     def test_append_only(self):
         with self.assertRaises(AssertionError):self.sql('DELETE FROM master.journal;',database='ledger_test')
 

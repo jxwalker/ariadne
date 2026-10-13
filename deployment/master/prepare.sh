@@ -30,7 +30,10 @@ EXPECTED_DEPLOYED_COMMIT=$(sed -n 's/^Expected deployed commit: //p' "$PKG/PLAN.
 [[ $(cat "$LIVE/DEPLOYED_COMMIT") == "$EXPECTED_DEPLOYED_COMMIT" ]]
 [[ $(id -un) == james ]]
 [[ $(psql -XAt -c "SELECT rolname||':'||rolsuper||':'||rolcreatedb||':'||(rolpassword IS NULL) FROM pg_authid WHERE rolname='ariadne_master'") == 'ariadne_master:false:false:true' ]]
-[[ $(psql -XAt -c "SELECT count(*) FROM pg_namespace WHERE nspname='master'") == 0 ]]
+MIGRATION_SHA=$(sha256sum "$PKG/stage/migrations/master/001-ledger.sql" | cut -d ' ' -f1)
+if [[ $(psql -XAt -c "SELECT count(*) FROM pg_namespace WHERE nspname='master'") != 0 ]]; then
+ [[ $(psql -XAt -c "SELECT count(*) FROM master.migrations WHERE version=1 AND source_sha='$MIGRATION_SHA'") == 1 ]] || { echo 'Unrecognized existing migration; separately reconcile before preparing' >&2; exit 1; }
+fi
 python3 "$PKG/stage/scripts/master_import.py" --output "$PKG/import-commands.json"
 python3 -m py_compile "$PKG/stage/scripts/master_dashboard.py" "$PKG/stage/scripts/activity_server.py"
 python3 -m unittest discover -s "$PKG/stage/scripts" -p 'test_master*.py'
@@ -46,7 +49,7 @@ for p in root.rglob('*'):
 pathlib.Path(sys.argv[2]).write_text(json.dumps(links,sort_keys=True))
 PYLINK
 find "$PKG/stage" -type f -print0 | sort -z | xargs -0 sha256sum > "$PKG/source-hashes.txt"
-sha256sum "$PKG/check-approval.py" "$PKG"/*.sh "$PKG/HEAD_SHA" "$PKG/PLAN.md" "$PKG/import-commands.json" "$PKG/dependency-links.json" "$PKG/operator-actions.json" >> "$PKG/source-hashes.txt"
+sha256sum "$PKG"/*.py "$PKG"/*.sh "$PKG/HEAD_SHA" "$PKG/PLAN.md" "$PKG/import-commands.json" "$PKG/dependency-links.json" "$PKG/operator-actions.json" >> "$PKG/source-hashes.txt"
 
 sha256sum "$PKG/source-hashes.txt"
 printf '%s\n' 'PASS: bounded stage, roles, isolated contracts and existing operations; no live mutation.'

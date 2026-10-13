@@ -22,9 +22,11 @@ cp -a "$HOME/.config/ariadne-activity/server.json" "$B/server.json"
 printf '%s\n' "$B" > "$PKG/last-backup"
 fi
 if [[ $(psql -XAt -c "SELECT count(*) FROM pg_namespace WHERE nspname='master'") == 0 ]]; then
- psql -X -v ON_ERROR_STOP=1 -f "$PKG/stage/migrations/master/001-ledger.sql"
+ MIGRATION_SHA=$(sha256sum "$PKG/stage/migrations/master/001-ledger.sql" | cut -d ' ' -f1)
+ PGOPTIONS="-c ariadne.migration_sha=$MIGRATION_SHA" psql -X -v ON_ERROR_STOP=1 -f "$PKG/stage/migrations/master/001-ledger.sql"
 else
- [[ $(psql -XAt -c "SELECT count(*) FROM master.migrations WHERE version=1") == 1 ]]
+ MIGRATION_SHA=$(sha256sum "$PKG/stage/migrations/master/001-ledger.sql" | cut -d ' ' -f1)
+ [[ $(psql -XAt -c "SELECT count(*) FROM master.migrations WHERE version=1 AND source_sha='$MIGRATION_SHA'") == 1 ]]
 fi
 psql -X -v ON_ERROR_STOP=1 <<'SQL'
 ALTER DATABASE ariadne_master OWNER TO james;
