@@ -1,0 +1,12 @@
+[Unit]
+Description=Ariadne master ledger PostgreSQL 17 (private native cluster)
+[Service]
+Type=simple
+ExecStart=/usr/lib/postgresql/17/bin/postgres -D %h/.local/state/ariadne-master-pg/data
+KillSignal=SIGINT
+TimeoutStopSec=120
+Restart=on-failure
+UMask=0077
+NoNewPrivileges=yes
+[Install]
+WantedBy=default.target

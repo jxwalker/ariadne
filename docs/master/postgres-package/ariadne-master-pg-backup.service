@@ -1,0 +1,10 @@
+[Unit]
+Description=Ariadne master ledger dump and isolated restore test
+Requires=ariadne-master-pg.service
+After=ariadne-master-pg.service
+[Service]
+Type=oneshot
+ExecStart=/bin/bash %h/ariadne-run/master-pg/backup.sh
+TimeoutStartSec=1800
+UMask=0077
+NoNewPrivileges=yes

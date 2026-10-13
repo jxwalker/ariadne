@@ -1,0 +1,8 @@
+[Unit]
+Description=Daily Ariadne master ledger backup
+[Timer]
+OnCalendar=*-*-* 02:15:00 UTC
+Persistent=true
+Unit=ariadne-master-pg-backup.service
+[Install]
+WantedBy=timers.target
