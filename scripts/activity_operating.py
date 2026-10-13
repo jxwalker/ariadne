@@ -39,6 +39,21 @@ def test_run(e,reg):
 def day(t):return datetime.fromtimestamp(t,timezone.utc).strftime('%Y-%m-%d')
 def stable(*parts):return hashlib.sha256('\n'.join(str(p) for p in parts).encode()).hexdigest()[:20]
 
+def num(v):return v if isinstance(v,(int,float)) and not isinstance(v,bool) and math.isfinite(v) else None
+def sanitize_machine(m,clean):
+    # Snapshots come from remote hosts; only bounded finite numbers and short redacted strings reach the API and DOM.
+    if not isinstance(m,dict):return {}
+    out={k:num(m.get(k)) for k in ['at','cpuPercent','cores','memoryPercent','memoryAvailableBytes','memoryTotalBytes','swapUsedBytes','diskPercent','diskUsedBytes','diskTotalBytes']}
+    out['status']=m.get('status') if m.get('status') in {'available','unreachable'} else 'unknown'
+    out['platform']=clean(m['platform'],32) if isinstance(m.get('platform'),str) else None
+    out['load']=[num(v) for v in m['load'][:3]] if isinstance(m.get('load'),list) else None
+    out['pressure']={clean(k,64):num(v) for k,v in list((m.get('pressure') or {}).items())[:20] if isinstance(k,str) and num(v) is not None} if isinstance(m.get('pressure'),dict) else {}
+    for key,field in [('temperatures','celsius'),('fans','rpm')]:
+        out[key]=[{'name':clean(v.get('name'),80),field:num(v.get(field)),'status':clean(v.get('status'),32)} for v in (m.get(key) or [])[:64] if isinstance(v,dict) and num(v.get(field)) is not None] if isinstance(m.get(key),list) else []
+    out['services']=[{'name':clean(v.get('name'),128),'state':clean(v.get('state'),32)} for v in m['services'][:20] if isinstance(v,dict)] if isinstance(m.get('services'),list) else []
+    out['vms']=[{**{k:num(v.get(k)) for k in ['cpu','maxcpu','mem','maxmem','disk','maxdisk','uptime']},**{k:clean(v.get(k),128) for k in ['vmid','name','status','node']}} for v in m['vms'][:200] if isinstance(v,dict)] if isinstance(m.get('vms'),list) else None
+    return out
+
 def evidence(store):
     prs={};runs={};jobs={};deployments={};collections={};machines={};issues={};pending={};repo_info={};truncated=False
     with store.connect() as db:
@@ -170,8 +185,11 @@ def operating(store,registry,config,params=None,at=None):
                 blocked.append(action(stable('unknown',row['source'],row['run']),title,'Execution freshness is unknown; this is not proof that the task is stuck.',owner,r['repo'],r['last'],'Inspect the source or contact the owning bot before restarting or reassigning.',pr_url,kind='telemetry',priority=4))
         # Resolve only an exact source/request identity; another source cannot close it.
         decisions={}
-        for row in db.execute("SELECT source,envelope,received FROM events WHERE json_extract(envelope,'$.kind') IN ('decision.requested','decision.resolved') ORDER BY julianday(json_extract(envelope,'$.occurredAt')) DESC,json_extract(envelope,'$.sequence') DESC LIMIT 5000"):
-            e=json.loads(row['envelope']);d=e.get('decision',{});key=(row['source'],e['repository'],d.get('id'));reg=registry.get(row['source'],{})
+        # Order by parsed source time in Python: SQLite julianday() cannot parse every ISO form validate() accepts.
+        lifecycle=[(json.loads(r['envelope']),r) for r in db.execute("SELECT source,envelope,received FROM events WHERE json_extract(envelope,'$.kind') IN ('decision.requested','decision.resolved') ORDER BY received DESC LIMIT 5000")]
+        lifecycle.sort(key=lambda p:(ts(p[0]['occurredAt']) or p[1]['received'],p[0]['sequence']),reverse=True)
+        for e,row in lifecycle:
+            d=e.get('decision',{});key=(row['source'],e['repository'],d.get('id'));reg=registry.get(row['source'],{})
             if key in decisions:continue
             decisions[key]=True
             if e['kind']!='decision.requested' or e['repository'] not in active_repos or d.get('recipient','').lower() not in aliases or reg.get('displayTaskMetadata') is not True or test_run(e,reg) or reg.get('provenance')=='read-only local snapshot' or reg.get('revoked'):continue
@@ -210,6 +228,10 @@ def operating(store,registry,config,params=None,at=None):
             needs.append(action(stable('issue',repo,number),issue.get('title') or f'Issue #{number}','An open decision issue is explicitly assigned to you; assignment time has not been collected.','James',repo,None,'Read the issue and record your decision there.',issue.get('html_url'),kind='assigned-decision',priority=1))
     for p in ev['pending'].values():
         if p['repo'] not in active_repos or at-p['_observed']>900:continue
+        attempts=[v for (r,rid,_),v in ev['runs'].items() if r==p['repo'] and rid==p['runId']]
+        newest=max(attempts,key=lambda v:v['_observed'],default=None)
+        # A later run observation that is no longer waiting means the approval was decided or the run ended.
+        if newest and newest['_observed']>p['_observed'] and newest.get('status') not in {'waiting','pending'}:continue
         reviewers=p.get('reviewers',[]);mine=any(v.get('type')=='User' and v.get('reviewer',{}).get('login','').lower() in aliases for v in reviewers)
         if mine:
             needs.append(action(stable('deploy-approval',p['repo'],p['runId'],p.get('environment',{}).get('id')),'Deployment approval requested',p.get('environment',{}).get('name') or 'Protected environment','James',p['repo'],p['_observed'],'Review the exact revision and checks in the protected environment before approving.','https://github.com/'+p['repo']+'/actions/runs/'+str(p['runId']),kind='deployment-approval',priority=0))
@@ -231,14 +253,14 @@ def operating(store,registry,config,params=None,at=None):
         if state in {'failure','error'} and latest_deployments.get((repo,d.get('environment') or 'Unspecified'),{}).get('id')==ident:blocked.append(action(stable('deployment',repo,ident),(d.get('environment') or 'Environment')+' deployment failed','The latest GitHub deployment attempt reports '+state+'.','Repository maintainer',repo,at_status or created,'Inspect the deployment log and verify which revision is running before retrying.',s.get('log_url'),kind='deployment-failure',priority=1))
     machine_rows=[]
     for spec in config.get('machines',[]):
-        host=spec['host'];m=ev['machines'].get(host,{})
-        measured=m.get('at');status=m.get('status','never-collected');stale=measured is None or at-measured>180
+        host=spec['host'];m=sanitize_machine(ev['machines'].get(host),clean)
+        measured=m.get('at');status=m.get('status') or 'never-collected';stale=measured is None or at-measured>180
         state='unknown' if stale else 'reachable' if status=='available' else 'unreachable'
         row={k:m.get(k) for k in ['cpuPercent','cores','memoryPercent','memoryAvailableBytes','memoryTotalBytes','swapUsedBytes','diskPercent','diskUsedBytes','diskTotalBytes','load','pressure','temperatures','fans','services','vms']}
         row.update(host=host,kind=spec.get('kind','machine'),parent=spec.get('parent'),at=measured,state=state,platform=m.get('platform'),history=[])
         with store.connect() as db:
             history=db.execute("SELECT observed,body FROM observation_history WHERE id LIKE ? AND observed BETWEEN ? AND ? ORDER BY observed DESC LIMIT 120",('machine:'+host+':%',start,at)).fetchall()
-        row['history']=[{'at':h['observed'],**{k:json.loads(h['body']).get('body',{}).get(k) for k in ['cpuPercent','memoryPercent','diskPercent']}} for h in reversed(history)]
+        row['history']=[{'at':h['observed'],**{k:num(json.loads(h['body']).get('body',{}).get(k)) for k in ['cpuPercent','memoryPercent','diskPercent']}} for h in reversed(history)]
         machine_rows.append(row)
         if state=='reachable':
             if row.get('diskPercent') is not None and row['diskPercent']>=85:insights.append(action(stable('disk',host),'Inspect storage headroom',f"{host}: root disk is {row['diskPercent']:.1f}% used.",'Machine operator',None,measured,'Inspect disk growth and retention; prepare a reviewed cleanup or expansion plan.',kind='storage',priority=1))

@@ -112,4 +112,28 @@ class OperatingTests(unittest.TestCase):
                 self.assertEqual(len(d['needsYou']),1 if seq==0 else 0);self.assertNotIn('fixture-only-signing-value',canonical(d))
         finally:server.shutdown();server.server_close();thread.join();app.store.close()
 
+    def test_malformed_machine_snapshot_is_sanitised_not_fatal(self):
+        self.observe('machine:vm','machine_snapshot',{'host':'vm','at':self.at-5,'status':'available','cpuPercent':'<img src=x onerror=alert(1)>','diskPercent':{'x':1},'pressure':{'macFreePercent':'<b>','memory_full':1.5},'temperatures':[{'celsius':'<i>'},{'name':'CPU','celsius':41,'status':'ok'},{'name':'no-celsius'}],'vms':[{'name':'guest','vmid':100,'mem':'<s>'}],'services':['bad',{'name':'svc','state':'active'}]})
+        row=self.read()['machines'][0]
+        self.assertIsNone(row['cpuPercent']);self.assertIsNone(row['diskPercent']);self.assertEqual(row['pressure'],{'memory_full':1.5})
+        self.assertEqual([t['name'] for t in row['temperatures']],['CPU']);self.assertIsNone(row['vms'][0]['mem']);self.assertEqual(row['services'],[{'name':'svc','state':'active'}])
+        self.assertNotIn('<',canonical(row))
+    def test_basic_format_resolution_time_still_orders_decisions(self):
+        d={'id':'choice','recipient':'james','question':'Choose?','blocking':True}
+        self.send('decision.requested',decision=d)
+        self.send('decision.resolved',seq=1,decision={'id':'choice','recipient':'james','resolution':'Chosen'})
+        with self.store.connect() as db:
+            row=db.execute("SELECT envelope FROM events WHERE id='event-1'").fetchone();env=json.loads(row['envelope']);env['occurredAt']=time.strftime('%Y%m%dT%H%M%SZ',time.gmtime(self.at+1));db.execute("UPDATE events SET envelope=? WHERE id='event-1'",(canonical(env),))
+        self.assertEqual(self.read()['needsYou'],[])
+    def test_approved_deployment_leaves_queue_after_run_moves_on(self):
+        self.observe('pending','pending_deployments',{'runId':7,'pending':[{'environment':{'id':1,'name':'production'},'reviewers':[{'type':'User','reviewer':{'login':'jxwalker'}}]}]},self.at-60)
+        self.assertEqual(len(self.read()['needsYou']),1)
+        self.observe('run','workflow_run',{'workflow_run':{'id':7,'name':'Deploy UAT','status':'in_progress','created_at':time.strftime('%Y-%m-%dT%H:%M:%SZ',time.gmtime(self.at-100)),'updated_at':time.strftime('%Y-%m-%dT%H:%M:%SZ',time.gmtime(self.at-10))}},self.at-5)
+        self.assertEqual(self.read()['needsYou'],[])
+    def test_fleet_machine_observations_are_not_a_repository(self):
+        from activity_insights import project
+        self.observe('machine:vm','machine_snapshot',{'host':'vm','at':self.at,'status':'available'})
+        with self.store.connect() as db:db.execute("UPDATE observations SET repo='_fleet' WHERE id='machine:vm'")
+        self.assertNotIn('_fleet',canonical(project(self.store,self.registry,'24h',self.at+1)))
+
 if __name__=='__main__':unittest.main()
