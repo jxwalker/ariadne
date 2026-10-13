@@ -386,6 +386,7 @@ export interface MutationReadinessPlan {
   risk: "low" | "medium" | "high";
   scope: string;
   approvalRef?: string;
+  approvalSha256?: string;
   approvalStatus?: ApprovalRecord["status"];
   authEvidenceRefs: string[];
   evidenceRefs: string[];
@@ -417,6 +418,7 @@ export interface MutationReadinessAudit {
   };
   checks: Array<{
     planId: string;
+    planSha256?: string;
     target: MutationReadinessPlan["target"];
     status: "passed" | "blocked" | "retired";
     blockers: string[];
@@ -462,6 +464,7 @@ export interface MutationDryRunRecord {
   id: string;
   project: string;
   planId: string;
+  planSha256?: string;
   target: MutationReadinessPlan["target"];
   startedAt: string;
   finishedAt: string;
@@ -470,6 +473,7 @@ export interface MutationDryRunRecord {
   exitCode?: number;
   signal?: string;
   bufferExceeded?: boolean;
+  timedOut?: boolean;
   durationMs: number;
   stdout: string;
   stderr: string;

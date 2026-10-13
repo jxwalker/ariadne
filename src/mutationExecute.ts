@@ -1,7 +1,8 @@
 import fs from "node:fs/promises";
 import path from "node:path";
 import { timestampFile, writeJsonArtifact, writeTextArtifact } from "./artifacts.js";
-import { clampCommandTimeout, execMutationCommand, readMutationPlan } from "./mutationCommand.js";
+import { clampCommandTimeout, execMutationCommand, readMutationPlanWithDigest } from "./mutationCommand.js";
+import { runMutationDryRun } from "./mutationDryRun.js";
 import { generateMutationReadinessAudit } from "./mutationReadinessAudit.js";
 import { projectDir, slugifyProject } from "./paths.js";
 import type { MutationDryRunRecord, MutationExecutionRecord } from "./types.js";
@@ -14,18 +15,31 @@ export async function runMutationExecution(input: {
   timeoutMs?: number;
 }): Promise<{ jsonPath: string; markdownPath: string; record: MutationExecutionRecord }> {
   const project = slugifyProject(input.project);
-  const plan = await readMutationPlan(input.vaultRoot, project, input.plan);
+  const loadedPlan = await readMutationPlanWithDigest(input.vaultRoot, project, input.plan);
+  const plan = loadedPlan.plan;
   if (input.confirmPlan !== plan.id) {
     throw new Error(`--confirm-plan must exactly match ${plan.id}.`);
   }
   const audit = await generateMutationReadinessAudit({ project, vaultRoot: input.vaultRoot });
   const auditCheck = audit.audit.checks.find((check) => check.planId === plan.id);
-  if (!auditCheck || auditCheck.status !== "passed") {
+  if (!auditCheck || auditCheck.status !== "passed" || auditCheck.planSha256 !== loadedPlan.sha256) {
     throw new Error(`Readiness plan ${plan.id} is not audit-passed.`);
   }
-  const dryRun = await latestPassedDryRun(input.vaultRoot, project, plan.id);
+  const dryRun = await latestPassedDryRun(input.vaultRoot, project, plan.id, loadedPlan.sha256);
   if (!dryRun) {
-    throw new Error(`Readiness plan ${plan.id} has no passed mutation dry-run evidence.`);
+    throw new Error(`Readiness plan ${plan.id} has no passed mutation dry-run evidence matching the complete plan digest.`);
+  }
+
+  // Writable historical evidence is not an execution authority. Re-run the audited
+  // read-only validation and use the current process result, not a claimed status.
+  const fresh = await runMutationDryRun({ project, vaultRoot: input.vaultRoot, plan: input.plan, timeoutMs: input.timeoutMs });
+  if (fresh.record.planSha256 !== loadedPlan.sha256 || !passedResult(fresh.record)) {
+    throw new Error(`Readiness plan ${plan.id} failed current read-only revalidation.`);
+  }
+  const finalAudit = await generateMutationReadinessAudit({ project, vaultRoot: input.vaultRoot });
+  const finalCheck = finalAudit.audit.checks.find(check => check.planId === plan.id);
+  if (!finalCheck || finalCheck.status !== "passed" || finalCheck.planSha256 !== loadedPlan.sha256) {
+    throw new Error(`Readiness plan ${plan.id} changed or lost approval during revalidation.`);
   }
 
   const started = new Date();
@@ -80,7 +94,7 @@ export async function runMutationExecution(input: {
     postVerificationStderr: postVerify?.stderr ?? "",
     durationMs: live.durationMs + (postVerify?.durationMs ?? 0),
     auditRef: path.relative(input.vaultRoot, audit.jsonPath),
-    dryRunRef: dryRun.id,
+    dryRunRef: fresh.record.id,
     rollback: plan.rollback,
     execute: true
   };
@@ -95,7 +109,7 @@ export async function runMutationExecution(input: {
   return { jsonPath, markdownPath, record };
 }
 
-async function latestPassedDryRun(vaultRoot: string, project: string, planId: string): Promise<MutationDryRunRecord | undefined> {
+async function latestPassedDryRun(vaultRoot: string, project: string, planId: string, planSha256: string): Promise<MutationDryRunRecord | undefined> {
   const dir = path.join(projectDir(vaultRoot, project), "control", "mutation-dry-runs");
   let names: string[];
   try {
@@ -110,7 +124,12 @@ async function latestPassedDryRun(vaultRoot: string, project: string, planId: st
       .sort()
       .map(async (name) => JSON.parse(await fs.readFile(path.join(dir, name), "utf8")) as MutationDryRunRecord)
   );
-  return records.filter((record) => record.planId === planId && record.status === "passed").at(-1);
+  return records.filter((record) => record.schemaVersion === 1 && record.project === project && record.planId === planId && record.planSha256 === planSha256 && passedResult(record)).at(-1);
+}
+
+function passedResult(record: MutationDryRunRecord): boolean {
+  return record.status === "passed" && record.exitCode === 0 && record.timedOut === false
+    && record.bufferExceeded === false && record.signal === undefined && record.execute === false;
 }
 
 function renderRecord(record: MutationExecutionRecord): string {

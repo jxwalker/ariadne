@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+import { runLedger } from "./masterLedger.js";
 import path from "node:path";
 import { decideApproval, requestApproval } from "./approvals.js";
 import { generateArtifactCheckReport } from "./artifactChecks.js";
@@ -248,6 +249,8 @@ function usage(): string {
     "  ariadne roadmap --project <project> [--target-url <url>] [--repo <path>]",
     "  ariadne status --project <project> [--expert]",
     "",
+    "  ariadne ledger-command --project ariadne --file <command.json>",
+    "  ariadne ledger-view --project ariadne",
     "Options:",
     "  --vault <path>       Override the vault root. Defaults to ./vault.",
     "  --project <name>     Project slug or name. Defaults to default.",
@@ -267,6 +270,12 @@ async function main(): Promise<void> {
 
   if (!parsed.command || parsed.command === "help" || parsed.options.has("help")) {
     console.log(usage());
+    return;
+  }
+
+  if (["ledger-command", "ledger-view"].includes(parsed.command)) {
+    if (project !== "ariadne") throw new Error("Ledger commands require --project ariadne");
+    await runLedger(parsed.command, optionString(parsed.options, "file", "") || undefined);
     return;
   }
 

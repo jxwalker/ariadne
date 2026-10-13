@@ -1,0 +1,15 @@
+{
+  "command": [
+    "gh",
+    "pr",
+    "view",
+    "169",
+    "--repo",
+    "jxwalker/ariadne",
+    "--json",
+    "number,state,isDraft,headRefOid,url,mergeStateStatus"
+  ],
+  "exit": 0,
+  "stdout": "{\"headRefOid\":\"03dd67778ce5ef7b37089b79957b13526d70c829\",\"isDraft\":true,\"mergeStateStatus\":\"CLEAN\",\"number\":169,\"state\":\"OPEN\",\"url\":\"https://github.com/jxwalker/ariadne/pull/169\"}\n",
+  "stderr": ""
+}

@@ -1,0 +1,2627 @@
+{
+  "observed": "2026-10-13",
+  "commit": "ae881ad4204cf76b64b8486f9bc33f20635faec2",
+  "truncated": false,
+  "paths": [
+    {
+      "path": ".gsd/QUEUE.md",
+      "blob_sha": "1f243c5175e4f16325ba0bc21a206453ef2cf4ae"
+    },
+    {
+      "path": ".gsd/REQUIREMENTS.md",
+      "blob_sha": "47da6861aa2cd738a664790e113b798eaf9b041b"
+    },
+    {
+      "path": ".gsd/STATE.md",
+      "blob_sha": "4ec7cf6fd68c8f28659b934de0c746d15c1c2e7a"
+    },
+    {
+      "path": ".gsd/milestones/M001/M001-CONTEXT.md",
+      "blob_sha": "b37f7ded08d5daaac57b739118b7512b450a842b"
+    },
+    {
+      "path": ".gsd/milestones/M001/M001-RESEARCH.md",
+      "blob_sha": "ba27830d8e51fc9fe822296c0a842bde68ff2bd7"
+    },
+    {
+      "path": ".gsd/milestones/M001/M001-ROADMAP.md",
+      "blob_sha": "e8d3063715c2fe5e0c8aa497ec1129a57f99148d"
+    },
+    {
+      "path": ".gsd/milestones/M001/M001-SUMMARY.md",
+      "blob_sha": "78f3fb7ca55fca15db055d9c14d278b005947187"
+    },
+    {
+      "path": ".gsd/milestones/M001/slices/S01/S01-PLAN.md",
+      "blob_sha": "37ea47aef011f37c5972a92bc38205c985ad1ac6"
+    },
+    {
+      "path": ".gsd/milestones/M001/slices/S01/S01-SUMMARY.md",
+      "blob_sha": "684e98975f82defb31eb9d2e26ee9bfa1c91cbbd"
+    },
+    {
+      "path": ".gsd/milestones/M001/slices/S01/S01-UAT.md",
+      "blob_sha": "d2b4f31163f941f598d484f3a329ca2c93fe05aa"
+    },
+    {
+      "path": ".gsd/milestones/M001/slices/S01/tasks/T01-PLAN.md",
+      "blob_sha": "c7a37a700b46300a0950b9a9be3bb25862a88096"
+    },
+    {
+      "path": ".gsd/milestones/M001/slices/S01/tasks/T02-PLAN.md",
+      "blob_sha": "910758942dfb9684bb4bd67b03bf2c8905663f39"
+    },
+    {
+      "path": ".gsd/milestones/M001/slices/S01/tasks/T03-PLAN.md",
+      "blob_sha": "8998e906aaab7fac5fc51e37447385da69e807f3"
+    },
+    {
+      "path": ".gsd/milestones/M001/slices/S02/S02-PLAN.md",
+      "blob_sha": "cdfc4824500a61542c12864b7571018f16141a9a"
+    },
+    {
+      "path": ".gsd/milestones/M001/slices/S02/S02-SUMMARY.md",
+      "blob_sha": "4f58deb8d3b3714f8ed12128b8a61aaf090e07f3"
+    },
+    {
+      "path": ".gsd/milestones/M001/slices/S02/S02-UAT.md",
+      "blob_sha": "a64ab068b034a0c7afa45e58677ce90412e5f128"
+    },
+    {
+      "path": ".gsd/milestones/M001/slices/S02/tasks/T01-PLAN.md",
+      "blob_sha": "ab4773cc3492550c990d01e5640e8b77a5a80005"
+    },
+    {
+      "path": ".gsd/milestones/M001/slices/S02/tasks/T02-PLAN.md",
+      "blob_sha": "57cfa56994563c97b2c3b940723dfa23045d4afc"
+    },
+    {
+      "path": ".gsd/milestones/M001/slices/S02/tasks/T03-PLAN.md",
+      "blob_sha": "4f9113d8d9ece5809e68b78aca2741e31824e16b"
+    },
+    {
+      "path": ".gsd/milestones/M001/slices/S03/S03-PLAN.md",
+      "blob_sha": "55d8052278afeb795b94e420424997812f4dc7be"
+    },
+    {
+      "path": ".gsd/milestones/M001/slices/S03/S03-SUMMARY.md",
+      "blob_sha": "30c23be3fb09ef3bbde7efa1c4eee4163f250a66"
+    },
+    {
+      "path": ".gsd/milestones/M001/slices/S04/S04-PLAN.md",
+      "blob_sha": "54b6d4306021cfea59f9af9f9fdf60d7282c1dd3"
+    },
+    {
+      "path": ".gsd/milestones/M001/slices/S04/S04-SUMMARY.md",
+      "blob_sha": "f45b98a8d86cf9af2c3c85c0e010c02578732eff"
+    },
+    {
+      "path": ".gsd/milestones/M001/slices/S05/S05-PLAN.md",
+      "blob_sha": "223748040627ff2ff28732c9d9056b518f9761e8"
+    },
+    {
+      "path": ".gsd/milestones/M001/slices/S05/S05-SUMMARY.md",
+      "blob_sha": "e9fc13e3fd5241ad266e48b9b2828ea0b2900235"
+    },
+    {
+      "path": ".gsd/milestones/M001/slices/S06/S06-PLAN.md",
+      "blob_sha": "fd5c91f6caaf8a27d5813a873800a8819827a8ef"
+    },
+    {
+      "path": ".gsd/milestones/M001/slices/S06/S06-SUMMARY.md",
+      "blob_sha": "285daaaa7c445e7dbf8a21c93c3130e5ee36d7a0"
+    },
+    {
+      "path": ".gsd/milestones/M001/slices/S06/S06-UAT.md",
+      "blob_sha": "29e215b41e95a1bbb66ea5b23fa779927e9401aa"
+    },
+    {
+      "path": ".gsd/milestones/M001/slices/S06/tasks/T01-PLAN.md",
+      "blob_sha": "5c16909ead3e5ebc265c882e4fff337e4dab4e9c"
+    },
+    {
+      "path": ".gsd/milestones/M001/slices/S06/tasks/T02-PLAN.md",
+      "blob_sha": "778b25c9272c17c41f496c7e46a0052464585e66"
+    },
+    {
+      "path": ".gsd/milestones/M001/slices/S06/tasks/T03-PLAN.md",
+      "blob_sha": "f620d0f9983da286410a9272fe586c9cfffbc23f"
+    },
+    {
+      "path": ".gsd/milestones/M001/slices/S07/S07-PLAN.md",
+      "blob_sha": "be418c690f9881784071372faed9920732f6f3e6"
+    },
+    {
+      "path": ".gsd/milestones/M001/slices/S07/S07-SUMMARY.md",
+      "blob_sha": "b12bcd42b4bec3bc672ebdef01f1bf730d81d99d"
+    },
+    {
+      "path": ".gsd/milestones/M001/slices/S08/S08-PLAN.md",
+      "blob_sha": "9e77327e414f50c86a5b6f32e027a62d28c144e6"
+    },
+    {
+      "path": ".gsd/milestones/M001/slices/S08/S08-SUMMARY.md",
+      "blob_sha": "7106b6d62c2b990ed839a6e06b13eda34be68892"
+    },
+    {
+      "path": ".gsd/milestones/M001/slices/S09/S09-PLAN.md",
+      "blob_sha": "6f64d3851e2d545c82e761d1745909144d5ecf63"
+    },
+    {
+      "path": ".gsd/milestones/M001/slices/S09/S09-SUMMARY.md",
+      "blob_sha": "8daea8c041dc1a1821c5affdb7637acff3ae5be7"
+    },
+    {
+      "path": ".gsd/milestones/M001/slices/S09/S09-UAT.md",
+      "blob_sha": "ef6abf626c97f5c3a2918f33715094dc658c91a6"
+    },
+    {
+      "path": ".gsd/milestones/M001/slices/S09/tasks/T01-PLAN.md",
+      "blob_sha": "11fced1de3ed8501c4dace5f944d29b24950352b"
+    },
+    {
+      "path": ".gsd/milestones/M001/slices/S09/tasks/T01-SUMMARY.md",
+      "blob_sha": "195d2ecd2ba82f0d4adc353ee24b6f93ed510fcb"
+    },
+    {
+      "path": ".gsd/milestones/M001/slices/S09/tasks/T02-PLAN.md",
+      "blob_sha": "38172e797b9b8b3335b59969219fd85f99c5d0f9"
+    },
+    {
+      "path": ".gsd/milestones/M001/slices/S09/tasks/T02-SUMMARY.md",
+      "blob_sha": "4ea1022d303f6979ebcf2a4a340e44be0a992d18"
+    },
+    {
+      "path": ".gsd/milestones/M001/slices/S09/tasks/T03-PLAN.md",
+      "blob_sha": "75e83cb400572d7da096f907a8c672c3131610dc"
+    },
+    {
+      "path": ".gsd/milestones/M001/slices/S09/tasks/T03-SUMMARY.md",
+      "blob_sha": "7062f6c6314f3d10adc22504f29923f517f84865"
+    },
+    {
+      "path": ".gsd/milestones/M001/slices/S10/S10-PLAN.md",
+      "blob_sha": "2ac8a2a9a653779f6bf3b5bb1409b5ee25bea32e"
+    },
+    {
+      "path": ".gsd/milestones/M001/slices/S10/S10-SUMMARY.md",
+      "blob_sha": "8ccd4878b5329c258bc50c31a5d1e69b37b4a60e"
+    },
+    {
+      "path": ".gsd/milestones/M001/slices/S11/S11-PLAN.md",
+      "blob_sha": "c58676681c8269fb1d92b09adf2a7635622fca8c"
+    },
+    {
+      "path": ".gsd/milestones/M001/slices/S11/S11-RESEARCH.md",
+      "blob_sha": "4d6f308454814ea0a4906c261d80e64db40987b1"
+    },
+    {
+      "path": ".gsd/milestones/M001/slices/S11/S11-SUMMARY.md",
+      "blob_sha": "0c589a61bfbccbcb9450cf25f2003634ff80e3fc"
+    },
+    {
+      "path": ".gsd/milestones/M001/slices/S11/S11-UAT.md",
+      "blob_sha": "0abdd385aedb6dcfa1e9e763049ef4f1dd37d514"
+    },
+    {
+      "path": ".gsd/milestones/M001/slices/S11/tasks/T01-PLAN.md",
+      "blob_sha": "609b9a49575b6f7220d5093ec89474074c2b55e7"
+    },
+    {
+      "path": ".gsd/milestones/M001/slices/S11/tasks/T01-SUMMARY.md",
+      "blob_sha": "67cf82846db965c9dba26baa73f8d120387426a7"
+    },
+    {
+      "path": ".gsd/milestones/M001/slices/S11/tasks/T02-PLAN.md",
+      "blob_sha": "07e4aae88fea5d0fd8a85057359607d978503eef"
+    },
+    {
+      "path": ".gsd/milestones/M001/slices/S11/tasks/T02-SUMMARY.md",
+      "blob_sha": "79d62d4ccdd3c1168b03f4f34c22c1b4925e8d00"
+    },
+    {
+      "path": ".gsd/milestones/M001/slices/S11/tasks/T03-PLAN.md",
+      "blob_sha": "b4ba599447cc5e571226538f32eccb45a7a85fb6"
+    },
+    {
+      "path": ".gsd/milestones/M001/slices/S11/tasks/T03-SUMMARY.md",
+      "blob_sha": "71ba7e3e9c0811390be6dee1f0f0b2e220287f6e"
+    },
+    {
+      "path": ".gsd/milestones/M001/slices/S11/tasks/T04-PLAN.md",
+      "blob_sha": "39b0b931a2eedeb0dd05b125d77d93e0f9c2b6e0"
+    },
+    {
+      "path": ".gsd/milestones/M001/slices/S11/tasks/T04-SUMMARY.md",
+      "blob_sha": "5552a11da4947348ba17894b9c6e7e4fcca56bd9"
+    },
+    {
+      "path": ".gsd/milestones/M001/slices/S12/S12-PLAN.md",
+      "blob_sha": "1e3aad00bf8efc0a808662c5bc28312a5aaa5a02"
+    },
+    {
+      "path": ".gsd/milestones/M001/slices/S12/S12-RESEARCH.md",
+      "blob_sha": "62391f4823a579ff8b92f34aeb3aa3b4b1ff6b4d"
+    },
+    {
+      "path": ".gsd/milestones/M001/slices/S12/S12-SUMMARY.md",
+      "blob_sha": "263599df321cd4a5aa1ab605e60aeefe2291e205"
+    },
+    {
+      "path": ".gsd/milestones/M001/slices/S12/S12-UAT.md",
+      "blob_sha": "6900e0e649ec55ed974b202c165083fdadcbcde2"
+    },
+    {
+      "path": ".gsd/milestones/M001/slices/S12/tasks/T01-PLAN.md",
+      "blob_sha": "76916dbdac8451e223948a000700dc4fdd6aa387"
+    },
+    {
+      "path": ".gsd/milestones/M001/slices/S12/tasks/T01-SUMMARY.md",
+      "blob_sha": "5aa093f0a96d7c6f7090bf3a1c15b27238db1802"
+    },
+    {
+      "path": ".gsd/milestones/M001/slices/S12/tasks/T02-PLAN.md",
+      "blob_sha": "07ea2951f70611dc92924d2da82e427e19741556"
+    },
+    {
+      "path": ".gsd/milestones/M001/slices/S12/tasks/T02-SUMMARY.md",
+      "blob_sha": "d38e667b253d3ae1369104a5f63524a550221fbd"
+    },
+    {
+      "path": ".gsd/milestones/M001/slices/S12/tasks/T03-PLAN.md",
+      "blob_sha": "d8430092bc4c29d8970152a38754ea15f7afa21a"
+    },
+    {
+      "path": ".gsd/milestones/M001/slices/S12/tasks/T03-SUMMARY.md",
+      "blob_sha": "a0339800ded83acd3b7af0401865c405c21eb48d"
+    },
+    {
+      "path": ".gsd/milestones/M001/slices/S12/tasks/T04-PLAN.md",
+      "blob_sha": "9af3551ee4793e10ca283319b27e65d72c750f46"
+    },
+    {
+      "path": ".gsd/milestones/M001/slices/S12/tasks/T04-SUMMARY.md",
+      "blob_sha": "9d806ed9f9e5fa7f41550e9ba3f72b319b4de654"
+    },
+    {
+      "path": ".gsd/milestones/M001/slices/S12/tasks/T05-PLAN.md",
+      "blob_sha": "3bf1dd633643d1bbd988db7fab222f190e392c61"
+    },
+    {
+      "path": ".gsd/milestones/M001/slices/S12/tasks/T05-SUMMARY.md",
+      "blob_sha": "7eeaf1e24c864a5c335c9f88eaa1d583e45cac6c"
+    },
+    {
+      "path": ".gsd/milestones/M001/slices/S13/S13-PLAN.md",
+      "blob_sha": "9728d321e38de596d53f3c4938452b7ace401747"
+    },
+    {
+      "path": ".gsd/milestones/M001/slices/S13/S13-RESEARCH.md",
+      "blob_sha": "e21cef436332a3ec86c13c863ebd22684fd1139e"
+    },
+    {
+      "path": ".gsd/milestones/M001/slices/S13/S13-SUMMARY.md",
+      "blob_sha": "ffcf36752f7aab3c64d41677ff2863be4237798b"
+    },
+    {
+      "path": ".gsd/milestones/M001/slices/S13/S13-UAT.md",
+      "blob_sha": "c23296576fa85fe435d778d0bd69344ca6bd2290"
+    },
+    {
+      "path": ".gsd/milestones/M001/slices/S13/tasks/T01-PLAN.md",
+      "blob_sha": "474d64c30601838bef41f16db3fc391d4b836fb2"
+    },
+    {
+      "path": ".gsd/milestones/M001/slices/S13/tasks/T01-SUMMARY.md",
+      "blob_sha": "105a341ccb7587df50a54a58c129238129e7b3de"
+    },
+    {
+      "path": ".gsd/milestones/M001/slices/S13/tasks/T02-PLAN.md",
+      "blob_sha": "a6262175506865285227a58ed82d5f0151e57042"
+    },
+    {
+      "path": ".gsd/milestones/M001/slices/S13/tasks/T02-SUMMARY.md",
+      "blob_sha": "204bdc80790430ca19ad441ae1f8f8204bf22554"
+    },
+    {
+      "path": ".gsd/milestones/M001/slices/S13/tasks/T03-PLAN.md",
+      "blob_sha": "a935ac54f4c5b19f7d1b88b91a57c34d5153c959"
+    },
+    {
+      "path": ".gsd/milestones/M001/slices/S13/tasks/T03-SUMMARY.md",
+      "blob_sha": "06b7710ffde221664cb4ae00d4d2d78997e108c9"
+    },
+    {
+      "path": ".gsd/milestones/M001/slices/S13/tasks/T04-PLAN.md",
+      "blob_sha": "f22f135a3191f02fa5d9286937dc3cfeb508f5db"
+    },
+    {
+      "path": ".gsd/milestones/M001/slices/S13/tasks/T04-SUMMARY.md",
+      "blob_sha": "400a551773f50a4316b84bd470b7a404810c10bd"
+    },
+    {
+      "path": ".gsd/milestones/M001/slices/S13/tasks/T05-PLAN.md",
+      "blob_sha": "bbf21a86e47216963c91efa20fc38e0635a82ae8"
+    },
+    {
+      "path": ".gsd/milestones/M001/slices/S13/tasks/T05-SUMMARY.md",
+      "blob_sha": "5139e7c75c04415dc7c7bcf01f988c88dc1c8b7d"
+    },
+    {
+      "path": ".gsd/milestones/M001/slices/S14/S14-PLAN.md",
+      "blob_sha": "006515fa3243afeee4c2885894c25666da54090e"
+    },
+    {
+      "path": ".gsd/milestones/M001/slices/S14/S14-RESEARCH.md",
+      "blob_sha": "84a5d578903314572c033f85bff8138287319822"
+    },
+    {
+      "path": ".gsd/milestones/M001/slices/S14/S14-SUMMARY.md",
+      "blob_sha": "1edba60681f0c9bdcb9f9193f76cb52975bb3514"
+    },
+    {
+      "path": ".gsd/milestones/M001/slices/S14/S14-UAT.md",
+      "blob_sha": "c6b73349f798985d0521ab93e24c842487bb9efc"
+    },
+    {
+      "path": ".gsd/milestones/M001/slices/S14/tasks/T01-PLAN.md",
+      "blob_sha": "0409d271ff9a9008bae43ec2c3cd21fb3d881048"
+    },
+    {
+      "path": ".gsd/milestones/M001/slices/S14/tasks/T01-SUMMARY.md",
+      "blob_sha": "b26f20fda5724c2bbafdb5024c73ee8bb97392f5"
+    },
+    {
+      "path": ".gsd/milestones/M001/slices/S14/tasks/T02-PLAN.md",
+      "blob_sha": "69465188c3871032928446f2d8baabc54156e9cf"
+    },
+    {
+      "path": ".gsd/milestones/M001/slices/S14/tasks/T02-SUMMARY.md",
+      "blob_sha": "540eab14c17094d42bcf42fd177b7fe68c7f4f80"
+    },
+    {
+      "path": ".gsd/milestones/M001/slices/S14/tasks/T03-PLAN.md",
+      "blob_sha": "4081fec6c5fe6ca241d0dafe1ea7d17ece822d50"
+    },
+    {
+      "path": ".gsd/milestones/M001/slices/S14/tasks/T03-SUMMARY.md",
+      "blob_sha": "1ed54a13d2da67d3a456b33ab0da1d8d1ac6905e"
+    },
+    {
+      "path": ".gsd/milestones/M001/slices/S14/tasks/T04-PLAN.md",
+      "blob_sha": "a555ed854140b58a3e8e8fa7579a4ed59147cc3f"
+    },
+    {
+      "path": ".gsd/milestones/M001/slices/S14/tasks/T04-SUMMARY.md",
+      "blob_sha": "cf25a9333724efdd50e7fac6a89a40b2a71c2aa6"
+    },
+    {
+      "path": ".gsd/milestones/M001/slices/S15/S15-PLAN.md",
+      "blob_sha": "2ea2d31be5bbec9254147a874e99ffcfb0fac2dd"
+    },
+    {
+      "path": ".gsd/milestones/M001/slices/S15/S15-RESEARCH.md",
+      "blob_sha": "754706557cbc5ca34f623dc10d2fcb7c98c4166b"
+    },
+    {
+      "path": ".gsd/milestones/M001/slices/S15/S15-SUMMARY.md",
+      "blob_sha": "300809764fd62faf5f6124d1da3f9fc5b59c9038"
+    },
+    {
+      "path": ".gsd/milestones/M001/slices/S15/S15-UAT.md",
+      "blob_sha": "1551e49e3f2370e3c0b023d5d364c76fb4706bab"
+    },
+    {
+      "path": ".gsd/milestones/M001/slices/S15/tasks/T01-PLAN.md",
+      "blob_sha": "833cb860a3695c24a984e60022336ad92962ce86"
+    },
+    {
+      "path": ".gsd/milestones/M001/slices/S15/tasks/T01-SUMMARY.md",
+      "blob_sha": "e7243a9b8bbd2e9241bd0b01703daafc0991d70b"
+    },
+    {
+      "path": ".gsd/milestones/M001/slices/S15/tasks/T02-PLAN.md",
+      "blob_sha": "f6cae8025f64b4c3f500cef5c99864df7a061e41"
+    },
+    {
+      "path": ".gsd/milestones/M001/slices/S15/tasks/T02-SUMMARY.md",
+      "blob_sha": "4495941564169090a4862debedc09dcf1d8f7b0a"
+    },
+    {
+      "path": ".gsd/milestones/M001/slices/S16/S16-PLAN.md",
+      "blob_sha": "dad0730a18c30ec6ccfd5b4711d858c746699678"
+    },
+    {
+      "path": ".gsd/milestones/M001/slices/S16/S16-RESEARCH.md",
+      "blob_sha": "19a06cc8339274ccf47c7cf597e9ddd7805663e9"
+    },
+    {
+      "path": ".gsd/milestones/M001/slices/S16/S16-SUMMARY.md",
+      "blob_sha": "5c8e00fa1bad699899994e6e5048f891ffda595b"
+    },
+    {
+      "path": ".gsd/milestones/M001/slices/S16/S16-UAT.md",
+      "blob_sha": "63e64ac074283dc73485e4b8b5c7b1bb4fbf49ef"
+    },
+    {
+      "path": ".gsd/milestones/M001/slices/S16/tasks/T01-PLAN.md",
+      "blob_sha": "8b4d270c7e44b2a4147cf1d1612fd22766caa5bb"
+    },
+    {
+      "path": ".gsd/milestones/M001/slices/S16/tasks/T01-SUMMARY.md",
+      "blob_sha": "9a8a3ea5223e488e37db721a348bac2a8fea0d39"
+    },
+    {
+      "path": ".gsd/milestones/M001/slices/S16/tasks/T02-PLAN.md",
+      "blob_sha": "b9717a55f10ca9ea96d871b1ea266a548e16869f"
+    },
+    {
+      "path": ".gsd/milestones/M001/slices/S16/tasks/T02-SUMMARY.md",
+      "blob_sha": "7e5e8b6a29b3b09afe5a02b7bbbbfcf0591ba95e"
+    },
+    {
+      "path": ".gsd/milestones/M001/slices/S16/tasks/T03-PLAN.md",
+      "blob_sha": "09dc714523f8d7b402fe3f69e564b0ce0423db9f"
+    },
+    {
+      "path": ".gsd/milestones/M001/slices/S16/tasks/T03-SUMMARY.md",
+      "blob_sha": "63f67ef2883a70e97d48f2b4d12b4b7f90ce479d"
+    },
+    {
+      "path": ".gsd/milestones/M001/slices/S16/tasks/T04-PLAN.md",
+      "blob_sha": "51ced9e3256031ed5c5f073054803fb23468ca01"
+    },
+    {
+      "path": ".gsd/milestones/M001/slices/S16/tasks/T04-SUMMARY.md",
+      "blob_sha": "2b045f12c2e0b0537ce9ab08ac0b6be3341347d3"
+    },
+    {
+      "path": ".gsd/milestones/M001/slices/S17/S17-PLAN.md",
+      "blob_sha": "6d99a2580deb6ca01390ad0dee90a42a90615dd7"
+    },
+    {
+      "path": ".gsd/milestones/M001/slices/S17/S17-RESEARCH.md",
+      "blob_sha": "5ba8cbca34efadba3d951b66dc4b45c6cae2ba62"
+    },
+    {
+      "path": ".gsd/milestones/M001/slices/S17/S17-SUMMARY.md",
+      "blob_sha": "3fc1a1939d71c34c16044d624606b28277fffa2d"
+    },
+    {
+      "path": ".gsd/milestones/M001/slices/S17/S17-UAT.md",
+      "blob_sha": "9c1f1da9d88671e96a0c5bb5d6b8765bda9f788a"
+    },
+    {
+      "path": ".gsd/milestones/M001/slices/S17/tasks/T01-PLAN.md",
+      "blob_sha": "10d5de755d1768072509dce63c78161ca4f76bd9"
+    },
+    {
+      "path": ".gsd/milestones/M001/slices/S17/tasks/T01-SUMMARY.md",
+      "blob_sha": "653010c8023e3ca5b623b45d3641ad2364087781"
+    },
+    {
+      "path": ".gsd/milestones/M001/slices/S17/tasks/T02-PLAN.md",
+      "blob_sha": "0bbe238d64d094eae2d627d35381985a68fd6748"
+    },
+    {
+      "path": ".gsd/milestones/M001/slices/S17/tasks/T02-SUMMARY.md",
+      "blob_sha": "fd74288d52459eeae02f60a0540bb550c7d9d2b7"
+    },
+    {
+      "path": ".gsd/milestones/M001/slices/S17/tasks/T03-PLAN.md",
+      "blob_sha": "306db21f1475412577444c488d0f1f91bf4e6b65"
+    },
+    {
+      "path": ".gsd/milestones/M001/slices/S17/tasks/T03-SUMMARY.md",
+      "blob_sha": "3979233b9d1c978828bb46f8cf74d8f17a4e3774"
+    },
+    {
+      "path": ".gsd/milestones/M001/slices/S17/tasks/T04-PLAN.md",
+      "blob_sha": "54953ff4b7be8bf85cba3f66a1f9cafe6f8fc021"
+    },
+    {
+      "path": ".gsd/milestones/M001/slices/S17/tasks/T04-SUMMARY.md",
+      "blob_sha": "8bd4d422a978f6cbe6c448e8d10ea1ee5e2d1f47"
+    },
+    {
+      "path": ".gsd/milestones/M001/slices/S18/S18-PLAN.md",
+      "blob_sha": "ade90f43040bc67d8f9dbde23e1319d092c58ca7"
+    },
+    {
+      "path": ".gsd/milestones/M001/slices/S18/S18-RESEARCH.md",
+      "blob_sha": "96c51614589da8fc81b599358541aadc3464e959"
+    },
+    {
+      "path": ".gsd/milestones/M001/slices/S18/S18-SUMMARY.md",
+      "blob_sha": "bb1dabd302837560a2baf6bc434013429afabdff"
+    },
+    {
+      "path": ".gsd/milestones/M001/slices/S18/S18-UAT.md",
+      "blob_sha": "96d23d5490c8c92d7c51e4d8789898eeb673e11c"
+    },
+    {
+      "path": ".gsd/milestones/M001/slices/S18/tasks/T01-PLAN.md",
+      "blob_sha": "5e8615411900bb990d7bcae72c72e5e9b0f28f7d"
+    },
+    {
+      "path": ".gsd/milestones/M001/slices/S18/tasks/T01-SUMMARY.md",
+      "blob_sha": "51b4bbed06e0d8faf7ec5d52342231aef4d28610"
+    },
+    {
+      "path": ".gsd/milestones/M001/slices/S18/tasks/T02-PLAN.md",
+      "blob_sha": "2e2a6029244e3cded22efe52c618f8bfe319571d"
+    },
+    {
+      "path": ".gsd/milestones/M001/slices/S18/tasks/T02-SUMMARY.md",
+      "blob_sha": "222d435800f946e08c5eeec3c293946130fcd816"
+    },
+    {
+      "path": ".gsd/milestones/M001/slices/S18/tasks/T03-PLAN.md",
+      "blob_sha": "dd0dee9d705f760b22448522f286f7e65b8cdbe2"
+    },
+    {
+      "path": ".gsd/milestones/M001/slices/S18/tasks/T03-SUMMARY.md",
+      "blob_sha": "e8ba68a8950643dd51cf3cdb26a48589bb6b4a78"
+    },
+    {
+      "path": ".gsd/milestones/M001/slices/S18/tasks/T04-PLAN.md",
+      "blob_sha": "8b9c0f766de4092faa0eabfe257c9dbc4a769ad4"
+    },
+    {
+      "path": ".gsd/milestones/M001/slices/S18/tasks/T04-SUMMARY.md",
+      "blob_sha": "f648a7972f4b25a460e03735ed4aa722690da1de"
+    },
+    {
+      "path": ".gsd/milestones/M001/slices/S19/S19-PLAN.md",
+      "blob_sha": "9022a51d30a34e365fb43c14a4aeae1fc71c19f4"
+    },
+    {
+      "path": ".gsd/milestones/M001/slices/S19/S19-RESEARCH.md",
+      "blob_sha": "b3a47e1b0ba1fdf1246e31481ff428f2a1741058"
+    },
+    {
+      "path": ".gsd/milestones/M001/slices/S19/S19-SUMMARY.md",
+      "blob_sha": "b5bf9a95479b90b9a3e5bd84855b1fe2bace2039"
+    },
+    {
+      "path": ".gsd/milestones/M001/slices/S19/S19-UAT.md",
+      "blob_sha": "08bd2b9b4a2f19bcb86d3a36de0630d02845dfa9"
+    },
+    {
+      "path": ".gsd/milestones/M001/slices/S19/tasks/T01-PLAN.md",
+      "blob_sha": "16d5eade508debfcb3c7f502e0cbc8bdaf095810"
+    },
+    {
+      "path": ".gsd/milestones/M001/slices/S19/tasks/T01-SUMMARY.md",
+      "blob_sha": "f15e497eca5ecde04417b8584b551514d52eb392"
+    },
+    {
+      "path": ".gsd/milestones/M001/slices/S19/tasks/T02-PLAN.md",
+      "blob_sha": "e440f957ac103bf0ad5a8252ef659b28ad3d12c2"
+    },
+    {
+      "path": ".gsd/milestones/M001/slices/S19/tasks/T02-SUMMARY.md",
+      "blob_sha": "30c6a9f1dccc1053eb41c1feb341a17ae6bcf846"
+    },
+    {
+      "path": ".gsd/milestones/M001/slices/S20/S20-PLAN.md",
+      "blob_sha": "244cd3b9e31ed6354720788eb9297cfdbeec3636"
+    },
+    {
+      "path": ".gsd/milestones/M001/slices/S20/S20-RESEARCH.md",
+      "blob_sha": "d6fcd91598a0fcd6f8cd04598d7e527dfe0d096f"
+    },
+    {
+      "path": ".gsd/milestones/M001/slices/S20/S20-SUMMARY.md",
+      "blob_sha": "3578ec0ded30c2620b3a2d92ba10d9f0075efe59"
+    },
+    {
+      "path": ".gsd/milestones/M001/slices/S20/S20-UAT.md",
+      "blob_sha": "97ec763eccc14acdf37454c2ad3da3fee23b0419"
+    },
+    {
+      "path": ".gsd/milestones/M001/slices/S20/tasks/T01-PLAN.md",
+      "blob_sha": "4e1ce290161f54db9e6d38852c4c5002c86893b7"
+    },
+    {
+      "path": ".gsd/milestones/M001/slices/S20/tasks/T01-SUMMARY.md",
+      "blob_sha": "b17199ea89f24f3b550702debedc09723099fb7a"
+    },
+    {
+      "path": ".gsd/milestones/M001/slices/S20/tasks/T02-PLAN.md",
+      "blob_sha": "fabe81148148d06d24808cb2198cd7928588c732"
+    },
+    {
+      "path": ".gsd/milestones/M001/slices/S20/tasks/T02-SUMMARY.md",
+      "blob_sha": "c598fae23ac8664a6c38e7727d9f068fd566632d"
+    },
+    {
+      "path": ".gsd/milestones/M001/slices/S20/tasks/T03-PLAN.md",
+      "blob_sha": "0f1fdd212ae457746d9dbe0865001f77770af292"
+    },
+    {
+      "path": ".gsd/milestones/M001/slices/S20/tasks/T03-SUMMARY.md",
+      "blob_sha": "70dbb327d1d7fa19052b99aeaea68db79e7197a5"
+    },
+    {
+      "path": ".gsd/milestones/M001/slices/S21/S21-PLAN.md",
+      "blob_sha": "5a3cab69fcbb4d2c8e2aef9687fecabce2c9da1b"
+    },
+    {
+      "path": ".gsd/milestones/M001/slices/S21/S21-RESEARCH.md",
+      "blob_sha": "f61593c9c1dfff5c41af20f9866ac95f0db3dda0"
+    },
+    {
+      "path": ".gsd/milestones/M001/slices/S21/S21-SUMMARY.md",
+      "blob_sha": "7c60d42e5a78cc86008ef7c0c40771f348a0921a"
+    },
+    {
+      "path": ".gsd/milestones/M001/slices/S21/S21-UAT.md",
+      "blob_sha": "983b573df5c1a7e6f1bc8d9b69ae5a714c3e514c"
+    },
+    {
+      "path": ".gsd/milestones/M001/slices/S21/tasks/T01-PLAN.md",
+      "blob_sha": "7b6eb8926c1b02afa95786283873aa9382cbb924"
+    },
+    {
+      "path": ".gsd/milestones/M001/slices/S21/tasks/T01-SUMMARY.md",
+      "blob_sha": "9f1d3bcad21549e10e5f621d6dac8776c5030b1c"
+    },
+    {
+      "path": ".gsd/milestones/M001/slices/S21/tasks/T02-PLAN.md",
+      "blob_sha": "ae0f6c70e367ac44aab0ba00858026d76035ccf4"
+    },
+    {
+      "path": ".gsd/milestones/M001/slices/S21/tasks/T02-SUMMARY.md",
+      "blob_sha": "0c66bf2f63b41bf5f8491a5836a1c1882af7b446"
+    },
+    {
+      "path": ".gsd/milestones/M001/slices/S21/tasks/T03-PLAN.md",
+      "blob_sha": "02b186e136c04836b1cd5576e971fe991ff076ec"
+    },
+    {
+      "path": ".gsd/milestones/M001/slices/S21/tasks/T03-SUMMARY.md",
+      "blob_sha": "5f558346d3f7f18df429dd85f29c1902bc05b556"
+    },
+    {
+      "path": ".gsd/milestones/M001/slices/S21/tasks/T04-PLAN.md",
+      "blob_sha": "bd1598d24dc80b7443792af212a3b1e528b80c82"
+    },
+    {
+      "path": ".gsd/milestones/M001/slices/S21/tasks/T04-SUMMARY.md",
+      "blob_sha": "be9ef3977c0ceffa69b1e807f8d1f5b22e5e02e9"
+    },
+    {
+      "path": ".gsd/milestones/M001/slices/S22/S22-PLAN.md",
+      "blob_sha": "13efe241d3c7c58bc531fb31c9001909e91cca46"
+    },
+    {
+      "path": ".gsd/milestones/M001/slices/S22/S22-RESEARCH.md",
+      "blob_sha": "73b164931b6233e92c6fb9f99a7f1588d6ff2c8f"
+    },
+    {
+      "path": ".gsd/milestones/M001/slices/S22/S22-SUMMARY.md",
+      "blob_sha": "57e4132966da8dedd88aa49784b07d484bd77f24"
+    },
+    {
+      "path": ".gsd/milestones/M001/slices/S22/S22-UAT.md",
+      "blob_sha": "90fd5f071109f01e8ea4b45c6b43aaa3ba28e1ce"
+    },
+    {
+      "path": ".gsd/milestones/M001/slices/S22/tasks/T01-PLAN.md",
+      "blob_sha": "25d56d6c6f854883ac61b476074e3b25221436c4"
+    },
+    {
+      "path": ".gsd/milestones/M001/slices/S22/tasks/T01-SUMMARY.md",
+      "blob_sha": "a6137af6b169b6f31e5fe43bf5023a0a49fb17bf"
+    },
+    {
+      "path": ".gsd/milestones/M001/slices/S22/tasks/T02-PLAN.md",
+      "blob_sha": "bd09c0c8340df861ac7803652eb58f6d34973709"
+    },
+    {
+      "path": ".gsd/milestones/M001/slices/S22/tasks/T02-SUMMARY.md",
+      "blob_sha": "f4e800d8c966c60ee7c0d9ee1396c235d96b1a7e"
+    },
+    {
+      "path": ".gsd/milestones/M001/slices/S22/tasks/T03-PLAN.md",
+      "blob_sha": "d8fd05c358fb5cd9f646fb39347bb85670bfb158"
+    },
+    {
+      "path": ".gsd/milestones/M001/slices/S22/tasks/T03-SUMMARY.md",
+      "blob_sha": "4bffb246f5a90b0fa6c54f2d8a27fb3ffe170915"
+    },
+    {
+      "path": ".gsd/milestones/M001/slices/S23/S23-PLAN.md",
+      "blob_sha": "186e034bca9bad41828d2637d0533f1df9194a3c"
+    },
+    {
+      "path": ".gsd/milestones/M001/slices/S23/S23-RESEARCH.md",
+      "blob_sha": "f24b3596bc6abd03abc84692066d15dca30fde45"
+    },
+    {
+      "path": ".gsd/milestones/M001/slices/S23/S23-SUMMARY.md",
+      "blob_sha": "aad458382c667771ea7079981a72dfeddc452716"
+    },
+    {
+      "path": ".gsd/milestones/M001/slices/S23/S23-UAT.md",
+      "blob_sha": "f797c74a61ab256f978395549cf0cfc3c04069ac"
+    },
+    {
+      "path": ".gsd/milestones/M001/slices/S23/tasks/T01-PLAN.md",
+      "blob_sha": "bc16b27448d2b1829585512711c8e3e21c6796f2"
+    },
+    {
+      "path": ".gsd/milestones/M001/slices/S23/tasks/T01-SUMMARY.md",
+      "blob_sha": "d80aaf9cc87881731fa48b43515754e4201ae086"
+    },
+    {
+      "path": ".gsd/milestones/M001/slices/S23/tasks/T02-PLAN.md",
+      "blob_sha": "17da26d782648db61ef890af4179517e2c735110"
+    },
+    {
+      "path": ".gsd/milestones/M001/slices/S23/tasks/T02-SUMMARY.md",
+      "blob_sha": "475c5f9866d08b38adfe030b83aca32223bc14ff"
+    },
+    {
+      "path": ".gsd/milestones/M001/slices/S23/tasks/T03-PLAN.md",
+      "blob_sha": "d6022acc591f7a50290275bb551cba067c658229"
+    },
+    {
+      "path": ".gsd/milestones/M001/slices/S23/tasks/T03-SUMMARY.md",
+      "blob_sha": "dc354026a53a995abfb457582728cdf18cd1774a"
+    },
+    {
+      "path": ".gsd/milestones/M001/slices/S24/S24-PLAN.md",
+      "blob_sha": "6a03b0f65265fd8d7bd9b66bf11b9c2257452af0"
+    },
+    {
+      "path": ".gsd/milestones/M001/slices/S24/S24-RESEARCH.md",
+      "blob_sha": "46c09d9fe9210c5703979ab0fa311853f58a0b84"
+    },
+    {
+      "path": ".gsd/milestones/M001/slices/S24/S24-SUMMARY.md",
+      "blob_sha": "75702e74b49111f7f72ff68d627ef3a52766166a"
+    },
+    {
+      "path": ".gsd/milestones/M001/slices/S24/S24-UAT.md",
+      "blob_sha": "32bb95adfe78b026fa112a39e16184d114965325"
+    },
+    {
+      "path": ".gsd/milestones/M001/slices/S24/tasks/T01-PLAN.md",
+      "blob_sha": "9f5c7f4c62d0107c1ccb3d4a47a3f4b425f49ab3"
+    },
+    {
+      "path": ".gsd/milestones/M001/slices/S24/tasks/T01-SUMMARY.md",
+      "blob_sha": "9d9f93f2a62a3812787719c3f4c734480932982b"
+    },
+    {
+      "path": ".gsd/milestones/M001/slices/S24/tasks/T02-PLAN.md",
+      "blob_sha": "af921b70a2331f75cca2e1fbf4e83c78d225625e"
+    },
+    {
+      "path": ".gsd/milestones/M001/slices/S24/tasks/T02-SUMMARY.md",
+      "blob_sha": "9439cffbdcbfc612a356a6fd60805bd5aaa849d8"
+    },
+    {
+      "path": ".gsd/milestones/M001/slices/S25/S25-PLAN.md",
+      "blob_sha": "7c2977e1fdab4086dee81066081e6f60de63eb65"
+    },
+    {
+      "path": ".gsd/milestones/M001/slices/S25/S25-RESEARCH.md",
+      "blob_sha": "e8840135474b812a4a555c07057e05de5510428b"
+    },
+    {
+      "path": ".gsd/milestones/M001/slices/S25/S25-SUMMARY.md",
+      "blob_sha": "ff1f36fd984877cb1421e376fb84387470d97643"
+    },
+    {
+      "path": ".gsd/milestones/M001/slices/S25/S25-UAT.md",
+      "blob_sha": "d916c21967a8469f04eb5099beab6226fdcd3737"
+    },
+    {
+      "path": ".gsd/milestones/M001/slices/S25/tasks/T01-PLAN.md",
+      "blob_sha": "2abe1e046d74fff1bb16422bc54793c4c4dddd74"
+    },
+    {
+      "path": ".gsd/milestones/M001/slices/S25/tasks/T01-SUMMARY.md",
+      "blob_sha": "b130396343c7d60fb5a0026f0941a8cd52d10cc0"
+    },
+    {
+      "path": ".gsd/milestones/M001/slices/S25/tasks/T02-PLAN.md",
+      "blob_sha": "c4d52a4e5662fc1b9339d2b357c9d639be74313c"
+    },
+    {
+      "path": ".gsd/milestones/M001/slices/S25/tasks/T02-SUMMARY.md",
+      "blob_sha": "08251c46180672e403757340994658ec6bf1aabb"
+    },
+    {
+      "path": ".gsd/milestones/M001/slices/S26/S26-PLAN.md",
+      "blob_sha": "e6417b94da2973895c843043f9554ea683e242f0"
+    },
+    {
+      "path": ".gsd/milestones/M001/slices/S26/S26-RESEARCH.md",
+      "blob_sha": "caae82f14f33cb65cf99123bb27746fadc160d26"
+    },
+    {
+      "path": ".gsd/milestones/M001/slices/S26/S26-SUMMARY.md",
+      "blob_sha": "ec0fd2237155f1dc465c98ea7f691ee7938a70eb"
+    },
+    {
+      "path": ".gsd/milestones/M001/slices/S26/S26-UAT.md",
+      "blob_sha": "4a4f3a63643251a7361aaef818d189ad15aa6692"
+    },
+    {
+      "path": ".gsd/milestones/M001/slices/S26/tasks/T01-PLAN.md",
+      "blob_sha": "b179f6643e2b8464518a9358171deec4c3f4d925"
+    },
+    {
+      "path": ".gsd/milestones/M001/slices/S26/tasks/T01-SUMMARY.md",
+      "blob_sha": "cdf575176864a97e72a6b94b7de5200fd61d5990"
+    },
+    {
+      "path": ".gsd/milestones/M001/slices/S26/tasks/T02-PLAN.md",
+      "blob_sha": "f4dcf703e7ebee49d8fdde04b96f32f31586b6da"
+    },
+    {
+      "path": ".gsd/milestones/M001/slices/S26/tasks/T02-SUMMARY.md",
+      "blob_sha": "c62fe90bc4c775ca7f39d2bf00319bbd382d5dde"
+    },
+    {
+      "path": ".gsd/milestones/M001/slices/S26/tasks/T03-PLAN.md",
+      "blob_sha": "dcb39c8ea892a975b259e53d7f8b9606655a7b9b"
+    },
+    {
+      "path": ".gsd/milestones/M001/slices/S26/tasks/T03-SUMMARY.md",
+      "blob_sha": "1f0aa42b7c637c9aed189aab2976824dad1f5ba0"
+    },
+    {
+      "path": ".gsd/milestones/M001/slices/S27/S27-PLAN.md",
+      "blob_sha": "fbfb98ce322d3d2aa00f0a32404cc65bd718181a"
+    },
+    {
+      "path": ".gsd/milestones/M001/slices/S27/S27-RESEARCH.md",
+      "blob_sha": "85af4110829727a54d2cff83cbd18cb9eadd48b5"
+    },
+    {
+      "path": ".gsd/milestones/M001/slices/S27/S27-SUMMARY.md",
+      "blob_sha": "b70e86a0410164562989edc7c9e46af7fb8a319e"
+    },
+    {
+      "path": ".gsd/milestones/M001/slices/S27/S27-UAT.md",
+      "blob_sha": "6450bbf8f7bb2a671f0a4da13ae76f26ad4b3563"
+    },
+    {
+      "path": ".gsd/milestones/M001/slices/S27/tasks/T01-PLAN.md",
+      "blob_sha": "9a28953d1e718f9acdf874962ffe1d8b081c9d43"
+    },
+    {
+      "path": ".gsd/milestones/M001/slices/S27/tasks/T01-SUMMARY.md",
+      "blob_sha": "c21a293cdb87d309ef4b5892b2f5f0cb0431d0b6"
+    },
+    {
+      "path": ".gsd/milestones/M001/slices/S27/tasks/T02-PLAN.md",
+      "blob_sha": "1dab9c8bfc82444a4372850be01e3986b04e0373"
+    },
+    {
+      "path": ".gsd/milestones/M001/slices/S27/tasks/T02-SUMMARY.md",
+      "blob_sha": "f2f112de07c93ee303281de3e32af937c28c65ff"
+    },
+    {
+      "path": ".gsd/milestones/M001/slices/S27/tasks/T03-PLAN.md",
+      "blob_sha": "885a9b2703186499692a2e3820378fb94b1a8e16"
+    },
+    {
+      "path": ".gsd/milestones/M001/slices/S27/tasks/T03-SUMMARY.md",
+      "blob_sha": "d37fe61eeb2ced34a0475be422e63c0ac6d75c9c"
+    },
+    {
+      "path": ".gsd/milestones/M001/slices/S28/S28-PLAN.md",
+      "blob_sha": "48a69cf939df1faa57adc8a27c865e48b340f487"
+    },
+    {
+      "path": ".gsd/milestones/M001/slices/S28/S28-RESEARCH.md",
+      "blob_sha": "a34d031988cb79d013837b399ec773218e1d464b"
+    },
+    {
+      "path": ".gsd/milestones/M001/slices/S28/S28-SUMMARY.md",
+      "blob_sha": "30706f478d7776f1e622f94217a3e49eb6e61035"
+    },
+    {
+      "path": ".gsd/milestones/M001/slices/S28/S28-UAT.md",
+      "blob_sha": "9ab49fbf0a78904c35b2073444e1f240451801ec"
+    },
+    {
+      "path": ".gsd/milestones/M001/slices/S28/tasks/T01-PLAN.md",
+      "blob_sha": "4cc1de4737d2230d68ad867aa4177613192b6dce"
+    },
+    {
+      "path": ".gsd/milestones/M001/slices/S28/tasks/T01-SUMMARY.md",
+      "blob_sha": "ab6095e6cc6f9cb9a0e683e7bdb9dae68b1965d3"
+    },
+    {
+      "path": ".gsd/milestones/M001/slices/S28/tasks/T02-PLAN.md",
+      "blob_sha": "2c6f2762a9ad049348ae53b3cbf3dfe904909582"
+    },
+    {
+      "path": ".gsd/milestones/M001/slices/S28/tasks/T02-SUMMARY.md",
+      "blob_sha": "6afebd244ab28a6e1647108859d75e08d57f8f94"
+    },
+    {
+      "path": ".gsd/milestones/M001/slices/S29/S29-PLAN.md",
+      "blob_sha": "e6d93b932b66661154e364a5650932d1c130070a"
+    },
+    {
+      "path": ".gsd/milestones/M001/slices/S29/S29-RESEARCH.md",
+      "blob_sha": "8badb788e5bbf97288c085ce08213db644713ffb"
+    },
+    {
+      "path": ".gsd/milestones/M001/slices/S29/S29-SUMMARY.md",
+      "blob_sha": "e4c7cb0041aaf2bc312e347edc8969ee3b5f8db4"
+    },
+    {
+      "path": ".gsd/milestones/M001/slices/S29/S29-UAT.md",
+      "blob_sha": "dabca44e4e3796f1d947e1e6ee5589e79d5b30ac"
+    },
+    {
+      "path": ".gsd/milestones/M001/slices/S29/tasks/T01-PLAN.md",
+      "blob_sha": "9e78ab1d4a6f6a70439d6048572e2d204eff526f"
+    },
+    {
+      "path": ".gsd/milestones/M001/slices/S29/tasks/T01-SUMMARY.md",
+      "blob_sha": "f7229f1dcbefa9dcd33340abe933339830d0442c"
+    },
+    {
+      "path": ".gsd/milestones/M001/slices/S29/tasks/T02-PLAN.md",
+      "blob_sha": "a1c31f80f6f9f9d002566d73cb672c8a501a4c2c"
+    },
+    {
+      "path": ".gsd/milestones/M001/slices/S29/tasks/T02-SUMMARY.md",
+      "blob_sha": "f242643130412db7083231aafe4e6d3d8dcabcb5"
+    },
+    {
+      "path": ".gsd/milestones/M001/slices/S29/tasks/T03-PLAN.md",
+      "blob_sha": "1faf4a310387cf5c6f1e079126044324628d37d0"
+    },
+    {
+      "path": ".gsd/milestones/M001/slices/S29/tasks/T03-SUMMARY.md",
+      "blob_sha": "e020d66bed5bfd7fc88d77413403d3b00966859d"
+    },
+    {
+      "path": ".gsd/milestones/M001/slices/S30/S30-PLAN.md",
+      "blob_sha": "d627f472fb9647c7314eb37935bf7cb2ddccb3fd"
+    },
+    {
+      "path": ".gsd/milestones/M001/slices/S30/S30-RESEARCH.md",
+      "blob_sha": "9283573fefb94c24593c88ff9338aadd237527b1"
+    },
+    {
+      "path": ".gsd/milestones/M001/slices/S30/S30-SUMMARY.md",
+      "blob_sha": "c317e2f45609c1be79d0a76375488c3caad815e9"
+    },
+    {
+      "path": ".gsd/milestones/M001/slices/S30/S30-UAT.md",
+      "blob_sha": "664c092fd54fd854485a4d9c1dfa6cbe677bb86a"
+    },
+    {
+      "path": ".gsd/milestones/M001/slices/S30/tasks/T01-PLAN.md",
+      "blob_sha": "50850f3b5aba9a82d82c06e70861af72861c1c05"
+    },
+    {
+      "path": ".gsd/milestones/M001/slices/S30/tasks/T01-SUMMARY.md",
+      "blob_sha": "a5dd0dc555fc522bb5db33080887e69a43b37c3f"
+    },
+    {
+      "path": ".gsd/milestones/M001/slices/S30/tasks/T02-PLAN.md",
+      "blob_sha": "2da98e2211142cd2d1dd583c5714ec119e942c09"
+    },
+    {
+      "path": ".gsd/milestones/M001/slices/S30/tasks/T02-SUMMARY.md",
+      "blob_sha": "f31507f00cc97ad7cb2283ebc1e83b8ce1225ac3"
+    },
+    {
+      "path": ".gsd/milestones/M001/slices/S30/tasks/T03-PLAN.md",
+      "blob_sha": "ee7a28f85664739a96c91c79e2e52d4c3a563504"
+    },
+    {
+      "path": ".gsd/milestones/M001/slices/S30/tasks/T03-SUMMARY.md",
+      "blob_sha": "3ec2417e0a4e0efed8daaf3e96c6a69a8dc7bfb0"
+    },
+    {
+      "path": ".gsd/milestones/M001/slices/S31/S31-ASSESSMENT.md",
+      "blob_sha": "61e4c43d8f7d9e413fb67bdcde2fec20e12ac011"
+    },
+    {
+      "path": ".gsd/milestones/M001/slices/S31/S31-PLAN.md",
+      "blob_sha": "3efef2a3e1930395360126d85a7a8d2df93cdf4e"
+    },
+    {
+      "path": ".gsd/milestones/M001/slices/S31/S31-RESEARCH.md",
+      "blob_sha": "9facea42612a2f021821212cc2da0fb7a2f7d321"
+    },
+    {
+      "path": ".gsd/milestones/M001/slices/S31/S31-SUMMARY.md",
+      "blob_sha": "ed2dfc797f1ef738b89c8ba319aa918396c5dd9d"
+    },
+    {
+      "path": ".gsd/milestones/M001/slices/S31/S31-UAT.md",
+      "blob_sha": "de1f448d09fe07d120e7ebc6163ab49cbf2833ab"
+    },
+    {
+      "path": ".gsd/milestones/M001/slices/S31/tasks/T01-PLAN.md",
+      "blob_sha": "c1c3194dbbb67ed610b84996852562dbd265f680"
+    },
+    {
+      "path": ".gsd/milestones/M001/slices/S31/tasks/T01-SUMMARY.md",
+      "blob_sha": "696c8f1da4ed4ca8b11e56e961fc33adce2983ac"
+    },
+    {
+      "path": ".gsd/milestones/M001/slices/S31/tasks/T02-PLAN.md",
+      "blob_sha": "f1d6ba7ea43bdb8dd4e893b21a20f2ed95d39812"
+    },
+    {
+      "path": ".gsd/milestones/M001/slices/S31/tasks/T02-SUMMARY.md",
+      "blob_sha": "8f283e6bd2443a9d62abc5b2ec2febcecf1b5561"
+    },
+    {
+      "path": ".gsd/milestones/M001/slices/S31/tasks/T03-PLAN.md",
+      "blob_sha": "6db279811d1b4b168b90ef212bb4f28661336397"
+    },
+    {
+      "path": ".gsd/milestones/M001/slices/S31/tasks/T03-SUMMARY.md",
+      "blob_sha": "57a54a0bdd66b5caf73280c3d2aca2cc77e5b420"
+    },
+    {
+      "path": ".gsd/milestones/M001/slices/S32/S32-PLAN.md",
+      "blob_sha": "4a6c353a933b8a9c4200638c60d826642c8cf193"
+    },
+    {
+      "path": ".gsd/milestones/M001/slices/S32/S32-RESEARCH.md",
+      "blob_sha": "c2da68d6c7bb574ce04955bb59d2cb4e19405d97"
+    },
+    {
+      "path": ".gsd/milestones/M001/slices/S32/S32-SUMMARY.md",
+      "blob_sha": "f5d19a4ff13b153a9ab13951d1116ddaea4a94ae"
+    },
+    {
+      "path": ".gsd/milestones/M001/slices/S32/S32-UAT.md",
+      "blob_sha": "5a0e782d6d8a8ee762cf1cc1ffaf27e5d2d1d671"
+    },
+    {
+      "path": ".gsd/milestones/M001/slices/S32/tasks/T01-PLAN.md",
+      "blob_sha": "d606a4138114d73274153fd056fd7cfbaaae9a23"
+    },
+    {
+      "path": ".gsd/milestones/M001/slices/S32/tasks/T01-SUMMARY.md",
+      "blob_sha": "1ff8f7dc7b40a13ba8070e57c09ca79fef4e0801"
+    },
+    {
+      "path": ".gsd/milestones/M001/slices/S32/tasks/T02-PLAN.md",
+      "blob_sha": "c2cc9d91524922062965077af565c19fce2e3248"
+    },
+    {
+      "path": ".gsd/milestones/M001/slices/S32/tasks/T02-SUMMARY.md",
+      "blob_sha": "2a53701486484959cfdc00a73bfd532e9b44080e"
+    },
+    {
+      "path": ".gsd/milestones/M001/slices/S32/tasks/T03-PLAN.md",
+      "blob_sha": "eb9209ce3d7887dbbbfd81784cf4e81798af3f5d"
+    },
+    {
+      "path": ".gsd/milestones/M001/slices/S32/tasks/T03-SUMMARY.md",
+      "blob_sha": "c6db9464179c09aeda9e7eb097fbc17f14886b0e"
+    },
+    {
+      "path": ".gsd/milestones/M001/slices/S32/tasks/T04-PLAN.md",
+      "blob_sha": "8c507faa6aa0e5660bba89ab45f2c22f8d3337cb"
+    },
+    {
+      "path": ".gsd/milestones/M001/slices/S32/tasks/T04-SUMMARY.md",
+      "blob_sha": "d847be8596355a11dd2bf32481289b6cab74c73d"
+    },
+    {
+      "path": ".gsd/milestones/M002/M002-CONTEXT.md",
+      "blob_sha": "8b9ce9a4863086c560b19fd94892eb0f01d5d82f"
+    },
+    {
+      "path": ".gsd/milestones/M002/M002-ROADMAP.md",
+      "blob_sha": "3f7b05e7648d7788b0a1aa5224631a2f28fa3641"
+    },
+    {
+      "path": ".gsd/milestones/M002/M002-SUMMARY.md",
+      "blob_sha": "07a2ac03756465c3ab03d79656c7755783b93f67"
+    },
+    {
+      "path": ".gsd/milestones/M002/slices/S01/S01-CONTINUE.md",
+      "blob_sha": "e75c3ab80663fdeb2c490f77e5335fa6f96d63bd"
+    },
+    {
+      "path": ".gsd/milestones/M002/slices/S01/S01-PLAN.md",
+      "blob_sha": "ee7824ee7794833f78c939a64c146a983949f625"
+    },
+    {
+      "path": ".gsd/milestones/M003/M003-CONTEXT.md",
+      "blob_sha": "a40b6d4e38a03b433bad65f05a15466a499861f1"
+    },
+    {
+      "path": ".gsd/milestones/M003/M003-ROADMAP.md",
+      "blob_sha": "f56c4f1c833039b4853fb384a163e26152bf7bc1"
+    },
+    {
+      "path": ".gsd/milestones/M003/M003-SUMMARY.md",
+      "blob_sha": "5378b4f67ebf0a6653676de20a5aca3e69fa7981"
+    },
+    {
+      "path": ".gsd/milestones/M003/slices/S01/S01-PLAN.md",
+      "blob_sha": "86d47924f44767ea7a763d40e7dc0bd5d1c58ac0"
+    },
+    {
+      "path": ".gsd/milestones/M003/slices/S02/S02-PLAN.md",
+      "blob_sha": "ecf48abeb17e4dbb704bc4931ef96291c7338926"
+    },
+    {
+      "path": ".gsd/milestones/M004/M004-CONTEXT.md",
+      "blob_sha": "bc32ba37a25bfe967591bacfbca657b3e62ce76c"
+    },
+    {
+      "path": ".gsd/milestones/M004/M004-ROADMAP.md",
+      "blob_sha": "5032b764ab9382634a8988341a7db8b3f1307362"
+    },
+    {
+      "path": ".gsd/milestones/M004/M004-SUMMARY.md",
+      "blob_sha": "b1460ad5ea31d5fac85ba1e93a674e3f49a80354"
+    },
+    {
+      "path": ".gsd/milestones/M004/slices/S01/S01-PLAN.md",
+      "blob_sha": "c5175d85a15f7275b37182d959b2ec25c62206e8"
+    },
+    {
+      "path": ".gsd/milestones/M005/M005-CONTEXT.md",
+      "blob_sha": "dc772d79b60e7c656b6c1b547d52b1a53e72fdd5"
+    },
+    {
+      "path": ".gsd/milestones/M005/M005-ROADMAP.md",
+      "blob_sha": "8fe2362683e6780814cc47253c08be5ff169d853"
+    },
+    {
+      "path": ".gsd/milestones/M005/M005-SUMMARY.md",
+      "blob_sha": "3caa3471a81ef6f87ccfe3060571ed14255b13e8"
+    },
+    {
+      "path": ".gsd/milestones/M005/slices/S01/S01-ASSESSMENT.md",
+      "blob_sha": "d382c0e4fab3e49c28cf01562c01c6e4c4bf3d72"
+    },
+    {
+      "path": ".gsd/milestones/M005/slices/S01/S01-PLAN.md",
+      "blob_sha": "5df3fb8a09ab6c717072bfecfe67a2a6dd2445fd"
+    },
+    {
+      "path": ".gsd/milestones/M005/slices/S01/S01-RESEARCH.md",
+      "blob_sha": "1c15be3a5adc8fef3284e83eb9e9d91cb0170fa5"
+    },
+    {
+      "path": ".gsd/milestones/M005/slices/S01/S01-SUMMARY.md",
+      "blob_sha": "80f34407371c20a7bd97b164f1b4b3704aaf13f1"
+    },
+    {
+      "path": ".gsd/milestones/M005/slices/S01/S01-UAT.md",
+      "blob_sha": "b8c375adc5e3dd9067341e6faace996d194a17b5"
+    },
+    {
+      "path": ".gsd/milestones/M005/slices/S01/tasks/T01-PLAN.md",
+      "blob_sha": "d4648d5adea1d25493810e14c21bfe45bb1a4769"
+    },
+    {
+      "path": ".gsd/milestones/M005/slices/S01/tasks/T01-SUMMARY.md",
+      "blob_sha": "02edeab60d9fd75b5a357da4662c567d4815f606"
+    },
+    {
+      "path": ".gsd/milestones/M005/slices/S01/tasks/T02-PLAN.md",
+      "blob_sha": "87d33d97eb015e1853679999df3cb546ce025e4a"
+    },
+    {
+      "path": ".gsd/milestones/M005/slices/S01/tasks/T02-SUMMARY.md",
+      "blob_sha": "ad97f0c3b0238100ba2bdf2ee10c4aa9a318c1e5"
+    },
+    {
+      "path": ".gsd/milestones/M005/slices/S01/tasks/T03-PLAN.md",
+      "blob_sha": "d62ac060b55058e5a4cc25ebef6e38bfc93fa843"
+    },
+    {
+      "path": ".gsd/milestones/M005/slices/S01/tasks/T03-SUMMARY.md",
+      "blob_sha": "39453f67258fa69d6cc9e392c6df0630d210d634"
+    },
+    {
+      "path": ".gsd/milestones/M005/slices/S01/tasks/T04-PLAN.md",
+      "blob_sha": "cd4d249ff0f3fa9b639581e556d394113b822671"
+    },
+    {
+      "path": ".gsd/milestones/M005/slices/S01/tasks/T04-SUMMARY.md",
+      "blob_sha": "24dbe552081a2b22efa1b8b72394e3d5a13a73c3"
+    },
+    {
+      "path": ".gsd/milestones/M005/slices/S02/S02-ASSESSMENT.md",
+      "blob_sha": "af1da90b0ddf6e3bc2ae0ba0006ad0ed9ff87c6f"
+    },
+    {
+      "path": ".gsd/milestones/M005/slices/S02/S02-PLAN.md",
+      "blob_sha": "a304f3774a3841a0c4c0879629c8578446048fa3"
+    },
+    {
+      "path": ".gsd/milestones/M005/slices/S02/S02-RESEARCH.md",
+      "blob_sha": "240612072e17bcd054907b081624f9ba0b0bd488"
+    },
+    {
+      "path": ".gsd/milestones/M005/slices/S02/S02-SUMMARY.md",
+      "blob_sha": "d7fbeba3ed4bea8b2a9f779ce1e206f2f276c03e"
+    },
+    {
+      "path": ".gsd/milestones/M005/slices/S02/S02-UAT.md",
+      "blob_sha": "81002ed2de373e5afaa926b373238539c4e8061c"
+    },
+    {
+      "path": ".gsd/milestones/M005/slices/S02/tasks/T01-PLAN.md",
+      "blob_sha": "e8e66d5f2ce820580b3d79ca78e8e4fa5c295505"
+    },
+    {
+      "path": ".gsd/milestones/M005/slices/S02/tasks/T01-SUMMARY.md",
+      "blob_sha": "5ddccba1a4dc8a6aa89547de7fbe9928c13cc57d"
+    },
+    {
+      "path": ".gsd/milestones/M005/slices/S02/tasks/T02-PLAN.md",
+      "blob_sha": "97494747a29d398930a0caaccb51b5f0be2d5229"
+    },
+    {
+      "path": ".gsd/milestones/M005/slices/S02/tasks/T02-SUMMARY.md",
+      "blob_sha": "60d9df79abd8a50cbb17ced0568fb0e9842b979d"
+    },
+    {
+      "path": ".gsd/milestones/M005/slices/S02/tasks/T03-PLAN.md",
+      "blob_sha": "cab1ad7da6d3caa467da51c7e98ec61ba19d87f8"
+    },
+    {
+      "path": ".gsd/milestones/M005/slices/S02/tasks/T03-SUMMARY.md",
+      "blob_sha": "93a7c8844313fe0a9f0b617995d1676dbbae0526"
+    },
+    {
+      "path": ".gsd/milestones/M005/slices/S03/S03-ASSESSMENT.md",
+      "blob_sha": "c64240fafcc376179bd9d1486d60ac6408634ce4"
+    },
+    {
+      "path": ".gsd/milestones/M005/slices/S03/S03-PLAN.md",
+      "blob_sha": "d5bc8171a6a0dad33f1294c34cbed835a500fc0b"
+    },
+    {
+      "path": ".gsd/milestones/M005/slices/S03/S03-RESEARCH.md",
+      "blob_sha": "8bd9d9b371a6a3c194ac02cb7fefd88b8978d504"
+    },
+    {
+      "path": ".gsd/milestones/M005/slices/S03/S03-SUMMARY.md",
+      "blob_sha": "d43bef08e49459f5a5b16e846ea23d77a961c07a"
+    },
+    {
+      "path": ".gsd/milestones/M005/slices/S03/S03-UAT.md",
+      "blob_sha": "093c33524c40f93aecaa4c4d12d3721767e40da5"
+    },
+    {
+      "path": ".gsd/milestones/M005/slices/S03/tasks/T01-PLAN.md",
+      "blob_sha": "18692198fc56701e78195b58408bcbb23cf0f8b3"
+    },
+    {
+      "path": ".gsd/milestones/M005/slices/S03/tasks/T01-SUMMARY.md",
+      "blob_sha": "7f4db06498e69f4888430d5da05b295b8b52f1e4"
+    },
+    {
+      "path": ".gsd/milestones/M005/slices/S03/tasks/T02-PLAN.md",
+      "blob_sha": "d524d0b006ae444d6ee0eb4c0e603026e8499a8f"
+    },
+    {
+      "path": ".gsd/milestones/M005/slices/S03/tasks/T02-SUMMARY.md",
+      "blob_sha": "53610f5eff9c029e0ac36f38f8ac046b483ef692"
+    },
+    {
+      "path": ".gsd/milestones/M005/slices/S03/tasks/T03-PLAN.md",
+      "blob_sha": "a98bc7de2856e96af3db7ae72ef8e5c2f2db715b"
+    },
+    {
+      "path": ".gsd/milestones/M005/slices/S03/tasks/T03-SUMMARY.md",
+      "blob_sha": "38c9cbfe0e2cfa5cc5e921e9d363cd2b2366c182"
+    },
+    {
+      "path": ".gsd/milestones/M005/slices/S03/tasks/T04-PLAN.md",
+      "blob_sha": "571706925824b5778ed5f01a116737d445040bb4"
+    },
+    {
+      "path": ".gsd/milestones/M005/slices/S03/tasks/T04-SUMMARY.md",
+      "blob_sha": "85fef7a430f93b7f9d39bb57e785158270507a08"
+    },
+    {
+      "path": ".gsd/milestones/M005/slices/S03/tasks/T05-PLAN.md",
+      "blob_sha": "40bf84edf6817c2cf4ec3330d787b8b629e12b1d"
+    },
+    {
+      "path": ".gsd/milestones/M005/slices/S03/tasks/T05-SUMMARY.md",
+      "blob_sha": "085734a9d600041e87d32a613bbb5260e089eb07"
+    },
+    {
+      "path": ".gsd/milestones/M005/slices/S04/S04-PLAN.md",
+      "blob_sha": "11bfcc906d9b90f55c6319e757f6aab1814d439c"
+    },
+    {
+      "path": ".gsd/milestones/M005/slices/S04/S04-RESEARCH.md",
+      "blob_sha": "b6d509cdaba2646cad673f1febb910c50f3508e4"
+    },
+    {
+      "path": ".gsd/milestones/M005/slices/S04/S04-SUMMARY.md",
+      "blob_sha": "9d4c43073843c53e45e79233d46dd42cbe9b719d"
+    },
+    {
+      "path": ".gsd/milestones/M006/M006-CONTEXT.md",
+      "blob_sha": "9908b439196861f3b83467a08ecd7b020ad2eb2b"
+    },
+    {
+      "path": ".gsd/milestones/M006/M006-ROADMAP.md",
+      "blob_sha": "dbfdab8e1be92dcccc062eb42cc90d6f712e834c"
+    },
+    {
+      "path": ".gsd/milestones/M006/M006-SUMMARY.md",
+      "blob_sha": "19fd3bf8a7c1da7b085cb6430efede694bbf67fa"
+    },
+    {
+      "path": ".gsd/milestones/M006/slices/S01/S01-PLAN.md",
+      "blob_sha": "d4e10895ab7b49512ba9e2e3ace102b1ec33dfe6"
+    },
+    {
+      "path": ".gsd/milestones/M006/slices/S01/S01-SUMMARY.md",
+      "blob_sha": "f11c9ef2d9aa96ac5ddc08b4200fff85d82daacc"
+    },
+    {
+      "path": ".gsd/milestones/M006/slices/S02/S02-PLAN.md",
+      "blob_sha": "4f54a1c638d41d5bbb2b7e09f29c8e835cf5cd85"
+    },
+    {
+      "path": ".gsd/milestones/M006/slices/S02/S02-SUMMARY.md",
+      "blob_sha": "6604aca059b6d9b538bc98b9944eab5f99902545"
+    },
+    {
+      "path": ".gsd/milestones/M006/slices/S03/S03-PLAN.md",
+      "blob_sha": "807e55ee5e0bc210aa2df281efa51f3e77b795d4"
+    },
+    {
+      "path": ".gsd/milestones/M006/slices/S03/S03-SUMMARY.md",
+      "blob_sha": "211d8f8a9cd77dde8f204d7234443b2fa0160706"
+    },
+    {
+      "path": ".gsd/milestones/M006/slices/S04/S04-SUMMARY.md",
+      "blob_sha": "e30ded121f77a04d0e7f9a11b2f6bcc1932844a5"
+    },
+    {
+      "path": ".gsd/milestones/M007/M007-CONTEXT.md",
+      "blob_sha": "426dd6642ce507a727bcdea20b321f1c1bd112b8"
+    },
+    {
+      "path": ".gsd/milestones/M007/M007-ROADMAP.md",
+      "blob_sha": "fe2e8b976fd535f24baf9a07ab505e0daeb7d1a4"
+    },
+    {
+      "path": ".gsd/milestones/M007/M007-SUMMARY.md",
+      "blob_sha": "6ea4f871fe3795b4a79613ef3cbc1bacd90a0f34"
+    },
+    {
+      "path": ".gsd/milestones/M007/slices/S01/S01-PLAN.md",
+      "blob_sha": "658034dba737b01166253be1a686e4237021af6c"
+    },
+    {
+      "path": ".gsd/milestones/M008/M008-CONTEXT.md",
+      "blob_sha": "e25485cd3b29caeda3f92354b56505436f7059a2"
+    },
+    {
+      "path": ".gsd/milestones/M008/M008-ROADMAP.md",
+      "blob_sha": "e54f1ca2a0455864767e6379af826db571a9cca6"
+    },
+    {
+      "path": ".gsd/milestones/M008/M008-SUMMARY.md",
+      "blob_sha": "317a7c684c4e9e6bb138afa933da496548c42e23"
+    },
+    {
+      "path": ".gsd/milestones/M008/slices/S01/S01-PLAN.md",
+      "blob_sha": "79052bd0b5d1a41c1a726f0a578a381abe01007a"
+    },
+    {
+      "path": ".gsd/milestones/M008/slices/S02/S02-PLAN.md",
+      "blob_sha": "14b0dd528511ba9eb240fc864bc193c594adbd0d"
+    },
+    {
+      "path": ".gsd/milestones/M008/slices/S03/S03-PLAN.md",
+      "blob_sha": "d2eb8d81012e38568b7f79efe16208cb1489d5fe"
+    },
+    {
+      "path": ".gsd/milestones/M008/slices/S04/S04-PLAN.md",
+      "blob_sha": "024cf038376166cb106b13fe573a71ae6ec0606c"
+    },
+    {
+      "path": ".gsd/milestones/M008/slices/S05/S05-PLAN.md",
+      "blob_sha": "9bc2654ef6590bd242f4d48ce0b647e3fd7173a4"
+    },
+    {
+      "path": ".gsd/milestones/M009/M009-CONTEXT.md",
+      "blob_sha": "2fae8a638e10e589f5d387f71b6c39bf7bcd6c5f"
+    },
+    {
+      "path": ".gsd/milestones/M009/M009-ROADMAP.md",
+      "blob_sha": "84f577452c8dc59cc88fa007d7d46e04e646b4ed"
+    },
+    {
+      "path": ".gsd/milestones/M009/M009-SUMMARY.md",
+      "blob_sha": "c942dc4712c9163adabedc617dd1523ca092566b"
+    },
+    {
+      "path": ".gsd/milestones/M009/slices/S01/S01-PLAN.md",
+      "blob_sha": "a039abe437c8a32209bb8d9ab66f429453efa43a"
+    },
+    {
+      "path": ".gsd/milestones/M010/M010-CONTEXT.md",
+      "blob_sha": "5aa9ef7bdebd255c5d9928f75ea68decffe20416"
+    },
+    {
+      "path": ".gsd/milestones/M010/M010-ROADMAP.md",
+      "blob_sha": "f5bc9dd0b59d5904daba88d878a0dcdeb1cd5fd8"
+    },
+    {
+      "path": ".gsd/milestones/M010/M010-SUMMARY.md",
+      "blob_sha": "f409d4c35f9548ab5fe8788daa44a13687e72977"
+    },
+    {
+      "path": ".gsd/milestones/M011/M011-CONTEXT.md",
+      "blob_sha": "7ba6494e455a08ae29aebcbf49bf553315abe768"
+    },
+    {
+      "path": ".gsd/milestones/M011/M011-ROADMAP.md",
+      "blob_sha": "12812c8649edd118bd73ac845d24a79acc1ec0f8"
+    },
+    {
+      "path": ".gsd/milestones/M011/M011-SUMMARY.md",
+      "blob_sha": "3108374817a3c9e24955ec02a27af44249352bda"
+    },
+    {
+      "path": ".gsd/milestones/M011/slices/S01/S01-PLAN.md",
+      "blob_sha": "31382d08c10e92513aa255946ad1bf53eae9f5c7"
+    },
+    {
+      "path": ".gsd/milestones/M011/slices/S01/S01-SUMMARY.md",
+      "blob_sha": "5bf3888ba62111147e6a0abf7ba6f98894974cf2"
+    },
+    {
+      "path": ".gsd/milestones/M011/slices/S02/S02-PLAN.md",
+      "blob_sha": "63f031331b7145e0b9416e8cdcfae43b839fbe8b"
+    },
+    {
+      "path": ".gsd/milestones/M011/slices/S02/S02-SUMMARY.md",
+      "blob_sha": "26e7fb5919db2292e67c26cb68bcd196e7769cd9"
+    },
+    {
+      "path": ".gsd/milestones/M011/slices/S03/S03-PLAN.md",
+      "blob_sha": "393e8b0d872b0eb8126b807edb67e676f859bcf6"
+    },
+    {
+      "path": ".gsd/milestones/M011/slices/S03/S03-SUMMARY.md",
+      "blob_sha": "e31a6d7dba70a8a575376e0c8782c44e36e92955"
+    },
+    {
+      "path": ".gsd/milestones/M011/slices/S04/S04-PLAN.md",
+      "blob_sha": "85c3289b50dcb6599ab8aa817922ae42584ebb75"
+    },
+    {
+      "path": ".gsd/milestones/M011/slices/S04/S04-SUMMARY.md",
+      "blob_sha": "eb8f0dc6507683e9dfaab6818e414f0c1aef1e04"
+    },
+    {
+      "path": ".gsd/milestones/M012/M012-CONTEXT.md",
+      "blob_sha": "9cfe24167a7d1fda0f1c3e73c0b3f10df22f12e0"
+    },
+    {
+      "path": ".gsd/milestones/M012/M012-ROADMAP.md",
+      "blob_sha": "35d9483a1ba34afc5c77cb21759cbc9e58872cd1"
+    },
+    {
+      "path": ".gsd/milestones/M012/M012-SUMMARY.md",
+      "blob_sha": "e6ec37e957c2e6bc3d2287172438fa9a6fe0960e"
+    },
+    {
+      "path": ".gsd/milestones/M012/slices/S01/S01-PLAN.md",
+      "blob_sha": "c53c3d8eeb62bbfdef1c0a981d2ff9879007f054"
+    },
+    {
+      "path": ".gsd/milestones/M012/slices/S02/S02-PLAN.md",
+      "blob_sha": "5e3dcfacf77db6d16599a30acaa356e5dfd14693"
+    },
+    {
+      "path": ".gsd/milestones/M012/slices/S03/S03-PLAN.md",
+      "blob_sha": "f700807eb18184a14a4987fb26ea1bd6f7ea9818"
+    },
+    {
+      "path": ".gsd/milestones/M012/slices/S04/S04-PLAN.md",
+      "blob_sha": "088d448ceaca84fb4637dc1e0babfd9162b5960c"
+    },
+    {
+      "path": ".gsd/milestones/M013/M013-CONTEXT.md",
+      "blob_sha": "cd509698d1e807e5e8069e99ab42339f2169ab35"
+    },
+    {
+      "path": ".gsd/milestones/M013/M013-ROADMAP.md",
+      "blob_sha": "783ab71ddd2093c160362da504d242b5ea7fff81"
+    },
+    {
+      "path": ".gsd/milestones/M013/M013-SUMMARY.md",
+      "blob_sha": "8c169c52d7c67ce7053b19f8c9cc96174d9e8810"
+    },
+    {
+      "path": ".gsd/milestones/M014/M014-CONTEXT.md",
+      "blob_sha": "7d44d03921260ffcc7b3a3f9333a87288dcf8bb4"
+    },
+    {
+      "path": ".gsd/milestones/M014/M014-ROADMAP.md",
+      "blob_sha": "1ecd02a2c73fe7a7da071360ecde32f92fa078b9"
+    },
+    {
+      "path": ".gsd/milestones/M014/M014-SUMMARY.md",
+      "blob_sha": "a7801f304001c5974c57c0b224c7081acdc057d8"
+    },
+    {
+      "path": ".gsd/milestones/M015/M015-CONTEXT.md",
+      "blob_sha": "581fe3f79d550a1861c7af853a91e5d27167293f"
+    },
+    {
+      "path": ".gsd/milestones/M015/M015-ROADMAP.md",
+      "blob_sha": "ad8034fbe5d19192370b920cd5365e8eac365fe9"
+    },
+    {
+      "path": ".gsd/milestones/M015/M015-SUMMARY.md",
+      "blob_sha": "43df477ecbe8b1c6bef2979e4b1b1448b587c293"
+    },
+    {
+      "path": ".gsd/milestones/M015/slices/S01/S01-PLAN.md",
+      "blob_sha": "ee73dcf3d1f8730045622d8bc9a247c46dd77f7b"
+    },
+    {
+      "path": ".gsd/milestones/M015/slices/S01/S01-SUMMARY.md",
+      "blob_sha": "09a71b00f3835a8dba4cf520585b9e9135e6ad20"
+    },
+    {
+      "path": ".gsd/milestones/M015/slices/S01/tasks/T01-PLAN.md",
+      "blob_sha": "840f21421d895c605de481e9d471d753d9b63f78"
+    },
+    {
+      "path": ".gsd/milestones/M015/slices/S01/tasks/T01-SUMMARY.md",
+      "blob_sha": "732d6fa563d3db73f68fbe2a0790326681e398bf"
+    },
+    {
+      "path": ".gsd/milestones/M015/slices/S02/S02-PLAN.md",
+      "blob_sha": "2408f8a796009e0a937fbd683a431083ea1d4e30"
+    },
+    {
+      "path": ".gsd/milestones/M015/slices/S02/S02-SUMMARY.md",
+      "blob_sha": "bbc033262e734c9fbebca694508d43bda69fa950"
+    },
+    {
+      "path": ".gsd/milestones/M015/slices/S02b/S02b-PLAN.md",
+      "blob_sha": "47bc52f1afd81791f817e8a0d6ae9c31e6051143"
+    },
+    {
+      "path": ".gsd/milestones/M015/slices/S02b/S02b-SUMMARY.md",
+      "blob_sha": "6b3a1a2313fb43c40e20a9af9f009f0bcb7d85b2"
+    },
+    {
+      "path": ".gsd/milestones/M015/slices/S03/S03-PLAN.md",
+      "blob_sha": "9e18d3d31fb6c752eae3c905b36bac9072f79dc4"
+    },
+    {
+      "path": ".gsd/milestones/M015/slices/S03/S03-SUMMARY.md",
+      "blob_sha": "97b6b1b56a5c8a00e4df86bd82689e254e1ead15"
+    },
+    {
+      "path": ".gsd/milestones/M015/slices/S04/S04-PLAN.md",
+      "blob_sha": "260b8da72cab23f6e0b5d54dc0955335e063f275"
+    },
+    {
+      "path": ".gsd/milestones/M015/slices/S04/S04-SUMMARY.md",
+      "blob_sha": "c7b19fccc2586bfebc67c70190ca6c3e6d2f0cb9"
+    },
+    {
+      "path": ".gsd/milestones/M015/slices/S05/S05-PLAN.md",
+      "blob_sha": "5a148d955fb2838fbcca530530e69d54a46f6c07"
+    },
+    {
+      "path": ".gsd/milestones/M015/slices/S05/S05-SUMMARY.md",
+      "blob_sha": "f51ecf6fab94f8af9bf3667fe53f4168a2433840"
+    },
+    {
+      "path": ".gsd/milestones/M015/slices/S06/S06-PLAN.md",
+      "blob_sha": "05969c89a1c7c7ae854f9767cd1d546190e05dd9"
+    },
+    {
+      "path": ".gsd/milestones/M015/slices/S06/S06-SUMMARY.md",
+      "blob_sha": "fe1a547d9fb3166c1125d74165d44a4427681043"
+    },
+    {
+      "path": ".gsd/milestones/M015/slices/S07/S07-PLAN.md",
+      "blob_sha": "80b4070b99fd8b8fbb6e2d6eff7d7b2dbc060bf5"
+    },
+    {
+      "path": ".gsd/milestones/M015/slices/S07/S07-SUMMARY.md",
+      "blob_sha": "360f162896c3ff4e293d65309cbd7f3067771843"
+    },
+    {
+      "path": ".gsd/milestones/M016/M016-CONTEXT.md",
+      "blob_sha": "d3b69fe5de8e21cc3f745f709bd7fb519648b3a8"
+    },
+    {
+      "path": ".gsd/milestones/M016/M016-ROADMAP.md",
+      "blob_sha": "e2bc2dd7ee2472d57291abc337126e146eada5bb"
+    },
+    {
+      "path": ".gsd/milestones/M016/M016-SUMMARY.md",
+      "blob_sha": "8c9feaaffca0cf62082ef414803bbd55c5beabaf"
+    },
+    {
+      "path": ".gsd/milestones/M016/slices/S01/S01-PLAN.md",
+      "blob_sha": "388386a0deaa7794afc5dd8d94ca6f338c1d1dea"
+    },
+    {
+      "path": ".gsd/milestones/M016/slices/S01/S01-SUMMARY.md",
+      "blob_sha": "611ff25a7b53090606c4fd3cf03bc31cccfc7f5a"
+    },
+    {
+      "path": ".gsd/milestones/M016/slices/S02/S02-PLAN.md",
+      "blob_sha": "222df3d169fe2b17c0704d2c57b0982aaaabd627"
+    },
+    {
+      "path": ".gsd/milestones/M016/slices/S02/S02-SUMMARY.md",
+      "blob_sha": "cd4d5d793b288c08481cae11961cb9fc9983a0ec"
+    },
+    {
+      "path": ".gsd/milestones/M016/slices/S03/S03-PLAN.md",
+      "blob_sha": "3ee76d85bfa3bde39c00feee192eb7d645a8b67c"
+    },
+    {
+      "path": ".gsd/milestones/M016/slices/S03/S03-SUMMARY.md",
+      "blob_sha": "e3a18f056df317c42f8e50b402f5645aa905b295"
+    },
+    {
+      "path": ".gsd/milestones/M016/slices/S04/S04-PLAN.md",
+      "blob_sha": "0038b3f3264bdb48bc497fb41400df4c0dd90ee0"
+    },
+    {
+      "path": ".gsd/milestones/M016/slices/S04/S04-SUMMARY.md",
+      "blob_sha": "d94cc324f185dc4a6f9c652fa12613ae3a849fd4"
+    },
+    {
+      "path": ".gsd/milestones/M017/M017-CONTEXT.md",
+      "blob_sha": "91b6c76c22aed7ce1cef8ea9d392095d7f9448c0"
+    },
+    {
+      "path": ".gsd/milestones/M017/M017-ROADMAP.md",
+      "blob_sha": "cb8ae72dbeacec6342dac9a006a66c3d7aeb7516"
+    },
+    {
+      "path": ".gsd/milestones/M017/M017-SUMMARY.md",
+      "blob_sha": "cde0ee6bae5b31ce2f7a1f24e44418888f42cd35"
+    },
+    {
+      "path": ".gsd/milestones/M017/slices/S01/S01-PLAN.md",
+      "blob_sha": "9110fff41fa8303b8029ba1b1c4358ebb1d782df"
+    },
+    {
+      "path": ".gsd/milestones/M017/slices/S01/S01-SUMMARY.md",
+      "blob_sha": "aeeae796df9121a3c64c5aec8f4df1a5144a0bbf"
+    },
+    {
+      "path": ".gsd/milestones/M017/slices/S02/S02-PLAN.md",
+      "blob_sha": "f468a3bcd776d0705f88eb4f29541b3457f1b003"
+    },
+    {
+      "path": ".gsd/milestones/M017/slices/S02/S02-SUMMARY.md",
+      "blob_sha": "38d5e392e2019e37db704b0bc3d63ce63556eeb8"
+    },
+    {
+      "path": ".gsd/milestones/M017/slices/S03/S03-PLAN.md",
+      "blob_sha": "5feb1d35c9755e730a1f55730aac32ade7f34848"
+    },
+    {
+      "path": ".gsd/milestones/M017/slices/S03/S03-SUMMARY.md",
+      "blob_sha": "3f679f75072b02fc20ae6e99cc5330314e5b39c7"
+    },
+    {
+      "path": ".gsd/milestones/M018/M018-CONTEXT.md",
+      "blob_sha": "780ffd2b3185d4d5f1ce12f3eae2c0a5e9d06d74"
+    },
+    {
+      "path": ".gsd/milestones/M018/M018-ROADMAP.md",
+      "blob_sha": "492c8a83623efe2b4b9ccbb9e0c435eb3f14c999"
+    },
+    {
+      "path": ".gsd/milestones/M018/M018-SUMMARY.md",
+      "blob_sha": "6e7849dd62fff5890d5faa9f31116ac115a4b25b"
+    },
+    {
+      "path": ".gsd/milestones/M018/slices/S01/S01-PLAN.md",
+      "blob_sha": "4c7bb77f9d56bb179b94237f97809928b54a3a6b"
+    },
+    {
+      "path": ".gsd/milestones/M018/slices/S01/S01-SUMMARY.md",
+      "blob_sha": "9e202e84ed01481da51cd4b296f3d787edd804b5"
+    },
+    {
+      "path": ".gsd/milestones/M018/slices/S02/S02-PLAN.md",
+      "blob_sha": "52933e7111955b7b9c21127ad4bb199a66e8f021"
+    },
+    {
+      "path": ".gsd/milestones/M018/slices/S02/S02-SUMMARY.md",
+      "blob_sha": "3bc7f7f20bb7f28eab43659cf2bdc57800fbdfbe"
+    },
+    {
+      "path": ".gsd/milestones/M018/slices/S03/S03-PLAN.md",
+      "blob_sha": "7da177e2623e2a788cd24f4db15002946468cc10"
+    },
+    {
+      "path": ".gsd/milestones/M018/slices/S03/S03-SUMMARY.md",
+      "blob_sha": "ffb9212b6a590a2b1cd33440854328830ea567d1"
+    },
+    {
+      "path": ".gsd/milestones/M018/slices/S04/S04-PLAN.md",
+      "blob_sha": "1b563f54ad1b7fe5371ccb4b96554b9732a16ed6"
+    },
+    {
+      "path": ".gsd/milestones/M018/slices/S04/S04-SUMMARY.md",
+      "blob_sha": "2639c69bb4a1b0923d025cd181b20e59d29abe16"
+    },
+    {
+      "path": ".gsd/milestones/M019/M019-CONTEXT.md",
+      "blob_sha": "b4d0e6338c249b2b21a2258a7180346fd4b00aed"
+    },
+    {
+      "path": ".gsd/milestones/M019/M019-ROADMAP.md",
+      "blob_sha": "45243c03a1741568f0b55f7e47c6ebfe6dd2f0b7"
+    },
+    {
+      "path": ".gsd/milestones/M019/M019-SUMMARY.md",
+      "blob_sha": "0c6ce47cf931a71c50e1dcb2ee72220f68296c47"
+    },
+    {
+      "path": ".gsd/milestones/M019/slices/S01/S01-PLAN.md",
+      "blob_sha": "5360356f50b78f545058cf9c1f10e5ef58200cbb"
+    },
+    {
+      "path": ".gsd/milestones/M019/slices/S01/S01-SUMMARY.md",
+      "blob_sha": "0698228910f9ea888822281c5e257fbfd47f5239"
+    },
+    {
+      "path": ".gsd/milestones/M019/slices/S02/S02-PLAN.md",
+      "blob_sha": "5be67acde830c41360dc7deca94ce6a86d15aa97"
+    },
+    {
+      "path": ".gsd/milestones/M019/slices/S02/S02-SUMMARY.md",
+      "blob_sha": "b643ac046c027ef0cd7fbaefb5358ac1698b0751"
+    },
+    {
+      "path": ".gsd/milestones/M019/slices/S03/S03-PLAN.md",
+      "blob_sha": "d04931ca67939caa3a261c62ac926d7e4c3bc951"
+    },
+    {
+      "path": ".gsd/milestones/M019/slices/S03/S03-SUMMARY.md",
+      "blob_sha": "93c69de57c8525c4774bf08d2653fd31d619fe78"
+    },
+    {
+      "path": ".gsd/milestones/M020/M020-CONTEXT.md",
+      "blob_sha": "eb63837107b46f00e2b8bd956ba222bad85adba2"
+    },
+    {
+      "path": ".gsd/milestones/M020/M020-ROADMAP.md",
+      "blob_sha": "9af64d267d5f29b1373c4e06de432665aca7300d"
+    },
+    {
+      "path": ".gsd/milestones/M020/M020-SUMMARY.md",
+      "blob_sha": "848a7d2d78bae7b6b07ee00cc5d100a95fdec198"
+    },
+    {
+      "path": ".gsd/milestones/M020/slices/S01/S01-PLAN.md",
+      "blob_sha": "911ed22c62fa84cc1627fe5e00c75801a6613f07"
+    },
+    {
+      "path": ".gsd/milestones/M020/slices/S01/S01-SUMMARY.md",
+      "blob_sha": "b75eaa011b94cd87cfe3073a721fa0817a425f93"
+    },
+    {
+      "path": ".gsd/milestones/M021/M021-CONTEXT.md",
+      "blob_sha": "558e91a0e018dfe619b263c01d7121bb58576bf1"
+    },
+    {
+      "path": ".gsd/milestones/M021/M021-ROADMAP.md",
+      "blob_sha": "b0f4d3d577f754ac4e597eb6e50b2b75c71d286d"
+    },
+    {
+      "path": ".gsd/milestones/M021/M021-SUMMARY.md",
+      "blob_sha": "513e49f3ad02ffc8e7c801eb31786cc183746e5e"
+    },
+    {
+      "path": ".gsd/milestones/M022/M022-CONTEXT.md",
+      "blob_sha": "ed825571028693b76d854c3c926da783ff17225a"
+    },
+    {
+      "path": ".gsd/milestones/M022/M022-ROADMAP.md",
+      "blob_sha": "15b166270775fd4dcab4c6e474550b379e438d3b"
+    },
+    {
+      "path": ".gsd/milestones/M022/M022-SUMMARY.md",
+      "blob_sha": "c9d930a5957051ad062979cba99e448adf603c1e"
+    },
+    {
+      "path": ".gsd/milestones/M023/M023-CONTEXT.md",
+      "blob_sha": "82f1e4ad283e73321c2ff38b18f8fdb4d3489be5"
+    },
+    {
+      "path": ".gsd/milestones/M023/M023-ROADMAP.md",
+      "blob_sha": "923e0688e27054303d93764cb737a32ac201309a"
+    },
+    {
+      "path": ".gsd/milestones/M023/M023-SUMMARY.md",
+      "blob_sha": "d8f758cc3901067e68e75457628a7b1e497f29fe"
+    },
+    {
+      "path": ".gsd/milestones/M023/slices/S01/S01-PLAN.md",
+      "blob_sha": "a8b495a6d8af264f87d9744f50ae92074b98215c"
+    },
+    {
+      "path": ".gsd/milestones/M023/slices/S01/S01-SUMMARY.md",
+      "blob_sha": "80353f24fbf49d9629dfebc89a1f12fe8fbefde3"
+    },
+    {
+      "path": ".gsd/milestones/M023/slices/S02/S02-SUMMARY.md",
+      "blob_sha": "448887d58efb4d1e4202c227e7e944265b5adc9d"
+    },
+    {
+      "path": ".gsd/milestones/M023/slices/S03/S03-SUMMARY.md",
+      "blob_sha": "c29c8ec18f1091944ffab01502fb04996876fc8c"
+    },
+    {
+      "path": ".gsd/milestones/M023/slices/S04/S04-SUMMARY.md",
+      "blob_sha": "f2a8be651173b4cf08ba2392c07842938876d097"
+    },
+    {
+      "path": ".gsd/milestones/M023/slices/S05/S05-SUMMARY.md",
+      "blob_sha": "9066d1d392f5df2091fd422e32dd57f339884be0"
+    },
+    {
+      "path": ".gsd/milestones/M023/slices/S06/S06-SUMMARY.md",
+      "blob_sha": "b3ea21af30a2d52c322d721097127939c3265b09"
+    },
+    {
+      "path": ".gsd/milestones/M023/slices/S07/S07-SUMMARY.md",
+      "blob_sha": "1006da3966e461e29bf834bdacc03eae865343db"
+    },
+    {
+      "path": ".gsd/milestones/M024/M024-CONTEXT.md",
+      "blob_sha": "f21f6fd7f9fd03dee5c538f12f2e8ed18290e5d7"
+    },
+    {
+      "path": ".gsd/milestones/M024/M024-ROADMAP.md",
+      "blob_sha": "898056d5c499f77ec52963d7771bc437e7680520"
+    },
+    {
+      "path": ".gsd/milestones/M024/M024-SUMMARY.md",
+      "blob_sha": "2df4df86e7fb20cfb3f616593f8de4f9f000e21e"
+    },
+    {
+      "path": ".gsd/milestones/M024/slices/S01/S01-PLAN.md",
+      "blob_sha": "6f65fac76cc8932f4c2d82148403566f3a4e4964"
+    },
+    {
+      "path": ".gsd/milestones/M025/M025-CONTEXT.md",
+      "blob_sha": "03d93417d1975a1f334b83507b3d34dea320ab85"
+    },
+    {
+      "path": ".gsd/milestones/M025/M025-RESEARCH.md",
+      "blob_sha": "e8a8dc7ea1c415b469dd6ceb87000c293829835a"
+    },
+    {
+      "path": ".gsd/milestones/M025/M025-ROADMAP.md",
+      "blob_sha": "d0bdd88929da2ed472adfd8e65bd02b1eddd87ac"
+    },
+    {
+      "path": ".gsd/milestones/M025/M025-SUMMARY.md",
+      "blob_sha": "2569b9ed97d3200f19799c71d5bf9450a2394ee0"
+    },
+    {
+      "path": ".gsd/milestones/M025/slices/S01/S01-PLAN.md",
+      "blob_sha": "f28cb7a14884c7744c6836782bc3919b0d3bafff"
+    },
+    {
+      "path": ".gsd/milestones/M025/slices/S02/S02-PLAN.md",
+      "blob_sha": "f921e4cd7df7eb1e3aa02cd6e854f7696b781a88"
+    },
+    {
+      "path": ".gsd/milestones/M026/M026-CONTEXT.md",
+      "blob_sha": "b5feccd1032c4e0954c01b0b48875f760bedbd6f"
+    },
+    {
+      "path": ".gsd/milestones/M026/M026-RESEARCH.md",
+      "blob_sha": "f4a01b7d97526c87f7084a9ce8d6229d42eefb51"
+    },
+    {
+      "path": ".gsd/milestones/M026/M026-ROADMAP.md",
+      "blob_sha": "618db38ba7fcd72ce6731ec4b776cc885d89b666"
+    },
+    {
+      "path": ".gsd/milestones/M026/M026-SUMMARY.md",
+      "blob_sha": "08bd6cd98e987c21d3f7981d03ab2873e1b1d87d"
+    },
+    {
+      "path": ".gsd/milestones/M026/slices/S01/S01-PLAN.md",
+      "blob_sha": "4840b83108babbf20b0be42b0543000440bf8bf8"
+    },
+    {
+      "path": ".gsd/milestones/M026/slices/S01/S01-SUMMARY.md",
+      "blob_sha": "c01aaf98083058ceee85c2cca48b730fee64253f"
+    },
+    {
+      "path": ".gsd/milestones/M026/slices/S02/S02-PLAN.md",
+      "blob_sha": "bbe61cd6a9a9a0f9a84905b48e86c57dc123e3dd"
+    },
+    {
+      "path": ".gsd/milestones/M026/slices/S02/S02-SUMMARY.md",
+      "blob_sha": "5bd8540bd6fc303c0b662fb4e091bd71aef7b2ff"
+    },
+    {
+      "path": ".gsd/milestones/M026/slices/S03/S03-PLAN.md",
+      "blob_sha": "5466d87592bd42db11c50f1f3cc8bf818bd85b8f"
+    },
+    {
+      "path": ".gsd/milestones/M026/slices/S03/S03-SUMMARY.md",
+      "blob_sha": "5e8f93b4b0abc57b430150177d07ce2df129fc52"
+    },
+    {
+      "path": ".gsd/milestones/M026/slices/S04/S04-PLAN.md",
+      "blob_sha": "36e13d1af0b3fa250b7b8c72eacddad7a4b6c260"
+    },
+    {
+      "path": ".gsd/milestones/M026/slices/S04/S04-SUMMARY.md",
+      "blob_sha": "75a9ef33fc0e9d675ffdaa69eec68a67025f8a6b"
+    },
+    {
+      "path": ".gsd/milestones/M026/slices/S05/S05-PLAN.md",
+      "blob_sha": "bdd639cf87dd7f7c00d68528806b5121e10f69d9"
+    },
+    {
+      "path": ".gsd/milestones/M026/slices/S05/S05-SUMMARY.md",
+      "blob_sha": "b001c9f5390db20903f428c1e4ad54b35923ea12"
+    },
+    {
+      "path": ".gsd/milestones/M026/slices/S06/S06-PLAN.md",
+      "blob_sha": "a3033f570c55abb97ace6ddaf9760d12bb6deb5b"
+    },
+    {
+      "path": ".gsd/milestones/M026/slices/S06/S06-SUMMARY.md",
+      "blob_sha": "21961c7302532c08a058cc8e797508946a059ae5"
+    },
+    {
+      "path": ".gsd/milestones/M026/slices/S07/S07-PLAN.md",
+      "blob_sha": "c4f4e966be590b6cfa860e3552031d43ed94154f"
+    },
+    {
+      "path": ".gsd/milestones/M026/slices/S07/S07-SUMMARY.md",
+      "blob_sha": "d96e570e6eb5576bdc41b1b245fee838a9cee226"
+    },
+    {
+      "path": ".gsd/milestones/M026/slices/S08/S08-PLAN.md",
+      "blob_sha": "08db215e8383ff5276bf9afc39cecdf5fc0fa6d2"
+    },
+    {
+      "path": ".gsd/milestones/M026/slices/S08/S08-SUMMARY.md",
+      "blob_sha": "2838543e0d7ac4cff350aaca75fa6fa3f9f2b247"
+    },
+    {
+      "path": ".gsd/milestones/M026/slices/S09/S09-PLAN.md",
+      "blob_sha": "c1e1914552a94b84254d214c61f54b5d81c87b1d"
+    },
+    {
+      "path": ".gsd/milestones/M026/slices/S09/S09-SUMMARY.md",
+      "blob_sha": "2606152b100b2c6f067ec954d8dac8cc01426572"
+    },
+    {
+      "path": ".gsd/milestones/M027/M027-CONTEXT.md",
+      "blob_sha": "6405b1dd79a95cc071c62be57a73cf75a63133b9"
+    },
+    {
+      "path": ".gsd/milestones/M027/M027-RESEARCH.md",
+      "blob_sha": "3bc5c846e136af852d1f8f30d981fd9ecb6f31ec"
+    },
+    {
+      "path": ".gsd/milestones/M027/M027-ROADMAP.md",
+      "blob_sha": "823ff39eb52b12f7173a6feab538bb9bc4b0d1d3"
+    },
+    {
+      "path": ".gsd/milestones/M027/M027-SUMMARY.md",
+      "blob_sha": "a7cccf043cead90c970792afd589b07e0fdc7099"
+    },
+    {
+      "path": ".gsd/milestones/M027/slices/S01/S01-PLAN.md",
+      "blob_sha": "70565f7602fe2be38a5704a0407fbf3693b332e0"
+    },
+    {
+      "path": ".gsd/milestones/M027/slices/S01/S01-SUMMARY.md",
+      "blob_sha": "f4a66b4d93cc560e0d4a4935e752b41f6dec5e52"
+    },
+    {
+      "path": ".gsd/milestones/M028/M028-CONTEXT.md",
+      "blob_sha": "3bd2d82f793b5a53f7b722e63b04775f579f8df4"
+    },
+    {
+      "path": ".gsd/milestones/M028/M028-ROADMAP.md",
+      "blob_sha": "923d1b67cacbdc2d67256384cf075afb7989fa27"
+    },
+    {
+      "path": ".gsd/milestones/M028/M028-SUMMARY.md",
+      "blob_sha": "61d5a9b8b245855b5a3a488f9d2106d687df6bc1"
+    },
+    {
+      "path": ".gsd/milestones/M028/slices/S01/S01-PLAN.md",
+      "blob_sha": "99d6b0f7cf03bd20936601d8db4f9dfdc6830228"
+    },
+    {
+      "path": ".gsd/milestones/M029/M029-CONTEXT.md",
+      "blob_sha": "741c92b0732492aa79d90c1468850ba0c2465266"
+    },
+    {
+      "path": ".gsd/milestones/M029/M029-ROADMAP.md",
+      "blob_sha": "068d95afb42ccd0fc39535be289c24f929a4a027"
+    },
+    {
+      "path": ".gsd/milestones/M029/M029-SUMMARY.md",
+      "blob_sha": "10460046fce4f3d85e4b2b38714f2d80897229fc"
+    },
+    {
+      "path": ".gsd/milestones/M030/M030-CONTEXT.md",
+      "blob_sha": "5cb178a299a1c1310ddd74b6549bdbb325202981"
+    },
+    {
+      "path": ".gsd/milestones/M030/M030-ROADMAP.md",
+      "blob_sha": "9fbf74235b892795988a913ffa3de622ecf555a5"
+    },
+    {
+      "path": ".gsd/milestones/M030/M030-SUMMARY.md",
+      "blob_sha": "102f25c4ae1ad045469f8365236d3da2fa2af20a"
+    },
+    {
+      "path": ".gsd/milestones/M031/M031-CONTEXT.md",
+      "blob_sha": "f694a097739f7f391a2570effb565cbfa8e456a1"
+    },
+    {
+      "path": ".gsd/milestones/M031/M031-ROADMAP.md",
+      "blob_sha": "87cf5082998c88c62ae12ace8a90dbafe254ebf8"
+    },
+    {
+      "path": ".gsd/milestones/M031/M031-SUMMARY.md",
+      "blob_sha": "0566a9944e316523f186461048d3819d9f853af6"
+    },
+    {
+      "path": ".gsd/milestones/M031/slices/S01/S01-PLAN.md",
+      "blob_sha": "58edbb4daf3c4ac236caf73d7fc01442137dee08"
+    },
+    {
+      "path": ".gsd/milestones/M031/slices/S02/S02-PLAN.md",
+      "blob_sha": "cf7f9d26294fc50b7efa34c82fd0021cbd6d252c"
+    },
+    {
+      "path": ".gsd/milestones/M031/slices/S03/S03-PLAN.md",
+      "blob_sha": "62f55ed85abfdd1412dc8b61da576c70eba24375"
+    },
+    {
+      "path": ".gsd/milestones/M031/slices/S04/S04-PLAN.md",
+      "blob_sha": "dfb05eaca17e12082bf074a4096548e39f438c74"
+    },
+    {
+      "path": ".gsd/milestones/M031/slices/S05/S05-PLAN.md",
+      "blob_sha": "50bfc904356b964b56b2e7eef3a5cc72e4cac6d3"
+    },
+    {
+      "path": ".gsd/milestones/M032/M032-CONTEXT.md",
+      "blob_sha": "33539d0e14c8cd4f425bcffae077983ec3a24a53"
+    },
+    {
+      "path": ".gsd/milestones/M032/M032-RESEARCH.md",
+      "blob_sha": "e597216785dcdc0435db07bcdbe037b116c4ffde"
+    },
+    {
+      "path": ".gsd/milestones/M032/M032-ROADMAP.md",
+      "blob_sha": "aa52f7effca9cd1b808448e37225e7596a17382a"
+    },
+    {
+      "path": ".gsd/milestones/M032/M032-SUMMARY.md",
+      "blob_sha": "732627887344228f469d1ce066698786860ce093"
+    },
+    {
+      "path": ".gsd/milestones/M032/slices/S01/S01-PLAN.md",
+      "blob_sha": "b96161c854ff9f58c726ce393b01389a2c943763"
+    },
+    {
+      "path": ".gsd/milestones/M032/slices/S02/S02-PLAN.md",
+      "blob_sha": "9fbc329eff9504ede70aa897a3920cfc2d008809"
+    },
+    {
+      "path": ".gsd/milestones/M032/slices/S03/S03-PLAN.md",
+      "blob_sha": "3a095f29f4cdfe9e88f7930af7b95e60ea7f4c80"
+    },
+    {
+      "path": ".gsd/milestones/M032/slices/S04/S04-PLAN.md",
+      "blob_sha": "4685105c75709c2ca1f79851c47a817569345dd4"
+    },
+    {
+      "path": ".gsd/milestones/M032/slices/S05/S05-PLAN.md",
+      "blob_sha": "68968ccf97fd2e7397a2a9646fbd0cec72e8a251"
+    },
+    {
+      "path": ".gsd/milestones/M032/slices/S06/S06-PLAN.md",
+      "blob_sha": "6d6f5247af70c0cb4b67437d2ec8f8f1d602c88e"
+    },
+    {
+      "path": ".gsd/milestones/M033/M033-CONTEXT.md",
+      "blob_sha": "f6cbf1ea7639dddf9715a4672d9f4748acc2c43f"
+    },
+    {
+      "path": ".gsd/milestones/M033/M033-ROADMAP.md",
+      "blob_sha": "52fcd9754d4ae612f2a7ba9e4c625a7da7e6c376"
+    },
+    {
+      "path": ".gsd/milestones/M033/M033-SUMMARY.md",
+      "blob_sha": "bf29fa64dd64166d4da9bc51d4193383f8ac28b4"
+    },
+    {
+      "path": ".gsd/milestones/M033/slices/S01/S01-PLAN.md",
+      "blob_sha": "8df288d8b5b663c68e83c755f9e49ee4beac82fe"
+    },
+    {
+      "path": ".gsd/milestones/M033/slices/S01/S01-SUMMARY.md",
+      "blob_sha": "f85f1a7a657bf2498baebdd268d50a3c22e7672f"
+    },
+    {
+      "path": ".gsd/milestones/M033/slices/S02/S02-PLAN.md",
+      "blob_sha": "1eb676c57d80ba87c6bd658db7766738136c0946"
+    },
+    {
+      "path": ".gsd/milestones/M033/slices/S02/S02-SUMMARY.md",
+      "blob_sha": "16264767fb0670c05030d60f45b30610f9eba07d"
+    },
+    {
+      "path": ".gsd/milestones/M033/slices/S03/S03-PLAN.md",
+      "blob_sha": "d68eff6419e7a01f1952daac97617392754e29b0"
+    },
+    {
+      "path": ".gsd/milestones/M033/slices/S03/S03-SUMMARY.md",
+      "blob_sha": "a48c52038d32c6a9d073c84659367ced9e591c52"
+    },
+    {
+      "path": ".gsd/milestones/M033/slices/S04/S04-PLAN.md",
+      "blob_sha": "1b7aa6c510e4f13085f023ca9826a380e7543657"
+    },
+    {
+      "path": ".gsd/milestones/M033/slices/S04/S04-SUMMARY.md",
+      "blob_sha": "7ff3aeadb8b86b9683132d9d3b278b0441acf88e"
+    },
+    {
+      "path": ".gsd/milestones/M033/slices/S05/S05-PLAN.md",
+      "blob_sha": "8c4978b5451aab720eb29eb30023ebc7d3c55590"
+    },
+    {
+      "path": ".gsd/milestones/M033/slices/S05/S05-SUMMARY.md",
+      "blob_sha": "feee627ddb60520fb73790aac67739ce2948951b"
+    },
+    {
+      "path": ".gsd/milestones/M033/slices/S06/S06-PLAN.md",
+      "blob_sha": "d2213adaa3229f9cd231ce3c8793af2c12f6e350"
+    },
+    {
+      "path": ".gsd/milestones/M033/slices/S06/S06-SUMMARY.md",
+      "blob_sha": "91e4848cd9667fbc0bddb8814f1b8762951d276d"
+    },
+    {
+      "path": ".gsd/milestones/M034/M034-CONTEXT.md",
+      "blob_sha": "e4feec044f43c196db85c4adf1758c89e82d66b5"
+    },
+    {
+      "path": ".gsd/milestones/M034/M034-ROADMAP.md",
+      "blob_sha": "1c2eed3d2249a993dbdb2b7976e79fa49581fb0b"
+    },
+    {
+      "path": ".gsd/milestones/M034/M034-SUMMARY.md",
+      "blob_sha": "0ab6d5cde643cfee46bd00c075e95bbe2c0fd826"
+    },
+    {
+      "path": ".gsd/milestones/M034/slices/S01/S01-PLAN.md",
+      "blob_sha": "ec58c6ad9eb86259ae1579ddd4bcd73ffc5ff230"
+    },
+    {
+      "path": ".gsd/milestones/M034/slices/S01/S01-SUMMARY.md",
+      "blob_sha": "8c3357624707b3b3efad6ae7dff0e004f6b2c2db"
+    },
+    {
+      "path": ".gsd/milestones/M034/slices/S02/S02-SUMMARY.md",
+      "blob_sha": "03ce0a9c6d64f8f17c6cb1aa737bf04bba965dea"
+    },
+    {
+      "path": ".gsd/milestones/M034/slices/S03/S03-SUMMARY.md",
+      "blob_sha": "8bfe7ac3b8f3d2b20f6078666c0d3ec38291c739"
+    },
+    {
+      "path": ".gsd/milestones/M034/slices/S04/S04-SUMMARY.md",
+      "blob_sha": "6e2bd56ae568c615733d97474c6a372487bab233"
+    },
+    {
+      "path": ".gsd/milestones/M034/slices/S05/S05-SUMMARY.md",
+      "blob_sha": "5ca97b1c9396fae2396053946e418a163a12127d"
+    },
+    {
+      "path": ".gsd/milestones/M034/slices/S06/S06-SUMMARY.md",
+      "blob_sha": "1b0376366a16d440e8c15f16ef18ff23394a1f20"
+    },
+    {
+      "path": ".gsd/milestones/M035/M035-CONTEXT.md",
+      "blob_sha": "e6458c99d1c84bc4aceffea2b7cff1a062ed5764"
+    },
+    {
+      "path": ".gsd/milestones/M035/M035-ROADMAP.md",
+      "blob_sha": "4e93b63ee0c9ea0516c03042b31bdd75370b08c3"
+    },
+    {
+      "path": ".gsd/milestones/M035/M035-SUMMARY.md",
+      "blob_sha": "6d2174792909d1265ff398ace7144776dbfe0987"
+    },
+    {
+      "path": ".gsd/milestones/M036/M036-CONTEXT.md",
+      "blob_sha": "6f31b9a1506e3ac27728175a84d484eec9e29669"
+    },
+    {
+      "path": ".gsd/milestones/M036/M036-ROADMAP.md",
+      "blob_sha": "ad7c0158433abf238dc0ca7b2876b15f88612bc7"
+    },
+    {
+      "path": ".gsd/milestones/M037/M037-CONTEXT.md",
+      "blob_sha": "5049b3c32df2ae5d6df22ed95db51c1cfd8ded30"
+    },
+    {
+      "path": ".gsd/milestones/M037/M037-ROADMAP.md",
+      "blob_sha": "20495e51ad364ecff5d7a90deb1d2dab7ca743f9"
+    },
+    {
+      "path": ".gsd/milestones/M037/slices/S01/S01-PLAN.md",
+      "blob_sha": "28f055e08c773a09cbffb6318fcb938787a030b5"
+    },
+    {
+      "path": ".gsd/milestones/M037/slices/S02/S02-PLAN.md",
+      "blob_sha": "b958bc194d2162f3ea947cfa415efbdb61cb2c20"
+    },
+    {
+      "path": ".gsd/milestones/M037/slices/S03/S03-PLAN.md",
+      "blob_sha": "e6a80d0001d986110af3831c5cf35e501f23fab4"
+    },
+    {
+      "path": ".gsd/milestones/M037/slices/S04/S04-PLAN.md",
+      "blob_sha": "8b7b920aaec9d25bc35ffbc06391c4fad6f66062"
+    },
+    {
+      "path": ".gsd/milestones/M037/slices/S05/S05-PLAN.md",
+      "blob_sha": "fd8ea9602d36a1a1323e8d9eab382951c68e3806"
+    },
+    {
+      "path": ".gsd/milestones/M038/M038-CONTEXT.md",
+      "blob_sha": "74ab6207ec9816c1f3495af81bba5ac034376d04"
+    },
+    {
+      "path": ".gsd/milestones/M038/M038-ROADMAP.md",
+      "blob_sha": "d38c95b2b7432fd7ffb289eefea4aa8beb8ae0c4"
+    },
+    {
+      "path": ".gsd/milestones/M038/slices/S01/S01-PLAN.md",
+      "blob_sha": "e901880ecf9d1c0038aa9721bdd60c544da8a2a6"
+    },
+    {
+      "path": ".gsd/milestones/M038/slices/S02/S02-PLAN.md",
+      "blob_sha": "1d4cfc2bce298edec5571be07e7fe00e342b2137"
+    },
+    {
+      "path": ".gsd/milestones/M038/slices/S03/S03-PLAN.md",
+      "blob_sha": "d4fe5c149439b4674fe8207c6e58450a6c430bb7"
+    },
+    {
+      "path": ".gsd/milestones/M038/slices/S04/S04-PLAN.md",
+      "blob_sha": "c0b188aba448f1fe7dcf5ff69c1843ef2155cf0e"
+    },
+    {
+      "path": ".gsd/milestones/M039/M039-CONTEXT.md",
+      "blob_sha": "1db381f7400e53a35cd76b200edf88c00dc34a4a"
+    },
+    {
+      "path": ".gsd/milestones/M039/M039-ROADMAP.md",
+      "blob_sha": "44fb56f2efc5807eed1988ad8a405fc93637225f"
+    },
+    {
+      "path": ".gsd/milestones/M039/slices/S01/S01-PLAN.md",
+      "blob_sha": "c674f8e5dc1caa4f65d7c35f3d92c8357d2780f9"
+    },
+    {
+      "path": ".gsd/milestones/M039/slices/S02/S02-PLAN.md",
+      "blob_sha": "e7fdc189bc9e48f4aada467f4cdf094674865f7b"
+    },
+    {
+      "path": ".gsd/milestones/M039/slices/S03/S03-PLAN.md",
+      "blob_sha": "beb38f5984ea7cd55c21024649dd08dfce69075c"
+    },
+    {
+      "path": ".gsd/milestones/M039/slices/S04/S04-PLAN.md",
+      "blob_sha": "cf1e5497db4c57d12044524ee4e237bb3e1089c3"
+    },
+    {
+      "path": ".gsd/milestones/M040/M040-CONTEXT.md",
+      "blob_sha": "14ec0c22b6acc1cc5d9be1090610ec69f7019da6"
+    },
+    {
+      "path": ".gsd/milestones/M040/M040-ROADMAP.md",
+      "blob_sha": "13db31899357c609c4f4dd40505eed58f6636429"
+    },
+    {
+      "path": ".gsd/milestones/M040/slices/S01/S01-PLAN.md",
+      "blob_sha": "a01de0c7102204664d9974e1797731ed3c747aae"
+    },
+    {
+      "path": ".gsd/milestones/M040/slices/S02/S02-PLAN.md",
+      "blob_sha": "c0922dfad37ee3f55d901b45f355387a4b0ddd52"
+    },
+    {
+      "path": ".gsd/milestones/M041/M041-CONTEXT.md",
+      "blob_sha": "feac3b709ed66ead9b9132b709116d97f6007d13"
+    },
+    {
+      "path": ".gsd/milestones/M041/M041-ROADMAP.md",
+      "blob_sha": "58f6b184d8c9fcfb39c904f200980f177fe21479"
+    },
+    {
+      "path": ".gsd/milestones/M041/slices/S01/S01-PLAN.md",
+      "blob_sha": "8b20db98aab189dcfc7e7cc03b0e3a2431ed437f"
+    },
+    {
+      "path": ".gsd/milestones/M043/M043-CONTEXT.md",
+      "blob_sha": "6460736a144bd227bcbf5844f88930b7ece474cd"
+    },
+    {
+      "path": ".gsd/milestones/M043/M043-ROADMAP.md",
+      "blob_sha": "1357da9c4f78e2db698cf6699b65e009e9cdd5e0"
+    },
+    {
+      "path": ".gsd/milestones/M043/slices/S01/S01-PLAN.md",
+      "blob_sha": "949b70c89c323545885cbdfefc350d6573e404b9"
+    },
+    {
+      "path": ".gsd/milestones/M043/slices/S02/S02-PLAN.md",
+      "blob_sha": "9f993a8b4a911a356049f491985c4d4440bfa22a"
+    },
+    {
+      "path": ".gsd/milestones/M043/slices/S03/S03-PLAN.md",
+      "blob_sha": "c2d3b8253b44fde59c025ee4da76acd7fad6eb03"
+    },
+    {
+      "path": ".gsd/milestones/M044/M044-CONTEXT.md",
+      "blob_sha": "00d1a39075c6b3882e8b6366aa870b89cc800e11"
+    },
+    {
+      "path": ".gsd/milestones/M044/M044-ROADMAP.md",
+      "blob_sha": "2a71942398302c0157ac8d36f379bf7daadac09f"
+    },
+    {
+      "path": ".gsd/milestones/M044/slices/S01/S01-PLAN.md",
+      "blob_sha": "50b000dde8d83edfde8ab44c5633c85df85f8a85"
+    },
+    {
+      "path": ".gsd/milestones/M045/M045-CONTEXT.md",
+      "blob_sha": "e6c68a98b00ac6f11449af726321893d4fa88d05"
+    },
+    {
+      "path": ".gsd/milestones/M045/M045-ROADMAP.md",
+      "blob_sha": "86869cacb1f8570a80b4a474a0e6c74724083184"
+    },
+    {
+      "path": ".gsd/milestones/M045/slices/S01/S01-PLAN.md",
+      "blob_sha": "d397df7452d209403c07c4fe239b6dcc97506de1"
+    },
+    {
+      "path": ".gsd/milestones/M046/M046-CONTEXT.md",
+      "blob_sha": "05652cae577057029efdcde5bb3986d21f9a7397"
+    },
+    {
+      "path": ".gsd/milestones/M046/M046-ROADMAP.md",
+      "blob_sha": "14fbd51ab76ba9b1d71cf389d480d3627a4ef97d"
+    },
+    {
+      "path": ".gsd/milestones/M047/M047-CONTEXT.md",
+      "blob_sha": "98b1be8e7ab8b578e3e62344b7b02c066d13a4aa"
+    },
+    {
+      "path": ".gsd/milestones/M047/M047-ROADMAP.md",
+      "blob_sha": "29281ca6bf2b88e0288721208c9f89fa52e7381b"
+    },
+    {
+      "path": ".gsd/milestones/M048/M048-CONTEXT.md",
+      "blob_sha": "7ebccfd06030bf78dd496953e9fb0f7b8fa7a5af"
+    },
+    {
+      "path": ".gsd/milestones/M048/M048-ROADMAP.md",
+      "blob_sha": "394b97c7d8190b7ef07564e4728e7f094c46cd0c"
+    },
+    {
+      "path": ".gsd/milestones/M049/M049-CONTEXT.md",
+      "blob_sha": "7285ca2fb076b427d5791f6beb1d22fb8f904c9a"
+    },
+    {
+      "path": ".gsd/milestones/M050/M050-CONTEXT.md",
+      "blob_sha": "803e82ed427d5a2bfddbf63346b1e9086bb3243d"
+    },
+    {
+      "path": ".gsd/milestones/M051/M051-CONTEXT.md",
+      "blob_sha": "96440ac004bc3fe6bad7eead8039e46706d8e259"
+    },
+    {
+      "path": ".gsd/milestones/M057/M057-CONTEXT.md",
+      "blob_sha": "56857c26e8d9df9fd8c70140aab4391ab598c110"
+    },
+    {
+      "path": ".gsd/milestones/M058/M058-CONTEXT.md",
+      "blob_sha": "3c0c25265c65cd1c81bfb73edd265aff4a397b06"
+    },
+    {
+      "path": ".gsd/milestones/M059/M059-CONTEXT.md",
+      "blob_sha": "ba6e9d5fe004f482a56b4d7a9bfeb59f6e183fe0"
+    },
+    {
+      "path": ".gsd/milestones/M059/M059-ROADMAP.md",
+      "blob_sha": "4fec6e73339cef887961c7d65b7832932bc9081e"
+    },
+    {
+      "path": ".gsd/milestones/M059/slices/S01/S01-PLAN.md",
+      "blob_sha": "1f49603b19c5cd7fccc7854f8485febd53e15b06"
+    },
+    {
+      "path": ".gsd/milestones/M059/slices/S01/tasks/T01-PLAN.md",
+      "blob_sha": "3a85eb6e516849cece86e0f314a4fe3b1041103d"
+    },
+    {
+      "path": ".gsd/milestones/M059/slices/S01/tasks/T02-PLAN.md",
+      "blob_sha": "6e378ae9e3d17c27a03fbf2ffbf3d2bd19d6d465"
+    },
+    {
+      "path": ".gsd/milestones/M059/slices/S01/tasks/T03-PLAN.md",
+      "blob_sha": "bc0995a8ad755ab9337a10f9bfe5d4b1de2c4a02"
+    },
+    {
+      "path": ".gsd/milestones/M059/slices/S02/S02-PLAN.md",
+      "blob_sha": "69618819bb5dcbe23b902b43b8c3a3750be96d9d"
+    },
+    {
+      "path": ".gsd/milestones/M059/slices/S02/tasks/T01-PLAN.md",
+      "blob_sha": "3990ad23d733e1a1060d3fe8484dd81a62c4e711"
+    },
+    {
+      "path": ".gsd/milestones/M059/slices/S02/tasks/T02-PLAN.md",
+      "blob_sha": "c235ee04764ce3876cb1082c95f3027a5a6dcf26"
+    },
+    {
+      "path": ".gsd/milestones/M059/slices/S03/S03-PLAN.md",
+      "blob_sha": "abb328cf826c4ee6e3c8cda4ef369d724f9bc876"
+    },
+    {
+      "path": ".gsd/milestones/M059/slices/S03/tasks/T01-PLAN.md",
+      "blob_sha": "bfc05d1d31c442655e5c54dc9cddaa746f42eb25"
+    },
+    {
+      "path": ".gsd/milestones/M059/slices/S03/tasks/T02-PLAN.md",
+      "blob_sha": "e6177ea23eef196e3189893bc215eeab99c8f010"
+    },
+    {
+      "path": ".gsd/milestones/M059/slices/S04/S04-PLAN.md",
+      "blob_sha": "38b190bb0b32fb6f1898932fc9262f4e2ea4394c"
+    },
+    {
+      "path": ".gsd/milestones/M059/slices/S04/tasks/T01-PLAN.md",
+      "blob_sha": "55905b49f06a295e682833fa01a9b812ef25fc86"
+    },
+    {
+      "path": ".gsd/milestones/M059/slices/S04/tasks/T02-PLAN.md",
+      "blob_sha": "04fe4dd8f3444621438740d12322cd2d011a9a45"
+    },
+    {
+      "path": ".gsd/milestones/M060/M060-CONTEXT.md",
+      "blob_sha": "8036aa59014714599e3f5c95bec6cc2134806c4d"
+    },
+    {
+      "path": ".gsd/milestones/M060/M060-ROADMAP.md",
+      "blob_sha": "f1a4be7baf480addeee1af97ae282327d2b61e7c"
+    },
+    {
+      "path": ".gsd/milestones/M060/slices/S01/S01-PLAN.md",
+      "blob_sha": "ce68baa989f894a6b6eadf82a2e9c5b606cf0fdd"
+    },
+    {
+      "path": ".gsd/milestones/M060/slices/S01/tasks/T01-PLAN.md",
+      "blob_sha": "9a516669da79098e23dfaff79438c3d0c2edeb89"
+    },
+    {
+      "path": ".gsd/milestones/M060/slices/S01/tasks/T02-PLAN.md",
+      "blob_sha": "7f3cfa03cac453fd49c05ffd181a0d6b300e2566"
+    },
+    {
+      "path": ".gsd/milestones/M060/slices/S01/tasks/T03-PLAN.md",
+      "blob_sha": "8ae5697c72d3d072cbeae3910def10e01f23eb46"
+    },
+    {
+      "path": ".gsd/milestones/M061-deepsource-remediation.md",
+      "blob_sha": "57ffef1d709646648987767eb6de97dec3c4baca"
+    },
+    {
+      "path": ".gsd/milestones/M061/M061-ROADMAP.md",
+      "blob_sha": "fa30240d3cb2244e34166acc8a0bf7dff56f102f"
+    },
+    {
+      "path": ".gsd/milestones/M062/M062-ROADMAP.md",
+      "blob_sha": "1ba6e854421588428a112f4f9b8fe65d25c4da30"
+    },
+    {
+      "path": ".gsd/milestones/M063/M063-ROADMAP.md",
+      "blob_sha": "837c350649669a90746612d4345f46bb0e9bdd26"
+    },
+    {
+      "path": ".gsd/milestones/M064/M064-ROADMAP.md",
+      "blob_sha": "daf62613baa9937f868a4888f5aba7c9b2754d4a"
+    },
+    {
+      "path": ".gsd/milestones/M065/M065-ROADMAP.md",
+      "blob_sha": "570b27f3d98be7e1f5c1de516dd44bdae54e9634"
+    },
+    {
+      "path": ".gsd/milestones/M066/M066-ROADMAP.md",
+      "blob_sha": "ff747c4f02ec748b51564b18d0b183d9ce6fcc78"
+    },
+    {
+      "path": ".gsd/milestones/M067/M067-ROADMAP.md",
+      "blob_sha": "2c011af5048e5a8947dfbff5a49a4d59b3e0dabc"
+    },
+    {
+      "path": ".gsd/milestones/M068/M068-ROADMAP.md",
+      "blob_sha": "297dc86108563390aa2f0e6dbaf9eb24d41c7ce7"
+    },
+    {
+      "path": ".gsd/milestones/M069/M069-ROADMAP.md",
+      "blob_sha": "eba9b022e9e9e1d70487808976ae374bbde189d5"
+    },
+    {
+      "path": "docs/CANONICAL-FACTS.md",
+      "blob_sha": "3d6067aa696dd2effe4fef4a6d659ae8eb5caf36"
+    },
+    {
+      "path": "docs/ROADMAP.md",
+      "blob_sha": "f8fc82e88081f4ec77ce4c4df6b560a8dc02c4d2"
+    },
+    {
+      "path": "docs/api/endpoints/ml-evaluation.md",
+      "blob_sha": "f9a97c55e3b5480b7a3ad50a10a94ee226c4ca02"
+    },
+    {
+      "path": "docs/architecture/ROUTER-WORKFLOW-ROADMAP.md",
+      "blob_sha": "4662ae2a9eb2a900b7f9447ff28fc20bb8889944"
+    },
+    {
+      "path": "docs/evals/2026-03-24-dual-model-findings.md",
+      "blob_sha": "981bee5dd5837f1c7472a5fc82250ae2eb14fe77"
+    },
+    {
+      "path": "docs/evaluation-guide.md",
+      "blob_sha": "642e0d625decfedb1c7f2f27c0fe56aebe88e2a3"
+    }
+  ]
+}

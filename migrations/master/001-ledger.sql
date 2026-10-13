@@ -1,0 +1,326 @@
+BEGIN;
+CREATE SCHEMA IF NOT EXISTS master;
+CREATE TABLE IF NOT EXISTS master.migrations(version integer PRIMARY KEY, installed_at timestamptz NOT NULL DEFAULT now(), source_sha text CHECK(source_sha IS NULL OR source_sha ~ '^[a-f0-9]{64}$'));
+CREATE TABLE master.nodes(
+ id text PRIMARY KEY CHECK (id ~ '^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$'),
+ kind text NOT NULL CHECK(kind IN ('product','baseline','phase','milestone','work','policy','decision','external')),
+ parent text REFERENCES master.nodes(id), revision integer NOT NULL CHECK(revision>0),
+ body jsonb NOT NULL CHECK(jsonb_typeof(body)='object'), created_at timestamptz NOT NULL DEFAULT now());
+CREATE TABLE master.aliases(source text NOT NULL, alias text NOT NULL, node_id text NOT NULL REFERENCES master.nodes(id), PRIMARY KEY(source,alias));
+CREATE TABLE master.imports(id text PRIMARY KEY, body jsonb NOT NULL, received_at timestamptz NOT NULL DEFAULT now());
+CREATE TABLE master.dependencies(work_id text NOT NULL REFERENCES master.nodes(id), dependency_id text NOT NULL,
+ PRIMARY KEY(work_id,dependency_id), CHECK(work_id<>dependency_id));
+-- Unresolved edges are deliberately retained, and always block readiness.
+CREATE TABLE master.evidence(id text PRIMARY KEY, work_id text NOT NULL REFERENCES master.nodes(id), body jsonb NOT NULL, recorded_at timestamptz NOT NULL DEFAULT now());
+CREATE TABLE master.scope(baseline_id text NOT NULL REFERENCES master.nodes(id), criterion_id text NOT NULL,
+ work_id text NOT NULL REFERENCES master.nodes(id), PRIMARY KEY(baseline_id,criterion_id));
+CREATE TABLE master.accepted(work_id text NOT NULL REFERENCES master.nodes(id), criterion_id text NOT NULL,
+ evidence_id text REFERENCES master.evidence(id), command_id text NOT NULL, PRIMARY KEY(work_id,criterion_id), UNIQUE(criterion_id));
+CREATE TABLE master.acceptance_evidence(work_id text NOT NULL REFERENCES master.nodes(id), criterion_id text NOT NULL, kind text NOT NULL, evidence_id text NOT NULL REFERENCES master.evidence(id), command_id text NOT NULL, PRIMARY KEY(work_id,criterion_id,kind));
+CREATE TABLE master.commands(id text PRIMARY KEY, actor text NOT NULL, payload jsonb NOT NULL, result jsonb NOT NULL, at timestamptz NOT NULL DEFAULT now());
+CREATE TABLE master.journal(sequence bigint GENERATED ALWAYS AS IDENTITY PRIMARY KEY, command_id text NOT NULL,
+ actor text NOT NULL, via text, target text NOT NULL, before_state jsonb, after_state jsonb, result jsonb NOT NULL, at timestamptz NOT NULL DEFAULT now());
+CREATE TABLE master.outbox(sequence bigint GENERATED ALWAYS AS IDENTITY PRIMARY KEY, command_id text NOT NULL UNIQUE,
+ body jsonb NOT NULL, at timestamptz NOT NULL DEFAULT now());
+CREATE FUNCTION master.immutable() RETURNS trigger LANGUAGE plpgsql AS $$ BEGIN RAISE EXCEPTION 'append-only'; END $$;
+CREATE TRIGGER accepted_immutable BEFORE UPDATE OR DELETE ON master.accepted FOR EACH ROW EXECUTE FUNCTION master.immutable();
+CREATE TRIGGER acceptance_evidence_immutable BEFORE UPDATE OR DELETE ON master.acceptance_evidence FOR EACH ROW EXECUTE FUNCTION master.immutable();
+CREATE TRIGGER journal_immutable BEFORE UPDATE OR DELETE ON master.journal FOR EACH ROW EXECUTE FUNCTION master.immutable();
+CREATE TRIGGER command_immutable BEFORE UPDATE OR DELETE ON master.commands FOR EACH ROW EXECUTE FUNCTION master.immutable();
+CREATE TRIGGER import_immutable BEFORE UPDATE OR DELETE ON master.imports FOR EACH ROW EXECUTE FUNCTION master.immutable();
+CREATE TRIGGER evidence_immutable BEFORE UPDATE OR DELETE ON master.evidence FOR EACH ROW EXECUTE FUNCTION master.immutable();
+CREATE FUNCTION master.node_state(n master.nodes) RETURNS jsonb LANGUAGE sql STABLE SET search_path=pg_catalog,master AS $$
+ SELECT to_jsonb(n)||jsonb_build_object('dependencies',coalesce((SELECT jsonb_agg(dependency_id ORDER BY dependency_id) FROM master.dependencies WHERE work_id=n.id),'[]'));
+$$;
+CREATE FUNCTION master.waiver_inactive(n master.nodes) RETURNS boolean LANGUAGE plpgsql STABLE SET search_path=pg_catalog,master AS $$
+DECLARE deadline timestamptz;
+BEGIN
+ IF n.kind IS DISTINCT FROM 'work' OR n.body->>'acceptanceMode' IS DISTINCT FROM 'waiver' THEN RETURN false; END IF;
+ BEGIN
+  deadline:=(n.body->'waiver'->>'expiresAt')::timestamptz;
+  RETURN deadline IS NULL OR NOT isfinite(deadline) OR deadline<=now();
+ EXCEPTION WHEN invalid_datetime_format OR datetime_field_overflow THEN RETURN true;
+ END;
+END $$;
+CREATE FUNCTION master.blockers(w text) RETURNS jsonb LANGUAGE sql STABLE SET search_path=pg_catalog,master AS $$
+ SELECT coalesce(jsonb_agg(jsonb_build_object('id',d.dependency_id,'state',coalesce(n.body->>'state','unresolved'),'reason',CASE WHEN n.body->>'state'='accepted' AND master.waiver_inactive(n) THEN 'expired or invalid waiver' ELSE 'unresolved or unaccepted' END) ORDER BY d.dependency_id),'[]')
+ FROM master.dependencies d LEFT JOIN master.nodes n ON n.id=d.dependency_id
+ WHERE d.work_id=w AND (n.id IS NULL OR n.kind NOT IN ('work','external') OR (n.kind='work' AND (n.body->>'state' IS DISTINCT FROM 'accepted' OR master.waiver_inactive(n))) OR (n.kind='external' AND n.body->>'state' IS DISTINCT FROM 'resolved'));
+$$;
+CREATE FUNCTION master.command(actor text, c jsonb) RETURNS jsonb LANGUAGE plpgsql SECURITY DEFINER
+ SET search_path=pg_catalog,master AS $$
+DECLARE old master.nodes; prior master.commands; b jsonb; r jsonb; op text:=c->>'op';
+ target text:=c->>'target'; cid text:=c->>'commandId'; dep text; criterion jsonb; e master.evidence;
+ scope_entry jsonb; affected master.nodes; child jsonb; child_criteria jsonb; split_ids text[]; next_revision integer; before_state jsonb; affected_before jsonb; error_text text;
+BEGIN
+ -- One lock serializes commands including graph and baseline changes. Reads do not lock.
+ PERFORM pg_advisory_xact_lock(20261013,1);
+ IF actor IS NULL OR actor !~ '^(james|agent:[A-Za-z0-9_.:-]+)$' THEN RAISE EXCEPTION 'invalid actor'; END IF;
+ -- The deployed application role cannot impersonate agents; no agent login is provisioned.
+ IF session_user='ariadne_master' AND actor<>'james' THEN RAISE EXCEPTION 'operator-only transport'; END IF;
+ IF cid IS NULL OR cid !~ '^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$' OR target IS NULL THEN RAISE EXCEPTION 'invalid command identity'; END IF;
+ SELECT * INTO prior FROM master.commands WHERE id=cid;
+ IF FOUND THEN
+  IF prior.actor=actor AND prior.payload=c THEN RETURN prior.result; END IF;
+  INSERT INTO master.journal(command_id,actor,via,target,result) VALUES(cid,actor,c->>'via',target,'{"ok":false,"error":"command ID payload conflict"}');
+  RETURN '{"ok":false,"error":"command ID payload conflict"}';
+ END IF;
+ SELECT * INTO old FROM master.nodes WHERE id=target;
+ before_state:=CASE WHEN old.id IS NOT NULL THEN master.node_state(old) END;
+ BEGIN
+  IF c->>'reason' IS NULL OR length(c->>'reason')=0 THEN RAISE EXCEPTION 'reason required'; END IF;
+  IF coalesce((c->>'expectedRevision')::integer,-1)<>coalesce(old.revision,0) THEN RAISE EXCEPTION 'revision conflict'; END IF;
+  IF actor<>'james' AND (op NOT IN ('update','transition') OR old.kind<>'work' OR old.body->>'owner' IS DISTINCT FROM actor)
+    THEN RAISE EXCEPTION 'permission denied'; END IF;
+  IF op='create' THEN
+   IF old.id IS NOT NULL THEN RAISE EXCEPTION 'identity already exists'; END IF;
+   b:=c->'body';
+   IF b IS NULL OR jsonb_typeof(b)<>'object' THEN RAISE EXCEPTION 'body required'; END IF;
+   IF c->>'kind' IN ('work','baseline') AND coalesce(b->>'state','proposed')<>'proposed' THEN RAISE EXCEPTION 'new scope must be proposed'; END IF;
+   IF c->>'kind'='work' THEN
+    IF b ?| ARRAY['generation','waiver','acceptanceMode','acceptedBy','acceptanceCommand','splitFrom','splitChildren','blockerSince','waiverRenewalCount'] THEN RAISE EXCEPTION 'managed work fields cannot be supplied'; END IF;
+    IF b ? 'source' AND jsonb_typeof(b->'source') IS DISTINCT FROM 'object' THEN RAISE EXCEPTION 'work source must be an object'; END IF;
+    IF b ? 'candidate' AND coalesce(b->>'candidate','') !~ '^[a-f0-9]{40}$' THEN RAISE EXCEPTION 'invalid candidate revision'; END IF;
+    IF jsonb_array_length(coalesce(b->'criteria','[]'))=0 OR b->>'policy' IS NULL OR b->>'goal' IS NULL THEN RAISE EXCEPTION 'work requires goal policy criteria'; END IF;
+    IF NOT EXISTS(SELECT 1 FROM master.nodes WHERE id=b->>'policy' AND kind='policy') THEN RAISE EXCEPTION 'unknown policy'; END IF;
+    IF EXISTS(SELECT 1 FROM jsonb_array_elements(b->'criteria') x WHERE jsonb_typeof(x->'id') IS DISTINCT FROM 'string' OR jsonb_typeof(x->'text') IS DISTINCT FROM 'string' OR coalesce(x->>'id','')='' OR coalesce(x->>'text','')='') THEN RAISE EXCEPTION 'criterion id and text required'; END IF;
+    IF EXISTS(SELECT 1 FROM master.nodes w, jsonb_array_elements(w.body->'criteria') x, jsonb_array_elements(b->'criteria') y WHERE w.kind='work' AND x->>'id'=y->>'id') THEN RAISE EXCEPTION 'criterion identity already exists; use split'; END IF;
+    IF (SELECT count(DISTINCT x->>'id') FROM jsonb_array_elements(b->'criteria') x)<>jsonb_array_length(b->'criteria') THEN RAISE EXCEPTION 'duplicate criterion'; END IF;
+    IF b ? 'refs' AND (jsonb_typeof(b->'refs') IS DISTINCT FROM 'array' OR EXISTS(SELECT 1 FROM jsonb_array_elements(b->'refs') ref WHERE jsonb_typeof(ref) IS DISTINCT FROM 'object')) THEN RAISE EXCEPTION 'refs must be an array of objects'; END IF;
+    b:=b||'{"state":"proposed","generation":1}';
+   END IF;
+   IF c->>'kind'='baseline' THEN b:=b||'{"state":"proposed"}'; END IF;
+   IF c->>'kind'='decision' AND b ? 'options' AND jsonb_typeof(b->'options') IS DISTINCT FROM 'array' THEN RAISE EXCEPTION 'decision options must be an array'; END IF;
+   IF c->>'kind'='external' THEN
+    IF coalesce(b->>'state','unresolved')<>'unresolved' THEN RAISE EXCEPTION 'external gap cannot assert acceptance'; END IF;
+    b:=b||'{"state":"unresolved"}';
+   END IF;
+   IF c->>'kind'='policy' THEN
+    IF jsonb_typeof(b->'requiredKinds') IS DISTINCT FROM 'array' THEN RAISE EXCEPTION 'invalid acceptance policy'; END IF;
+    IF EXISTS(SELECT 1 FROM jsonb_array_elements(b->'requiredKinds') k WHERE jsonb_typeof(k) IS DISTINCT FROM 'string' OR coalesce(k #>> '{}','') NOT IN ('github_pr','ci','merge','deploy','eval','runtime','review','document'))
+      OR (SELECT count(DISTINCT k) FROM jsonb_array_elements_text(b->'requiredKinds') k)<>jsonb_array_length(b->'requiredKinds')
+      OR jsonb_array_length(coalesce(b->'requiredKinds','[]'))=0 OR coalesce((b->>'maxAgeSeconds')::integer,0)<=0
+      OR b->'requiredKinds' ? 'agent_run' THEN RAISE EXCEPTION 'invalid acceptance policy'; END IF;
+   END IF;
+   IF c->>'kind' IN ('product','policy','decision','external') AND c->>'parent' IS NOT NULL THEN RAISE EXCEPTION 'root nodes must have no parent'; END IF;
+
+   IF c->>'kind' IN ('baseline','phase','milestone','work') AND NOT EXISTS(
+    SELECT 1 FROM master.nodes WHERE id=c->>'parent' AND kind=CASE c->>'kind' WHEN 'baseline' THEN 'product' WHEN 'phase' THEN 'baseline' WHEN 'milestone' THEN 'phase' ELSE 'milestone' END)
+    THEN RAISE EXCEPTION 'invalid hierarchy'; END IF;
+   INSERT INTO master.nodes(id,kind,parent,revision,body) VALUES(target,c->>'kind',c->>'parent',1,b);
+   FOR scope_entry IN SELECT * FROM jsonb_array_elements(coalesce(c->'aliases','[]')) LOOP
+    INSERT INTO master.aliases VALUES(scope_entry->>'source',scope_entry->>'alias',target);
+   END LOOP;
+  ELSIF old.id IS NULL THEN RAISE EXCEPTION 'unknown target';
+  ELSIF op='update' THEN
+   IF old.kind<>'work' OR (c->'patch') - ARRAY['title','owner','nextAction','candidate','blocker','requirements','refs'] <> '{}'::jsonb THEN RAISE EXCEPTION 'immutable scope or invalid patch'; END IF;
+   IF actor<>'james' AND c->'patch' ?| ARRAY['owner','candidate','requirements','refs'] THEN RAISE EXCEPTION 'permission denied'; END IF;
+   IF old.body->>'state'='accepted' THEN RAISE EXCEPTION 'accepted work immutable'; END IF;
+   IF c->'patch' ? 'candidate' AND coalesce(c->'patch'->>'candidate','') !~ '^[a-f0-9]{40}$' THEN RAISE EXCEPTION 'invalid candidate revision'; END IF;
+   IF c->'patch' ? 'refs' AND (jsonb_typeof(c->'patch'->'refs') IS DISTINCT FROM 'array' OR EXISTS(SELECT 1 FROM jsonb_array_elements(c->'patch'->'refs') ref WHERE jsonb_typeof(ref) IS DISTINCT FROM 'object')) THEN RAISE EXCEPTION 'refs must be an array of objects'; END IF;
+   b:=old.body||(c->'patch');
+   IF c->'patch' ? 'owner' AND c->'patch'->>'owner' IS DISTINCT FROM old.body->>'owner' THEN
+    b:=b||jsonb_build_object('generation',coalesce((old.body->>'generation')::integer,1)+1,'state','proposed');
+   END IF;
+   IF c->'patch' ? 'blocker' THEN
+    IF coalesce(c->'patch'->>'blocker','')='' THEN b:=b-ARRAY['blocker','blockerSince'];
+    ELSIF old.body->>'blockerSince' IS NULL THEN b:=b||jsonb_build_object('blockerSince',to_char(now() AT TIME ZONE 'UTC','YYYY-MM-DD"T"HH24:MI:SS.MS"Z"')); END IF;
+   END IF;
+   UPDATE master.nodes SET body=b, revision=revision+1 WHERE id=target;
+  ELSIF op='split' THEN
+   IF old.kind<>'work' OR old.body->>'state' IN ('cancelled','superseded') OR jsonb_array_length(coalesce(c->'children','[]'))<2 THEN RAISE EXCEPTION 'invalid split'; END IF;
+   SELECT array_agg(x->>'id' ORDER BY x->>'id') INTO split_ids FROM jsonb_array_elements(c->'children') ch, jsonb_array_elements(ch->'criteria') x;
+   IF split_ids IS DISTINCT FROM (SELECT array_agg(x->>'id' ORDER BY x->>'id') FROM jsonb_array_elements(old.body->'criteria') x) THEN RAISE EXCEPTION 'split must preserve criterion denominator exactly'; END IF;
+   FOR child IN SELECT * FROM jsonb_array_elements(c->'children') LOOP
+    SELECT jsonb_agg(x) INTO child_criteria FROM jsonb_array_elements(old.body->'criteria') x WHERE child->'criteria' @> jsonb_build_array(jsonb_build_object('id',x->>'id'));
+    IF child_criteria IS NULL OR child->>'title' IS NULL THEN RAISE EXCEPTION 'empty split child'; END IF;
+    INSERT INTO master.nodes(id,kind,parent,revision,body) VALUES(child->>'id','work',old.parent,1,
+      old.body||jsonb_build_object('title',child->>'title','criteria',child_criteria,'splitFrom',target,'state',CASE WHEN old.body->>'state'='accepted' THEN 'accepted' ELSE 'proposed' END));
+    INSERT INTO master.dependencies SELECT child->>'id',dependency_id FROM master.dependencies WHERE work_id=target;
+    INSERT INTO master.journal(command_id,actor,via,target,before_state,after_state,result) SELECT cid,actor,c->>'via',child->>'id',NULL,master.node_state(n),'{"ok":true,"effect":"split child"}' FROM master.nodes n WHERE n.id=child->>'id';
+   END LOOP;
+   FOR affected IN SELECT n.* FROM master.nodes n JOIN master.dependencies d ON d.work_id=n.id WHERE d.dependency_id=target LOOP
+    affected_before:=master.node_state(affected);
+    DELETE FROM master.dependencies WHERE work_id=affected.id AND dependency_id=target;
+    INSERT INTO master.dependencies SELECT affected.id,ch->>'id' FROM jsonb_array_elements(c->'children') ch ON CONFLICT DO NOTHING;
+    UPDATE master.nodes SET revision=revision+1 WHERE id=affected.id;
+    INSERT INTO master.journal(command_id,actor,via,target,before_state,after_state,result) SELECT cid,actor,c->>'via',affected.id,affected_before,master.node_state(n),'{"ok":true,"effect":"split dependency replacement"}' FROM master.nodes n WHERE n.id=affected.id;
+   END LOOP;
+   UPDATE master.nodes SET revision=revision+1,body=body||jsonb_build_object('state','superseded','splitChildren',c->'children') WHERE id=target;
+  ELSIF op='dependencies' THEN
+   IF old.kind<>'work' OR old.body->>'state'='accepted' THEN RAISE EXCEPTION 'invalid dependency target'; END IF;
+   IF jsonb_typeof(c->'dependencies') IS DISTINCT FROM 'array' THEN RAISE EXCEPTION 'dependency array required'; END IF;
+   IF EXISTS(SELECT 1 FROM jsonb_array_elements_text(c->'dependencies') dep(id) JOIN master.nodes n ON n.id=dep.id WHERE n.kind NOT IN ('work','external')) THEN RAISE EXCEPTION 'dependency requires work or external gap'; END IF;
+   DELETE FROM master.dependencies WHERE work_id=target;
+   FOR dep IN SELECT jsonb_array_elements_text(c->'dependencies') LOOP INSERT INTO master.dependencies VALUES(target,dep); END LOOP;
+   IF EXISTS(WITH RECURSIVE walk(id,path,cycle) AS (
+    SELECT target,ARRAY[target],false UNION ALL
+    SELECT d.dependency_id, path||d.dependency_id,d.dependency_id=ANY(path)
+     FROM walk JOIN master.dependencies d ON d.work_id=walk.id WHERE NOT cycle)
+    SELECT 1 FROM walk WHERE cycle) THEN RAISE EXCEPTION 'dependency cycle'; END IF;
+   b:=old.body||jsonb_build_object('dependencyProvenance',coalesce(c->'dependencyProvenance','{"classification":"operator supplied"}'::jsonb));
+   IF master.blockers(target)<>'[]'::jsonb AND old.body->>'state' IN ('ready','active','verification') THEN b:=b||jsonb_build_object('state','proposed'); END IF;
+   UPDATE master.nodes SET body=b,revision=revision+1 WHERE id=target;
+  ELSIF op='resolve' THEN
+   IF actor<>'james' OR old.kind NOT IN ('external','decision') OR coalesce(c->>'resolution','')='' THEN RAISE EXCEPTION 'operator resolution required'; END IF;
+   IF old.kind='decision' AND old.body->>'state'='resolved' THEN RAISE EXCEPTION 'decision already resolved; use a new decision ID'; END IF;
+   UPDATE master.nodes SET body=body||CASE WHEN old.kind='decision' AND jsonb_typeof(c->'response')='object' THEN c->'response' ELSE '{}'::jsonb END||jsonb_build_object('state','resolved','resolution',c->>'resolution','resolvedBy',actor,'resolvedAt',now()),revision=revision+1 WHERE id=target;
+  ELSIF op='transition' THEN
+   IF old.kind<>'work' OR c->>'state' IS NULL OR c->>'state' NOT IN ('ready','active','verification','blocked','waiting','parked','cancelled') THEN RAISE EXCEPTION 'invalid transition'; END IF;
+   IF actor<>'james' AND c->>'state'='cancelled' THEN RAISE EXCEPTION 'operator cancellation required'; END IF;
+   IF old.body->>'state' IN ('accepted','cancelled','superseded') THEN RAISE EXCEPTION 'terminal work'; END IF;
+   IF c->>'state' IN ('ready','active','verification') THEN
+    IF master.blockers(target)<>'[]'::jsonb THEN RAISE EXCEPTION 'dependencies unresolved or unaccepted'; END IF;
+    IF NOT EXISTS(SELECT 1 FROM master.nodes bl WHERE bl.kind='baseline' AND bl.body->>'state'='approved' AND NOT EXISTS(SELECT 1 FROM jsonb_array_elements(old.body->'criteria') required(value) WHERE NOT EXISTS(SELECT 1 FROM master.scope s WHERE s.baseline_id=bl.id AND s.criterion_id=required.value->>'id'))) THEN RAISE EXCEPTION 'scope not approved'; END IF;
+   END IF;
+   IF c->>'state'='active' AND old.body->>'state'<>'ready' OR c->>'state'='verification' AND old.body->>'state'<>'active' THEN RAISE EXCEPTION 'invalid lifecycle order'; END IF;
+   b:=old.body||jsonb_build_object('state',c->>'state');
+   IF c->>'state' IN ('blocked','waiting') THEN b:=b||jsonb_build_object('blockerSince',coalesce(old.body->>'blockerSince',to_char(now() AT TIME ZONE 'UTC','YYYY-MM-DD"T"HH24:MI:SS.MS"Z"')),'blocker',c->>'reason');
+   ELSE b:=b-ARRAY['blocker','blockerSince']; END IF;
+   UPDATE master.nodes SET body=b,revision=revision+1 WHERE id=target;
+  ELSIF op='scope' THEN
+   IF old.kind<>'baseline' OR old.body->>'state'<>'proposed' THEN RAISE EXCEPTION 'approved baseline scope immutable'; END IF;
+   DELETE FROM master.scope WHERE baseline_id=target;
+   FOR scope_entry IN SELECT * FROM jsonb_array_elements(c->'scope') LOOP
+    IF NOT EXISTS(SELECT 1 FROM master.nodes w JOIN master.nodes m ON m.id=w.parent JOIN master.nodes ph ON ph.id=m.parent JOIN master.nodes wb ON wb.id=ph.parent JOIN master.nodes bl ON bl.id=target WHERE wb.parent=bl.parent AND w.id=scope_entry->>'workId' AND w.kind='work' AND w.body->'criteria' @> jsonb_build_array(jsonb_build_object('id',scope_entry->>'criterionId')))
+      THEN RAISE EXCEPTION 'unknown scope criterion'; END IF;
+    INSERT INTO master.scope VALUES(target,scope_entry->>'criterionId',scope_entry->>'workId');
+   END LOOP;
+   UPDATE master.nodes SET revision=revision+1,body=body||jsonb_build_object('scopeDiff',jsonb_build_object(
+    'proposal',c->'scopeDiff',
+    'previousBaseline',old.body->>'previousBaseline',
+    'denominatorBefore',(SELECT count(*) FROM master.scope WHERE baseline_id=old.body->>'previousBaseline'),
+    'denominatorAfter',(SELECT count(*) FROM master.scope WHERE baseline_id=target),
+    'added',(SELECT coalesce(jsonb_agg(s.criterion_id),'[]') FROM master.scope s WHERE s.baseline_id=target AND NOT EXISTS(SELECT 1 FROM master.scope prior_scope WHERE prior_scope.baseline_id=old.body->>'previousBaseline' AND prior_scope.criterion_id=s.criterion_id)),
+    'removed',(SELECT coalesce(jsonb_agg(s.criterion_id),'[]') FROM master.scope s WHERE s.baseline_id=old.body->>'previousBaseline' AND NOT EXISTS(SELECT 1 FROM master.scope next_scope WHERE next_scope.baseline_id=target AND next_scope.criterion_id=s.criterion_id)))) WHERE id=target;
+  ELSIF op='approve' THEN
+   IF old.kind<>'baseline' OR old.body->>'state'<>'proposed' OR NOT EXISTS(SELECT 1 FROM master.scope WHERE baseline_id=target) THEN RAISE EXCEPTION 'baseline requires proposed scope'; END IF;
+   UPDATE master.nodes SET revision=revision+1,body=body||jsonb_build_object('state','approved','approvedBy',actor,'approvedAt',now()) WHERE id=target;
+  ELSIF op='evidence' THEN
+   IF old.kind<>'work' THEN RAISE EXCEPTION 'evidence requires work'; END IF;
+   b:=c->'evidence';
+   IF b->>'id' IS NULL OR b->>'kind' NOT IN ('agent_run','github_pr','ci','merge','deploy','eval','runtime','review','document') OR b->>'uri' IS NULL THEN RAISE EXCEPTION 'invalid evidence'; END IF;
+   IF b ? 'observedAt' THEN
+   IF jsonb_typeof(b->'observedAt') IS DISTINCT FROM 'string' OR NOT isfinite((b->>'observedAt')::timestamptz)
+      OR (b->>'observedAt')::timestamptz>now() THEN RAISE EXCEPTION 'finite non-future observedAt required'; END IF;
+   b:=b||jsonb_build_object('reportedObservedAt',b->>'observedAt','observedAt',to_char((b->>'observedAt')::timestamptz AT TIME ZONE 'UTC','YYYY-MM-DD"T"HH24:MI:SS.US"Z"'));
+   END IF;
+   IF b ? 'generation' AND b->>'generation' IS DISTINCT FROM coalesce(old.body->>'generation','1') THEN RAISE EXCEPTION 'evidence generation mismatch'; END IF;
+   b:=b||jsonb_build_object('generation',coalesce((old.body->>'generation')::integer,1));
+   INSERT INTO master.evidence VALUES(b->>'id',target,b,now());
+   UPDATE master.nodes SET revision=revision+1 WHERE id=target;
+  ELSIF op IN ('accept','override') THEN
+   IF old.kind<>'work' OR old.body->>'state'<>'verification' OR master.blockers(target)<>'[]'::jsonb THEN RAISE EXCEPTION 'not eligible for acceptance'; END IF;
+   IF NOT EXISTS(SELECT 1 FROM master.nodes bl WHERE bl.kind='baseline' AND bl.body->>'state'='approved' AND NOT EXISTS(SELECT 1 FROM jsonb_array_elements(old.body->'criteria') required(value) WHERE NOT EXISTS(SELECT 1 FROM master.scope s WHERE s.baseline_id=bl.id AND s.criterion_id=required.value->>'id'))) THEN RAISE EXCEPTION 'scope not approved'; END IF;
+   IF op='override' AND jsonb_typeof(c->'waivedCriteria') IS DISTINCT FROM 'array' THEN RAISE EXCEPTION 'override requires explicit waived criteria array'; END IF;
+   IF op='override' AND (SELECT array_agg(k ORDER BY k) FROM jsonb_array_elements_text(c->'waivedCriteria') k)
+     IS DISTINCT FROM (SELECT array_agg(k->>'id' ORDER BY k->>'id') FROM jsonb_array_elements(old.body->'criteria') k) THEN RAISE EXCEPTION 'waiver criteria must exactly match work'; END IF;
+   SELECT body INTO b FROM master.nodes WHERE id=old.body->>'policy' AND kind='policy';
+   FOR criterion IN SELECT * FROM jsonb_array_elements(old.body->'criteria') LOOP
+    FOR dep IN SELECT jsonb_array_elements_text(b->'requiredKinds') LOOP
+     SELECT * INTO e FROM master.evidence ev WHERE ev.work_id=target
+      AND ev.body->>'kind'=dep AND ev.body->>'criterionId'=criterion->>'id'
+      AND ev.body->>'candidate'=old.body->>'candidate' AND old.body->>'candidate' IS NOT NULL
+      AND ev.body->>'generation'=coalesce(old.body->>'generation','1')
+      AND ev.body->>'policy'=old.body->>'policy' AND ev.body->>'status'='passed'
+      AND ev.body->'synthetic'='false'::jsonb AND ev.body->>'sha256' ~ '^[a-f0-9]{64}$'
+      AND (ev.body->>'observedAt')::timestamptz <= now()
+      AND (ev.body->>'observedAt')::timestamptz >= now()-make_interval(secs=>(b->>'maxAgeSeconds')::integer)
+      ORDER BY ev.recorded_at DESC LIMIT 1;
+     IF NOT FOUND AND op='accept' THEN RAISE EXCEPTION 'missing stale unrelated or synthetic required evidence: % %',criterion->>'id',dep; END IF;
+     IF FOUND THEN INSERT INTO master.acceptance_evidence VALUES(target,criterion->>'id',dep,e.id,cid); END IF;
+    END LOOP;
+    IF op='override' AND (coalesce(c->>'risk','')='' OR NOT isfinite((c->>'expiresAt')::timestamptz) OR (c->>'expiresAt')::timestamptz <= now() OR c->>'expiresAt' IS NULL OR NOT (c->'waivedCriteria' ? (criterion->>'id'))) THEN RAISE EXCEPTION 'override requires explicit criteria risk expiry'; END IF;
+    INSERT INTO master.accepted VALUES(target,criterion->>'id',CASE WHEN op='accept' THEN e.id END,cid);
+   END LOOP;
+   UPDATE master.nodes SET revision=revision+1,body=body||jsonb_build_object('state','accepted','acceptedBy',actor,'acceptanceCommand',cid,'acceptanceMode',CASE WHEN op='override' THEN 'waiver' ELSE 'evidence' END,'waiver',CASE WHEN op='override' THEN jsonb_build_object('reason',c->>'reason','risk',c->>'risk','expiresAt',c->>'expiresAt','criteria',c->'waivedCriteria') ELSE NULL END) WHERE id=target;
+  ELSIF op='renew-waiver' THEN
+   IF actor<>'james' OR old.kind<>'work' OR old.body->>'state' IS DISTINCT FROM 'accepted' OR old.body->>'acceptanceMode' IS DISTINCT FROM 'waiver'
+      OR jsonb_typeof(old.body->'waiver') IS DISTINCT FROM 'object' OR NOT master.waiver_inactive(old) THEN RAISE EXCEPTION 'operator renewal of expired waiver required'; END IF;
+   IF length(btrim(coalesce(c->>'reason','')))=0 OR length(btrim(coalesce(c->>'risk','')))=0
+      OR c->>'expiresAt' IS NULL OR NOT isfinite((c->>'expiresAt')::timestamptz)
+      OR (c->>'expiresAt')::timestamptz<=now() THEN RAISE EXCEPTION 'renewal requires explicit reason risk finite future expiry'; END IF;
+   UPDATE master.nodes SET revision=revision+1,
+    body=body||jsonb_build_object('waiver',body->'waiver'||jsonb_build_object('reason',c->>'reason','risk',c->>'risk','expiresAt',c->>'expiresAt','renewedBy',actor,'renewedAt',now(),'renewalCommand',cid,'criteria',(SELECT jsonb_agg(x->>'id') FROM jsonb_array_elements(old.body->'criteria') x)),
+                                 'waiverRenewalCount',coalesce((body->>'waiverRenewalCount')::integer,0)+1)
+    WHERE id=target;
+   -- Existing accepted criteria/evidence/candidate remain immutable. Journal captures both waiver terms.
+  ELSIF op='import' THEN
+   b:=c->'provenance';
+   IF b->>'import_id' IS NULL OR coalesce(b->>'sha256','') !~ '^[a-f0-9]{64}$' OR b->>'commit_sha' IS NULL OR b->>'observed_at' IS NULL OR b->>'path' IS NULL OR b->>'reconciliation_reason' IS NULL THEN RAISE EXCEPTION 'incomplete provenance'; END IF;
+   INSERT INTO master.imports VALUES(b->>'import_id',b,now());
+   UPDATE master.nodes SET revision=revision+1 WHERE id=target;
+  ELSE RAISE EXCEPTION 'unknown command'; END IF;
+  SELECT revision INTO next_revision FROM master.nodes WHERE id=target;
+  r:=jsonb_build_object('ok',true,'id',target,'revision',next_revision);
+ EXCEPTION WHEN OTHERS THEN
+  GET STACKED DIAGNOSTICS error_text=MESSAGE_TEXT;
+  r:=jsonb_build_object('ok',false,'error',error_text);
+ END;
+ INSERT INTO master.commands VALUES(cid,actor,c,r,now());
+ INSERT INTO master.journal(command_id,actor,via,target,before_state,after_state,result)
+  SELECT cid,actor,c->>'via',target,before_state,master.node_state(n),r FROM (SELECT 1) x LEFT JOIN master.nodes n ON n.id=target;
+ INSERT INTO master.outbox(command_id,body) VALUES(cid,jsonb_build_object('target',target,'result',r));
+ RETURN r;
+END $$;
+CREATE VIEW master.products AS SELECT * FROM master.nodes WHERE kind='product';
+CREATE VIEW master.baselines AS SELECT * FROM master.nodes WHERE kind='baseline';
+CREATE VIEW master.phases AS SELECT * FROM master.nodes WHERE kind='phase';
+CREATE VIEW master.milestones AS SELECT * FROM master.nodes WHERE kind='milestone';
+CREATE VIEW master.work_items AS SELECT * FROM master.nodes WHERE kind='work';
+CREATE VIEW master.acceptance_policies AS SELECT * FROM master.nodes WHERE kind='policy';
+CREATE VIEW master.decisions AS SELECT * FROM master.nodes WHERE kind='decision';
+CREATE INDEX work_split_lineage ON master.nodes((body->>'splitFrom')) WHERE kind='work';
+CREATE FUNCTION master.criterion_owner(origin text,criterion text) RETURNS master.nodes LANGUAGE sql STABLE SET search_path=pg_catalog,master AS $$
+ WITH RECURSIVE lineage AS (
+  SELECT n.id,0 depth,ARRAY[n.id] path FROM master.nodes n
+   WHERE n.id=origin AND n.kind='work' AND n.body->'criteria' @> jsonb_build_array(jsonb_build_object('id',criterion))
+  UNION ALL
+  SELECT child.id,parent.depth+1,parent.path||child.id
+   FROM lineage parent JOIN master.nodes child ON child.kind='work' AND child.body->>'splitFrom'=parent.id
+   WHERE NOT child.id=ANY(parent.path) AND child.body->'criteria' @> jsonb_build_array(jsonb_build_object('id',criterion))
+ )
+ SELECT n.* FROM lineage l JOIN master.nodes n ON n.id=l.id ORDER BY l.depth DESC,n.id LIMIT 1;
+$$;
+CREATE VIEW master.progress AS
+ SELECT n.id baseline_id,n.body->>'state' baseline_state,count(s.criterion_id) denominator,
+ count(a.criterion_id) FILTER (WHERE a.evidence_id IS NOT NULL) accepted_criteria,
+ count(a.criterion_id) FILTER (WHERE a.evidence_id IS NULL) waived_criteria,
+ count(a.criterion_id) FILTER (WHERE a.evidence_id IS NULL AND (waiver_owner.id IS NULL OR master.waiver_inactive(waiver_owner))) expired_waived_criteria FROM master.nodes n
+ LEFT JOIN master.scope s ON s.baseline_id=n.id LEFT JOIN master.accepted a ON a.criterion_id=s.criterion_id
+ LEFT JOIN LATERAL master.criterion_owner(s.work_id,s.criterion_id) waiver_owner ON true
+ WHERE n.kind='baseline' GROUP BY n.id;
+CREATE FUNCTION master.snapshot() RETURNS jsonb LANGUAGE sql STABLE SECURITY DEFINER SET search_path=pg_catalog,master AS $$
+ SELECT jsonb_build_object(
+ 'nodes',coalesce((SELECT jsonb_agg(to_jsonb(n)||jsonb_build_object('blockers',master.blockers(n.id),'waiverInactive',master.waiver_inactive(n)) ORDER BY n.id) FROM master.nodes n),'[]'),
+ 'aliases',coalesce((SELECT jsonb_agg(a ORDER BY a.source,a.alias) FROM master.aliases a),'[]'),
+ 'dependencies',coalesce((SELECT jsonb_agg(d ORDER BY d.work_id,d.dependency_id) FROM master.dependencies d),'[]'),
+ 'scope',coalesce((SELECT jsonb_agg(s ORDER BY s.baseline_id,s.criterion_id) FROM master.scope s),'[]'),
+ 'progress',coalesce((SELECT jsonb_agg(p ORDER BY p.baseline_id) FROM master.progress p),'[]'),
+ 'accepted',coalesce((SELECT jsonb_agg(to_jsonb(a)||jsonb_build_object('waiver_owner_id',(master.criterion_owner(a.work_id,a.criterion_id)).id) ORDER BY a.work_id,a.criterion_id) FROM master.accepted a),'[]'),
+ 'acceptanceEvidence',coalesce((SELECT jsonb_agg(a ORDER BY a.work_id,a.criterion_id,a.kind) FROM master.acceptance_evidence a),'[]'),
+ 'evidence',coalesce((SELECT jsonb_agg(e ORDER BY e.id) FROM master.evidence e),'[]'),
+ 'imports',coalesce((SELECT jsonb_agg(i ORDER BY i.id) FROM master.imports i),'[]'),
+ 'history',coalesce((SELECT jsonb_agg(j ORDER BY sequence) FROM master.journal j),'[]'));
+$$;
+CREATE INDEX operator_response_lookup ON master.nodes((body->>'sourceId'),(body->>'repository'),(body->>'runId')) WHERE kind='decision' AND body->>'origin'='operator-dashboard' AND body->>'state'='resolved';
+CREATE FUNCTION master.operator_replies(source_id text,repo text,run text) RETURNS jsonb LANGUAGE sql STABLE SECURITY DEFINER SET search_path=pg_catalog,master AS $$
+ SELECT coalesce(jsonb_agg(reply ORDER BY resolved_at,command_id),'[]') FROM (
+  SELECT jsonb_build_object('sourceId',body->>'sourceId','repository',body->>'repository','runId',body->>'runId','requestId',body->>'requestId','requestRevision',body->>'requestRevision','resolution',body->>'resolution','resolvedBy',body->>'resolvedBy','resolvedAt',body->>'resolvedAt','commandId',body->>'commandId') reply,
+         (body->>'resolvedAt')::timestamptz resolved_at,body->>'commandId' command_id
+  FROM master.nodes WHERE kind='decision' AND body->>'origin'='operator-dashboard' AND body->>'state'='resolved'
+    AND body->>'sourceId'=source_id AND body->>'repository'=repo AND body->>'runId'=run
+  ORDER BY (body->>'resolvedAt')::timestamptz DESC,body->>'commandId' DESC LIMIT 50
+ ) latest;
+$$;
+CREATE INDEX resolved_decision_lookup ON master.nodes(id) WHERE kind='decision' AND body->>'state'='resolved';
+CREATE FUNCTION master.operator_resolved() RETURNS jsonb LANGUAGE sql STABLE SECURITY DEFINER SET search_path=pg_catalog,master AS $$
+ SELECT jsonb_build_object(
+  'nodes',coalesce((SELECT jsonb_agg(jsonb_build_object('id',id,'kind',kind,'body',jsonb_build_object('state','resolved','origin',body->>'origin','sourceId',body->>'sourceId','repository',body->>'repository','runId',body->>'runId','requestId',body->>'requestId','requestRevision',body->>'requestRevision','resolution',body->>'resolution','resolvedBy',body->>'resolvedBy','resolvedAt',body->>'resolvedAt','commandId',body->>'commandId'))) FROM master.nodes WHERE kind='decision' AND body->>'state'='resolved'),'[]'),
+  'aliases',coalesce((SELECT jsonb_agg(a) FROM master.aliases a JOIN master.nodes n ON n.id=a.node_id WHERE n.kind='decision' AND n.body->>'state'='resolved'),'[]'));
+$$;
+REVOKE ALL ON SCHEMA master FROM PUBLIC;
+REVOKE ALL ON ALL TABLES IN SCHEMA master FROM PUBLIC;
+REVOKE ALL ON ALL FUNCTIONS IN SCHEMA master FROM PUBLIC;
+INSERT INTO master.migrations(version,source_sha) VALUES(1,current_setting('ariadne.migration_sha',true));
+COMMIT;

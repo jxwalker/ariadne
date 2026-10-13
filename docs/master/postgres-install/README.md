@@ -1,0 +1,9 @@
+# Phase 1 bounded PostgreSQL server install
+
+`package.sh` complements the Phase 0 user-cluster package. It installs the distro's PostgreSQL 17 server with required dependencies only. Preconditions require no native server, default cluster, existing cluster configuration, service override or `policy-rc.d`. It records absent configuration paths, prevents default cluster creation and temporarily denies only PostgreSQL startup. Post-verification requires no system clusters, a disabled/inactive system service and no added non-loopback listeners compared with the saved baseline.
+
+Run only through the canonical mutation-readiness, approval, audit, dry-run and exact confirmed deployment-mutation-execute path. The live marker prevents accidental invocation; it does not substitute for that path. Local evidence and the fixed reviewed script are under `~/ariadne-run/master-p1/`. Recorded approval was transcribed from James's assignment, not obtained by the implementer making a decision as James.
+
+Rollback must itself use a separately audited confirmed plan. Its conservative action disables system PostgreSQL while retaining packages and all user-ledger files; destructive uninstall or data removal requires a separate plan. No existing application, container or other worktree is changed.
+
+On 2026-10-13 package installation and the separate Phase 0 user-cluster provisioning both passed their audited executions and post-verification. A first empty-ledger dump passed isolated socket-only restore. Application cutover has not occurred. Work is stopped at the write-authentication boundary: the handoff reserves existing credentials for observations, while the Phase 0 application role remains locked pending separately authorized credential provisioning. No local write credential, ledger capability or database grant was added beyond the reviewed Phase 0 provisioning package.

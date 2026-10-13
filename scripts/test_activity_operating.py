@@ -118,6 +118,54 @@ class OperatingTests(unittest.TestCase):
         self.assertIsNone(row['cpuPercent']);self.assertIsNone(row['diskPercent']);self.assertEqual(row['pressure'],{'memory_full':1.5})
         self.assertEqual([t['name'] for t in row['temperatures']],['CPU']);self.assertIsNone(row['vms'][0]['mem']);self.assertEqual(row['services'],[{'name':'svc','state':'active'}])
         self.assertNotIn('<',canonical(row))
+    def test_decision_projection_uses_partial_index_and_upgrades_v3(self):
+        with self.store.connect() as db:
+            db.execute('DROP INDEX events_decision_lifecycle');db.execute('PRAGMA user_version=3')
+        self.store.close();self.store=Store(pathlib.Path(self.tmp.name)/'activity.db')
+        from unittest.mock import patch
+        statements=[]
+        original=self.store.connect
+        def traced():
+            db=original();db.set_trace_callback(statements.append);return db
+        with patch.object(self.store,'connect',side_effect=traced):self.read()
+        query=next(q for q in statements if 'WITH per_run_decisions' in q)
+        with self.store.connect() as db:
+            self.assertEqual(db.execute('PRAGMA user_version').fetchone()[0],4)
+            from activity_operating import ts
+            db.create_function('ariadne_decision_time',2,lambda stamp,received:ts(stamp) or received,deterministic=True)
+            plan=[row['detail'] for row in db.execute('EXPLAIN QUERY PLAN '+query)]
+        self.assertTrue(any('USING INDEX events_decision_lifecycle' in row for row in plan),plan)
+
+    def test_resolution_sequence_survives_producer_clock_rollback(self):
+        self.send('decision.requested',decision={'id':'choice','recipient':'james','question':'Choose?','blocking':True})
+        self.send('decision.resolved',seq=1,decision={'id':'choice','recipient':'james','resolution':'Chosen'})
+        with self.store.connect() as db:
+            env=json.loads(db.execute("SELECT envelope FROM events WHERE id='event-1'").fetchone()['envelope'])
+            env['occurredAt']=time.strftime('%Y-%m-%dT%H:%M:%SZ',time.gmtime(self.at-3600))
+            db.execute("UPDATE events SET envelope=? WHERE id='event-1'",(canonical(env),))
+        self.assertEqual(self.read()['needsYou'],[])
+
+    def test_late_lower_sequence_cannot_reopen_resolved_question(self):
+        self.send('decision.resolved',seq=2,decision={'id':'choice','recipient':'james','resolution':'Chosen'})
+        self.send('decision.requested',seq=1,decision={'id':'choice','recipient':'james','question':'Choose?','blocking':True})
+        with self.store.connect() as db:
+            env=json.loads(db.execute("SELECT envelope FROM events WHERE id='event-1'").fetchone()['envelope'])
+            env['occurredAt']=time.strftime('%Y-%m-%dT%H:%M:%SZ',time.gmtime(self.at+300))
+            db.execute("UPDATE events SET envelope=? WHERE id='event-1'",(canonical(env),))
+        self.assertEqual(self.read()['needsYou'],[])
+
+    def test_unresolved_question_survives_large_decision_history(self):
+        original=self.send('decision.requested',decision={'id':'old-choice','recipient':'james','question':'Still needs an answer','blocking':True})
+        rows=[]
+        for i in range(5001):
+            e=copy.deepcopy(original);e.update(eventId='history-'+str(i),sequence=i+1,kind='decision.resolved',decision={'id':'closed-'+str(i),'recipient':'james','resolution':'Already answered'})
+            validate(e);encoded=canonical(e);rows.append((e['eventId'],'test',self.at+i*0.001,e['occurredAt'],encoded.encode(),encoded))
+        with self.store.connect() as db:
+            db.executemany('INSERT INTO events(id,source,received,received_at,raw,envelope) VALUES(?,?,?,?,?,?)',rows)
+        self.assertEqual([a['requestId'] for a in self.read()['needsYou']],['old-choice'])
+        self.send('decision.resolved',seq=5002,decision={'id':'old-choice','recipient':'james','resolution':'Chosen'})
+        self.assertEqual(self.read()['needsYou'],[])
+
     def test_basic_format_resolution_time_still_orders_decisions(self):
         d={'id':'choice','recipient':'james','question':'Choose?','blocking':True}
         self.send('decision.requested',decision=d)

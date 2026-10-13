@@ -1,6 +1,7 @@
 import { exec } from "node:child_process";
 import fs from "node:fs/promises";
 import path from "node:path";
+import { createHash } from "node:crypto";
 import { projectDir } from "./paths.js";
 import type { MutationReadinessPlan } from "./types.js";
 
@@ -15,14 +16,19 @@ export interface MutationCommandResult {
 }
 
 export async function readMutationPlan(vaultRoot: string, project: string, plan: string): Promise<MutationReadinessPlan> {
+  return (await readMutationPlanWithDigest(vaultRoot, project, plan)).plan;
+}
+
+export async function readMutationPlanWithDigest(vaultRoot: string, project: string, plan: string): Promise<{ plan: MutationReadinessPlan; sha256: string }> {
   const planPath = plan.endsWith(".json")
     ? path.resolve(plan)
     : path.join(projectDir(vaultRoot, project), "control", "mutation-readiness", `${plan}.json`);
-  const record = JSON.parse(await fs.readFile(planPath, "utf8")) as MutationReadinessPlan;
+  const raw = await fs.readFile(planPath);
+  const record = JSON.parse(raw.toString("utf8")) as MutationReadinessPlan;
   if (record.project !== project) {
     throw new Error(`Readiness plan ${record.id} belongs to ${record.project}, not ${project}.`);
   }
-  return record;
+  return { plan: record, sha256: createHash("sha256").update(raw).digest("hex") };
 }
 
 export function clampCommandTimeout(timeoutMs?: number): number {

@@ -1,0 +1,17 @@
+CREATE TABLE migrations(version INTEGER PRIMARY KEY);
+CREATE TABLE events(id TEXT PRIMARY KEY, source TEXT, received REAL, received_at TEXT, raw BLOB, envelope TEXT, processed INTEGER DEFAULT 0);
+CREATE TABLE runs(source TEXT, run TEXT, task TEXT, seq INTEGER, state TEXT, last REAL, envelope TEXT, gaps INTEGER DEFAULT 0, PRIMARY KEY(source,run));
+CREATE TABLE webhooks(id TEXT PRIMARY KEY, kind TEXT, received REAL, raw BLOB, processed INTEGER DEFAULT 0);
+CREATE TABLE observations(id TEXT PRIMARY KEY, repo TEXT, observed REAL, body TEXT);
+CREATE TABLE health(name TEXT PRIMARY KEY, at REAL, status TEXT, detail TEXT);
+CREATE TABLE nonces(source TEXT, nonce TEXT, digest TEXT, at REAL, PRIMARY KEY(source,nonce));
+CREATE TABLE rates(source TEXT, minute INTEGER, requests INTEGER, PRIMARY KEY(source,minute));
+CREATE TABLE observation_history(id TEXT PRIMARY KEY, observed REAL, body TEXT);
+CREATE INDEX observation_repo ON observations(repo);
+CREATE INDEX events_run_sequence ON events(source,json_extract(envelope,'$.runId'),json_extract(envelope,'$.sequence'));
+CREATE INDEX events_received ON events(received);
+CREATE INDEX events_source_received ON events(source,received);
+CREATE INDEX events_pending ON events(processed,received,id);
+CREATE INDEX webhooks_pending ON webhooks(processed,received);
+CREATE INDEX observations_observed ON observations(observed);
+CREATE INDEX runs_last ON runs(last);

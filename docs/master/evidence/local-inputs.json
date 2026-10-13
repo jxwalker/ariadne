@@ -1,0 +1,62 @@
+[
+  {
+    "path": "/home/james/workspaces/ariadne-master/AGENTS.md",
+    "sha256": "48a4fb0d748d78c796f7a15924869921f7fe20bd082b8520a883e74d5c435849",
+    "commit_sha": "03dd67778ce5ef7b37089b79957b13526d70c829",
+    "observed_at": "2026-10-13"
+  },
+  {
+    "path": "/home/james/.local/share/ariadne-handoffs/master-state-pilot-20261013/ariadne-operating-dashboard-2026-10-13.md",
+    "sha256": "14b6cda685038320b820a5af5fcb5ad95f5093171486cb8b3c560b049a2b082f",
+    "commit_sha": null,
+    "observed_at": "2026-10-13"
+  },
+  {
+    "path": "/home/james/.local/share/ariadne-handoffs/master-state-pilot-20261013/ariadne-master-development-plan.md",
+    "sha256": "967864273132587f7c2c59a05fddf47b7aa9c27a586bc948039224507fd0b781",
+    "commit_sha": null,
+    "observed_at": "2026-10-13"
+  },
+  {
+    "path": "/home/james/.local/share/ariadne-handoffs/master-state-pilot-20261013/ariadne-phases-0-and-1-bot-brief.md",
+    "sha256": "2940967830d4f1325b9e758146b1f875c40f8702e5bd8b2cb03b8fc7441cb1d0",
+    "commit_sha": null,
+    "observed_at": "2026-10-13"
+  },
+  {
+    "path": "/home/james/.local/share/ariadne-handoffs/master-state-pilot-20261013/ariadne-development-coordination-research.md",
+    "sha256": "ef1b0f55016f4e3820f23e3285bd3639964413d461eab41eb7efea2a30fa7abc",
+    "commit_sha": null,
+    "observed_at": "2026-10-13"
+  },
+  {
+    "path": "/home/james/ariadne-run/audited.sh",
+    "sha256": "0ef69cdd6ff595468628714c4a7f8bf41f0311b01b33ecb1edfcb4aa20e4e352",
+    "commit_sha": null,
+    "observed_at": "2026-10-13"
+  },
+  {
+    "path": "/home/james/ariadne-run/names-nobox/dryrun.sh",
+    "sha256": "96d96fd03074c5069d4803950d31255e4a520640b76fba2d08ae3cab3498ee81",
+    "commit_sha": null,
+    "observed_at": "2026-10-13"
+  },
+  {
+    "path": "/home/james/ariadne-run/names-nobox/apply.sh",
+    "sha256": "eb93df94431a88e04edd701ed31bb9dda22979e6e9b730d4c88e42339b4fb1cd",
+    "commit_sha": null,
+    "observed_at": "2026-10-13"
+  },
+  {
+    "path": "/home/james/ariadne-run/names-nobox/verify.sh",
+    "sha256": "5fd5410828dd12bac0b773c15bc98c162f4e977c9eb68544f8df612047052cd1",
+    "commit_sha": null,
+    "observed_at": "2026-10-13"
+  },
+  {
+    "path": "/home/james/ariadne-run/names-nobox/rollback.sh",
+    "sha256": "48cd4801401a5c8793c446781c447287026a036a2143b98ecba38d8a7d8dc51a",
+    "commit_sha": null,
+    "observed_at": "2026-10-13"
+  }
+]

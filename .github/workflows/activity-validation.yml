@@ -17,4 +17,12 @@ jobs:
       - run: npm ci
       - run: npx playwright install --with-deps chromium
       - run: npm run check && npm test && npm run build
+      - name: Require PostgreSQL for real ledger tests
+        run: test -n "$(find /usr/lib/postgresql -path '*/bin/initdb' -print -quit)"
       - run: python -m unittest discover -s scripts -p 'test_*.py'
+      - run: node scripts/check_master_dashboard.mjs master-browser-evidence
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: master-browser-evidence
+          path: master-browser-evidence/

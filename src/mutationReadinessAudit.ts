@@ -1,5 +1,6 @@
 import fs from "node:fs/promises";
 import path from "node:path";
+import { createHash } from "node:crypto";
 import { writeJsonArtifact, writeTextArtifact } from "./artifacts.js";
 import { projectDir, slugifyProject } from "./paths.js";
 import type { MutationReadinessAudit, MutationReadinessPlan } from "./types.js";
@@ -9,8 +10,9 @@ export async function generateMutationReadinessAudit(input: {
   vaultRoot: string;
 }): Promise<{ jsonPath: string; markdownPath: string; audit: MutationReadinessAudit }> {
   const project = slugifyProject(input.project);
-  const plans = await readPlans(input.vaultRoot, project);
-  const checks = await Promise.all(plans.map((plan) => auditPlan(input.vaultRoot, project, plan)));
+  const loadedPlans = await readPlans(input.vaultRoot, project);
+  const plans = loadedPlans.map(({plan}) => plan);
+  const checks = await Promise.all(loadedPlans.map(({plan, sha256}) => auditPlan(input.vaultRoot, project, plan, sha256)));
   const summary = {
     plans: plans.length,
     ready: checks.filter((check) => check.status === "passed").length,
@@ -42,7 +44,7 @@ export async function generateMutationReadinessAudit(input: {
   return { jsonPath, markdownPath, audit };
 }
 
-async function readPlans(vaultRoot: string, project: string): Promise<MutationReadinessPlan[]> {
+async function readPlans(vaultRoot: string, project: string): Promise<Array<{plan: MutationReadinessPlan; sha256: string}>> {
   const dir = path.join(projectDir(vaultRoot, project), "control", "mutation-readiness");
   let names: string[];
   try {
@@ -52,11 +54,12 @@ async function readPlans(vaultRoot: string, project: string): Promise<MutationRe
     throw error;
   }
 
-  const plans: MutationReadinessPlan[] = [];
+  const plans: Array<{plan: MutationReadinessPlan; sha256: string}> = [];
   for (const name of names.filter((item) => item.endsWith(".json")).sort()) {
-    const value = JSON.parse(await fs.readFile(path.join(dir, name), "utf8")) as MutationReadinessPlan;
+    const raw = await fs.readFile(path.join(dir, name));
+    const value = JSON.parse(raw.toString("utf8")) as MutationReadinessPlan;
     if (value.schemaVersion === 1 && value.project === project && value.id?.startsWith("mutation-readiness-")) {
-      plans.push(value);
+      plans.push({plan: value, sha256: createHash("sha256").update(raw).digest("hex")});
     }
   }
   return plans;
@@ -65,17 +68,20 @@ async function readPlans(vaultRoot: string, project: string): Promise<MutationRe
 async function auditPlan(
   vaultRoot: string,
   project: string,
-  plan: MutationReadinessPlan
+  plan: MutationReadinessPlan,
+  planSha256: string
 ): Promise<MutationReadinessAudit["checks"][number]> {
   const blockers: string[] = [];
   const warnings: string[] = [];
   const evidenceRefs = Array.from(new Set([...plan.authEvidenceRefs, ...plan.evidenceRefs]));
 
   // A plan whose approval was later rejected or expired is closed: retired, not a pending blocker.
-  const decided = await currentApprovalStatus(vaultRoot, project, plan.approvalRef);
+  const currentApproval = await currentApprovalRecord(vaultRoot, project, plan.approvalRef);
+  const decided = currentApproval?.status;
   if (decided === "rejected" || decided === "expired") {
     return {
       planId: plan.id,
+      planSha256,
       target: plan.target,
       status: "retired",
       blockers: [],
@@ -83,6 +89,13 @@ async function auditPlan(
       evidenceRefs,
       requiredGates: plan.requiredGates
     };
+  }
+
+  if (!plan.approvalSha256 || currentApproval?.sha256 !== plan.approvalSha256) {
+    blockers.push("current approval record digest is missing or changed");
+  }
+  if (decided !== "approved") {
+    blockers.push(`current approval record is ${decided ?? "missing"}`);
   }
 
   if (plan.execute !== false) {
@@ -125,6 +138,7 @@ async function auditPlan(
 
   return {
     planId: plan.id,
+    planSha256,
     target: plan.target,
     status: blockers.length === 0 ? "passed" : "blocked",
     blockers,
@@ -134,17 +148,16 @@ async function auditPlan(
   };
 }
 
-async function currentApprovalStatus(
+async function currentApprovalRecord(
   vaultRoot: string,
   project: string,
   approvalRef: string | undefined
-): Promise<string | undefined> {
+): Promise<{ status?: string; sha256: string } | undefined> {
   if (!approvalRef || !/^approval-[A-Za-z0-9T:.-]+$/.test(approvalRef)) return undefined;
   try {
-    const record = JSON.parse(
-      await fs.readFile(path.join(projectDir(vaultRoot, project), "control", "approvals", `${approvalRef}.json`), "utf8")
-    ) as { status?: unknown };
-    return typeof record.status === "string" ? record.status : undefined;
+    const raw = await fs.readFile(path.join(projectDir(vaultRoot, project), "control", "approvals", `${approvalRef}.json`));
+    const record = JSON.parse(raw.toString("utf8")) as { status?: unknown };
+    return { status: typeof record.status === "string" ? record.status : undefined, sha256: createHash("sha256").update(raw).digest("hex") };
   } catch {
     return undefined;
   }

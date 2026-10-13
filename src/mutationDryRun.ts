@@ -1,6 +1,6 @@
 import path from "node:path";
 import { timestampFile, writeJsonArtifact, writeTextArtifact } from "./artifacts.js";
-import { clampCommandTimeout, execMutationCommand, readMutationPlan } from "./mutationCommand.js";
+import { clampCommandTimeout, execMutationCommand, readMutationPlanWithDigest } from "./mutationCommand.js";
 import { generateMutationReadinessAudit } from "./mutationReadinessAudit.js";
 import { slugifyProject } from "./paths.js";
 import type { MutationDryRunRecord } from "./types.js";
@@ -12,13 +12,14 @@ export async function runMutationDryRun(input: {
   timeoutMs?: number;
 }): Promise<{ jsonPath: string; markdownPath: string; record: MutationDryRunRecord }> {
   const project = slugifyProject(input.project);
-  const plan = await readMutationPlan(input.vaultRoot, project, input.plan);
+  const loadedPlan = await readMutationPlanWithDigest(input.vaultRoot, project, input.plan);
+  const plan = loadedPlan.plan;
   const audit = await generateMutationReadinessAudit({ project, vaultRoot: input.vaultRoot });
   const auditCheck = audit.audit.checks.find((check) => check.planId === plan.id);
   if (!auditCheck) {
     throw new Error(`Readiness plan ${plan.id} was not found in the mutation readiness audit.`);
   }
-  if (auditCheck.status !== "passed") {
+  if (auditCheck.status !== "passed" || auditCheck.planSha256 !== loadedPlan.sha256) {
     throw new Error(`Readiness plan ${plan.id} is blocked: ${auditCheck.blockers.join("; ")}`);
   }
 
@@ -31,6 +32,7 @@ export async function runMutationDryRun(input: {
     id: `mutation-dry-run-${timestampFile(started)}`,
     project,
     planId: plan.id,
+    planSha256: loadedPlan.sha256,
     target: plan.target,
     startedAt: started.toISOString(),
     finishedAt: finished.toISOString(),
@@ -39,6 +41,7 @@ export async function runMutationDryRun(input: {
     exitCode: result.exitCode,
     signal: result.signal,
     bufferExceeded: result.bufferExceeded,
+    timedOut: result.timedOut,
     durationMs: result.durationMs,
     stdout: result.stdout,
     stderr: result.stderr,
@@ -63,6 +66,7 @@ function renderRecord(record: MutationDryRunRecord): string {
     "",
     `Id: ${record.id}`,
     `Plan: ${record.planId}`,
+    `Plan SHA-256: ${record.planSha256 ?? "unbound legacy record"}`,
     `Target: ${record.target}`,
     `Status: ${record.status}`,
     `Started: ${record.startedAt}`,

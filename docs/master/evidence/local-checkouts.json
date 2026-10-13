@@ -1,0 +1,58 @@
+[
+  {
+    "repo": "patent-studio",
+    "path": "/home/james/workspaces/patent-studio",
+    "git_commit": "bb723594e808bdae3ad84b0fb30cefe15d392719",
+    "error": null,
+    "observed_at": "2026-10-13"
+  },
+  {
+    "path": "/home/james/workspaces/patent-studio/.planning/CANONICAL.md",
+    "sha256": "88bf6a4a2ae344bb0b0affaf3c09ec8980252e9fe6d42aef3449a193a1fc0b2a",
+    "git_commit": "bb723594e808bdae3ad84b0fb30cefe15d392719",
+    "snapshot": "evidence/local/patent-studio/.planning/CANONICAL.md",
+    "observed_at": "2026-10-13"
+  },
+  {
+    "path": "/home/james/workspaces/patent-studio/.planning/STATE.md",
+    "sha256": "562065cccb25c043a0889e944655edf98944cabe4cf05fef4ed2602c952c6788",
+    "git_commit": "bb723594e808bdae3ad84b0fb30cefe15d392719",
+    "snapshot": "evidence/local/patent-studio/.planning/STATE.md",
+    "observed_at": "2026-10-13"
+  },
+  {
+    "path": "/home/james/workspaces/patent-studio/docs/delivery/README.md",
+    "sha256": "798d26c4bce689c82d1b54802aa3e364e60a9ebccbe97b2b9f4c6bab7d18ef7a",
+    "git_commit": "bb723594e808bdae3ad84b0fb30cefe15d392719",
+    "snapshot": "evidence/local/patent-studio/docs/delivery/README.md",
+    "observed_at": "2026-10-13"
+  },
+  {
+    "repo": "openscorpion",
+    "path": "/home/james/workspaces/openscorpion-current",
+    "git_commit": null,
+    "error": "fatal: not a git repository (or any of the parent directories): .git\n",
+    "observed_at": "2026-10-13"
+  },
+  {
+    "path": "/home/james/workspaces/openscorpion-current/docs/ROADMAP.md",
+    "sha256": "8fb28cce12a248da42e064cc530dd71d3474903ecd93e8ed91aa5d8e09d8613f",
+    "git_commit": null,
+    "snapshot": "evidence/local/openscorpion/docs/ROADMAP.md",
+    "observed_at": "2026-10-13"
+  },
+  {
+    "path": "/home/james/workspaces/openscorpion-current/.gsd/STATE.md",
+    "sha256": "cc6f983c912e83bc214a2652a56ee61061eaa686f72c25824ecc63b37accd926",
+    "git_commit": null,
+    "snapshot": "evidence/local/openscorpion/.gsd/STATE.md",
+    "observed_at": "2026-10-13"
+  },
+  {
+    "path": "/home/james/workspaces/openscorpion-current/.gsd/REQUIREMENTS.md",
+    "sha256": "52705984e02fceccdcd4dd84fa05ee8d81c1d3ae36b701711793b6e0d1b820da",
+    "git_commit": null,
+    "snapshot": "evidence/local/openscorpion/.gsd/REQUIREMENTS.md",
+    "observed_at": "2026-10-13"
+  }
+]

@@ -1,8 +1,10 @@
-/* Private read-only operating dashboard. All supplied text is escaped. */
+/* Private operating dashboard with confirmed operator responses. Supplied text is escaped. */
 (() => {
 'use strict';
 const $=id=>document.getElementById(id), esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const initial=new URLSearchParams(location.search);let busy=false,pending=false,page=1,request=0;
+let operator={canRespond:false},questions=new Map(),editing=null;
+const responding=new Set(),responseCommands=new Map();
 const date=t=>t==null?'Not measured':new Date(t*1000).toLocaleString(undefined,{month:'short',day:'numeric',hour:'2-digit',minute:'2-digit'});
 const age=t=>{if(t==null)return 'Age unknown';const s=Math.max(0,Date.now()/1000-t);return s<60?`${Math.floor(s)}s ago`:s<3600?`${Math.floor(s/60)}m ago`:s<86400?`${Math.floor(s/3600)}h ago`:`${Math.floor(s/86400)}d ago`;};
 const seconds=v=>v==null?'Not measured':v<60?`${Math.round(v)}s`:v<3600?`${Math.round(v/60)}m`:`${(v/3600).toFixed(1)}h`;
@@ -13,7 +15,7 @@ const badge=(s,c='')=>`<span class="badge ${c}">${esc(s)}</span>`;
 const anchor=(url,label)=>url?`<a href="${esc(url)}" rel="noreferrer">${esc(label)}</a>`:'';
 const table=(heads,rows)=>`<div class="table-scroll"><table><thead><tr>${heads.map(h=>`<th scope="col">${esc(h)}</th>`).join('')}</tr></thead><tbody>${rows.join('')||`<tr><td colspan="${heads.length}">No matching evidence.</td></tr>`}</tbody></table></div>`;
 function actions(items,empty,limit=5){
- const render=a=>`<article class="action ${a.priority===0?'urgent':a.priority>=3?'info':''}"><div><div class="context">${esc(a.repo||'Fleet')} · ${esc(a.owner)} · ${time(a.since)}${a.source?` · ${esc(a.source)}`:''}</div><h3>${esc(a.title)}</h3><p>${esc(a.reason)}</p>${a.options?.length?`<p>Options: ${a.options.map(esc).join(' · ')}</p>`:''}</div><div class="next">${esc(a.nextStep)}<br>${anchor(a.url,a.kind==='explicit-decision'?'Open request':a.kind==='requested-review'?'Review PR':a.kind==='ci-failure'?'Inspect failed run':a.kind==='deployment-approval'?'Review deployment':'Open evidence')}</div></article>`;
+ const render=a=>`<article class="action ${a.priority===0?'urgent':a.priority>=3?'info':''}"><div><div class="context">${esc(a.repo||'Fleet')} · ${esc(a.owner)} · ${time(a.since)}${a.source?` · ${esc(a.source)}`:''}</div><h3>${esc(a.title)}</h3><p>${esc(a.reason)}</p>${a.options?.length?`<p>Options: ${a.options.map(esc).join(' · ')}</p>`:''}</div><div class="next">${a.recommendation?`<p><strong>Agent-suggested response</strong><br>${esc(a.recommendation)}<small>From ${esc(a.source)} · review before confirming</small></p>`:esc(a.nextStep)}<br>${anchor(a.url,a.kind==='explicit-decision'?'Open request':a.kind==='requested-review'?'Review PR':a.kind==='ci-failure'?'Inspect failed run':a.kind==='deployment-approval'?'Review deployment':'Open evidence')}${operator.canRespond&&a.kind==='explicit-decision'&&a.requestRevision?`<div class="response-buttons">${a.recommendation?`<button type="button" data-response-suggested="${esc(a.id)}" ${responding.has(a.id)?'disabled':''}>Confirm suggested response</button>`:''}<button type="button" data-response-edit="${esc(a.id)}" ${responding.has(a.id)?'disabled':''}>Choose or edit response</button></div>`:''}</div></article>`;
  return items.length?items.slice(0,limit).map(render).join('')+(items.length>limit?`<details class="section-more" data-detail="queue-${esc(items[0].id)}"><summary>${items.length-limit} more records</summary><div class="actions">${items.slice(limit).map(render).join('')}</div></details>`:''):`<p class="empty">${esc(empty)}</p>`;
 }
 function svg(title,body,height=190){return `<svg viewBox="0 0 520 ${height}" role="img" aria-label="${esc(title)}"><title>${esc(title)}</title>${body}</svg>`;}
@@ -31,6 +33,7 @@ function lineChart(samples,title){
  return svg(title,body,180)+'<div class="chart-key"><span><i style="background:#365e9e"></i>CPU</span><span><i style="background:#14765e"></i>RAM</span></div>';
 }
 function render(d){
+ questions=new Map(d.needsYou.filter(a=>a.kind==='explicit-decision').map(a=>[a.id,a]));
  const opened=[...document.querySelectorAll('details[open]')].map(e=>e.id||e.dataset.detail).filter(Boolean);const scroll=window.scrollY;
  $('insight-status').textContent=`Updated ${date(d.generatedAt)} · current work stays visible across performance periods${d.truncated?' · Record cap reached: some evidence is partial':''}`;
  const selection=$('operating-repo').value;$('operating-repo').innerHTML='<option value="">All repositories</option>'+d.repositories.map(r=>`<option value="${esc(r)}">${esc(r.replace('jxwalker/',''))}</option>`).join('');$('operating-repo').value=selection;
@@ -67,6 +70,34 @@ function render(d){
 }
 function view(name){if(!['overview','delivery','machines','evidence'].includes(name))name='overview';document.querySelectorAll('[data-panel]').forEach(p=>p.hidden=p.dataset.panel!==name);document.querySelectorAll('[data-view]').forEach(b=>{if(b.dataset.view===name)b.setAttribute('aria-current','page');else b.removeAttribute('aria-current');});if(name==='evidence')Promise.allSettled([history(),controls()]);}
 async function json(path){const r=await fetch(path,{cache:'no-store'});if(!r.ok)throw Error('HTTP '+r.status);return r.json();}
+async function operatorSession(){operator=await json('/api/operator-session');}
+async function respond(a,resolution){
+ if(responding.has(a.id))return;responding.add(a.id);
+ $('operator-status').textContent='Recording your response…';
+ try{
+  if(!operator.expiresAt||Date.now()/1000>operator.expiresAt-30)await operatorSession();
+  if(!operator.canRespond)throw Error('Operator authentication is required.');
+  const key=a.id+':'+a.requestRevision+':'+resolution;
+  if(!responseCommands.has(key))responseCommands.set(key,crypto.randomUUID());
+  const body={sourceId:a.sourceId,repo:a.repo,requestId:a.requestId,requestRevision:a.requestRevision,commandId:responseCommands.get(key),resolution};
+  const r=await fetch('/api/operator-response',{method:'POST',headers:{'Content-Type':'application/json','X-Ariadne-CSRF':operator.csrfToken},body:JSON.stringify(body)}),result=await r.json();
+  if(!r.ok)throw Error(result.error||'Response was not confirmed.');
+  $('operator-status').textContent='Response recorded for '+a.source+'. It is available on the agent’s next signed report.';
+  if($('operator-response-dialog').open)$('operator-response-dialog').close();
+  await poll();
+ }catch(e){$('operator-status').textContent=e.message;}
+ finally{responding.delete(a.id);}
+}
+$('needs-you').addEventListener('click',e=>{
+ const suggested=e.target.closest('[data-response-suggested]'),edit=e.target.closest('[data-response-edit]');
+ const id=suggested?.dataset.responseSuggested||edit?.dataset.responseEdit,a=questions.get(id);if(!a)return;
+ if(suggested){respond(a,a.recommendation);return;}
+ editing=a;$('operator-question-title').textContent='Respond to '+a.source;$('operator-question').textContent=a.reason;
+ $('operator-options').innerHTML='<option value="">Your own response</option>'+(a.options||[]).map(v=>`<option value="${esc(v)}">${esc(v)}</option>`).join('');
+ $('operator-response-text').value=a.recommendation||'';$('operator-response-dialog').showModal();
+});
+$('operator-options').addEventListener('change',e=>{if(e.target.value)$('operator-response-text').value=e.target.value;});
+$('operator-confirm').addEventListener('click',()=>{const value=$('operator-response-text').value.trim();if(editing&&value)respond(editing,value);});
 async function history(){const n=++request,p=new URLSearchParams(new FormData($('insight-filters')));p.set('range',$('insight-range').value);p.set('page',page);if($('operating-repo').value)p.set('repo',$('operating-repo').value);const d=await json('/api/runs?'+p);if(n!==request)return;
  $('insight-run-summary').textContent=`Agent activity history (${d.total} matching runs)`;
  $('insight-rows').innerHTML=table(['Task / bot','Repository / harness','State','Last event'],d.runs.map(r=>`<tr><td class="long"><strong>${esc(r.title||r.task)}</strong><small>${esc(r.sourceName)}</small>${r.note||r.blocker?`<small>${esc(r.note||r.blocker)}</small>`:''}</td><td>${esc(r.repo)}<small>${esc(r.agent)} · ${esc(r.machine)}</small></td><td>${esc(r.state)}</td><td>${time(r.last)}</td></tr>`));
@@ -74,10 +105,10 @@ async function history(){const n=++request,p=new URLSearchParams(new FormData($(
 }
 async function controls(){const d=await json('/api/controls');$('controls-status').textContent=`Updated ${date(d.generatedAt)} · raw execution output is suppressed`;
  $('control-rows').innerHTML=d.controls.map(r=>`<article><h3>${esc(r.title)} · ${badge(r.status,['fail','stale','missing'].includes(r.status)?'warn':'')}</h3><p>${esc(r.summary)}</p><details><summary>${r.records.length} sanitized records</summary><pre>${esc(JSON.stringify(r.records,null,2))}</pre></details></article>`).join('');}
-async function poll(){if(document.hidden)return;if(busy){pending=true;return;}busy=true;const range=$('insight-range').value,repo=$('operating-repo').value;try{const p=new URLSearchParams({range,repo}),d=await json('/api/operating?'+p);if(range!==$('insight-range').value||repo!==$('operating-repo').value){pending=true;return;}render(d);if(!document.querySelector('[data-panel=evidence]').hidden)await Promise.allSettled([history(),controls()]);}catch(e){$('insight-status').textContent='Refresh unavailable; previous evidence retained. '+e.message;}finally{busy=false;if(pending){pending=false;poll();}}}
+async function poll(){if(document.hidden)return;if(busy){pending=true;return;}busy=true;const range=$('insight-range').value,repo=$('operating-repo').value;try{if(!operator.canRespond||!operator.expiresAt||Date.now()/1000>operator.expiresAt-30)await operatorSession().catch(()=>{});const p=new URLSearchParams({range,repo}),d=await json('/api/operating?'+p);if(range!==$('insight-range').value||repo!==$('operating-repo').value){pending=true;return;}render(d);if(!document.querySelector('[data-panel=evidence]').hidden)await Promise.allSettled([history(),controls()]);}catch(e){$('insight-status').textContent='Refresh unavailable; previous evidence retained. '+e.message;}finally{busy=false;if(pending){pending=false;poll();}}}
 if(initial.get('repo')){$('operating-repo').innerHTML+=`<option value="${esc(initial.get('repo'))}">${esc(initial.get('repo'))}</option>`;$('operating-repo').value=initial.get('repo');}
 if(['24h','7d','30d'].includes(initial.get('range')))$('insight-range').value=initial.get('range');for(const key of ['text','snapshots','stale']){const e=$('insight-filters').elements[key];if(initial.has(key)){if(e.type==='checkbox')e.checked=initial.get(key)==='show';else e.value=initial.get(key);}}view(initial.get('view')||(initial.get('text')?'evidence':'overview'));
 document.querySelectorAll('[data-view]').forEach(b=>b.addEventListener('click',()=>view(b.dataset.view)));['insight-range','operating-repo'].forEach(k=>$(k).addEventListener('change',()=>{page=1;poll();}));
 let debounce;$('insight-filters').addEventListener('submit',e=>e.preventDefault());$('insight-filters').addEventListener('input',()=>{page=1;clearTimeout(debounce);debounce=setTimeout(()=>history().catch(()=>{}),200);});
-$('insight-prev').onclick=()=>{if(page>1){page--;history();}};$('insight-next').onclick=()=>{page++;history();};document.addEventListener('visibilitychange',()=>{if(!document.hidden)poll();});poll();setInterval(poll,15000);
+$('insight-prev').onclick=()=>{if(page>1){page--;history();}};$('insight-next').onclick=()=>{page++;history();};document.addEventListener('visibilitychange',()=>{if(!document.hidden)poll();});operatorSession().catch(()=>{}).finally(poll);setInterval(poll,15000);
 })();

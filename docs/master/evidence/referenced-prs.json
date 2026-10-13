@@ -1,0 +1,162 @@
+[
+  {
+    "repo": "jxwalker/openscorpion",
+    "observed_at": "2026-10-13",
+    "exit": 0,
+    "data": {
+      "headRefOid": "b815bc7c89afcd3a6e62bee71e97ad9ce39fb11a",
+      "isDraft": false,
+      "mergeCommit": {
+        "oid": "d93aa8479be1de30379d44fb9f2b8728d840873c"
+      },
+      "mergedAt": "2026-06-10T12:30:13Z",
+      "number": 795,
+      "state": "MERGED",
+      "title": "chore: extract internal IP to private repos, add BSL 1.1 license (MVP P0)",
+      "url": "https://github.com/jxwalker/openscorpion/pull/795"
+    },
+    "error": ""
+  },
+  {
+    "repo": "jxwalker/openscorpion",
+    "observed_at": "2026-10-13",
+    "exit": 0,
+    "data": {
+      "headRefOid": "0344d83892c0e05c6d10279b6cafe6bf058ce307",
+      "isDraft": false,
+      "mergeCommit": {
+        "oid": "7356aea0f8df193eb7f5c09458bd548da7a223e1"
+      },
+      "mergedAt": "2026-06-11T13:40:38Z",
+      "number": 796,
+      "state": "MERGED",
+      "title": "feat(router): standalone single-binary mode (--config-file, no control plane)",
+      "url": "https://github.com/jxwalker/openscorpion/pull/796"
+    },
+    "error": ""
+  },
+  {
+    "repo": "jxwalker/openscorpion",
+    "observed_at": "2026-10-13",
+    "exit": 0,
+    "data": {
+      "headRefOid": "6599c2355e95d6c7a2e573e9f8f5981eaf526e3f",
+      "isDraft": false,
+      "mergeCommit": {
+        "oid": "7e46e5f07fa3ade2511bc5e80d5a1df353222a44"
+      },
+      "mergedAt": "2026-06-16T14:54:17Z",
+      "number": 799,
+      "state": "MERGED",
+      "title": "feat(quickstart): 15-minute docker quickstart with offline proof verification",
+      "url": "https://github.com/jxwalker/openscorpion/pull/799"
+    },
+    "error": ""
+  },
+  {
+    "repo": "jxwalker/openscorpion",
+    "observed_at": "2026-10-13",
+    "exit": 0,
+    "data": {
+      "headRefOid": "82b70e872782192b25ab4365b00de06f44cdaa2f",
+      "isDraft": false,
+      "mergeCommit": {
+        "oid": "bbd5db7d25ae895cb63f541f9f98ffbcda5169af"
+      },
+      "mergedAt": "2026-06-16T15:30:23Z",
+      "number": 798,
+      "state": "MERGED",
+      "title": "feat(dashboard): profile masking \u2014 9-page default surface, operator_advanced full nav",
+      "url": "https://github.com/jxwalker/openscorpion/pull/798"
+    },
+    "error": ""
+  },
+  {
+    "repo": "jxwalker/openscorpion",
+    "observed_at": "2026-10-13",
+    "exit": 0,
+    "data": {
+      "headRefOid": "6889f65e181bad049062cb23cc3bd30d3f2d1827",
+      "isDraft": false,
+      "mergeCommit": {
+        "oid": "2a92b3a5f0250d721e6402d43ef4385aee3cd8e3"
+      },
+      "mergedAt": "2026-06-16T16:35:17Z",
+      "number": 800,
+      "state": "MERGED",
+      "title": "docs(mvp): roadmap/state stocktake + dogfood real-provider config & runbook",
+      "url": "https://github.com/jxwalker/openscorpion/pull/800"
+    },
+    "error": ""
+  },
+  {
+    "repo": "jxwalker/openscorpion",
+    "observed_at": "2026-10-13",
+    "exit": 0,
+    "data": {
+      "headRefOid": "eb6192a71770b5578c3b6987a90913dfc94be65a",
+      "isDraft": false,
+      "mergeCommit": null,
+      "mergedAt": null,
+      "number": 824,
+      "state": "CLOSED",
+      "title": "fix(signals): dlopen ONNX Runtime on demand so control and router boot without AVX",
+      "url": "https://github.com/jxwalker/openscorpion/pull/824"
+    },
+    "error": ""
+  },
+  {
+    "repo": "jxwalker/openscorpion",
+    "observed_at": "2026-10-13",
+    "exit": 0,
+    "data": {
+      "headRefOid": "5ab247a3c7dd69ff68c64e273811d4bcf8f9752f",
+      "isDraft": false,
+      "mergeCommit": {
+        "oid": "19b260327271c87b7f42c17899acd2742cfb4bea"
+      },
+      "mergedAt": "2026-09-27T20:03:02Z",
+      "number": 851,
+      "state": "MERGED",
+      "title": "Security fixes, dead-feature removal, and an end-to-end test net",
+      "url": "https://github.com/jxwalker/openscorpion/pull/851"
+    },
+    "error": ""
+  },
+  {
+    "repo": "jxwalker/patent-studio",
+    "observed_at": "2026-10-13",
+    "exit": 0,
+    "data": {
+      "headRefOid": "87fc59e58eaba61392533fc7749f4434bd80dbc8",
+      "isDraft": false,
+      "mergeCommit": {
+        "oid": "74abdccbfb3f79d29dbb18431c11ddaeed7bc426"
+      },
+      "mergedAt": "2026-08-12T07:58:30Z",
+      "number": 1692,
+      "state": "MERGED",
+      "title": "feat(CREATE-1): shortlist loop + agent messaging",
+      "url": "https://github.com/jxwalker/patent-studio/pull/1692"
+    },
+    "error": ""
+  },
+  {
+    "repo": "jxwalker/patent-studio",
+    "observed_at": "2026-10-13",
+    "exit": 0,
+    "data": {
+      "headRefOid": "7b990b17448934e552b150f2c283bd7d0e6d8eaa",
+      "isDraft": false,
+      "mergeCommit": {
+        "oid": "f59eecb6760f02191999d190b625e71db3bf9366"
+      },
+      "mergedAt": "2026-08-12T13:47:09Z",
+      "number": 1695,
+      "state": "MERGED",
+      "title": "test(CREATE-1-E2E): shortlist CoS Playwright + API coverage",
+      "url": "https://github.com/jxwalker/patent-studio/pull/1695"
+    },
+    "error": ""
+  }
+]

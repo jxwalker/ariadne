@@ -1,0 +1,82 @@
+{
+  "observed": "2026-10-13",
+  "data": {
+    "main": {
+      "command": [
+        "gh",
+        "api",
+        "repos/jxwalker/ariadne/commits/main",
+        "--jq",
+        ".sha"
+      ],
+      "exit": 0,
+      "stdout": "d9aacc455ffe5c78698efbbad469f0f8f446b387\n",
+      "stderr": ""
+    },
+    "issues": {
+      "command": [
+        "gh",
+        "issue",
+        "list",
+        "--repo",
+        "jxwalker/ariadne",
+        "--state",
+        "open",
+        "--limit",
+        "1000",
+        "--json",
+        "number,title,url,labels,milestone"
+      ],
+      "exit": 0,
+      "stdout": "[]\n",
+      "stderr": ""
+    },
+    "prs": {
+      "command": [
+        "gh",
+        "pr",
+        "list",
+        "--repo",
+        "jxwalker/ariadne",
+        "--state",
+        "open",
+        "--limit",
+        "1000",
+        "--json",
+        "number,title,url,headRefOid,isDraft"
+      ],
+      "exit": 0,
+      "stdout": "[{\"headRefOid\":\"03dd67778ce5ef7b37089b79957b13526d70c829\",\"isDraft\":true,\"number\":169,\"title\":\"Build actionable operating dashboard with reliable delivery and fleet evidence\",\"url\":\"https://github.com/jxwalker/ariadne/pull/169\"}]\n",
+      "stderr": ""
+    },
+    "milestones": {
+      "command": [
+        "gh",
+        "api",
+        "--paginate",
+        "repos/jxwalker/ariadne/milestones?state=all",
+        "--jq",
+        "map({number,title,state,open_issues,closed_issues,due_on,html_url})"
+      ],
+      "exit": 0,
+      "stdout": "[]\n",
+      "stderr": ""
+    },
+    "runs": {
+      "command": [
+        "gh",
+        "run",
+        "list",
+        "--repo",
+        "jxwalker/ariadne",
+        "--limit",
+        "10",
+        "--json",
+        "databaseId,headSha,name,status,conclusion,url,createdAt"
+      ],
+      "exit": 0,
+      "stdout": "[{\"conclusion\":\"success\",\"createdAt\":\"2026-10-13T14:21:21Z\",\"databaseId\":38412622113,\"headSha\":\"03dd67778ce5ef7b37089b79957b13526d70c829\",\"name\":\"Activity validation\",\"status\":\"completed\",\"url\":\"https://github.com/jxwalker/ariadne/actions/runs/38412622113\"},{\"conclusion\":\"success\",\"createdAt\":\"2026-10-13T14:21:20Z\",\"databaseId\":38412621231,\"headSha\":\"03dd67778ce5ef7b37089b79957b13526d70c829\",\"name\":\"Grok PR Review\",\"status\":\"completed\",\"url\":\"https://github.com/jxwalker/ariadne/actions/runs/38412621231\"},{\"conclusion\":\"success\",\"createdAt\":\"2026-10-13T14:21:16Z\",\"databaseId\":38412608785,\"headSha\":\"03dd67778ce5ef7b37089b79957b13526d70c829\",\"name\":\"Activity validation\",\"status\":\"completed\",\"url\":\"https://github.com/jxwalker/ariadne/actions/runs/38412608785\"},{\"conclusion\":\"success\",\"createdAt\":\"2026-10-13T13:58:38Z\",\"databaseId\":38409410810,\"headSha\":\"8a186225d1b96be4238f127fa924d94239fcf1e8\",\"name\":\"Activity validation\",\"status\":\"completed\",\"url\":\"https://github.com/jxwalker/ariadne/actions/runs/38409410810\"},{\"conclusion\":\"success\",\"createdAt\":\"2026-10-13T13:58:38Z\",\"databaseId\":38409410109,\"headSha\":\"8a186225d1b96be4238f127fa924d94239fcf1e8\",\"name\":\"Grok PR Review\",\"status\":\"completed\",\"url\":\"https://github.com/jxwalker/ariadne/actions/runs/38409410109\"},{\"conclusion\":\"success\",\"createdAt\":\"2026-10-13T13:58:36Z\",\"databaseId\":38409404727,\"headSha\":\"8a186225d1b96be4238f127fa924d94239fcf1e8\",\"name\":\"Activity validation\",\"status\":\"completed\",\"url\":\"https://github.com/jxwalker/ariadne/actions/runs/38409404727\"},{\"conclusion\":\"success\",\"createdAt\":\"2026-10-13T12:49:48Z\",\"databaseId\":38400205661,\"headSha\":\"d9aacc455ffe5c78698efbbad469f0f8f446b387\",\"name\":\"Activity validation\",\"status\":\"completed\",\"url\":\"https://github.com/jxwalker/ariadne/actions/runs/38400205661\"},{\"conclusion\":\"success\",\"createdAt\":\"2026-10-13T12:44:13Z\",\"databaseId\":38399497201,\"headSha\":\"350cb33db949b71de04ef70dc1e561f2c3c505d0\",\"name\":\"Grok PR Review\",\"status\":\"completed\",\"url\":\"https://github.com/jxwalker/ariadne/actions/runs/38399497201\"},{\"conclusion\":\"success\",\"createdAt\":\"2026-10-13T12:44:13Z\",\"databaseId\":38399497122,\"headSha\":\"350cb33db949b71de04ef70dc1e561f2c3c505d0\",\"name\":\"Activity validation\",\"status\":\"completed\",\"url\":\"https://github.com/jxwalker/ariadne/actions/runs/38399497122\"},{\"conclusion\":\"success\",\"createdAt\":\"2026-10-13T12:44:10Z\",\"databaseId\":38399490477,\"headSha\":\"350cb33db949b71de04ef70dc1e561f2c3c505d0\",\"name\":\"Activity validation\",\"status\":\"completed\",\"url\":\"https://github.com/jxwalker/ariadne/actions/runs/38399490477\"}]\n",
+      "stderr": ""
+    }
+  }
+}

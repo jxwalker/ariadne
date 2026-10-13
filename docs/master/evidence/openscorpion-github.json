@@ -1,0 +1,82 @@
+{
+  "observed": "2026-10-13",
+  "data": {
+    "main": {
+      "command": [
+        "gh",
+        "api",
+        "repos/jxwalker/openscorpion/commits/main",
+        "--jq",
+        ".sha"
+      ],
+      "exit": 0,
+      "stdout": "ae881ad4204cf76b64b8486f9bc33f20635faec2\n",
+      "stderr": ""
+    },
+    "issues": {
+      "command": [
+        "gh",
+        "issue",
+        "list",
+        "--repo",
+        "jxwalker/openscorpion",
+        "--state",
+        "open",
+        "--limit",
+        "1000",
+        "--json",
+        "number,title,url,labels,milestone"
+      ],
+      "exit": 0,
+      "stdout": "[]\n",
+      "stderr": ""
+    },
+    "prs": {
+      "command": [
+        "gh",
+        "pr",
+        "list",
+        "--repo",
+        "jxwalker/openscorpion",
+        "--state",
+        "open",
+        "--limit",
+        "1000",
+        "--json",
+        "number,title,url,headRefOid,isDraft"
+      ],
+      "exit": 0,
+      "stdout": "[{\"headRefOid\":\"bb133e45ec6eb4c5e3e6096ceacf449e93aad704\",\"isDraft\":false,\"number\":876,\"title\":\"build(deps): bump the github-actions group across 2 directories with 10 updates\",\"url\":\"https://github.com/jxwalker/openscorpion/pull/876\"},{\"headRefOid\":\"ab6e59972b7a5748365f0f086ceaac4d6fecc33a\",\"isDraft\":false,\"number\":873,\"title\":\"build(deps): bump the cargo group across 1 directory with 28 updates\",\"url\":\"https://github.com/jxwalker/openscorpion/pull/873\"},{\"headRefOid\":\"7fb76323c2105ebba9a42a1b9ed489998cf2ebdb\",\"isDraft\":false,\"number\":868,\"title\":\"build(deps): bump ubuntu from 24.04 to 25.10 in /ci/cross in the docker-base-images group across 1 directory\",\"url\":\"https://github.com/jxwalker/openscorpion/pull/868\"},{\"headRefOid\":\"cefaddde2db74aaf00a45e385d2273ffd158eb76\",\"isDraft\":false,\"number\":849,\"title\":\"ci(quickstart-smoke): build with BuildKit; disk guard skips image prunes during builds\",\"url\":\"https://github.com/jxwalker/openscorpion/pull/849\"},{\"headRefOid\":\"bf0434e3c35c5c1aaef642de94dbd6b58699f971\",\"isDraft\":false,\"number\":846,\"title\":\"build(deps): bump whatlang from 0.16.4 to 0.18.0\",\"url\":\"https://github.com/jxwalker/openscorpion/pull/846\"},{\"headRefOid\":\"6d2079a77d8b8f933209ad3f20308f8e9bbc33d4\",\"isDraft\":false,\"number\":843,\"title\":\"build(deps): bump the compose-images group across 1 directory with 5 updates\",\"url\":\"https://github.com/jxwalker/openscorpion/pull/843\"}]\n",
+      "stderr": ""
+    },
+    "milestones": {
+      "command": [
+        "gh",
+        "api",
+        "--paginate",
+        "repos/jxwalker/openscorpion/milestones?state=all",
+        "--jq",
+        "map({number,title,state,open_issues,closed_issues,due_on,html_url})"
+      ],
+      "exit": 0,
+      "stdout": "[{\"closed_issues\":12,\"due_on\":null,\"html_url\":\"https://github.com/jxwalker/openscorpion/milestone/1\",\"number\":1,\"open_issues\":0,\"state\":\"open\",\"title\":\"Enterprise Pilot Readiness\"}]\n",
+      "stderr": ""
+    },
+    "runs": {
+      "command": [
+        "gh",
+        "run",
+        "list",
+        "--repo",
+        "jxwalker/openscorpion",
+        "--limit",
+        "10",
+        "--json",
+        "databaseId,headSha,name,status,conclusion,url,createdAt"
+      ],
+      "exit": 0,
+      "stdout": "[{\"conclusion\":\"success\",\"createdAt\":\"2026-10-13T03:50:39Z\",\"databaseId\":38343608771,\"headSha\":\"ae881ad4204cf76b64b8486f9bc33f20635faec2\",\"name\":\"Main Red Alert\",\"status\":\"completed\",\"url\":\"https://github.com/jxwalker/openscorpion/actions/runs/38343608771\"},{\"conclusion\":\"success\",\"createdAt\":\"2026-10-13T03:40:28Z\",\"databaseId\":38342818762,\"headSha\":\"ae881ad4204cf76b64b8486f9bc33f20635faec2\",\"name\":\"CI Nightly\",\"status\":\"completed\",\"url\":\"https://github.com/jxwalker/openscorpion/actions/runs/38342818762\"},{\"conclusion\":\"success\",\"createdAt\":\"2026-10-12T11:01:16Z\",\"databaseId\":38239969496,\"headSha\":\"ae881ad4204cf76b64b8486f9bc33f20635faec2\",\"name\":\"Main Red Alert\",\"status\":\"completed\",\"url\":\"https://github.com/jxwalker/openscorpion/actions/runs/38239969496\"},{\"conclusion\":\"success\",\"createdAt\":\"2026-10-12T11:01:13Z\",\"databaseId\":38239964428,\"headSha\":\"ae881ad4204cf76b64b8486f9bc33f20635faec2\",\"name\":\"Main Red Alert\",\"status\":\"completed\",\"url\":\"https://github.com/jxwalker/openscorpion/actions/runs/38239964428\"},{\"conclusion\":\"failure\",\"createdAt\":\"2026-10-12T10:41:03Z\",\"databaseId\":38237860508,\"headSha\":\"bb133e45ec6eb4c5e3e6096ceacf449e93aad704\",\"name\":\"APCG Governance\",\"status\":\"completed\",\"url\":\"https://github.com/jxwalker/openscorpion/actions/runs/38237860508\"},{\"conclusion\":\"success\",\"createdAt\":\"2026-10-12T10:41:02Z\",\"databaseId\":38237859811,\"headSha\":\"bb133e45ec6eb4c5e3e6096ceacf449e93aad704\",\"name\":\"Proxmox Runner Smoke\",\"status\":\"completed\",\"url\":\"https://github.com/jxwalker/openscorpion/actions/runs/38237859811\"},{\"conclusion\":\"success\",\"createdAt\":\"2026-10-12T10:41:02Z\",\"databaseId\":38237859654,\"headSha\":\"bb133e45ec6eb4c5e3e6096ceacf449e93aad704\",\"name\":\"CI\",\"status\":\"completed\",\"url\":\"https://github.com/jxwalker/openscorpion/actions/runs/38237859654\"},{\"conclusion\":\"failure\",\"createdAt\":\"2026-10-12T10:38:13Z\",\"databaseId\":38237567918,\"headSha\":\"ae881ad4204cf76b64b8486f9bc33f20635faec2\",\"name\":\"github_actions in /, /.github/actions/apcg-governance for actions/checkout, azure/setup-kubectl, actions/setup-python, taiki-e/install-action, actions/upload-artifact, actions/cache, docker/login-action, docker/metadata-action, docker/build-push-action, actions/download-artifact, actions/checkout, actions/setup-python, actions/cache, actions/upload-artifact, actions/checkout, actions/setup-python, actions/upload-artifact, actions/cache, actions/checkout, actions/setup-python, actions/cache, actions/uploa...\",\"status\":\"completed\",\"url\":\"https://github.com/jxwalker/openscorpion/actions/runs/38237567918\"},{\"conclusion\":\"success\",\"createdAt\":\"2026-10-12T10:36:49Z\",\"databaseId\":38237424277,\"headSha\":\"ae881ad4204cf76b64b8486f9bc33f20635faec2\",\"name\":\"APCG Governance\",\"status\":\"completed\",\"url\":\"https://github.com/jxwalker/openscorpion/actions/runs/38237424277\"},{\"conclusion\":\"success\",\"createdAt\":\"2026-10-12T10:36:49Z\",\"databaseId\":38237423565,\"headSha\":\"ae881ad4204cf76b64b8486f9bc33f20635faec2\",\"name\":\"CI\",\"status\":\"completed\",\"url\":\"https://github.com/jxwalker/openscorpion/actions/runs/38237423565\"}]\n",
+      "stderr": ""
+    }
+  }
+}

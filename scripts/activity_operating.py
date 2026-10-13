@@ -185,15 +185,35 @@ def operating(store,registry,config,params=None,at=None):
                 blocked.append(action(stable('unknown',row['source'],row['run']),title,'Execution freshness is unknown; this is not proof that the task is stuck.',owner,r['repo'],r['last'],'Inspect the source or contact the owning bot before restarting or reassigning.',pr_url,kind='telemetry',priority=4))
         # Resolve only an exact source/request identity; another source cannot close it.
         decisions={}
-        # Order by parsed source time in Python: SQLite julianday() cannot parse every ISO form validate() accepts.
-        lifecycle=[(json.loads(r['envelope']),r) for r in db.execute("SELECT source,envelope,received FROM events WHERE json_extract(envelope,'$.kind') IN ('decision.requested','decision.resolved') ORDER BY received DESC LIMIT 5000")]
-        lifecycle.sort(key=lambda p:(ts(p[0]['occurredAt']) or p[1]['received'],p[0]['sequence']),reverse=True)
+        # Select current state across the complete lifecycle before any UI/output bound.
+        # Producer sequence is authoritative within a run, including clock rollback.
+        # Across runs, the same parser handles every ISO form accepted by validate().
+        db.create_function('ariadne_decision_time',2,lambda stamp,received:ts(stamp) or received,deterministic=True)
+        lifecycle=[(json.loads(r['envelope']),r) for r in db.execute("""
+            WITH per_run_decisions AS (
+                SELECT id,source,envelope,received,
+                  row_number() OVER (
+                    PARTITION BY source,json_extract(envelope,'$.repository'),json_extract(envelope,'$.decision.id'),json_extract(envelope,'$.runId')
+                    ORDER BY json_extract(envelope,'$.sequence') DESC,received DESC,id DESC
+                  ) AS run_position
+                FROM events INDEXED BY events_decision_lifecycle
+                WHERE json_extract(envelope,'$.kind') IN ('decision.requested','decision.resolved')
+            ), current_decisions AS (
+                SELECT source,envelope,received,
+                  row_number() OVER (
+                    PARTITION BY source,json_extract(envelope,'$.repository'),json_extract(envelope,'$.decision.id')
+                    ORDER BY ariadne_decision_time(json_extract(envelope,'$.occurredAt'),received) DESC,received DESC,id DESC
+                  ) AS position
+                FROM per_run_decisions WHERE run_position=1
+            )
+            SELECT source,envelope,received FROM current_decisions WHERE position=1
+        """)]
         for e,row in lifecycle:
             d=e.get('decision',{});key=(row['source'],e['repository'],d.get('id'));reg=registry.get(row['source'],{})
             if key in decisions:continue
             decisions[key]=True
             if e['kind']!='decision.requested' or e['repository'] not in active_repos or d.get('recipient','').lower() not in aliases or reg.get('displayTaskMetadata') is not True or test_run(e,reg) or reg.get('provenance')=='read-only local snapshot' or reg.get('revoked'):continue
-            needs.append(action(stable('decision',*key),e['label'],d['question'],d['recipient'],e['repository'],ts(e['occurredAt']) or row['received'],d.get('recommendation') or 'Open the request and choose one of the supplied options.',d.get('url'),kind='explicit-decision',priority=0 if d['blocking'] else 2,options=[decision_text(v,secrets,160) for v in d.get('options',[])],requestId=d['id'],source=clean(reg.get('displayName') or row['source'],128)))
+            needs.append(action(stable('decision',*key),e['label'],d['question'],d['recipient'],e['repository'],ts(e['occurredAt']) or row['received'],d.get('recommendation') or 'Open the request and choose one of the supplied options.',d.get('url'),kind='explicit-decision',priority=0 if d['blocking'] else 2,options=[decision_text(v,secrets,160) for v in d.get('options',[])],requestId=d['id'],source=clean(reg.get('displayName') or row['source'],128),sourceId=row['source'],runId=e['runId'],requestRevision=hashlib.sha256(json.dumps(e,sort_keys=True,separators=(',',':'),ensure_ascii=False).encode()).hexdigest(),recommendation=decision_text(d['recommendation'],secrets,300) if d.get('recommendation') else None))
     for repo in active_repos:
         pipeline_data=pipeline(repo,ev,start,at,config.get('workflowPolicies',{}).get(repo));open_prs=[];merged=0;opened=0;merged_trend=Counter()
         for key in ['workflows','automation','runners']:
