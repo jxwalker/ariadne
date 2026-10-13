@@ -167,6 +167,7 @@ BEGIN
   ELSIF op IN ('accept','override') THEN
    IF old.kind<>'work' OR old.body->>'state'<>'verification' OR master.blockers(target)<>'[]'::jsonb THEN RAISE EXCEPTION 'not eligible for acceptance'; END IF;
    IF NOT EXISTS(SELECT 1 FROM master.nodes bl WHERE bl.kind='baseline' AND bl.body->>'state'='approved' AND NOT EXISTS(SELECT 1 FROM jsonb_array_elements(old.body->'criteria') required(value) WHERE NOT EXISTS(SELECT 1 FROM master.scope s WHERE s.baseline_id=bl.id AND s.criterion_id=required.value->>'id'))) THEN RAISE EXCEPTION 'scope not approved'; END IF;
+   IF op='override' AND jsonb_typeof(c->'waivedCriteria') IS DISTINCT FROM 'array' THEN RAISE EXCEPTION 'override requires explicit waived criteria array'; END IF;
    SELECT body INTO b FROM master.nodes WHERE id=old.body->>'policy' AND kind='policy';
    FOR criterion IN SELECT * FROM jsonb_array_elements(old.body->'criteria') LOOP
     FOR dep IN SELECT jsonb_array_elements_text(b->'requiredKinds') LOOP
@@ -181,7 +182,7 @@ BEGIN
      IF NOT FOUND AND op='accept' THEN RAISE EXCEPTION 'missing stale unrelated or synthetic required evidence: % %',criterion->>'id',dep; END IF;
      IF FOUND THEN INSERT INTO master.acceptance_evidence VALUES(target,criterion->>'id',dep,e.id,cid); END IF;
     END LOOP;
-    IF op='override' AND (c->>'risk' IS NULL OR (c->>'expiresAt')::timestamptz <= now() OR c->>'expiresAt' IS NULL OR NOT (c->'waivedCriteria' ? (criterion->>'id'))) THEN RAISE EXCEPTION 'override requires explicit criteria risk expiry'; END IF;
+    IF op='override' AND (coalesce(c->>'risk','')='' OR (c->>'expiresAt')::timestamptz <= now() OR c->>'expiresAt' IS NULL OR NOT (c->'waivedCriteria' ? (criterion->>'id'))) THEN RAISE EXCEPTION 'override requires explicit criteria risk expiry'; END IF;
     INSERT INTO master.accepted VALUES(target,criterion->>'id',CASE WHEN op='accept' THEN e.id END,cid);
    END LOOP;
    UPDATE master.nodes SET revision=revision+1,body=body||jsonb_build_object('state','accepted','acceptedBy',actor,'acceptanceCommand',cid) WHERE id=target;

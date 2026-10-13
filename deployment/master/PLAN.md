@@ -1,5 +1,7 @@
 # Bounded phase 1 application deployment
 
+Run prepare.sh in a fresh exact-head package before generating a readiness plan. Preparation only reads live state and runs isolated tests. The plan embeds the manifest SHA-256 literally; its independent system sha256sum checks run before any package script in dry-run, live and post-verification commands. Never regenerate a manifest for an existing plan.
+
 Install a CI-green, reviewed PR head without merging. Stage from exact Git revision;
 compile and execute the immutable staged canonical runner, copy and hash installed dependencies and their internal symlinks, verify hashes, real isolated PostgreSQL tests, least-privilege role and existing operations.
 Keep all evidence under ~/ariadne-run/master-p1; use its own vault, never ariadne-dev.

@@ -84,6 +84,9 @@ class LedgerContract(unittest.TestCase):
         self.assertFalse(self.cmd('override',w,rev,actor='agent:bot')['ok'])
         self.assertFalse(self.cmd('update',w,rev,actor='agent:other',patch={'nextAction':'take'})['ok'])
         self.assertFalse(self.cmd('accept',w,rev)['ok'])
+        future=self.sql("SELECT to_jsonb(now()+interval '1 day');",database='ledger_test')
+        for waived in [{},{'waivedCriteria':None},{'waivedCriteria':{}},{'waivedCriteria':[]}]:
+            self.assertFalse(self.cmd('override',w,rev,risk='recorded risk',expiresAt=future,**waived)['ok'])
         variants=[{'kind':'agent_run'},{'observedAt':'2000-01-01T00:00:00Z'},{'candidate':'b'*40},{'synthetic':True},{'policy':'unrelated'},{'status':'skipped'}]
         for variant in variants:
             e={'id':str(uuid.uuid4()),'kind':'ci','criterionId':p+'wc','candidate':'a'*40,'policy':p+'policy','status':'passed','synthetic':False,'sha256':'a'*64,'observedAt':'2026-10-13T17:00:00Z','uri':'https://example.invalid/proof',**variant}

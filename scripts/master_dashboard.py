@@ -67,10 +67,17 @@ def render(data,route,filters):
             visited.add(id);edges=[d for d in data['dependencies'] if d['work_id']==id]
             return ''.join('<article>'+esc(d['dependency_id'])+' · '+esc(nodes.get(d['dependency_id'],{}).get('body',{}).get('state','unresolved'))+chain(d['dependency_id'])+'</article>' for d in edges)
         body+=chain(n['id']) or '<p>No recorded dependencies</p>'
-        body+='<h2>Run / PR / CI / merge / deploy / Eval Factory references</h2><pre>'+esc(json.dumps([e for e in data['evidence'] if e['work_id']==n['id']]+b.get('refs',[]),indent=2))+'</pre>'
+        lineage={n['id']};ancestor=b.get('splitFrom')
+        while ancestor and ancestor not in lineage:
+            lineage.add(ancestor);ancestor=nodes.get(ancestor,{}).get('body',{}).get('splitFrom')
+        criteria={x['id'] for x in b.get('criteria',[])}
+        refs=[e for e in data['evidence'] if e['work_id']==n['id'] or e['work_id'] in lineage and e['body'].get('criterionId') in criteria]
+        associations=[e for e in data.get('acceptanceEvidence',[]) if e['criterion_id'] in criteria and e['work_id'] in lineage]
+        if b.get('splitFrom'):body+='<p>Inherited criterion evidence and acceptance from '+esc(b['splitFrom'])+'; original immutable records retained.</p>'
+        body+='<h2>Run / PR / CI / merge / deploy / Eval Factory references</h2><pre>'+esc(json.dumps({'references':refs+b.get('refs',[]),'selectedAcceptanceEvidence':associations},indent=2))+'</pre>'
         body+='<p>Missing references remain unverified. Agent completion alone cannot accept this work.</p><h2>Immutable command history</h2>'
         for j in data['history']:
-            if j['target']==n['id']:body+='<article><p>'+esc(j['at'])+' · '+esc(j['actor'])+' · '+esc(j['command_id'])+'</p><pre>'+esc(json.dumps(j,indent=2))+'</pre></article>'
+            if j['target'] in lineage:body+='<article><p>'+esc(j['at'])+' · '+esc(j['actor'])+' · '+esc(j['command_id'])+'</p><pre>'+esc(json.dumps(j,indent=2))+'</pre></article>'
     elif route=='/work':
         body+='<h1>Work queues</h1><p>Authoritative state, source claims and unattributed observations stay visible. Draft scope cannot be ready.</p>'
         for state in ['ready','active','verification','blocked','waiting','parked','proposed','accepted','cancelled','superseded']:
