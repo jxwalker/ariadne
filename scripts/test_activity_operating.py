@@ -72,6 +72,11 @@ class OperatingTests(unittest.TestCase):
         created=time.strftime('%Y-%m-%dT%H:%M:%SZ',time.gmtime(self.at-10))
         self.observe('deploy','pipeline_deployment',{'id':1,'created_at':created,'environment':'production','latest_status':{'state':'success','created_at':created}})
         row=self.read()['deployments'][0];self.assertEqual(row['state'],'success');self.assertFalse(row['runtimeVerified'])
+    def test_later_success_clears_historical_deployment_failure(self):
+        for ident,offset,state in [(1,-300,'failure'),(2,-10,'success')]:
+            at=time.strftime('%Y-%m-%dT%H:%M:%SZ',time.gmtime(self.at+offset))
+            self.observe('deploy-'+str(ident),'pipeline_deployment',{'id':ident,'created_at':at,'environment':'production','latest_status':{'state':state,'created_at':at}})
+        d=self.read();self.assertFalse(any(a['kind']=='deployment-failure' for a in d['blocked']));self.assertEqual(len(d['deployments']),2)
     def test_v1_contract_stays_strict_and_v2_decisions_validated(self):
         e=event();e['stage']='build'
         with self.assertRaises(ValueError):validate(e)

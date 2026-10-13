@@ -204,7 +204,10 @@ def operating(store,registry,config,params=None,at=None):
         reviewers=p.get('reviewers',[]);mine=any(v.get('type')=='User' and v.get('reviewer',{}).get('login','').lower() in aliases for v in reviewers)
         if mine:
             needs.append(action(stable('deploy-approval',p['repo'],p['runId'],p.get('environment',{}).get('id')),'Deployment approval requested',p.get('environment',{}).get('name') or 'Protected environment','James',p['repo'],p['_observed'],'Review the exact revision and checks in the protected environment before approving.','https://github.com/'+p['repo']+'/actions/runs/'+str(p['runId']),kind='deployment-approval',priority=0))
-    deployment_rows=[]
+    deployment_rows=[];latest_deployments={}
+    for (repo,ident),d in ev['deployments'].items():
+        key=(repo,d.get('environment') or 'Unspecified');previous=latest_deployments.get(key)
+        if previous is None or (ts(d.get('created_at')) or 0)>(ts(previous.get('created_at')) or 0):latest_deployments[key]=d
     for (repo,ident),d in ev['deployments'].items():
         if repo not in active_repos:continue
         created=ts(d.get('created_at'));s=d.get('latest_status',{});state=s.get('state') or 'unknown';at_status=ts(s.get('created_at'));terminal=d.get('terminal_status') or s
@@ -216,7 +219,7 @@ def operating(store,registry,config,params=None,at=None):
         if start<=terminal_at<=at:
             bucket=stats['deploymentTrend'].setdefault(day(terminal_at),{'success':0,'failure':0,'pending':0})
             bucket['success' if key=='success' else 'failure' if key in {'failure','error'} else 'pending']+=1
-        if state in {'failure','error'}:blocked.append(action(stable('deployment',repo,ident),'Deployment reported a failure',d.get('environment') or 'Environment unspecified','Repository maintainer',repo,at_status or created,'Inspect the deployment log and verify which revision is running before retrying.',s.get('log_url'),kind='deployment-failure',priority=1))
+        if state in {'failure','error'} and latest_deployments.get((repo,d.get('environment') or 'Unspecified'),{}).get('id')==ident:blocked.append(action(stable('deployment',repo,ident),(d.get('environment') or 'Environment')+' deployment failed','The latest GitHub deployment attempt reports '+state+'.','Repository maintainer',repo,at_status or created,'Inspect the deployment log and verify which revision is running before retrying.',s.get('log_url'),kind='deployment-failure',priority=1))
     machine_rows=[]
     for spec in config.get('machines',[]):
         host=spec['host'];m=ev['machines'].get(host,{})
