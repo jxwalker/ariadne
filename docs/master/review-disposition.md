@@ -66,3 +66,10 @@ its second value and imported phases reference that baseline. Real HTTP
 click-through coverage traverses the selected baseline to phases and work.
 CI caught an ambiguous Needs you heading in the new browser check; its selector
 now explicitly targets the level-2 section heading.
+
+
+Codex re-review at a7647432781d915bffe232385ca359c7d59c7db5: fixed
+4261884186 (unsupported/duplicate required evidence kinds) and 4261884197
+(unrelated waiver criteria). Policy kinds must be supported, unique strings;
+waiver lists must match exactly the work's criterion IDs. Real PG tests reject
+malformed kinds, extra/duplicate/null waiver IDs and retain a valid override.

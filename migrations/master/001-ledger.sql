@@ -79,7 +79,10 @@ BEGIN
     b:=b||'{"state":"unresolved"}';
    END IF;
    IF c->>'kind'='policy' THEN
-    IF jsonb_array_length(coalesce(b->'requiredKinds','[]'))=0 OR coalesce((b->>'maxAgeSeconds')::integer,0)<=0
+    IF jsonb_typeof(b->'requiredKinds') IS DISTINCT FROM 'array' THEN RAISE EXCEPTION 'invalid acceptance policy'; END IF;
+    IF EXISTS(SELECT 1 FROM jsonb_array_elements(b->'requiredKinds') k WHERE jsonb_typeof(k) IS DISTINCT FROM 'string' OR coalesce(k #>> '{}','') NOT IN ('github_pr','ci','merge','deploy','eval','runtime','review','document'))
+      OR (SELECT count(DISTINCT k) FROM jsonb_array_elements_text(b->'requiredKinds') k)<>jsonb_array_length(b->'requiredKinds')
+      OR jsonb_array_length(coalesce(b->'requiredKinds','[]'))=0 OR coalesce((b->>'maxAgeSeconds')::integer,0)<=0
       OR b->'requiredKinds' ? 'agent_run' THEN RAISE EXCEPTION 'invalid acceptance policy'; END IF;
    END IF;
    IF c->>'kind' IN ('baseline','phase','milestone','work') AND NOT EXISTS(
@@ -178,6 +181,8 @@ BEGIN
    IF old.kind<>'work' OR old.body->>'state'<>'verification' OR master.blockers(target)<>'[]'::jsonb THEN RAISE EXCEPTION 'not eligible for acceptance'; END IF;
    IF NOT EXISTS(SELECT 1 FROM master.nodes bl WHERE bl.kind='baseline' AND bl.body->>'state'='approved' AND NOT EXISTS(SELECT 1 FROM jsonb_array_elements(old.body->'criteria') required(value) WHERE NOT EXISTS(SELECT 1 FROM master.scope s WHERE s.baseline_id=bl.id AND s.criterion_id=required.value->>'id'))) THEN RAISE EXCEPTION 'scope not approved'; END IF;
    IF op='override' AND jsonb_typeof(c->'waivedCriteria') IS DISTINCT FROM 'array' THEN RAISE EXCEPTION 'override requires explicit waived criteria array'; END IF;
+   IF op='override' AND (SELECT array_agg(k ORDER BY k) FROM jsonb_array_elements_text(c->'waivedCriteria') k)
+     IS DISTINCT FROM (SELECT array_agg(k->>'id' ORDER BY k->>'id') FROM jsonb_array_elements(old.body->'criteria') k) THEN RAISE EXCEPTION 'waiver criteria must exactly match work'; END IF;
    SELECT body INTO b FROM master.nodes WHERE id=old.body->>'policy' AND kind='policy';
    FOR criterion IN SELECT * FROM jsonb_array_elements(old.body->'criteria') LOOP
     FOR dep IN SELECT jsonb_array_elements_text(b->'requiredKinds') LOOP

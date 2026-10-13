@@ -186,6 +186,18 @@ class LedgerContract(unittest.TestCase):
         rev=self.ok('transition',w,rev,state='ready',via='ariadne-bot/codex')
         self.assertEqual(self.sql("SELECT to_jsonb(j) FROM master.journal j WHERE target='%s' ORDER BY sequence DESC LIMIT 1;"%w,database='ledger_test')['via'],'ariadne-bot/codex')
 
+    def test_policy_kinds_and_exact_waiver_scope(self):
+        p=self.fixture();w=p+'w'
+        for kinds in [['c1'],['ci','ci'],['agent_run'],['ci',None],[42],[],None,{}]:
+            result=self.cmd('create',p+'badpolicy',kind='policy',body={'requiredKinds':kinds,'maxAgeSeconds':3600})
+            self.assertFalse(result['ok'],kinds)
+        rev=1
+        for state in ['ready','active','verification']:rev=self.ok('transition',w,rev,state=state)
+        expiry=self.sql("SELECT to_jsonb(now()+interval '1 day');",database='ledger_test')
+        for criteria in [[p+'wc','unrelated'],[p+'wc',p+'wc'],[p+'wc',None],['misspelled']]:
+            self.assertFalse(self.cmd('override',w,rev,waivedCriteria=criteria,risk='risk',expiresAt=expiry)['ok'])
+        self.ok('override',w,rev,waivedCriteria=[p+'wc'],risk='risk',expiresAt=expiry)
+
     def test_waiver_progress_and_expiry(self):
         p=self.fixture();w=p+'w';rev=1
         for state in ['ready','active','verification']:rev=self.ok('transition',w,rev,state=state)
