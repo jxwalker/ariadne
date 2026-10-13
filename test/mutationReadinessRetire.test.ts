@@ -122,9 +122,19 @@ describe("mutation-readiness audit retirement", () => {
       await fs.writeFile(dryRun.jsonPath, JSON.stringify(legacy));
       await expect(runMutationExecution({ project: "ariadne", vaultRoot, plan: result.plan.id, confirmPlan: result.plan.id })).rejects.toThrow("matching the complete plan digest");
       expect(command).toHaveBeenCalledTimes(1);
+      for (const patch of [{ exitCode: 1 }, { timedOut: true }, { bufferExceeded: true }, { signal: "SIGTERM" }, { execute: true }]) {
+        await fs.writeFile(dryRun.jsonPath, JSON.stringify({ ...dryRun.record, ...patch }));
+        await expect(runMutationExecution({ project: "ariadne", vaultRoot, plan: result.plan.id, confirmPlan: result.plan.id })).rejects.toThrow("matching the complete plan digest");
+        expect(command).toHaveBeenCalledTimes(1);
+      }
+      await fs.writeFile(dryRun.jsonPath, JSON.stringify(dryRun.record));
+      command.mockResolvedValueOnce({ stdout: "mocked failure", stderr: "", exitCode: 1, timedOut: false, bufferExceeded: false, durationMs: 1 });
+      await expect(runMutationExecution({ project: "ariadne", vaultRoot, plan: result.plan.id, confirmPlan: result.plan.id })).rejects.toThrow("failed current read-only revalidation");
+      expect(command).toHaveBeenCalledTimes(2);
+      // Restore an internally consistent claimed success; actual current validation is still required.
       await fs.writeFile(dryRun.jsonPath, JSON.stringify(dryRun.record));
       expect((await runMutationExecution({ project: "ariadne", vaultRoot, plan: result.plan.id, confirmPlan: result.plan.id })).record.status).toBe("passed");
-      expect(command).toHaveBeenCalledTimes(3);
+      expect(command).toHaveBeenCalledTimes(5);
     } finally { command.mockRestore(); await fs.rm(vaultRoot, { recursive: true, force: true }); }
   });
 });

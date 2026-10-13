@@ -473,6 +473,7 @@ export interface MutationDryRunRecord {
   exitCode?: number;
   signal?: string;
   bufferExceeded?: boolean;
+  timedOut?: boolean;
   durationMs: number;
   stdout: string;
   stderr: string;

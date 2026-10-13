@@ -67,3 +67,5 @@ This is a procedural gate, not cryptographic authentication: the phase 1 same-ui
 operator-equivalence limitation still applies.
 
 The supplied approval must be at its canonical package-vault approvals path; audit blocks missing or no-longer-approved current records. External approval files are rejected.
+
+Future audited execution independently repeats the current read-only validation and rechecks plan bytes and approval after it; stored success status alone cannot authorize execution.

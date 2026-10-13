@@ -41,6 +41,7 @@ export async function runMutationDryRun(input: {
     exitCode: result.exitCode,
     signal: result.signal,
     bufferExceeded: result.bufferExceeded,
+    timedOut: result.timedOut,
     durationMs: result.durationMs,
     stdout: result.stdout,
     stderr: result.stderr,
