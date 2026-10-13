@@ -55,7 +55,7 @@ def candidates(store,registry,config,at):
         if source['state']=='revoked':continue
         if source['state'] in {'never-connected','provider-pending'} or ident in pending:
             add('pending:'+ident,'source-information',source['name']+': provider-pending' if ident in pending else source['name']+': never-connected','info')
-        elif at-source['last']>quiet_seconds(ident,registry[ident],options):add('quiet:'+ident,'quiet-source',source['name']+': collector/receipt quiet beyond configured threshold')
+        elif source.get('last') is None or at-source['last']>quiet_seconds(ident,registry[ident],options):add('quiet:'+ident,'quiet-source',source['name']+': collector/receipt quiet beyond configured threshold')
     for row in control['controls']:
         if row['id'] in {'executions','audit'} and row['status']=='fail':
             latest={}

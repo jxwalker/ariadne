@@ -81,7 +81,8 @@ def rotation_candidates(config,at=None):
     keep=set(files[:1]);daily_groups=set();weekly_groups=set()
     for path in files:
         stamp=path.name[9:].split('.')[0]
-        date=datetime.strptime(stamp,'%Y%m%dT%H%M%SZ' if len(stamp)==16 else '%Y%m%dT%H%M%S%fZ').replace(tzinfo=timezone.utc)
+        try:date=datetime.strptime(stamp,'%Y%m%dT%H%M%SZ' if len(stamp)==16 else '%Y%m%dT%H%M%S%fZ').replace(tzinfo=timezone.utc)
+        except ValueError:continue
         day=date.date();week=date.isocalendar()[:2]
         if daily is not None and day not in daily_groups and len(daily_groups)<daily:keep.add(path);daily_groups.add(day)
         if weekly is not None and week not in weekly_groups and len(weekly_groups)<weekly:keep.add(path);weekly_groups.add(week)
