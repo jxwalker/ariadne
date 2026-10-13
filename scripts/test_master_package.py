@@ -117,6 +117,8 @@ class PackageHelpers(unittest.TestCase):
         with tempfile.TemporaryDirectory() as tmp:
             root=pathlib.Path(tmp);pkg=root/'package';pkg.mkdir();backups=root/'backups';backup=backups/'master-p1-pre-fixture';backup.mkdir(parents=True)
             (backup/'scripts').mkdir();(backup/'ledger-before.dump').write_text('isolated backup fixture');(backup/'DEPLOYED_COMMIT').write_text('old')
+            (backup/'server.json').write_text('{}')
+            for name in ['activity_server.py','operating_dashboard.html','operating_dashboard.js']:(backup/'scripts'/name).write_text('baseline file')
             self.assertEqual(module.validate(pkg,backups,'old','old','new',0,'','digest'),'initial')
             with self.assertRaises(ValueError):module.validate(pkg,backups,'old','old','new',1,'digest','digest')
             (pkg/'last-backup').write_text(str(backup))
@@ -124,5 +126,21 @@ class PackageHelpers(unittest.TestCase):
                 self.assertEqual(module.validate(pkg,backups,marker,'old','new',1,'digest','digest'),'partial')
             for marker,source in [('other','digest'),('old','wrong')]:
                 with self.assertRaises(ValueError):module.validate(pkg,backups,marker,'old','new',1,source,'digest')
+            for bad in ['not json','[]']:
+                (backup/'server.json').write_text(bad)
+                with self.assertRaises(ValueError):module.validate(pkg,backups,'old','old','new',1,'digest','digest')
+            (backup/'server.json').unlink()
+            with self.assertRaises(ValueError):module.validate(pkg,backups,'old','old','new',1,'digest','digest')
+            (backup/'server.json').write_text('{}')
+            from unittest.mock import patch
+            original=pathlib.Path.read_text
+            def unreadable(path,*args,**kwargs):
+                if path.name=='server.json':raise PermissionError('configuration unavailable')
+                return original(path,*args,**kwargs)
+            with patch.object(pathlib.Path,'read_text',unreadable):
+                with self.assertRaises(ValueError):module.validate(pkg,backups,'old','old','new',1,'digest','digest')
+            app=backup/'scripts/activity_server.py';app.unlink()
+            with self.assertRaises(ValueError):module.validate(pkg,backups,'old','old','new',1,'digest','digest')
+            app.write_text('baseline file')
             (backup/'DEPLOYED_COMMIT').write_text('unrelated')
             with self.assertRaises(ValueError):module.validate(pkg,backups,'old','old','new',1,'digest','digest')
