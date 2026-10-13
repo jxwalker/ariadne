@@ -1,5 +1,5 @@
 """Bounded, metadata-only private dashboard projections. Never return raw envelopes."""
-import json, math, time
+import json, math, time, re
 from collections import Counter, defaultdict
 from datetime import datetime, timezone
 from activity_server import safe_link
@@ -18,12 +18,22 @@ def source_name(ident, registration):
     if 'test' in ident.lower(): return 'Controlled test'
     return ident.replace('-',' ').replace('_',' ').title()[:128]
 
+def hosted_sources(db):
+    # Controlled/test reports do not establish provider onboarding.
+    return {r['source'] for r in db.execute("SELECT DISTINCT source FROM events WHERE json_extract(envelope,'$.location.kind')='cloud' AND lower(json_extract(envelope,'$.agent.product')) LIKE '%grok%' AND lower(source) NOT LIKE '%test%' AND lower(source) NOT LIKE '%controlled%' AND lower(json_extract(envelope,'$.runId')) NOT LIKE '%test%' AND lower(json_extract(envelope,'$.runId')) NOT LIKE '%controlled%' AND lower(json_extract(envelope,'$.taskId')) NOT LIKE '%test%' AND lower(json_extract(envelope,'$.taskId')) NOT LIKE '%controlled%' AND lower(json_extract(envelope,'$.label')) NOT LIKE '%controlled%'")}
+
 def sources_view(store, registry, at):
     with store.connect() as db:
+        hosted=hosted_sources(db)
         latest={r['source']:r['last'] for r in db.execute('SELECT source, MAX(received) AS last FROM events GROUP BY source')}
-        for r in db.execute("SELECT name,at FROM health WHERE name LIKE 'snapshot:%'"):
-            ident=r['name'][9:];latest[ident]=max(latest.get(ident,0),r['at'])
-    return [{'id':ident,'name':source_name(ident,v),'last':latest.get(ident),'state':'revoked' if v.get('revoked') else 'never-connected' if ident not in latest else 'connected' if at-latest[ident]<=90 else 'quiet', 'snapshot':v.get('provenance')=='read-only local snapshot'} for ident,v in registry.items()]
+        snapshot_sessions={}
+        for r in db.execute("SELECT name,at,detail FROM health WHERE name LIKE 'snapshot:%' AND status='connected'"):
+            ident=r['name'][9:]
+            if registry.get(ident,{}).get('provenance')=='read-only local snapshot':
+                latest[ident]=max(latest.get(ident,0),r['at'])
+                match=re.fullmatch(r'(\d+) recent sessions',r['detail'] or '')
+                snapshot_sessions[ident]=int(match[1]) if match else None
+    return [{'id':ident,'name':source_name(ident,v),'last':latest.get(ident),'recentSessions':snapshot_sessions.get(ident),'state':'revoked' if v.get('revoked') else 'provider-pending' if 'grok' in ident.lower() and ident not in hosted else 'never-connected' if ident not in latest else 'connected' if at-latest[ident]<=90 else 'quiet', 'snapshot':v.get('provenance')=='read-only local snapshot'} for ident,v in registry.items()]
 
 def percentile(values, fraction):
     if not values: return None

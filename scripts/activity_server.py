@@ -201,8 +201,14 @@ class App:
             if row and row[0]!=digest: raise PermissionError('nonce replay conflict')
             db.execute('INSERT OR IGNORE INTO nonces VALUES(?,?,?,?)',(s,nonce,digest,time.time()))
     def work(self):
+        next_alert=0
         while not self.stop.wait(0.5):
-            try: self.store.process()
+            try:
+                self.store.process()
+                if not self.config.get('ingestOnly') and time.time()>=next_alert:
+                    next_alert=time.time()+60
+                    from activity_alerts import evaluate
+                    evaluate(self.store,self.sources(),self.config)
             except Exception as exc: print('processor failure:',type(exc).__name__,flush=True)
 
 class Handler(BaseHTTPRequestHandler):
@@ -246,6 +252,8 @@ class Handler(BaseHTTPRequestHandler):
             if logo and pathlib.Path(logo).is_file():
                 raw=pathlib.Path(logo).read_bytes();self.send_response(200);self.send_header('Content-Type','image/png');self.send_header('Content-Length',str(len(raw)));self.end_headers();self.wfile.write(raw);return
             return self.reply(404,{'error':'logo unavailable'})
+        if self.path=='/favicon.ico':
+            self.send_response(204);self.send_header('Content-Length','0');self.end_headers();return
         if self.path=='/healthz': return self.reply(200,{'status':'alive'})
         if self.path=='/readyz':
             try: self.server.app.sources(); self.server.app.store.snapshot({}); return self.reply(200,{'status':'ready'})
@@ -255,11 +263,14 @@ class Handler(BaseHTTPRequestHandler):
         if len(route.query)>2048: return self.reply(400,{'error':'query too long'})
         try: filters=parse_qs(route.query,max_num_fields=20)
         except ValueError:return self.reply(400,{'error':'too many query fields'})
-        if route.path in {'/api/activity','/api/insights','/api/runs','/api/sources','/api/controls'}:
+        if route.path in {'/api/activity','/api/insights','/api/runs','/api/sources','/api/controls','/api/alerts'}:
             from activity_insights import project,page_runs,sources_view
             try:
                 registry=self.server.app.sources()
                 from activity_controls import controls
+                if route.path=='/api/alerts':
+                    from activity_alerts import evaluate
+                    return self.reply(200,evaluate(self.server.app.store,registry,self.server.app.config))
                 if route.path=='/api/controls':return self.reply(200,controls(self.server.app.store,registry,self.server.app.config.get('controlEvidenceDirs',[])))
                 if route.path=='/api/sources':return self.reply(200,{'sources':sources_view(self.server.app.store,registry,time.time())})
                 data=project(self.server.app.store,registry,filters.get('range',['24h'])[0])
@@ -292,6 +303,7 @@ class Handler(BaseHTTPRequestHandler):
         body=re.sub(r'(<script[^>]*id="console-data"[^>]*>)(.*?)(</script>)',suppress_embedded,body,flags=re.DOTALL)
         body=body.replace('../../../../assets/ariadne-logo-square.png','/assets/ariadne-logo-square.png')
         body=body.replace('<main class="shell">','<main class="shell">'+dashboard({}),1) if '<main class="shell">' in body else body.replace('</body>',dashboard({})+'</body>')
+        body=body.replace('</head>', '<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 32 32%22%3E%3Ctext y=%2226%22 font-size=%2228%22%3EA%3C/text%3E%3C/svg%3E"></head>')
         raw=body.encode(); self.send_response(200); self.send_header('Content-Type','text/html; charset=utf-8'); self.send_header('Content-Length',str(len(raw))); self.send_header('Cache-Control','no-store'); self.send_header('X-Content-Type-Options','nosniff'); self.send_header('Content-Security-Policy',"default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; frame-ancestors 'none'"); self.end_headers(); self.wfile.write(raw)
 
 def dashboard(data):

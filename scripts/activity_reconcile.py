@@ -3,6 +3,29 @@
 import argparse,hashlib,json,pathlib,subprocess,time
 from activity_server import Store,canonical
 
+# Repository metadata embedded in every historical PR changes independently of the PR.
+# Keep full raw bodies in history on meaningful changes and in the current index on every poll.
+REPO_VOLATILE = {'pushed_at', 'updated_at', 'open_issues', 'open_issues_count', 'size',
+                 'stargazers_count', 'watchers_count', 'watchers', 'forks', 'forks_count', 'subscribers_count'}
+
+def meaningful(value, repository=False):
+    if isinstance(value, dict):
+        return {k: meaningful(v, k in {'repo','repository'}) for k,v in value.items()
+                if not (repository and k in REPO_VOLATILE)}
+    if isinstance(value, list):return [meaningful(v) for v in value]
+    return value
+
+def version_digest(body):
+    return hashlib.sha256(canonical(meaningful(body)).encode()).hexdigest()
+
+def record_observation(db, ident, repo, body, at):
+    raw=canonical(body);old=db.execute('SELECT body FROM observations WHERE id=?',(ident,)).fetchone()
+    # Compare the prior current body too: prevents a one-time duplicate after upgrading the digest.
+    if old is None or version_digest(json.loads(old[0]))!=version_digest(body):
+        version=ident+':'+version_digest(body)
+        db.execute('INSERT OR IGNORE INTO observation_history VALUES(?,?,?)',(version,at,raw))
+    db.execute('INSERT OR REPLACE INTO observations VALUES(?,?,?,?)',(ident,repo,at,raw))
+
 def pages(endpoint):
     # Older deployed gh 2.46 supports --paginate but not --slurp. Decode concatenated pages.
     r=subprocess.run(['gh','api','--paginate',endpoint],check=True,capture_output=True,text=True,timeout=120)
@@ -27,9 +50,7 @@ def reconcile(store,repositories):
                         observations.append(('reconcile:'+kind+':'+repo+':'+str(pr['number']),{'kind':kind,'body':{'pull_request':pr,'pages':raw}}))
             with store.connect() as db:
                 for ident,body in observations:
-                    raw=canonical(body);version=ident+':'+hashlib.sha256(raw.encode()).hexdigest()
-                    db.execute('INSERT OR IGNORE INTO observation_history VALUES(?,?,?)',(version,time.time(),raw))
-                    db.execute('INSERT OR REPLACE INTO observations VALUES(?,?,?,?)',(ident,repo,time.time(),raw))
+                    record_observation(db,ident,repo,body,time.time())
                 db.execute('INSERT OR REPLACE INTO health VALUES(?,?,?,?)',('github:'+repo,time.time(),'success','All PR pages collected; associated task review/check pages collected; no agent attribution'))
         except Exception:
             with store.connect() as db: db.execute('INSERT OR REPLACE INTO health VALUES(?,?,?,?)',('github:'+repo,time.time(),'error','Read-only API reconciliation failed; inspect host gh access/rate limits'))

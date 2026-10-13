@@ -1,10 +1,11 @@
 <section id="durable-activity" aria-label="Activity insights">
 <div class="insights-heading"><div><p class="eyebrow">Private activity · stored evidence</p><h1>Ariadne insights</h1></div><label>Time range <select id="insight-range"><option value="24h">24 hours</option><option value="7d">7 days</option><option value="30d">30 days</option></select></label></div>
 <p id="insight-status" role="status">Loading stored activity…</p>
+<section aria-label="Alerts"><h2>Alerts</h2><p id="alerts-status" role="status">Loading alerts…</p><details><summary>Current alert evidence</summary><ul id="alert-items"></ul></details></section>
 <h2>Live now</h2><div id="insight-live" class="insight-grid"></div><div id="insight-sources" class="source-chips" aria-label="Source status"></div>
 <section id="orchestration-controls" aria-label="Orchestration evidence and controls">
 <h2>Orchestration evidence and controls</h2><p id="controls-status" role="status">Loading control evidence…</p>
-<p class="insight-note">Current cross-vault evidence, independent of the activity time range. A pass does not grant execution approval. Latest attempts per plan determine current dry-run/execution status; earlier attempts remain in the drawers. Freshness: approvals 30 days; plans, audits, dry runs, executions, adapter readiness/cutover and webhook deliveries 24 hours; sources, reconciliation and receipts 2 hours.</p>
+<p class="insight-note">Current cross-vault evidence, independent of the activity time range. A pass does not grant execution approval. Latest attempts per plan determine current dry-run/execution status; earlier attempts remain in the drawers. Approvals, plans, audits, dry runs and executions are judged by state and newer evidence. Adapter readiness/cutover is informational. Only live signals use age thresholds; connectivity does not imply task activity.</p>
 <div class="runs-scroll"><table class="insight-table control-table"><thead><tr><th>Control / evidence</th><th>Status</th><th>Last evidence</th><th>Sanitized records</th></tr></thead><tbody id="control-rows"></tbody></table></div>
 </section>
 <h2>In this range</h2><div id="insight-metrics" class="insight-grid"></div>
