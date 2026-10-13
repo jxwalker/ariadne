@@ -286,7 +286,6 @@ class LedgerContract(unittest.TestCase):
     def test_append_only(self):
         with self.assertRaises(AssertionError):self.sql('DELETE FROM master.journal;',database='ledger_test')
 
-if __name__=='__main__':unittest.main()
 
     def test_operator_reply_resolves_aliased_master_decision_durably(self):
         from types import SimpleNamespace
@@ -313,3 +312,5 @@ if __name__=='__main__':unittest.main()
         self.assertEqual(actions.replies({'sourceId':'other','repository':repo,'runId':p+'run'}),[])
         self.assertEqual(len([n for n in ledger['nodes'] if n['id']==p]),1)
         self.assertEqual(len([j for j in ledger['history'] if j['target']==p]),2)
+
+if __name__=='__main__':unittest.main()
