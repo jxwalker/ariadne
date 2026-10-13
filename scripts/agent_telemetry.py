@@ -130,7 +130,12 @@ def collect(home,host,mappings=None,now=None):
         sources.append({'agent':'Claude','status':'available','method':'read-only session lifecycle and tool names'})
     else:sources.append({'agent':'Claude','status':'not_installed','method':'No local session store'})
     sessions.sort(key=lambda s:s['lastEventAt'],reverse=True)
-    return {'schemaVersion':1,'host':host,'collectedAt':dt.datetime.fromtimestamp(now,dt.timezone.utc).isoformat(),'status':'available','sources':sources,'sessions':sessions[:30]}
+    result={'schemaVersion':1,'host':host,'collectedAt':dt.datetime.fromtimestamp(now,dt.timezone.utc).isoformat(),'status':'available','sources':sources,'sessions':sessions[:30]}
+    try:
+        from activity_machine_probe import collect as machine_collect
+        result['machine']=machine_collect(host,'mac' if __import__('platform').system()=='Darwin' else 'vm')
+    except (ImportError,OSError,ValueError):pass
+    return result
 
 if __name__=='__main__':
     parser=argparse.ArgumentParser();parser.add_argument('--host',default=socket.gethostname());parser.add_argument('--config');args=parser.parse_args()

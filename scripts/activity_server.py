@@ -6,6 +6,8 @@ from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from urllib.parse import urlsplit, parse_qs
 
 KINDS = {'task.start','task.progress','heartbeat','task.blocked','task.resumed','task.interrupted','task.completed','task.failed','session.start','session.end','subagent.start','subagent.end'}
+OPERATING_KINDS = KINDS | {'decision.requested','decision.resolved'}
+OPERATING_FIELDS = {'stage','nextStep','blockerCategory','owner','decision','classification'}
 TERMINAL = {'agent-reported completion','agent-reported failure'}
 FIELDS = {'schemaVersion','eventId','sourceId','agent','project','repository','taskId','runId','parentRunId','sequence','occurredAt','kind','label','summary','location','branch','commit','pr','evidenceLinks','sessionId'}
 ID = re.compile(r'^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$')
@@ -29,8 +31,26 @@ def safe_link(value):
     return u.scheme=='https' and bool(u.hostname) and not u.username and not u.password and not any(c.isspace() for c in value)
 def validate(e):
     required={'schemaVersion','eventId','sourceId','agent','project','repository','taskId','runId','sequence','occurredAt','kind','label','summary'}
-    if not isinstance(e,dict) or not required<=e.keys() or e.keys()-FIELDS: raise ValueError('unknown or missing fields')
-    if e['schemaVersion']!=1 or type(e['schemaVersion']) is not int or e['kind'] not in KINDS: raise ValueError('unsupported version/kind')
+    if not isinstance(e,dict) or not required<=e.keys(): raise ValueError('unknown or missing fields')
+    version=e['schemaVersion']
+    if type(version) is not int or version not in {1,2} or e['kind'] not in (KINDS if version==1 else OPERATING_KINDS): raise ValueError('unsupported version/kind')
+    if e.keys()-(FIELDS if version==1 else FIELDS|OPERATING_FIELDS): raise ValueError('unknown fields')
+    if version==2:
+        for k,limit in [('stage',80),('nextStep',300),('owner',128)]:
+            if k in e and not bounded(e[k],limit): raise ValueError('invalid operating metadata')
+        if 'classification' in e and e['classification'] not in {'work','test'}: raise ValueError('invalid classification')
+        if 'blockerCategory' in e and e['blockerCategory'] not in {'decision','ci','review','dependency','access','network','capacity','telemetry','other'}: raise ValueError('invalid blocker category')
+        if e['kind'].startswith('decision.'):
+            d=e.get('decision');allowed={'id','recipient','question','options','recommendation','blocking','url','resolution'}
+            required_decision={'id','recipient','question','blocking'} if e['kind']=='decision.requested' else {'id','recipient','resolution'}
+            if not isinstance(d,dict) or not required_decision<=d.keys() or d.keys()-allowed: raise ValueError('invalid decision')
+            if not isinstance(d['id'],str) or not ID.fullmatch(d['id']) or not bounded(d['recipient'],128): raise ValueError('invalid decision identity')
+            for k,limit in [('question',500),('recommendation',300),('resolution',300)]:
+                if k in d and not bounded(d[k],limit): raise ValueError('invalid decision text')
+            if 'blocking' in d and type(d['blocking']) is not bool: raise ValueError('invalid blocking flag')
+            if 'options' in d and (not isinstance(d['options'],list) or not 1<=len(d['options'])<=5 or not all(bounded(v,160) for v in d['options'])): raise ValueError('invalid decision options')
+            if 'url' in d and not safe_link(d['url']): raise ValueError('unsafe decision link')
+        elif 'decision' in e: raise ValueError('decision requires decision lifecycle kind')
     for k in ['eventId','sourceId','taskId','runId','project']:
         if not isinstance(e[k],str) or not ID.fullmatch(e[k]): raise ValueError('invalid identity')
     for k in ['parentRunId','sessionId']:
@@ -206,6 +226,7 @@ class Store:
 class App:
     def __init__(self,config):
         self.config=config; self.store=Store(config['database']); self.stop=threading.Event(); self.rates={}
+        self.operating_cache={};self.operating_lock=threading.Lock()
     def sources(self):
         # Reload protected credentials on every request for immediate revocation/rotation.
         p=pathlib.Path(self.config['credentials'])
@@ -275,7 +296,7 @@ class Handler(BaseHTTPRequestHandler):
     def do_GET(self):
         if self.server.app.config.get('ingestOnly'): return self.reply(404,{'error':'route not found'})
         if self.path=='/assets/activity-dashboard.js':
-            raw=pathlib.Path(__file__).with_name('activity_dashboard.js').read_bytes()
+            raw=pathlib.Path(__file__).with_name('operating_dashboard.js').read_bytes()
             self.send_response(200);self.send_header('Content-Type','application/javascript; charset=utf-8');self.send_header('Content-Length',str(len(raw)));self.send_header('X-Content-Type-Options','nosniff');self.end_headers();self.wfile.write(raw);return
         if self.path=='/assets/ariadne-logo-square.png':
             logo=self.server.app.config.get('logoFile')
@@ -293,10 +314,21 @@ class Handler(BaseHTTPRequestHandler):
         if len(route.query)>2048: return self.reply(400,{'error':'query too long'})
         try: filters=parse_qs(route.query,max_num_fields=20)
         except ValueError:return self.reply(400,{'error':'too many query fields'})
-        if route.path in {'/api/activity','/api/insights','/api/runs','/api/sources','/api/controls','/api/alerts'}:
+        if route.path in {'/api/activity','/api/insights','/api/runs','/api/sources','/api/controls','/api/alerts','/api/operating'}:
             from activity_insights import project,page_runs,sources_view
             try:
                 registry=self.server.app.sources()
+                if route.path=='/api/operating':
+                    from activity_operating import operating
+                    app=self.server.app;key=(filters.get('range',['7d'])[0],filters.get('repo',[''])[0],hashlib.sha256(canonical(registry).encode()).hexdigest())
+                    with app.operating_lock:
+                        cached=app.operating_cache.get(key)
+                        if cached is None or time.time()-cached[0]>10:
+                            data=operating(app.store,registry,app.config,filters)
+                            if len(app.operating_cache)>20:app.operating_cache.clear()
+                            app.operating_cache[key]=(time.time(),data)
+                        else:data=cached[1]
+                    return self.reply(200,data)
                 from activity_controls import controls
                 if route.path=='/api/alerts':
                     from activity_alerts import evaluate
@@ -316,28 +348,13 @@ class Handler(BaseHTTPRequestHandler):
             except ValueError:return self.reply(400,{'error':'invalid query'})
             except Exception:return self.reply(503,{'error':'insights unavailable'})
         if route.path not in {'/','/scorpion-labs/console/'}: return self.reply(404,{'error':'route not found'})
-        p=pathlib.Path(self.server.app.config['consoleHtml'])
-        body=p.read_text() if p.exists() else '<html><head><title>Ariadne</title></head><body><h1>Ariadne</h1></body></html>'
-        # Legacy task labels can be prompt-derived; suppress those excerpts on the new surface.
-        body=re.sub(r'(<div class="repo-work"><strong>[^<]*</strong>)<p>.*?</p>',r'\1<p>Read-only repository session</p>',body,flags=re.DOTALL)
-        body=re.sub(r'<meta\s+http-equiv=[\"\']refresh[\"\'][^>]*>', '', body, flags=re.I)
-        body=re.sub(r'<small>Latest update:.*?</small>', '', body, flags=re.DOTALL)
-        def suppress_embedded(match):
-            try:
-                embedded=json.loads(match[2])
-                for snapshot in embedded.get('agentTelemetry',[]):
-                    for session in snapshot.get('sessions',[]):
-                        session['task']='Read-only repository session';session.pop('update',None)
-                return match[1]+canonical(embedded).replace('<','\\u003c')+match[3]
-            except (ValueError,TypeError,AttributeError):return ''
-        body=re.sub(r'(<script[^>]*id="console-data"[^>]*>)(.*?)(</script>)',suppress_embedded,body,flags=re.DOTALL)
-        body=body.replace('../../../../assets/ariadne-logo-square.png','/assets/ariadne-logo-square.png')
-        body=body.replace('<main class="shell">','<main class="shell">'+dashboard({}),1) if '<main class="shell">' in body else body.replace('</body>',dashboard({})+'</body>')
+        # One canonical operating surface; legacy generated console stays on disk for rollback.
+        body='<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Ariadne · Operations</title></head><body>'+dashboard({})+'</body></html>'
         body=body.replace('</head>', '<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 32 32%22%3E%3Ctext y=%2226%22 font-size=%2228%22%3EA%3C/text%3E%3C/svg%3E"></head>')
         raw=body.encode(); self.send_response(200); self.send_header('Content-Type','text/html; charset=utf-8'); self.send_header('Content-Length',str(len(raw))); self.send_header('Cache-Control','no-store'); self.send_header('X-Content-Type-Options','nosniff'); self.send_header('Content-Security-Policy',"default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; frame-ancestors 'none'"); self.end_headers(); self.wfile.write(raw)
 
 def dashboard(data):
-    return pathlib.Path(__file__).with_name('activity_dashboard.html').read_text()
+    return pathlib.Path(__file__).with_name('operating_dashboard.html').read_text()
 
 def main():
     parser=argparse.ArgumentParser(); parser.add_argument('--config',required=True); parser.add_argument('--backup'); a=parser.parse_args()

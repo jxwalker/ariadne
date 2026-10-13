@@ -14,6 +14,12 @@ def main():
             if snap['status']!='available' or time.time()-collected>90:continue
             source=c.get('snapshotSources',{}).get(host)
             if not source:continue
+            machine=snap.get('machine')
+            if isinstance(machine,dict) and machine.get('host')==host and machine.get('status')=='available':
+                body=canonical({'kind':'machine_snapshot','body':machine})
+                with store.connect() as db:
+                    db.execute('INSERT OR REPLACE INTO observations VALUES(?,?,?,?)',('machine:'+host,'_fleet',collected,body))
+                    db.execute('INSERT OR IGNORE INTO observation_history VALUES(?,?,?)',('machine:'+host+':'+str(int(collected)),collected,body))
             with store.connect() as db: db.execute('INSERT OR REPLACE INTO health VALUES(?,?,?,?)',('snapshot:'+source,collected,'connected',str(len(snap.get('sessions',[])))+' recent sessions'))
             for s in snap.get('sessions',[]):
                 repo=s['repository'];repo=repo if '/' in repo else 'jxwalker/'+repo
