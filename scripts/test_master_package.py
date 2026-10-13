@@ -118,10 +118,11 @@ class PackageHelpers(unittest.TestCase):
             root=pathlib.Path(tmp);pkg=root/'package';pkg.mkdir();backups=root/'backups';backup=backups/'master-p1-pre-fixture';backup.mkdir(parents=True)
             (backup/'scripts').mkdir();(backup/'ledger-before.dump').write_text('isolated backup fixture');(backup/'DEPLOYED_COMMIT').write_text('old')
             (backup/'server.json').write_text('{}')
-            for name in ['activity_server.py','operating_dashboard.html','operating_dashboard.js']:(backup/'scripts'/name).write_text('baseline file')
+            for name in ['activity_server.py','activity_operating.py','activity_sender.py','operating_dashboard.html','operating_dashboard.js']:(backup/'scripts'/name).write_text('baseline file')
             self.assertEqual(module.validate(pkg,backups,'old','old','new',0,'','digest'),'initial')
             with self.assertRaises(ValueError):module.validate(pkg,backups,'old','old','new',1,'digest','digest')
             (pkg/'last-backup').write_text(str(backup))
+            self.assertEqual(module.validate(pkg,backups,'old','old','new',0,'','digest'),'initial')
             for marker in ['old','new']:
                 self.assertEqual(module.validate(pkg,backups,marker,'old','new',1,'digest','digest'),'partial')
             for marker,source in [('other','digest'),('old','wrong')]:
@@ -131,6 +132,7 @@ class PackageHelpers(unittest.TestCase):
                 with self.assertRaises(ValueError):module.validate(pkg,backups,'old','old','new',1,'digest','digest')
             (backup/'server.json').unlink()
             with self.assertRaises(ValueError):module.validate(pkg,backups,'old','old','new',1,'digest','digest')
+            with self.assertRaises(ValueError):module.validate(pkg,backups,'old','old','new',0,'','digest')
             (backup/'server.json').write_text('{}')
             from unittest.mock import patch
             original=pathlib.Path.read_text
@@ -139,8 +141,10 @@ class PackageHelpers(unittest.TestCase):
                 return original(path,*args,**kwargs)
             with patch.object(pathlib.Path,'read_text',unreadable):
                 with self.assertRaises(ValueError):module.validate(pkg,backups,'old','old','new',1,'digest','digest')
-            app=backup/'scripts/activity_server.py';app.unlink()
-            with self.assertRaises(ValueError):module.validate(pkg,backups,'old','old','new',1,'digest','digest')
-            app.write_text('baseline file')
+            for name in ['activity_server.py','activity_operating.py','activity_sender.py','operating_dashboard.html','operating_dashboard.js']:
+                app=backup/'scripts'/name;app.unlink()
+                for namespace in [0,1]:
+                    with self.assertRaises(ValueError):module.validate(pkg,backups,'old','old','new',namespace,'digest','digest')
+                app.write_text('baseline file')
             (backup/'DEPLOYED_COMMIT').write_text('unrelated')
             with self.assertRaises(ValueError):module.validate(pkg,backups,'old','old','new',1,'digest','digest')
