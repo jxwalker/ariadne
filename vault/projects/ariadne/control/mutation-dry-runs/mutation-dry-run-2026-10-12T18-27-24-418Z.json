@@ -1,0 +1,18 @@
+{
+  "schemaVersion": 1,
+  "id": "mutation-dry-run-2026-10-12T18-27-24-418Z",
+  "project": "ariadne",
+  "planId": "mutation-readiness-deployment-2026-10-12T18-27-19-846Z",
+  "target": "deployment",
+  "startedAt": "2026-10-12T18:27:24.418Z",
+  "finishedAt": "2026-10-12T18:27:25.133Z",
+  "status": "passed",
+  "command": "bash /home/james/ariadne-run/controls-closed/dryrun.sh",
+  "exitCode": 0,
+  "bufferExceeded": false,
+  "durationMs": 715,
+  "stdout": "Files /tmp/activity_controls.feadc20.py and /home/james/.local/lib/ariadne-activity/scripts/activity_controls.py differ\ncompiles\n",
+  "stderr": "",
+  "auditRef": "projects/ariadne/control/mutation-readiness-audit.json",
+  "execute": false
+}

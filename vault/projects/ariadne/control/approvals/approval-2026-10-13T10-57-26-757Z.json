@@ -1,0 +1,17 @@
+{
+  "schemaVersion": 1,
+  "id": "approval-2026-10-13T10-57-26-757Z",
+  "project": "ariadne",
+  "requestedAt": "2026-10-13T10:57:26.757Z",
+  "requestedBy": "ariadne-bot",
+  "target": "deployment",
+  "action": "deploy-enrolled-bot-display",
+  "risk": "high",
+  "status": "approved",
+  "reason": "Deploy PR #166 (704a936): opt-in enrolled-bot task title/note/blocker display with credential redaction; sender per-event overrides",
+  "rollback": "bash /home/james/ariadne-run/enrol-display/rollback.sh",
+  "evidenceRefs": [],
+  "decidedAt": "2026-10-13T10:57:28.811Z",
+  "decisionBy": "james",
+  "decisionNotes": "James approved in chat 11:40 BST 13 Oct: Yes, enrol the repo bots in Ariadne reporting as Control Bot described; James PR review 11:51 BST required fixes (snapshot provenance, docs, Live now, redaction) which are in 704a936"
+}

@@ -1,0 +1,31 @@
+{
+  "schemaVersion": 1,
+  "id": "mutation-readiness-deployment-2026-10-13T06-21-11-965Z",
+  "project": "ariadne",
+  "generatedAt": "2026-10-13T06:21:11.965Z",
+  "target": "deployment",
+  "status": "ready_for_bounded_review",
+  "risk": "medium",
+  "scope": "proxmox/codex-dev: Pin claude-dev host key, install remote_collect.py + ariadne-remote-collect timer (30s); Mac bridge untouched",
+  "approvalRef": "approval-2026-10-13T06-21-05-808Z",
+  "approvalStatus": "approved",
+  "authEvidenceRefs": [
+    "control/approvals/approval-2026-10-13T06-21-05-808Z.json"
+  ],
+  "evidenceRefs": [],
+  "dryRunCommand": "bash /home/james/ariadne-run/bridge-retire/dryrun.sh",
+  "proposedLiveCommand": "bash /home/james/ariadne-run/bridge-retire/apply.sh",
+  "postVerificationCommand": "bash /home/james/ariadne-run/bridge-retire/verify.sh",
+  "rollback": "proxmox/codex-dev: codex-dev: bash /home/james/ariadne-run/bridge-retire/rollback.sh",
+  "requiredGates": [
+    "bounded scope recorded",
+    "auth evidence reviewed",
+    "dry-run command reviewed",
+    "rollback command reviewed",
+    "human approval record approved",
+    "CodeRabbit or human review approval",
+    "post-action verification command defined",
+    "deployment target and rollback host verified"
+  ],
+  "execute": false
+}

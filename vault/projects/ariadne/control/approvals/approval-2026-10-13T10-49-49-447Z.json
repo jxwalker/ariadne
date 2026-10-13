@@ -1,0 +1,17 @@
+{
+  "schemaVersion": 1,
+  "id": "approval-2026-10-13T10-49-49-447Z",
+  "project": "ariadne",
+  "requestedAt": "2026-10-13T10:49:49.447Z",
+  "requestedBy": "ariadne-bot",
+  "target": "deployment",
+  "action": "enrol-repo-bot-sources",
+  "risk": "high",
+  "status": "approved",
+  "reason": "Enrol hosted repo bots as scoped Ariadne sources (4 new source IDs; no other source/route changed)",
+  "rollback": "bash /home/james/ariadne-run/enrol-bots/rollback.sh",
+  "evidenceRefs": [],
+  "decidedAt": "2026-10-13T10:49:52.147Z",
+  "decisionBy": "james",
+  "decisionNotes": "James approved in chat 11:40 BST 13 Oct: Yes, enrol the repo bots in Ariadne reporting as Control Bot described; and 11:44 BST: Yes, add apcg-engine, apcg-verifier, apcg-ui and scorpion-eval to Scorpion Build Bot scope"
+}

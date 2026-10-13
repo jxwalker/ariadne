@@ -1,0 +1,17 @@
+{
+  "schemaVersion": 1,
+  "id": "approval-2026-10-13T11-24-22-858Z",
+  "project": "ariadne",
+  "requestedAt": "2026-10-13T11:24:22.858Z",
+  "requestedBy": "ariadne-bot",
+  "target": "deployment",
+  "action": "deploy-bot-source-names",
+  "risk": "high",
+  "status": "approved",
+  "reason": "Deploy PR #167 (b5c6a9f5b424fd25258f9188012645b85202cd37): show enrolled bot name beside opted-in tasks",
+  "rollback": "bash /home/james/ariadne-run/names-display/rollback.sh",
+  "evidenceRefs": [],
+  "decidedAt": "2026-10-13T11:24:24.768Z",
+  "decisionBy": "james",
+  "decisionNotes": "James approved in chat 12:21 BST 13 Oct: readability fix within the reporting rollout, show friendly sourceName beside each opted-in task in Live now and activity table"
+}

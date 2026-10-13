@@ -1,0 +1,17 @@
+{
+  "schemaVersion": 1,
+  "id": "approval-2026-10-13T06-21-05-808Z",
+  "project": "ariadne",
+  "requestedAt": "2026-10-13T06:21:05.808Z",
+  "requestedBy": "ariadne-bot",
+  "target": "deployment",
+  "action": "proxmox/codex-dev: VM-side remote agent collection (claude-dev, M5) - bridge retire VM step",
+  "risk": "high",
+  "status": "approved",
+  "reason": "James chat 2026-10-12 21:58 BST: do everything you can without needing the test",
+  "rollback": "bash /home/james/ariadne-run/bridge-retire/rollback.sh",
+  "evidenceRefs": [],
+  "decidedAt": "2026-10-13T06:21:08.768Z",
+  "decisionBy": "james",
+  "decisionNotes": "Recorded by Ariadne Bot from James chat 21:58 BST 2026-10-12; VM step only, Mac bridge unload deferred to outage test."
+}

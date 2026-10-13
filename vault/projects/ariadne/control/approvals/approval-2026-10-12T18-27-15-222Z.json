@@ -1,0 +1,17 @@
+{
+  "schemaVersion": 1,
+  "id": "approval-2026-10-12T18-27-15-222Z",
+  "project": "ariadne",
+  "requestedAt": "2026-10-12T18:27:15.222Z",
+  "requestedBy": "ariadne-bot",
+  "target": "deployment",
+  "action": "proxmox/codex-dev: install activity_controls.py from main feadc20 (retired/closed control states)",
+  "risk": "high",
+  "status": "approved",
+  "reason": "James chat 2026-10-12 19:19 BST: Yes, retire both May plans and commit the roadmap (closed-state controls needed for the retirement to show on the dashboard)",
+  "rollback": "bash /home/james/ariadne-run/controls-closed/rollback.sh",
+  "evidenceRefs": [],
+  "decidedAt": "2026-10-12T18:27:17.577Z",
+  "decisionBy": "james",
+  "decisionNotes": "Recorded by Ariadne Bot from James chat 19:19 BST 2026-10-12; deploys only scripts/activity_controls.py from merged main feadc20."
+}
