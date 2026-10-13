@@ -112,3 +112,10 @@ fields, and criteria require string IDs/text. Regression tests exercise malforme
 payloads and ensure legacy metadata cannot take the portfolio down.
 
 Fresh CodeRabbit review at ac51e1d55a376e2e129c3234cacef5970dad2106: fixed 4262380597. Malformed /work pagination now returns 400 rather than 503, with real-handler HTTP tests for invalid limit/offset.
+
+
+Codex re-review at f645bee941cd121f9d156c12bd4c94236b2e93d2: fixed
+4262470463. Expired/invalid waivers now block dependencies and every advancing
+transition/acceptance; history stays immutable. The snapshot/API and work card
+mark inactive waivers. Infinite expiry is rejected. A real-PG regression waits
+for actual expiry, proves downstream rejection, and checks history is unchanged.

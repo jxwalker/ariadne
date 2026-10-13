@@ -58,7 +58,7 @@ def render(data,route,filters):
             parts.append(f'<p>Owner: {esc(b.get("owner"))} · {source(n)}</p><p>Source claim: {esc(b.get("sourceStatus"))}</p><p>Next: {esc(b.get("nextAction"))}</p>')
             parts.append('<p>PR attribution: '+('explicit reference' if any(r.get('kind')=='github_pr' and r.get('url') and not r.get('classification') for r in refs) else 'mentioned in source text, unverified' if refs else 'pre-PR / unattributed')+'</p>')
             if b.get('scopeExclusion'):parts.append('<p>Excluded from baseline commitments: '+esc(b['scopeExclusion'])+'</p>')
-            if isinstance(b.get('waiver'),dict):parts.append('<p class="blocked">WAIVER · expiry '+esc(b['waiver'].get('expiresAt'))+'</p><pre>'+esc(json.dumps(b['waiver']))+'</pre>')
+            if isinstance(b.get('waiver'),dict):parts.append('<p class="blocked">WAIVER '+('inactive (expired or invalid)' if n.get('waiverInactive') else 'recorded')+' · expiry '+esc(b['waiver'].get('expiresAt'))+'</p><pre>'+esc(json.dumps(b['waiver']))+'</pre>')
             if b.get('dependencyProvenance'):parts.append('<p>Dependencies: '+esc(json.dumps(b['dependencyProvenance']))+'</p>')
             if n.get('blockers'):parts.append('<p class="blocked">Dependencies: '+esc(json.dumps(n['blockers']))+'</p>')
             if b.get('blockerSince'):parts.append('<p>Blocker age: '+age(b['blockerSince'])+'</p>')

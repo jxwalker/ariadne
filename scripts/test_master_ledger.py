@@ -253,6 +253,27 @@ class LedgerContract(unittest.TestCase):
         self.ok('create',p+'source-shape',kind='work',parent=p+'m',body=body|{'source':{}})
         self.ok('create',p+'options-shape',kind='decision',body={'options':[]})
 
+    def test_expired_waiver_blocks_dependencies_without_erasing_history(self):
+        p=self.fixture();w=p+'w';x=p+'x';rev=1
+        for state in ['ready','active','verification']:rev=self.ok('transition',w,rev,state=state)
+        self.assertFalse(self.cmd('override',w,rev,waivedCriteria=[p+'wc'],risk='test risk',expiresAt='infinity')['ok'])
+        expiry=self.sql("SELECT to_jsonb(now()+interval '3 seconds');",database='ledger_test')
+        self.ok('override',w,rev,waivedCriteria=[p+'wc'],risk='test risk',expiresAt=expiry)
+        xrev=self.ok('dependencies',x,1,dependencies=[w])
+        self.assertEqual(self.sql("SELECT master.blockers('%s');"%x,database='ledger_test'),[])
+        for state in ['ready','active','verification']:xrev=self.ok('transition',x,xrev,state=state)
+        accepted=self.sql("SELECT to_jsonb(a) FROM master.accepted a WHERE work_id='%s';"%w,database='ledger_test')
+        self.sql("SELECT pg_sleep(greatest(0,extract(epoch FROM ('%s'::timestamptz-now())))::double precision+0.05);"%expiry,database='ledger_test',raw=True)
+        blockers=self.sql("SELECT master.blockers('%s');"%x,database='ledger_test')
+        self.assertEqual(blockers[0]['reason'],'expired or invalid waiver')
+        for state in ['ready','active','verification']:
+            self.assertFalse(self.cmd('transition',x,xrev,state=state)['ok'])
+        self.assertFalse(self.cmd('accept',x,xrev)['ok'])
+        self.assertEqual(self.sql("SELECT to_jsonb(a) FROM master.accepted a WHERE work_id='%s';"%w,database='ledger_test'),accepted)
+        self.assertTrue(next(n for n in self.sql('SELECT master.snapshot();',database='ledger_test')['nodes'] if n['id']==w)['waiverInactive'])
+        progress=self.sql("SELECT to_jsonb(p) FROM master.progress p WHERE baseline_id='%s';"%(p+'b'),database='ledger_test')
+        self.assertEqual(progress['expired_waived_criteria'],1)
+
     def test_append_only(self):
         with self.assertRaises(AssertionError):self.sql('DELETE FROM master.journal;',database='ledger_test')
 

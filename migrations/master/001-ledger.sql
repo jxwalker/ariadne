@@ -32,10 +32,20 @@ CREATE TRIGGER evidence_immutable BEFORE UPDATE OR DELETE ON master.evidence FOR
 CREATE FUNCTION master.node_state(n master.nodes) RETURNS jsonb LANGUAGE sql STABLE SET search_path=pg_catalog,master AS $$
  SELECT to_jsonb(n)||jsonb_build_object('dependencies',coalesce((SELECT jsonb_agg(dependency_id ORDER BY dependency_id) FROM master.dependencies WHERE work_id=n.id),'[]'));
 $$;
+CREATE FUNCTION master.waiver_inactive(n master.nodes) RETURNS boolean LANGUAGE plpgsql STABLE SET search_path=pg_catalog,master AS $$
+DECLARE deadline timestamptz;
+BEGIN
+ IF n.kind IS DISTINCT FROM 'work' OR n.body->>'acceptanceMode' IS DISTINCT FROM 'waiver' THEN RETURN false; END IF;
+ BEGIN
+  deadline:=(n.body->'waiver'->>'expiresAt')::timestamptz;
+  RETURN deadline IS NULL OR NOT isfinite(deadline) OR deadline<=now();
+ EXCEPTION WHEN invalid_datetime_format OR datetime_field_overflow THEN RETURN true;
+ END;
+END $$;
 CREATE FUNCTION master.blockers(w text) RETURNS jsonb LANGUAGE sql STABLE SET search_path=pg_catalog,master AS $$
- SELECT coalesce(jsonb_agg(jsonb_build_object('id',d.dependency_id,'state',coalesce(n.body->>'state','unresolved')) ORDER BY d.dependency_id),'[]')
+ SELECT coalesce(jsonb_agg(jsonb_build_object('id',d.dependency_id,'state',coalesce(n.body->>'state','unresolved'),'reason',CASE WHEN n.body->>'state'='accepted' AND master.waiver_inactive(n) THEN 'expired or invalid waiver' ELSE 'unresolved or unaccepted' END) ORDER BY d.dependency_id),'[]')
  FROM master.dependencies d LEFT JOIN master.nodes n ON n.id=d.dependency_id
- WHERE d.work_id=w AND (n.id IS NULL OR n.kind NOT IN ('work','external') OR (n.kind='work' AND n.body->>'state' IS DISTINCT FROM 'accepted') OR (n.kind='external' AND n.body->>'state' IS DISTINCT FROM 'resolved'));
+ WHERE d.work_id=w AND (n.id IS NULL OR n.kind NOT IN ('work','external') OR (n.kind='work' AND (n.body->>'state' IS DISTINCT FROM 'accepted' OR master.waiver_inactive(n))) OR (n.kind='external' AND n.body->>'state' IS DISTINCT FROM 'resolved'));
 $$;
 CREATE FUNCTION master.command(actor text, c jsonb) RETURNS jsonb LANGUAGE plpgsql SECURITY DEFINER
  SET search_path=pg_catalog,master AS $$
@@ -213,7 +223,7 @@ BEGIN
      IF NOT FOUND AND op='accept' THEN RAISE EXCEPTION 'missing stale unrelated or synthetic required evidence: % %',criterion->>'id',dep; END IF;
      IF FOUND THEN INSERT INTO master.acceptance_evidence VALUES(target,criterion->>'id',dep,e.id,cid); END IF;
     END LOOP;
-    IF op='override' AND (coalesce(c->>'risk','')='' OR (c->>'expiresAt')::timestamptz <= now() OR c->>'expiresAt' IS NULL OR NOT (c->'waivedCriteria' ? (criterion->>'id'))) THEN RAISE EXCEPTION 'override requires explicit criteria risk expiry'; END IF;
+    IF op='override' AND (coalesce(c->>'risk','')='' OR NOT isfinite((c->>'expiresAt')::timestamptz) OR (c->>'expiresAt')::timestamptz <= now() OR c->>'expiresAt' IS NULL OR NOT (c->'waivedCriteria' ? (criterion->>'id'))) THEN RAISE EXCEPTION 'override requires explicit criteria risk expiry'; END IF;
     INSERT INTO master.accepted VALUES(target,criterion->>'id',CASE WHEN op='accept' THEN e.id END,cid);
    END LOOP;
    UPDATE master.nodes SET revision=revision+1,body=body||jsonb_build_object('state','accepted','acceptedBy',actor,'acceptanceCommand',cid,'acceptanceMode',CASE WHEN op='override' THEN 'waiver' ELSE 'evidence' END,'waiver',CASE WHEN op='override' THEN jsonb_build_object('reason',c->>'reason','risk',c->>'risk','expiresAt',c->>'expiresAt','criteria',c->'waivedCriteria') ELSE NULL END) WHERE id=target;
@@ -252,7 +262,7 @@ CREATE VIEW master.progress AS
  WHERE n.kind='baseline' GROUP BY n.id;
 CREATE FUNCTION master.snapshot() RETURNS jsonb LANGUAGE sql STABLE SECURITY DEFINER SET search_path=pg_catalog,master AS $$
  SELECT jsonb_build_object(
- 'nodes',coalesce((SELECT jsonb_agg(to_jsonb(n)||jsonb_build_object('blockers',master.blockers(n.id)) ORDER BY n.id) FROM master.nodes n),'[]'),
+ 'nodes',coalesce((SELECT jsonb_agg(to_jsonb(n)||jsonb_build_object('blockers',master.blockers(n.id),'waiverInactive',master.waiver_inactive(n)) ORDER BY n.id) FROM master.nodes n),'[]'),
  'aliases',coalesce((SELECT jsonb_agg(a ORDER BY a.source,a.alias) FROM master.aliases a),'[]'),
  'dependencies',coalesce((SELECT jsonb_agg(d ORDER BY d.work_id,d.dependency_id) FROM master.dependencies d),'[]'),
  'scope',coalesce((SELECT jsonb_agg(s ORDER BY s.baseline_id,s.criterion_id) FROM master.scope s),'[]'),
