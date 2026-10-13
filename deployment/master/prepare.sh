@@ -27,6 +27,6 @@ for p in root.rglob('*'):
 pathlib.Path(sys.argv[2]).write_text(json.dumps(links,sort_keys=True))
 PYLINK
 find "$PKG/stage" -type f -print0 | sort -z | xargs -0 sha256sum > "$PKG/source-hashes.txt"
-sha256sum "$PKG"/*.sh "$PKG/HEAD_SHA" "$PKG/PLAN.md" "$PKG/import-commands.json" "$PKG/dependency-links.json" >> "$PKG/source-hashes.txt"
+sha256sum "$PKG/check-approval.py" "$PKG"/*.sh "$PKG/HEAD_SHA" "$PKG/PLAN.md" "$PKG/import-commands.json" "$PKG/dependency-links.json" >> "$PKG/source-hashes.txt"
 sha256sum "$PKG/source-hashes.txt"
 printf '%s\n' 'PASS: bounded stage, roles, isolated contracts and existing operations; no live mutation.'

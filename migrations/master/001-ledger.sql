@@ -88,6 +88,7 @@ BEGIN
       OR jsonb_array_length(coalesce(b->'requiredKinds','[]'))=0 OR coalesce((b->>'maxAgeSeconds')::integer,0)<=0
       OR b->'requiredKinds' ? 'agent_run' THEN RAISE EXCEPTION 'invalid acceptance policy'; END IF;
    END IF;
+   IF c->>'kind' IN ('product','policy','decision','external') AND c->>'parent' IS NOT NULL THEN RAISE EXCEPTION 'root nodes must have no parent'; END IF;
    IF c->>'kind' IN ('baseline','phase','milestone','work') AND NOT EXISTS(
     SELECT 1 FROM master.nodes WHERE id=c->>'parent' AND kind=CASE c->>'kind' WHEN 'baseline' THEN 'product' WHEN 'phase' THEN 'baseline' WHEN 'milestone' THEN 'phase' ELSE 'milestone' END)
     THEN RAISE EXCEPTION 'invalid hierarchy'; END IF;

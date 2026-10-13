@@ -12,3 +12,15 @@ class PackageHelpers(unittest.TestCase):
                 result=subprocess.run(['bash','-c',script,'test',str(root/'common.sh')],capture_output=True,text=True)
                 self.assertEqual(result.returncode,expected,result.stderr)
                 self.assertEqual(result.stdout.strip(),'3:0' if success else '20:1')
+
+    def test_separate_operator_approval_binds_exact_package(self):
+        import importlib.util
+        spec=importlib.util.spec_from_file_location('approval_check',ROOT/'deployment/master/check-approval.py')
+        module=importlib.util.module_from_spec(spec);spec.loader.exec_module(module)
+        head='a'*40;digest='b'*64
+        record={'status':'approved','project':'ariadne','target':'deployment','decisionBy':'James','decidedAt':'2026-10-13T00:00:00Z','action':f'Master phase 1 exact-head deployment: {head}; manifest {digest}'}
+        module.validate(record,head,digest)
+        for patch in [{'status':'requested'},{'decisionBy':'Ariadne Bot (transcription)'},{'action':'Unrelated approval'},{'decidedAt':None}]:
+            with self.assertRaises(ValueError):module.validate(record|patch,head,digest)
+        with self.assertRaises(ValueError):module.validate(record,'c'*40,digest)
+        with self.assertRaises(ValueError):module.validate(record,head,'d'*64)

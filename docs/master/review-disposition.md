@@ -75,3 +75,12 @@ waiver lists must match exactly the work's criterion IDs. Real PG tests reject
 malformed kinds, extra/duplicate/null waiver IDs and retain a valid override.
 
 Claude 170 finding 14: dependency IDs are now captured in command journal before/after state, including incoming split rewiring; a real-PG regression checks the old and new edge sets.
+
+
+Codex re-review at a3442b1fd973d0226896f6474f0f6b266c36c01c: fixed
+4261991135 by removing all automated approval decisions. The wrapper accepts
+only a separately recorded approved operator record bound to exact head/manifest;
+bot transcription can create only a pending request. Fixed 4261991147 by requiring
+product/policy/decision/external root nodes to have no parent. Isolated approval
+validation tests and real-PG root-parent regression tests cover both changes.
+The earlier exact-return-path fix is superseded by the explicit supplied approval.

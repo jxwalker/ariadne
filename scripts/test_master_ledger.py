@@ -211,6 +211,14 @@ class LedgerContract(unittest.TestCase):
         body=self.sql("SELECT body FROM master.nodes WHERE id='%s';"%w,database='ledger_test')
         self.assertEqual(body['acceptanceMode'],'waiver');self.assertEqual(body['waiver']['expiresAt'],expiry)
 
+    def test_root_parent_links_rejected(self):
+        p=self.fixture()
+        for kind,body in [('product',{}),('policy',{'requiredKinds':['ci'],'maxAgeSeconds':3600}),('decision',{}),('external',{})]:
+            target=p+'root-'+kind
+            for parent in [target,p]:
+                self.assertFalse(self.cmd('create',target,kind=kind,parent=parent,body=body)['ok'])
+            self.ok('create',target,kind=kind,body=body)
+
     def test_append_only(self):
         with self.assertRaises(AssertionError):self.sql('DELETE FROM master.journal;',database='ledger_test')
 

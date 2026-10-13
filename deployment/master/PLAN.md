@@ -41,7 +41,7 @@ blocked if no installed browser has its libraries; do not install host packages 
 
 ### Authorization source
 
-Any approval record produced by the wrapper is a bot transcription of James's
+Any approval request produced by the wrapper is a bot transcription of James's
 16:29 BST brief quoted above, with this section as its source pointer. It is not
 a James-authored decision or signature. The current FIX ONLY / FREEZE assignment
 does not authorize executing this package.
@@ -56,3 +56,12 @@ is restored if backed up, otherwise the newly added file is removed. Ledger sche
 pg_hba/pg_ident peer map, PG service and backup timer are retained. Dumps made with
 --no-owner --no-acl do not prove ownership/grant restoration; a data recovery plan
 must separately restore and verify those and peer configuration.
+
+The wrapper never makes approval decisions. `audited.sh request` may produce only
+a pending bot-authored brief transcription. James separately records an approval
+for the exact head and source-manifest digest. `audited.sh plan <approval.json>`
+requires that approved record, with operator decision attribution and the exact
+head/digest action; it rejects bot-authored decisions and mismatched packages.
+No request, decision, readiness plan or execution is invoked during FREEZE.
+This is a procedural gate, not cryptographic authentication: the phase 1 same-uid
+operator-equivalence limitation still applies.
