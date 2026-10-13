@@ -52,6 +52,13 @@ def flush(c):
             try:
                 receipt=deliver(c,p.read_bytes()); p.unlink(); retry={'at':0,'attempt':0}
                 (spool/'.last-receipt').write_text(json.dumps(receipt))
+                if receipt.get('operatorDecisions'):
+                    replies=spool/'.operator-decisions.json.state'
+                    known=json.loads(replies.read_text()) if replies.exists() else {}
+                    for reply in receipt['operatorDecisions']:
+                        known[reply['requestId']+':'+reply['requestRevision']]=reply
+                    replies.write_text(json.dumps(dict(list(known.items())[-100:])))
+                    replies.chmod(0o600)
             except Exception:
                 retry['attempt']=min(retry['attempt']+1,10); retry['at']=time.time()+min(300,2**retry['attempt']); break
         state.write_text(json.dumps(retry))

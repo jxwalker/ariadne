@@ -269,6 +269,19 @@ class Handler(BaseHTTPRequestHandler):
         raw=canonical(obj).encode(); self.send_response(status); self.send_header('Content-Type','application/json'); self.send_header('Content-Length',str(len(raw))); self.send_header('Cache-Control','no-store'); self.end_headers(); self.wfile.write(raw)
     def do_POST(self):
         try:
+            if self.path=='/api/operator-response':
+                if self.server.app.config.get('disableQueries') or self.server.app.config.get('ingestOnly'):return self.reply(404,{'error':'route not found'})
+                from activity_decisions import controller, StaleDecision
+                if self.headers.get('Transfer-Encoding') or not self.headers.get('Content-Length'):return self.reply(411,{'error':'content length required'})
+                n=int(self.headers['Content-Length'])
+                if not 0<n<=4096:return self.reply(413,{'error':'body too large'})
+                if self.headers.get('Content-Type','').split(';')[0]!='application/json':return self.reply(415,{'error':'JSON required'})
+                self.connection.settimeout(5)
+                raw=self.rfile.read(n)
+                if len(raw)!=n:raise ValueError('truncated body')
+                try:return self.reply(200,controller(self.server.app).answer(self.headers,self.client_address[0],json.loads(raw)))
+                except StaleDecision as exc:return self.reply(409,{'error':str(exc)})
+                except RuntimeError:return self.reply(503,{'error':'Operator ledger unavailable; response was not confirmed'})
             if self.path not in {'/ingest/v1/events','/ingest/v1/github'}: return self.reply(404,{'error':'route not found'})
             self.connection.settimeout(5)
             if self.headers.get('Transfer-Encoding') or not self.headers.get('Content-Length'): return self.reply(411,{'error':'content length required'})
@@ -280,7 +293,13 @@ class Handler(BaseHTTPRequestHandler):
             body=json.loads(raw)
             if self.path.endswith('/events'):
                 e=validate(body); self.server.app.authenticate(self.headers,raw,e); received,duplicate=self.server.app.store.accept(e,raw)
-                return self.reply(200 if duplicate else 202,{'eventId':e['eventId'],'receivedAt':received,'duplicate':duplicate})
+                receipt={'eventId':e['eventId'],'receivedAt':received,'duplicate':duplicate}
+                if self.server.app.config.get('operatorActions',{}).get('enabled'):
+                    try:
+                        from activity_decisions import controller
+                        receipt['operatorDecisions']=controller(self.server.app).replies(e)
+                    except Exception:pass  # Ledger availability never rejects a signed observation.
+                return self.reply(200 if duplicate else 202,receipt)
             secret=self.server.app.config.get('githubSecretFile')
             if not secret: raise PermissionError('GitHub onboarding pending')
             expected='sha256='+hmac.new(pathlib.Path(secret).read_bytes().strip(),raw,hashlib.sha256).hexdigest()
@@ -311,6 +330,11 @@ class Handler(BaseHTTPRequestHandler):
             except Exception: return self.reply(503,{'status':'unavailable'})
         # On private listener only. It MUST be behind a tailnet HTTPS proxy; never expose this listener publicly.
         route=urlsplit(self.path)
+        if route.path=='/api/operator-session':
+            try:
+                from activity_decisions import controller
+                return self.reply(200,controller(self.server.app).session(self.headers,self.client_address[0]))
+            except Exception:return self.reply(503,{'error':'Operator ledger unavailable'})
         if len(route.query)>2048: return self.reply(400,{'error':'query too long'})
         try: filters=parse_qs(route.query,max_num_fields=20)
         except ValueError:return self.reply(400,{'error':'too many query fields'})
@@ -340,6 +364,12 @@ class Handler(BaseHTTPRequestHandler):
                             if len(app.operating_cache)>20:app.operating_cache.clear()
                             app.operating_cache[key]=(time.time(),data)
                         else:data=cached[1]
+                    if app.config.get('operatorActions',{}).get('enabled'):
+                        try:
+                            from activity_decisions import hide_answered
+                            from master_dashboard import snapshot
+                            data=hide_answered(data,snapshot())
+                        except Exception:pass  # Keep operational evidence visible when the ledger is unavailable.
                     return self.reply(200,data)
                 from activity_controls import controls
                 if route.path=='/api/alerts':
