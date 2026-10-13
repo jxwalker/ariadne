@@ -10,15 +10,16 @@ class PackageHelpers(unittest.TestCase):
             digest=hashlib.sha256(manifest.encode()).hexdigest()
             (root/'common.sh').write_text(f'PKG={root}\nREPO={root}\nEVIDENCE={root}\nHEAD_SHA={head}\n')
             (root/'audited.sh').write_text((ROOT/'deployment/master/audited.sh').read_text())
+            (root/'check-approval.py').write_text((ROOT/'deployment/master/check-approval.py').read_text())
             fake=root/'fake';fake.mkdir();log=root/'calls'
             (fake/'npm').write_text(f'#!/bin/sh\nprintf "%s\\n" "$*" >> {log}\n')
             (fake/'npm').chmod(0o700)
             env={**os.environ,'PATH':str(fake)+':'+os.environ['PATH']}
             result=subprocess.run(['bash',str(root/'audited.sh'),'plan'],env=env,capture_output=True,text=True)
             self.assertNotEqual(result.returncode,0);self.assertFalse(log.exists())
-            approval={'status':'approved','project':'ariadne','target':'deployment','decisionBy':'James (isolated fixture)',
-                      'action':'deploy '+head,'decisionNotes':'bound fixture '+digest}
-            path=root/'approval.json';path.write_text(json.dumps({**approval,'action':'wrong head'}))
+            approval={'status':'approved','project':'ariadne','target':'deployment','id':'approval-fixture','decisionBy':'James','decidedAt':'2026-10-13T00:00:00Z',
+                      'action':f'Master phase 1 exact-head deployment: {head}; manifest {digest}'}
+            path=root/'vault/projects/ariadne/control/approvals/approval-fixture.json';path.parent.mkdir(parents=True);path.write_text(json.dumps({**approval,'action':'wrong head'}))
             result=subprocess.run(['bash',str(root/'audited.sh'),'plan',str(path)],env=env,capture_output=True,text=True)
             self.assertNotEqual(result.returncode,0);self.assertFalse(log.exists())
             path.write_text(json.dumps(approval))

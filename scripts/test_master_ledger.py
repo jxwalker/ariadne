@@ -287,3 +287,29 @@ class LedgerContract(unittest.TestCase):
         with self.assertRaises(AssertionError):self.sql('DELETE FROM master.journal;',database='ledger_test')
 
 if __name__=='__main__':unittest.main()
+
+    def test_operator_reply_resolves_aliased_master_decision_durably(self):
+        from types import SimpleNamespace
+        from unittest.mock import patch
+        from activity_decisions import OperatorActions,hide_answered
+        p='reply'+uuid.uuid4().hex[:10];repo='jxwalker/ariadne';source='box-ariadne-bot'
+        self.ok('create',p,kind='decision',body={'title':'Known pilot decision','state':'open'},aliases=[{'source':source+'/'+repo,'alias':p}])
+        app=SimpleNamespace(config={'operatorActions':{'enabled':True,'origin':'https://dashboard.example','allowedLogins':['operator@example'],'allowedClientIPs':['100.64.1.10']}},store=object(),sources=lambda:{})
+        def read():return self.sql('SELECT master.snapshot();',database='ledger_test')
+        def write(c):return self.sql("SELECT master.command('james','%s');"%json.dumps(c).replace("'","''"),database='ledger_test')
+        actions=OperatorActions(app,read=read,write=write)
+        headers={'Tailscale-User-Login':'operator@example','X-Forwarded-For':'100.64.1.10','Origin':'https://dashboard.example'}
+        headers['X-Ariadne-CSRF']=actions.session(headers,'127.0.0.1')['csrfToken']
+        question={'sourceId':source,'repo':repo,'runId':p+'run','requestId':p,'requestRevision':'a'*64,'kind':'explicit-decision','title':'Pilot','reason':'Choose a boundary','source':'Ariadne Bot','recommendation':'Operator only','options':['Operator only','Add agents']}
+        body={'sourceId':source,'repo':repo,'requestId':p,'requestRevision':'a'*64,'commandId':str(uuid.uuid4()),'resolution':"Operator only; preserve James's decision"}
+        with patch('activity_operating.operating',return_value={'needsYou':[question]}):
+            self.assertEqual(actions.answer(headers,'127.0.0.1',body)['decisionId'],p)
+            self.assertTrue(actions.answer(headers,'127.0.0.1',body)['duplicate'])
+        ledger=read();node=next(n for n in ledger['nodes'] if n['id']==p)
+        self.assertEqual(node['revision'],2);self.assertEqual(node['body']['resolution'],body['resolution'])
+        self.assertEqual(node['body']['state'],'resolved');self.assertEqual(node['body']['requestRevision'],'a'*64)
+        self.assertEqual(hide_answered({'needsYou':[question]},ledger)['needsYou'],[])
+        self.assertEqual(actions.replies({'sourceId':source,'repository':repo,'runId':p+'run'})[0]['resolution'],body['resolution'])
+        self.assertEqual(actions.replies({'sourceId':'other','repository':repo,'runId':p+'run'}),[])
+        self.assertEqual(len([n for n in ledger['nodes'] if n['id']==p]),1)
+        self.assertEqual(len([j for j in ledger['history'] if j['target']==p]),2)

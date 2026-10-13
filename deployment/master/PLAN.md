@@ -1,87 +1,67 @@
-# Bounded phase 1 application deployment
+# Phase 1 pilot ledger, dashboard and operator responses
 
-This combined candidate includes the ledger and roadmap/dashboard PRs plus operator
-responses requested by James in this Codex chat on 13 October 2026. His latest authorization
-is to review them and merge/deploy only when current checks and reviews are green.
-The plan wrapper requires a separately supplied approval record which names the reviewed
-head and artifact-manifest digest; it cannot create or approve its own authorization.
-Record the original human instruction and the adapter which transcribed it honestly.
-
-The additional application scope is `activity_decisions.py`, `activity_operating.py`,
-`operating_dashboard.js` and `activity_sender.py`, plus the protected `operatorActions`
-configuration. Preparation binds the existing James login and only the two existing Mac
-tailnet addresses into the manifest. Neither cloud bots nor VM identities gain dashboard
-writer access. These responses only create audited decision records through the same
-command API and return bounded replies to the original signed source/repository/run.
-No external action executes through the response button. No new provider, model routing,
-listener, public query endpoint, agent ledger credential or tailnet policy is introduced.
-Rollback restores all seven changed application files and only the operator configuration
-namespace while preserving the ledger and other current configuration.
+James authorized review and conditional merge/deployment of the ledger and dashboard
+in this Codex chat on 13 October 2026, and requested an easy way to act on Needs you.
+Preparation and execution are separate. A separately recorded approval must bind the
+reviewed Git head and immutable package-manifest digest. The wrapper cannot approve
+itself; the canonical runner also binds the complete approval record and rejects
+changed records. Record the direct human instruction verbatim and identify Codex as
+the transcribing adapter. This is existing task authorization, not a new human signature.
+Merge is separately gated on the exact current head, actual checks and review findings.
 
 Expected deployed commit: 2039065d8d9a70983d3470db05adc0db94afea6d
 
-Run prepare.sh in a fresh exact-head package before generating a readiness plan. Preparation only reads live state and runs isolated tests. The plan embeds the manifest SHA-256 literally; its independent system sha256sum checks run before any package script in dry-run, live and post-verification commands. Never regenerate a manifest for an existing plan.
+Prepare a fresh package from the exact reviewed Git revision. Copy physical installed
+dependencies, compile the staged canonical runner, validate internal dependency links,
+run isolated PostgreSQL contract tests and read-only service/role/API checks. Bind
+all staged bytes, imports, scripts, HEAD_SHA, this plan and protected operator-actions
+configuration into the manifest. Never regenerate a manifest for an existing plan.
+Independent system sha256sum verifies the literal manifest digest and each input before
+any package script in dry-run, live execution and post-verification.
 
-Install a CI-green, reviewed PR head without merging. Stage from exact Git revision;
-compile and execute the immutable staged canonical runner, copy and hash installed dependencies and their internal symlinks, verify hashes, real isolated PostgreSQL tests, least-privilege role and existing operations.
-Keep all evidence under ~/ariadne-run/master-p1; use its own vault, never ariadne-dev.
+Scope: migrate the existing local PostgreSQL 17 ledger; preserve data; add the bounded
+james-to-ariadne_master Unix peer map; retain database ownership with james and grant
+only connection and function access to the application role. Import three real sourced
+draft pilot roadmaps through the command API, preserving raw snapshots, explicit aliases,
+source limitations and zero inferred acceptance. Install seven application files:
+activity_server.py, master_dashboard.py, operating_dashboard.html, activity_decisions.py,
+activity_operating.py, operating_dashboard.js and activity_sender.py. Set the exact
+source deployment marker and restart only ariadne-activity.
 
-Scope: migrate the existing local PG17 ledger; add the approved james-to-ariadne_master
-Unix peer map; transfer database ownership to james and grant only connection/function access; execute only reviewed real draft imports through the canonical runner;
-install activity_server.py, master_dashboard.py, operating_dashboard.html into existing
-activity service; update its deployment marker and restart only ariadne-activity.
-Each candidate uses a separate immutable deployment package path; never overwrite an earlier plan package. No new listener, tailnet/public/ACL/firewall changes, agent credentials, system package
-install, external system writes, repository plan overwrite, or PR merge.
+The protected operatorActions namespace binds James's existing tailnet login and the
+two existing Macs' IPv4/IPv6 addresses. No VM/cloud observation identity gains general
+ledger writes. Responses are audited decisions through master.command, with exact
+signed question versions, CSRF, origin checks and concurrency protection. A response
+updates a known aliased master decision, or creates a new explicit decision. It is
+available only to the original signed source/repository/run on its next report. Delivery
+is distinct from agent acknowledgement and execution. The suggested text comes from
+the existing agent report; no new provider or model call is introduced.
 
-Before execution back up the complete existing scripts, marker, peer configurations and
-ledger dump. Apply is invoked only by deployment-mutation-execute with exact --confirm-plan;
-ARIADNE_MASTER_DEPLOY is an accident guard, not authorization. Plan, audit, dry-run, confirmed
-execute and post-verification use the canonical runner. Approval records quote verbatim:
+No external action executes through a response button. No new listener, public query
+endpoint, agent credential, tailnet/ACL/firewall change, system package installation,
+model routing change or repository roadmap overwrite is included. Phase 1 remains
+operator-only; general agent writes belong to Phase 2.
 
-James 2026-10-13 16:29 BST "PostgreSQL is the recommended ledger; use the existing VM unless evidence requires another arrangement. Prepare and execute necessary changes through the existing bounded, authorized deployment path."
+Use an isolated evidence folder and vault via ARIADNE_MASTER_EVIDENCE, and a fresh
+checkout via ARIADNE_MASTER_REPO. Never overwrite another agent's vault or package.
+Back up the existing application scripts, marker, server configuration, peer files and
+ledger dump before apply. Run mutation-readiness, audit, dry-run and confirmed execution
+through the canonical staged ariadne runner. Exact --confirm-plan matching is required.
+ARIADNE_MASTER_DEPLOY is only an accident guard. Transactional migrations and exact
+command IDs allow retry of the same immutable package after assessed partial failure;
+retain the original pre-apply backup. A different package requires a new approved plan.
 
-The 17:28 BST assignment update explicitly permits this new audited live-script package
-and operator peer auth after CI green and valid review findings addressed. Leave PRs open.
+Rollback needs a separately audited confirmed plan. Back up the current ledger again,
+restore the seven previous files (remove newly introduced ones), deployment marker and
+only the prior operatorActions configuration namespace, then restart activity. Preserve
+ledger schema/data/journal, database grants/ownership, peer map, PostgreSQL service and
+backup timer. Never restore an old dump over production as application rollback. Dumps
+using --no-owner --no-acl do not prove access restoration; data recovery must separately
+restore and verify those privileges and peer configuration.
 
-Application rollback requires a new audited confirmed plan. It restores backed-up scripts
-and deployment marker, takes another ledger backup and restarts activity. It retains all
-ledger state, acceptance history, peer operator access, PostgreSQL service and daily local
-dump timer. Never run a data downgrade or restore over production as application rollback.
-Partial apply must be assessed from its audit: migration transaction is atomic; imports
-are idempotent. The dry-run intentionally requires no master schema for first deployment. It does not perform an apply retry.
-A failed first cutover does not authorize silently rerunning a different deployment plan.
-
-Post-verification: bytes/marker, role restrictions, private views and existing operations,
-three sourced draft products, no inferred acceptance, unchanged listening addresses.
-Separate final verification records actual service restart persistence, nonempty isolated
-backup restore and a signed test-classified ingestion receipt. Browser proof may be reported
-blocked if no installed browser has its libraries; do not install host packages for it.
-
-### Authorization source
-
-Any approval request produced by the wrapper is a bot transcription of James's
-16:29 BST brief quoted above, with this section as its source pointer. It is not
-a James-authored decision or signature. The current FIX ONLY / FREEZE assignment
-does not authorize executing this package.
-
-Apply can resume the same immutable package after partial failure: the migration
-is transactional and skipped only when its recorded version is present; imports
-replay exact command IDs, and peer map entries are added only once. The original
-pre-apply backup is retained across retries. A different package needs a fresh
-approved plan. Application rollback restores the previous activity server and
-operations dashboard and deployment marker; the master dashboard
-is restored if backed up, otherwise the newly added file is removed. Ledger schema/data/journal, database ownership/grants,
-pg_hba/pg_ident peer map, PG service and backup timer are retained. Dumps made with
---no-owner --no-acl do not prove ownership/grant restoration; a data recovery plan
-must separately restore and verify those and peer configuration.
-
-The wrapper never makes approval decisions. `audited.sh request` may produce only
-a pending bot-authored brief transcription. James separately records an approval
-for the exact head and source-manifest digest. `audited.sh plan <approval.json>`
-requires that approved record, with operator decision attribution and the exact
-head/digest action; it rejects bot-authored decisions and mismatched packages.
-No request, decision, readiness plan or execution is invoked during FREEZE.
-This is a procedural gate, not cryptographic authentication: the phase 1 same-uid
-operator-equivalence limitation still applies.
-
-The supplied approval must be at its canonical package-vault approvals path; audit blocks missing or no-longer-approved current records. External approval files are rejected.
+Post-verification checks exact bytes/marker, operator configuration, role restrictions,
+private roadmap/work/API views, all three sourced draft products, no inferred acceptance,
+existing operating/ingestion paths and unchanged listeners. Browser verification checks
+actual Mac access, hierarchy and response controls. Draft baselines are reviewable
+roadmaps, not adopted scope or accepted delivery. Off-host backup remains a separately
+deferred operator decision, not an invented destination in this package.

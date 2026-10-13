@@ -2,6 +2,7 @@ import fs from "node:fs/promises";
 import path from "node:path";
 import { writeJsonArtifact, writeTextArtifact } from "./artifacts.js";
 import { projectDir, slugifyProject } from "./paths.js";
+import { approvalDigest } from "./mutationReadiness.js";
 import type { MutationReadinessAudit, MutationReadinessPlan } from "./types.js";
 
 export async function generateMutationReadinessAudit(input: {
@@ -87,6 +88,14 @@ async function auditPlan(
 
   if (decided !== "approved") {
     blockers.push(`current approval record is ${decided ?? "missing"}`);
+  }
+  if (decided === "approved") {
+    try {
+      const record = JSON.parse(await fs.readFile(path.join(projectDir(vaultRoot, project), "control", "approvals", `${plan.approvalRef}.json`), "utf8"));
+      if (!plan.approvalDigest || approvalDigest(record) !== plan.approvalDigest || record.id !== plan.approvalRef || record.project !== project || record.target !== plan.target) {
+        blockers.push("approval changed or lacks a bound digest; generate a new reviewed plan");
+      }
+    } catch { blockers.push("bound approval unavailable"); }
   }
 
   if (plan.execute !== false) {

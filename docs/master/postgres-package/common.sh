@@ -1,7 +1,7 @@
 #!/bin/bash
 set -euo pipefail
 umask 077
-PKG="$HOME/ariadne-run/master-pg"
+PKG=$(cd -- "$(dirname "${BASH_SOURCE[0]}")" && pwd -P)
 PG_BIN=/usr/lib/postgresql/17/bin
 PG_ROOT="$HOME/.local/state/ariadne-master-pg"
 PG_DATA="$PG_ROOT/data"

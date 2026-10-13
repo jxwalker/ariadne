@@ -69,3 +69,13 @@ class MasterDashboard(unittest.TestCase):
             for route,filters in [('/work',{}),('/work',{'id':['work']}),('/roadmaps',{})]:
                 result=render(data,route,filters)
                 self.assertIn('Master development portfolio',result)
+
+    def test_work_pagination_preserves_state(self):
+        from html import unescape
+        from urllib.parse import urlparse,parse_qs
+        import re
+        data={'nodes':[{'id':str(i),'kind':'work','revision':1,'body':{'title':str(i),'state':'active' if i<4 else 'proposed'}} for i in range(8)],'progress':[],'dependencies':[],'history':[],'evidence':[]}
+        page=render(data,'/work',{'state':['active'],'offset':['2'],'limit':['2']})
+        links=re.findall(r'href="([^"]+)"[^>]*>(?:Previous|Next)',page)
+        self.assertEqual(len(links),2)
+        for url in links:self.assertEqual(parse_qs(urlparse(unescape(url)).query)['state'],['active'])

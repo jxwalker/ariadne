@@ -387,6 +387,7 @@ export interface MutationReadinessPlan {
   scope: string;
   approvalRef?: string;
   approvalStatus?: ApprovalRecord["status"];
+  approvalDigest?: string;
   authEvidenceRefs: string[];
   evidenceRefs: string[];
   dryRunCommand: string;

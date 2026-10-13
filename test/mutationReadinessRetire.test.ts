@@ -2,6 +2,7 @@ import fs from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
 import { describe, expect, it } from "vitest";
+import { approvalDigest } from "../src/mutationReadiness.js";
 import { generateMutationReadinessAudit } from "../src/mutationReadinessAudit.js";
 
 describe("mutation-readiness audit retirement", () => {
@@ -47,18 +48,23 @@ describe("mutation-readiness audit retirement", () => {
       await fs.mkdir(path.join(control, "approvals"), { recursive: true });
       await fs.mkdir(path.join(control, "mutation-readiness"), { recursive: true });
       const approvalRef = "approval-2026-10-13T00-00-00-000Z";
+      const approved = { id: approvalRef, project: "ariadne", target: "deployment", status: "approved", action: "exact fixture", decisionBy: "Test operator" };
       const approvalPath = path.join(control, "approvals", `${approvalRef}.json`);
       const evidence = path.join(vaultRoot, "authorization.md");
       await fs.writeFile(evidence, "Isolated test authorization");
       await fs.writeFile(path.join(control, "mutation-readiness", "mutation-readiness-deployment-current.json"), JSON.stringify({
         schemaVersion: 1, id: "mutation-readiness-deployment-current", project: "ariadne", target: "deployment",
-        status: "ready_for_bounded_review", approvalRef, approvalStatus: "approved", risk: "high", execute: false,
+        status: "ready_for_bounded_review", approvalRef, approvalStatus: "approved", approvalDigest: approvalDigest(approved), risk: "high", execute: false,
         authEvidenceRefs: [evidence], evidenceRefs: [], dryRunCommand: "git status --short",
         proposedLiveCommand: "bounded-test-action", postVerificationCommand: "git status --short",
         rollback: "Isolated test rollback", requiredGates: []
       }));
-      await fs.writeFile(approvalPath, JSON.stringify({ status: "approved" }));
+      await fs.writeFile(approvalPath, JSON.stringify(approved));
       expect((await generateMutationReadinessAudit({ project: "ariadne", vaultRoot })).audit.checks[0].status).toBe("passed");
+      for (const patch of [{ id: "approval-other" }, { project: "other" }, { target: "generic" }, { action: "unrelated" }, { decisionBy: "other" }]) {
+        await fs.writeFile(approvalPath, JSON.stringify({ ...approved, ...patch }));
+        expect((await generateMutationReadinessAudit({ project: "ariadne", vaultRoot })).audit.checks[0].status).toBe("blocked");
+      }
       await fs.unlink(approvalPath);
       const missing = (await generateMutationReadinessAudit({ project: "ariadne", vaultRoot })).audit.checks[0];
       expect(missing.status).toBe("blocked");

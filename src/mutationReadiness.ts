@@ -1,5 +1,6 @@
 import fs from "node:fs/promises";
 import path from "node:path";
+import { createHash } from "node:crypto";
 import { timestampFile, writeJsonArtifact, writeTextArtifact } from "./artifacts.js";
 import { projectDir, slugifyProject } from "./paths.js";
 import type { ApprovalRecord, MutationReadinessPlan } from "./types.js";
@@ -35,6 +36,7 @@ export async function planMutationReadiness(input: {
     scope: input.scope,
     approvalRef: matchingApproval?.id,
     approvalStatus: matchingApproval?.status,
+    approvalDigest: matchingApproval ? approvalDigest(matchingApproval) : undefined,
     authEvidenceRefs: input.authEvidenceRefs,
     evidenceRefs: input.evidenceRefs,
     dryRunCommand: input.dryRunCommand,
@@ -55,6 +57,10 @@ export async function planMutationReadiness(input: {
     renderPlan(plan)
   );
   return { jsonPath, markdownPath, plan };
+}
+
+export function approvalDigest(record: unknown): string {
+  return createHash("sha256").update(JSON.stringify(record)).digest("hex");
 }
 
 export function mutationTargetOption(value: string): MutationReadinessPlan["target"] {

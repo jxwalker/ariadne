@@ -94,7 +94,7 @@ def render(data,route,filters):
         offset=max(0,int(filters.get('offset',['0'])[0]));limit=min(100,max(1,int(filters.get('limit',['50'])[0])))
         eligible=[n for n in nodes.values() if n['kind']=='work' and (not filters.get('state') or n['body'].get('state')==filters['state'][0])]
         visible={n['id'] for n in eligible[offset:offset+limit]}
-        body+='<p>'+str(len(eligible))+' items · <a href="'+link('/work',offset=max(0,offset-limit),limit=limit)+'">Previous</a> · <a href="'+link('/work',offset=offset+limit,limit=limit)+'">Next</a></p>'
+        body+='<p>'+str(len(eligible))+' items · <a href="'+link('/work',state=filters.get('state',[''])[0],offset=max(0,offset-limit),limit=limit)+'">Previous</a> · <a href="'+link('/work',state=filters.get('state',[''])[0],offset=offset+limit,limit=limit)+'">Next</a></p>'
         for state in ['ready','active','verification','blocked','waiting','parked','proposed','accepted','cancelled','superseded']:
             work=[n for n in nodes.values() if n['id'] in visible and n['body'].get('state')==state]
             body+=f'<details {"open" if state in ["active","blocked","proposed"] else ""}><summary>{esc(state.title())} · {len(work)}</summary><div class="grid">'+''.join(card(n) for n in work)+'</div></details>'

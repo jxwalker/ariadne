@@ -119,3 +119,27 @@ Codex re-review at f645bee941cd121f9d156c12bd4c94236b2e93d2: fixed
 transition/acceptance; history stays immutable. The snapshot/API and work card
 mark inactive waivers. Infinite expiry is rejected. A real-PG regression waits
 for actual expiry, proves downstream rejection, and checks history is unchanged.
+
+
+## Combined operator-response release
+
+Codex independently reviewed both stacked PRs and the latest c0f6b2a findings.
+The combined candidate preserves their ancestry and fixes changed approval records by
+binding their complete JSON digest into readiness plans; the audit rechecks it before
+dry-run and execution. Old plans without this binding must be regenerated. The historical
+PostgreSQL provisioning wrapper now requires a separately approved exact package manifest
+and embeds independent byte checks into every executable command. Work pagination keeps
+the active state filter. These changes do not provision a second cluster or weaken gates.
+
+Operator responses use the existing signed agent recommendation, an authenticated James
+session on his existing Macs, CSRF/origin and exact question-version checks. Replies update
+known explicit master decision aliases and persist through master.command; unknown questions
+create audited decision records. Only the originating source/repository/run receives the
+answer on its next signed report. Available delivery is not proof of acknowledgement or
+execution. No model-provider connection or general agent ledger credential is added.
+
+The real PostgreSQL suite tests durable response provenance, exact alias resolution,
+idempotency, source isolation and cache overlay in addition to the ledger contracts.
+Private HTTP tests cover unauthorized actors, stale versions, conflicting/double submissions
+and public-ingest denial. The three roadmap imports remain proposed and source claims remain
+unverified until their scope and acceptance evidence are approved.
