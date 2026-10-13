@@ -131,6 +131,8 @@ class OperatingTests(unittest.TestCase):
         query=next(q for q in statements if 'WITH per_run_decisions' in q)
         with self.store.connect() as db:
             self.assertEqual(db.execute('PRAGMA user_version').fetchone()[0],4)
+            from activity_operating import ts
+            db.create_function('ariadne_decision_time',2,lambda stamp,received:ts(stamp) or received,deterministic=True)
             plan=[row['detail'] for row in db.execute('EXPLAIN QUERY PLAN '+query)]
         self.assertTrue(any('USING INDEX events_decision_lifecycle' in row for row in plan),plan)
 
