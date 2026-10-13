@@ -141,7 +141,13 @@ BEGIN
       THEN RAISE EXCEPTION 'unknown scope criterion'; END IF;
     INSERT INTO master.scope VALUES(target,scope_entry->>'criterionId',scope_entry->>'workId');
    END LOOP;
-   UPDATE master.nodes SET revision=revision+1,body=body||jsonb_build_object('scopeDiff',c->'scopeDiff') WHERE id=target;
+   UPDATE master.nodes SET revision=revision+1,body=body||jsonb_build_object('scopeDiff',jsonb_build_object(
+    'proposal',c->'scopeDiff',
+    'previousBaseline',old.body->>'previousBaseline',
+    'denominatorBefore',(SELECT count(*) FROM master.scope WHERE baseline_id=old.body->>'previousBaseline'),
+    'denominatorAfter',(SELECT count(*) FROM master.scope WHERE baseline_id=target),
+    'added',(SELECT coalesce(jsonb_agg(s.criterion_id),'[]') FROM master.scope s WHERE s.baseline_id=target AND NOT EXISTS(SELECT 1 FROM master.scope prior_scope WHERE prior_scope.baseline_id=old.body->>'previousBaseline' AND prior_scope.criterion_id=s.criterion_id)),
+    'removed',(SELECT coalesce(jsonb_agg(s.criterion_id),'[]') FROM master.scope s WHERE s.baseline_id=old.body->>'previousBaseline' AND NOT EXISTS(SELECT 1 FROM master.scope next_scope WHERE next_scope.baseline_id=target AND next_scope.criterion_id=s.criterion_id)))) WHERE id=target;
   ELSIF op='approve' THEN
    IF old.kind<>'baseline' OR old.body->>'state'<>'proposed' OR NOT EXISTS(SELECT 1 FROM master.scope WHERE baseline_id=target) THEN RAISE EXCEPTION 'baseline requires proposed scope'; END IF;
    UPDATE master.nodes SET revision=revision+1,body=body||jsonb_build_object('state','approved','approvedBy',actor,'approvedAt',now()) WHERE id=target;

@@ -44,7 +44,7 @@ def render(data,route,filters):
         if n['kind']=='baseline':
             p=progress.get(n['id'],{'accepted_criteria':0,'denominator':0})
             parts.append(f'<p class="count">{p["accepted_criteria"]} accepted mandatory criteria / {p["denominator"]} {"approved" if b.get("state")=="approved" else "proposed"} criteria</p>')
-            parts.append('<p>Approved denominator: '+(str(p['denominator']) if b.get('state')=='approved' else 'none — awaiting James')+'</p>')
+            parts.append('<p>Approved denominator: '+(str(p['denominator']) if b.get('state')=='approved' else 'none — awaiting James')+'</p><details><summary>Scope diff</summary><pre>'+esc(json.dumps(b.get('scopeDiff',{}),indent=2))+'</pre></details>')
         if n['kind'] in ('product','phase','milestone'):parts.append(denominator(n))
         if n['kind']=='work':
             parts.append(f'<p>Owner: {esc(b.get("owner"))} · {source(n)}</p><p>Source claim: {esc(b.get("sourceStatus"))}</p><p>Next: {esc(b.get("nextAction"))}</p>')

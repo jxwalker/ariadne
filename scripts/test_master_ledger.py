@@ -120,16 +120,22 @@ class LedgerContract(unittest.TestCase):
         snapshot=self.sql('SELECT master.snapshot();',database='ledger_test')
         self.assertEqual(len([n for n in snapshot['nodes'] if n['kind']=='product' and n['id'].startswith('product:')]),3)
         self.assertTrue(all(n['body']['state']=='proposed' for n in snapshot['nodes'] if n['kind']=='baseline' and n['id'].startswith('baseline:')))
-        p=self.fixture(two_criteria=True);w=p+'w'
+        p=self.fixture(two_criteria=True);w=p+'w';rev=1
+        for state in ['ready','active','verification']:rev=self.ok('transition',w,rev,state=state)
+        for criterion in [p+'wc',p+'wc2']:
+            for kind in ['ci','runtime']:
+                rev=self.ok('evidence',w,rev,evidence={'id':str(uuid.uuid4()),'kind':kind,'criterionId':criterion,'candidate':'a'*40,'policy':p+'policy','status':'passed','synthetic':False,'sha256':'a'*64,'observedAt':self.sql('SELECT to_jsonb(now());',database='ledger_test'),'uri':'https://example.invalid/proof'})
+        rev=self.ok('accept',w,rev)
         # Two mandatory criteria remain two commitments after split and revision.
         before=self.sql("SELECT to_jsonb(p) FROM master.progress p WHERE baseline_id='%s';"%(p+'b'),database='ledger_test')
-        self.assertFalse(self.cmd('split',w,1,children=[{'id':p+'s1','title':'one','criteria':[{'id':p+'wc'}]},{'id':p+'s2','title':'two','criteria':[{'id':p+'new'}]}])['ok'])
-        self.ok('split',w,1,children=[{'id':p+'s1','title':'one','criteria':[{'id':p+'wc'}]},{'id':p+'s2','title':'two','criteria':[{'id':p+'wc2'}]}])
+        self.assertFalse(self.cmd('split',w,rev,children=[{'id':p+'s1','title':'one','criteria':[{'id':p+'wc'}]},{'id':p+'s2','title':'two','criteria':[{'id':p+'new'}]}])['ok'])
+        self.ok('split',w,rev,children=[{'id':p+'s1','title':'one','criteria':[{'id':p+'wc'}]},{'id':p+'s2','title':'two','criteria':[{'id':p+'wc2'}]}])
         self.assertEqual(before,self.sql("SELECT to_jsonb(p) FROM master.progress p WHERE baseline_id='%s';"%(p+'b'),database='ledger_test'))
         self.ok('create',p+'b2',kind='baseline',parent=p,body={'title':'revision v2','state':'proposed','previousBaseline':p+'b'})
         self.ok('scope',p+'b2',1,scope=[{'workId':p+'s1','criterionId':p+'wc'},{'workId':p+'x','criterionId':p+'xc'},{'workId':p+'s2','criterionId':p+'wc2'}],scopeDiff={'split':w,'denominatorDelta':0})
         after=self.sql("SELECT to_jsonb(p) FROM master.progress p WHERE baseline_id='%s';"%(p+'b2'),database='ledger_test')
         self.assertEqual(before['denominator'],after['denominator'])
+        self.assertEqual((before['accepted_criteria'],after['accepted_criteria']),(2,2))
 
     def test_partial_scope_cannot_ready_or_accept(self):
         p=self.fixture(two_criteria=True);w=p+'w'

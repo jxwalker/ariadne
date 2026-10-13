@@ -138,6 +138,7 @@ def compile_import():
         if hashlib.sha256(snapshot.read_bytes()).hexdigest()!=meta['sha256']:raise ValueError('hash mismatch '+str(snapshot))
         product_id='product:'+meta['repository'].split('/')[1]
         command('import',product_id,provenance={**meta,'reconciliation_reason':'Preserved Phase 0 source; owning rows imported as proposed, Done never establishes acceptance'})
+    command('update',assignment,patch={'nextAction':'Verify reviewed ledger deployment, restart persistence and isolated recovery; leave PRs open for James','refs':[{'kind':'agent_run','runId':assignment,'classification':'observation only'},{'kind':'github_pr','url':'https://github.com/jxwalker/ariadne/pull/170'},{'kind':'github_pr','url':'https://github.com/jxwalker/ariadne/pull/171'}]})
     return commands
 if __name__=='__main__':
     parser=argparse.ArgumentParser();parser.add_argument('--output',required=True);args=parser.parse_args()
