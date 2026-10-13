@@ -22,9 +22,12 @@ def hosted_sources(db):
     # Controlled/test reports do not establish provider onboarding.
     return {r['source'] for r in db.execute("SELECT DISTINCT source FROM events WHERE json_extract(envelope,'$.location.kind')='cloud' AND lower(json_extract(envelope,'$.agent.product')) LIKE '%grok%' AND lower(source) NOT LIKE '%test%' AND lower(source) NOT LIKE '%controlled%' AND lower(json_extract(envelope,'$.runId')) NOT LIKE '%test%' AND lower(json_extract(envelope,'$.runId')) NOT LIKE '%controlled%' AND lower(json_extract(envelope,'$.taskId')) NOT LIKE '%test%' AND lower(json_extract(envelope,'$.taskId')) NOT LIKE '%controlled%' AND lower(json_extract(envelope,'$.label')) NOT LIKE '%controlled%'")}
 
+def machine_sources(db):
+    return {r['source'] for r in db.execute("SELECT DISTINCT source FROM events WHERE json_extract(envelope,'$.location.kind')='machine' AND lower(json_extract(envelope,'$.agent.product')) LIKE '%grok%' AND lower(json_extract(envelope,'$.label')) NOT LIKE '%test%'")}
+
 def sources_view(store, registry, at):
     with store.connect() as db:
-        hosted=hosted_sources(db)
+        hosted=hosted_sources(db)|machine_sources(db)
         latest={r['source']:r['last'] for r in db.execute('SELECT source, MAX(received) AS last FROM events GROUP BY source')}
         snapshot_sessions={}
         for r in db.execute("SELECT name,at,detail FROM health WHERE name LIKE 'snapshot:%' AND status='connected'"):
@@ -63,7 +66,7 @@ def task_metadata(db, record, envelope, registration, state, secrets=()):
         else: out['note']=text
     return out
 
-def project(store, registry, range_key='24h', at=None):
+def project(store, registry, range_key='24h', at=None, include_github=True):
     if range_key not in RANGES: raise ValueError('range must be 24h, 7d or 30d')
     at=time.time() if at is None else at; start=at-RANGES[range_key]*86400
     secrets=tuple(v.get('secret') for v in registry.values() if isinstance(v,dict) and isinstance(v.get('secret'),str) and v.get('secret'))
@@ -119,7 +122,7 @@ def project(store, registry, range_key='24h', at=None):
         breakdown={key:[{'name':name,'runs':n} for name,n in Counter(r[key] for r in native).most_common()] for key in ['agent','machine','repo']}
         repositories={}; associations=defaultdict(list)
         # Latest reconciliation snapshots avoid counting repeated polls as new PRs or CI runs.
-        observations=db.execute('SELECT repo,observed,body FROM observations WHERE observed BETWEEN ? AND ? ORDER BY observed DESC LIMIT ?', (start,at,MAX_RECORDS+1))
+        observations=db.execute("SELECT repo,observed,body FROM observations WHERE repo!='_fleet' AND observed BETWEEN ? AND ? ORDER BY observed DESC LIMIT ?", (start,at,MAX_RECORDS+1)) if include_github else []
         for index,row in enumerate(observations):
             if index>=MAX_RECORDS:truncated=True;break
             repo=row['repo'];item=repositories.setdefault(repo,{'repo':repo,'commits':set(),'prs':set(),'checks':{},'observations':0})

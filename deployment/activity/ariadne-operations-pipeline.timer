@@ -1,0 +1,8 @@
+[Unit]
+Description=Refresh Ariadne delivery evidence after the prior collection completes
+[Timer]
+OnBootSec=90s
+OnUnitInactiveSec=5min
+Persistent=true
+[Install]
+WantedBy=timers.target

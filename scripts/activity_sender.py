@@ -11,7 +11,7 @@ def config(path):
     if not c['endpoint'].startswith('https://'): raise ValueError('HTTPS required')
     return c
 
-def enqueue(c,kind,run,task,summary='',parent=None,session=None):
+def enqueue(c,kind,run,task,summary='',parent=None,session=None,operating=None):
     spool=pathlib.Path(c['spool']); spool.mkdir(parents=True,exist_ok=True,mode=0o700)
     with open(spool/'.lock','a') as lock:
         fcntl.flock(lock,fcntl.LOCK_EX)
@@ -23,6 +23,8 @@ def enqueue(c,kind,run,task,summary='',parent=None,session=None):
             if k in c: e[k]=c[k]
         if parent: e['parentRunId']=parent
         if session: e['sessionId']=session
+        if operating:
+            e['schemaVersion']=2;e.update(operating)
         validate(e); p=spool/(e['eventId']+'.json'); p.write_text(canonical(e)); os.chmod(p,0o600)
         return e
 
@@ -75,7 +77,7 @@ def overrides(c,a):
     return c
 
 def main():
-    p=argparse.ArgumentParser(); p.add_argument('--config',required=True); p.add_argument('mode',choices=['hook','flush','worker','event','run']); p.add_argument('--kind',default='task.progress'); p.add_argument('--run-id'); p.add_argument('--task-id'); p.add_argument('--summary',default=''); [p.add_argument(f) for f in ('--label','--repository','--branch','--commit')]; p.add_argument('--pr',type=int); argv=sys.argv[1:]; split=argv.index('--') if '--' in argv else len(argv); a=p.parse_args(argv[:split]); a.command=argv[split+1:]; c=config(a.config); c=overrides(c,a)
+    p=argparse.ArgumentParser(); p.add_argument('--config',required=True); p.add_argument('mode',choices=['hook','flush','worker','event','run']); p.add_argument('--kind',default='task.progress'); p.add_argument('--run-id'); p.add_argument('--task-id'); p.add_argument('--summary',default=''); [p.add_argument(f) for f in ('--label','--repository','--branch','--commit','--stage','--next-step','--blocker-category','--owner','--classification','--decision-file')]; p.add_argument('--pr',type=int); argv=sys.argv[1:]; split=argv.index('--') if '--' in argv else len(argv); a=p.parse_args(argv[:split]); a.command=argv[split+1:]; c=config(a.config); c=overrides(c,a)
     if a.mode=='hook':
         try: hook(c,json.loads(sys.stdin.read(65537)))
         except Exception: pass
@@ -84,7 +86,10 @@ def main():
     if a.mode=='worker':
         while True: flush(c); time.sleep(2)
     run=a.run_id or str(uuid.uuid4()); task=a.task_id or run
-    if a.mode=='event': enqueue(c,a.kind,run,task,a.summary); flush(c); return
+    if a.mode=='event':
+        metadata={key:getattr(a,name) for key,name in [('stage','stage'),('nextStep','next_step'),('blockerCategory','blocker_category'),('owner','owner'),('classification','classification')] if getattr(a,name) is not None}
+        if a.decision_file:metadata['decision']=json.loads(pathlib.Path(a.decision_file).read_text())
+        enqueue(c,a.kind,run,task,a.summary,operating=metadata); flush(c); return
     command=a.command[1:] if a.command[:1]==['--'] else a.command
     if not command: p.error('runner requires command after --')
     enqueue(c,'task.start',run,task,'Runner started'); proc=subprocess.Popen(command); interrupted=False

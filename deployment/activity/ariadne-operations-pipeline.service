@@ -1,0 +1,8 @@
+[Unit]
+Description=Ariadne read-only workflow attempts, jobs, decisions and deployment collection
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/python3 %h/.local/lib/ariadne-activity/scripts/activity_operations_collect.py --config %h/.config/ariadne-activity/server.json --mode pipeline
+TimeoutStartSec=1800
+UMask=0077
+NoNewPrivileges=true

@@ -7,7 +7,7 @@ import time
 from collections import Counter
 
 from activity_server import stamp
-from activity_insights import source_name, product, hosted_sources
+from activity_insights import source_name, product, hosted_sources, machine_sources
 
 MAX_FILES = 1000
 MAX_BYTES = 1024 * 1024
@@ -217,6 +217,7 @@ def controls(store, registry, directories=(), at=None):
         tables={r[0] for r in db.execute("SELECT name FROM sqlite_master WHERE type='table'")}
         # Metadata evidence of a scoped hosted provider source; controlled reports never establish onboarding.
         hosted=hosted_sources(db)
+        native_grok=machine_sources(db)
         for ident,registration in registry.items():
             safe_id=text(ident,secrets);name=text(source_name(ident,registration),secrets)
             e=events.get(ident,{});receipt=e.get('last');snapshot=snapshots.get(ident) if registration.get('provenance')=='read-only local snapshot' else None
@@ -224,7 +225,7 @@ def controls(store, registry, directories=(), at=None):
             if registration.get('correlationHost') and not registration.get('displayName'):
                 prefix='Collector' if registration.get('provenance')=='read-only local snapshot' else product(e.get('products') or ident)
                 name=text(prefix+' on '+source_name(ident,registration),secrets)
-            provider='grok' in ident.lower()
+            provider='grok' in ident.lower() and ident not in native_grok
             state='revoked' if revoked else 'provider-pending' if provider and ident not in hosted else 'never-connected' if last is None else 'connected' if snapshot and at-last<=THRESHOLDS['sources'] else 'quiet' if snapshot else 'registered'
             status='fail' if revoked else 'missing' if state in {'provider-pending','never-connected'} else grade('success',last,THRESHOLDS['sources'],at)
             ref='source:'+safe_id if safe_id!=REDACTED else 'source:registered-'+hashlib.sha256(ident.encode()).hexdigest()[:12]
