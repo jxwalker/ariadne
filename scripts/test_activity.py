@@ -1,6 +1,6 @@
 import hashlib,hmac,json,pathlib,tempfile,time,unittest,threading,urllib.request,urllib.error
 from activity_server import App,Store,validate,dashboard,canonical,ThreadingHTTPServer,Handler
-from activity_sender import enqueue,hook,flush
+from activity_sender import enqueue,hook,flush,overrides
 from unittest.mock import patch
 import os
 
@@ -152,6 +152,49 @@ class ActivityTests(unittest.TestCase):
         self.assertEqual(page['total'],2);self.assertEqual(len(page['runs']),1)
         with self.assertRaises(ValueError):project(self.store,{},'all',100320)
         with self.assertRaises(ValueError):page_runs(d,{'page':['bad']})
+
+    def test_sender_overrides_respect_configured_repository_scope(self):
+        import argparse
+        c={'repository':'jxwalker/a','repositories':['jxwalker/a','jxwalker/b']}
+        a=argparse.Namespace(repository='jxwalker/b',label='Fix login',branch='x',commit=None,pr=12)
+        o=overrides(c,a);self.assertEqual((o['repository'],o['label'],o['branch'],o['pr']),('jxwalker/b','Fix login','x',12));self.assertNotIn('commit',o);self.assertEqual(c['repository'],'jxwalker/a')
+        with self.assertRaises(ValueError):overrides(c,argparse.Namespace(repository='jxwalker/c',label=None,branch=None,commit=None,pr=None))
+
+    def test_enrolled_source_task_metadata_is_opt_in_and_separate(self):
+        from activity_insights import project
+        for run,last,note in [('enrolled','task.progress','Tests passing; opening PR next'),('blocked','task.blocked','Waiting on CI runner')]:
+            for seq,kind in enumerate(['task.start',last]):
+                self.accept(event(kind,seq,run)|{'label':'Fix login form','summary':note,'sessionId':run,'location':{'kind':'cloud','name':'box'}})
+        self.store.process()
+        plain=project(self.store,{},'24h')
+        self.assertTrue(all('title' not in r and 'note' not in r for r in plain['runs']))
+        d=project(self.store,{'test':{'displayTaskMetadata':True}},'24h')
+        runs={r['id']:r for r in d['runs']}
+        self.assertEqual(runs['enrolled']['title'],'Fix login form')
+        self.assertEqual(runs['enrolled']['note'],'Tests passing; opening PR next');self.assertIsNone(runs['enrolled']['blocker'])
+        self.assertEqual(runs['blocked']['blocker'],'Waiting on CI runner');self.assertIsNone(runs['blocked']['note'])
+        self.assertEqual(runs['enrolled']['claim'],'agent-reported');self.assertIn('github',runs['enrolled'])
+        snap=project(self.store,{'test':{'displayTaskMetadata':True,'provenance':'read-only local snapshot'}},'24h')
+        self.assertTrue(all('title' not in r for r in snap['runs']))
+        xss=project(self.store,{'test':{'displayTaskMetadata':True}},'24h')
+        self.assertNotIn('onerror',canonical(xss))
+
+    def test_enrolled_metadata_redacts_secrets_across_insights_and_runs(self):
+        from activity_insights import project,page_runs
+        known='9f'*32; leaks=[known,'ghp_'+'A1b2'*9,'github_pat_11ABCDEFG0123456789_abcdefghijklmnopqrstuvwxyz','sk-proj-'+'x9'*20,'xoxb-123456789012-abcdefABCDEF','AKIAIOSFODNN7EXAMPLE','eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIn0.c2ln','Bearer abc.def']
+        for i,leak in enumerate(leaks):
+            run=f'leak{i}'
+            for seq,(kind,label,summary) in enumerate([('task.start',f'Deploy {leak}','start'),('task.progress','Deploy',f'used {leak} for push')]):
+                self.accept(event(kind,seq,run)|{'label':label,'summary':summary,'sessionId':run,'location':{'kind':'cloud','name':'box'}})
+        self.accept(event('task.start',0,'benign')|{'label':'Fix login form','summary':'start','sessionId':'benign','location':{'kind':'cloud','name':'box'}})
+        self.accept(event('task.progress',1,'benign')|{'label':'Fix login form','summary':'Tests passing; opening PR next','sessionId':'benign','location':{'kind':'cloud','name':'box'}})
+        self.store.process()
+        reg={'test':{'secret':known,'displayTaskMetadata':True}}
+        d=project(self.store,reg,'24h');blob=canonical(d)+canonical(page_runs(d,{'stale':['show'],'pageSize':['100']}))+canonical(d['live'])
+        for leak in leaks: self.assertNotIn(leak,blob)
+        runs={r['id']:r for r in d['runs']}
+        self.assertEqual(runs['benign']['title'],'Fix login form');self.assertEqual(runs['benign']['note'],'Tests passing; opening PR next')
+        self.assertTrue(all(runs[f'leak{i}']['title']!=f'Deploy {l}' for i,l in enumerate(leaks)))
 
     def test_insights_correlation_stale_empty_and_range_boundary(self):
         from activity_insights import project,page_runs
