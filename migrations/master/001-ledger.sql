@@ -127,7 +127,7 @@ BEGIN
    IF old.body->>'state' IN ('accepted','cancelled','superseded') THEN RAISE EXCEPTION 'terminal work'; END IF;
    IF c->>'state' IN ('ready','active','verification') THEN
     IF master.blockers(target)<>'[]'::jsonb THEN RAISE EXCEPTION 'dependencies unresolved or unaccepted'; END IF;
-    IF NOT EXISTS(SELECT 1 FROM master.nodes bl WHERE bl.kind='baseline' AND bl.body->>'state'='approved' AND NOT EXISTS(SELECT 1 FROM jsonb_array_elements(old.body->'criteria') criterion WHERE NOT EXISTS(SELECT 1 FROM master.scope s WHERE s.baseline_id=bl.id AND s.criterion_id=criterion->>'id'))) THEN RAISE EXCEPTION 'scope not approved'; END IF;
+    IF NOT EXISTS(SELECT 1 FROM master.nodes bl WHERE bl.kind='baseline' AND bl.body->>'state'='approved' AND NOT EXISTS(SELECT 1 FROM jsonb_array_elements(old.body->'criteria') required(value) WHERE NOT EXISTS(SELECT 1 FROM master.scope s WHERE s.baseline_id=bl.id AND s.criterion_id=required.value->>'id'))) THEN RAISE EXCEPTION 'scope not approved'; END IF;
    END IF;
    IF c->>'state'='active' AND old.body->>'state'<>'ready' OR c->>'state'='verification' AND old.body->>'state'<>'active' THEN RAISE EXCEPTION 'invalid lifecycle order'; END IF;
    b:=old.body||jsonb_build_object('state',c->>'state');
@@ -153,7 +153,7 @@ BEGIN
    UPDATE master.nodes SET revision=revision+1 WHERE id=target;
   ELSIF op IN ('accept','override') THEN
    IF old.kind<>'work' OR old.body->>'state'<>'verification' OR master.blockers(target)<>'[]'::jsonb THEN RAISE EXCEPTION 'not eligible for acceptance'; END IF;
-   IF NOT EXISTS(SELECT 1 FROM master.nodes bl WHERE bl.kind='baseline' AND bl.body->>'state'='approved' AND NOT EXISTS(SELECT 1 FROM jsonb_array_elements(old.body->'criteria') criterion WHERE NOT EXISTS(SELECT 1 FROM master.scope s WHERE s.baseline_id=bl.id AND s.criterion_id=criterion->>'id'))) THEN RAISE EXCEPTION 'scope not approved'; END IF;
+   IF NOT EXISTS(SELECT 1 FROM master.nodes bl WHERE bl.kind='baseline' AND bl.body->>'state'='approved' AND NOT EXISTS(SELECT 1 FROM jsonb_array_elements(old.body->'criteria') required(value) WHERE NOT EXISTS(SELECT 1 FROM master.scope s WHERE s.baseline_id=bl.id AND s.criterion_id=required.value->>'id'))) THEN RAISE EXCEPTION 'scope not approved'; END IF;
    SELECT body INTO b FROM master.nodes WHERE id=old.body->>'policy' AND kind='policy';
    FOR criterion IN SELECT * FROM jsonb_array_elements(old.body->'criteria') LOOP
     FOR dep IN SELECT jsonb_array_elements_text(b->'requiredKinds') LOOP
