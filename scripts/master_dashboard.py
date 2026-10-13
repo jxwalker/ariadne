@@ -24,6 +24,20 @@ def render(data,route,filters):
     def source(n):
         s=n['body'].get('source',{})
         return esc(s.get('repository','Assignment'))+' · '+esc(s.get('path','No source path'))+' · observed '+esc(s.get('observed_at'))
+    def descendant_ids(id):
+        result={id}
+        for child in nodes.values():
+            if child.get('parent')==id:result|=descendant_ids(child['id'])
+        return result
+    def denominator(n):
+        descendants=descendant_ids(n['id']);counts=[]
+        accepted={a['criterion_id'] for a in data.get('accepted',[])}
+        for baseline,p in progress.items():
+            entries=[s for s in data.get('scope',[]) if s['baseline_id']==baseline and s['work_id'] in descendants]
+            if entries:
+                ids={s['criterion_id'] for s in entries}
+                counts.append(str(len(ids&accepted))+' accepted / '+str(len(ids))+' '+esc(p['baseline_state'])+' criteria · '+esc(baseline))
+        return ''.join('<p class="count">'+c+'</p>' for c in counts) or '<p>No scoped criterion denominator recorded</p>'
     def card(n):
         href=link('/work',id=n['id']) if n['kind']=='work' else link('/roadmaps',node=n['id'])
         b=n['body'];parts=[f'<article><h3><a href="{href}">{title(n)}</a></h3><p>{esc(n["kind"])} · revision {n["revision"]} · {esc(b.get("state","sourced draft"))}</p>']
@@ -31,6 +45,7 @@ def render(data,route,filters):
             p=progress.get(n['id'],{'accepted_criteria':0,'denominator':0})
             parts.append(f'<p class="count">{p["accepted_criteria"]} accepted mandatory criteria / {p["denominator"]} {"approved" if b.get("state")=="approved" else "proposed"} criteria</p>')
             parts.append('<p>Approved denominator: '+(str(p['denominator']) if b.get('state')=='approved' else 'none — awaiting James')+'</p>')
+        if n['kind'] in ('product','phase','milestone'):parts.append(denominator(n))
         if n['kind']=='work':
             parts.append(f'<p>Owner: {esc(b.get("owner"))} · {source(n)}</p><p>Source claim: {esc(b.get("sourceStatus"))}</p><p>Next: {esc(b.get("nextAction"))}</p>')
             parts.append('<p>PR attribution: '+('linked' if b.get('refs') else 'pre-PR / unattributed')+'</p>')

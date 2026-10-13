@@ -29,7 +29,7 @@ CREATE TRIGGER evidence_immutable BEFORE UPDATE OR DELETE ON master.evidence FOR
 CREATE FUNCTION master.blockers(w text) RETURNS jsonb LANGUAGE sql STABLE SET search_path=pg_catalog,master AS $$
  SELECT coalesce(jsonb_agg(jsonb_build_object('id',d.dependency_id,'state',coalesce(n.body->>'state','unresolved'))),'[]')
  FROM master.dependencies d LEFT JOIN master.nodes n ON n.id=d.dependency_id
- WHERE d.work_id=w AND (n.id IS NULL OR n.body->>'state' IS DISTINCT FROM 'accepted');
+ WHERE d.work_id=w AND (n.id IS NULL OR n.kind<>'work' OR n.body->>'state' IS DISTINCT FROM 'accepted');
 $$;
 CREATE FUNCTION master.command(actor text, c jsonb) RETURNS jsonb LANGUAGE plpgsql SECURITY DEFINER
  SET search_path=pg_catalog,master AS $$
@@ -62,6 +62,7 @@ BEGIN
    IF b IS NULL OR jsonb_typeof(b)<>'object' THEN RAISE EXCEPTION 'body required'; END IF;
    IF c->>'kind' IN ('work','baseline') AND coalesce(b->>'state','proposed')<>'proposed' THEN RAISE EXCEPTION 'new scope must be proposed'; END IF;
    IF c->>'kind'='work' THEN
+    IF b ? 'candidate' AND coalesce(b->>'candidate','') !~ '^[a-f0-9]{40}$' THEN RAISE EXCEPTION 'invalid candidate revision'; END IF;
     IF jsonb_array_length(coalesce(b->'criteria','[]'))=0 OR b->>'policy' IS NULL OR b->>'goal' IS NULL THEN RAISE EXCEPTION 'work requires goal policy criteria'; END IF;
     IF NOT EXISTS(SELECT 1 FROM master.nodes WHERE id=b->>'policy' AND kind='policy') THEN RAISE EXCEPTION 'unknown policy'; END IF;
     IF EXISTS(SELECT 1 FROM jsonb_array_elements(b->'criteria') x WHERE coalesce(x->>'id','')='' OR coalesce(x->>'text','')='') THEN RAISE EXCEPTION 'criterion id and text required'; END IF;
@@ -70,6 +71,10 @@ BEGIN
     b:=b||'{"state":"proposed"}';
    END IF;
    IF c->>'kind'='baseline' THEN b:=b||'{"state":"proposed"}'; END IF;
+   IF c->>'kind'='external' THEN
+    IF coalesce(b->>'state','unresolved')<>'unresolved' THEN RAISE EXCEPTION 'external gap cannot assert acceptance'; END IF;
+    b:=b||'{"state":"unresolved"}';
+   END IF;
    IF c->>'kind'='policy' THEN
     IF jsonb_array_length(coalesce(b->'requiredKinds','[]'))=0 OR coalesce((b->>'maxAgeSeconds')::integer,0)<=0
       OR b->'requiredKinds' ? 'agent_run' THEN RAISE EXCEPTION 'invalid acceptance policy'; END IF;
@@ -86,6 +91,7 @@ BEGIN
    IF old.kind<>'work' OR (c->'patch') - ARRAY['title','owner','nextAction','candidate','blocker','requirements','refs'] <> '{}'::jsonb THEN RAISE EXCEPTION 'immutable scope or invalid patch'; END IF;
    IF actor<>'james' AND c->'patch' ?| ARRAY['owner','candidate','requirements','refs'] THEN RAISE EXCEPTION 'permission denied'; END IF;
    IF old.body->>'state'='accepted' THEN RAISE EXCEPTION 'accepted work immutable'; END IF;
+   IF c->'patch' ? 'candidate' AND coalesce(c->'patch'->>'candidate','') !~ '^[a-f0-9]{40}$' THEN RAISE EXCEPTION 'invalid candidate revision'; END IF;
    b:=old.body||(c->'patch');
    IF c->'patch' ? 'blocker' AND old.body->>'blockerSince' IS NULL THEN b:=b||jsonb_build_object('blockerSince',now()); END IF;
    UPDATE master.nodes SET body=b, revision=revision+1 WHERE id=target;
@@ -103,6 +109,8 @@ BEGIN
    UPDATE master.nodes SET revision=revision+1,body=body||jsonb_build_object('state','superseded','splitChildren',c->'children') WHERE id=target;
   ELSIF op='dependencies' THEN
    IF old.kind<>'work' OR old.body->>'state'='accepted' THEN RAISE EXCEPTION 'invalid dependency target'; END IF;
+   IF jsonb_typeof(c->'dependencies') IS DISTINCT FROM 'array' THEN RAISE EXCEPTION 'dependency array required'; END IF;
+   IF EXISTS(SELECT 1 FROM jsonb_array_elements_text(c->'dependencies') dep(id) JOIN master.nodes n ON n.id=dep.id WHERE n.kind NOT IN ('work','external')) THEN RAISE EXCEPTION 'dependency requires work or external gap'; END IF;
    DELETE FROM master.dependencies WHERE work_id=target;
    FOR dep IN SELECT jsonb_array_elements_text(c->'dependencies') LOOP INSERT INTO master.dependencies VALUES(target,dep); END LOOP;
    IF EXISTS(WITH RECURSIVE walk(id,path,cycle) AS (
@@ -112,7 +120,7 @@ BEGIN
     SELECT 1 FROM walk WHERE cycle) THEN RAISE EXCEPTION 'dependency cycle'; END IF;
    UPDATE master.nodes SET revision=revision+1 WHERE id=target;
   ELSIF op='transition' THEN
-   IF old.kind<>'work' OR c->>'state' NOT IN ('ready','active','verification','blocked','waiting','parked','cancelled') THEN RAISE EXCEPTION 'invalid transition'; END IF;
+   IF old.kind<>'work' OR c->>'state' IS NULL OR c->>'state' NOT IN ('ready','active','verification','blocked','waiting','parked','cancelled') THEN RAISE EXCEPTION 'invalid transition'; END IF;
    IF old.body->>'state' IN ('accepted','cancelled','superseded') THEN RAISE EXCEPTION 'terminal work'; END IF;
    IF c->>'state' IN ('ready','active','verification') THEN
     IF master.blockers(target)<>'[]'::jsonb THEN RAISE EXCEPTION 'dependencies unresolved or unaccepted'; END IF;
@@ -197,6 +205,7 @@ CREATE FUNCTION master.snapshot() RETURNS jsonb LANGUAGE sql STABLE SECURITY DEF
  'dependencies',coalesce((SELECT jsonb_agg(d) FROM master.dependencies d),'[]'),
  'scope',coalesce((SELECT jsonb_agg(s) FROM master.scope s),'[]'),
  'progress',coalesce((SELECT jsonb_agg(p) FROM master.progress p),'[]'),
+ 'accepted',coalesce((SELECT jsonb_agg(a) FROM master.accepted a),'[]'),
  'evidence',coalesce((SELECT jsonb_agg(e) FROM master.evidence e),'[]'),
  'imports',coalesce((SELECT jsonb_agg(i) FROM master.imports i),'[]'),
  'history',coalesce((SELECT jsonb_agg(j ORDER BY sequence) FROM master.journal j),'[]'));
