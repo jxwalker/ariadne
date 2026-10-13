@@ -34,19 +34,19 @@ its imported backlog scope.
 Phase 1 transport is local only. The OS user james maps through Unix peer authentication
 to the existing non-superuser `ariadne_master` role. This role has execute permissions on
 command/snapshot functions, not direct ledger-table writes. CLI actor identity is derived
-from the OS user; dashboard views are read-only. Existing observation credentials have no
+from the OS user; roadmap/work views are read-only; authenticated operator responses are audited writes. Existing observation credentials have no
 ledger route. No agent login/capability is provisioned. Code tests exercise agent identities
 using the isolated cluster owner: agents can update their owned work and advance eligible
 lifecycle steps, but cannot accept, override, approve, change scope or evidence. DEC-006
-remains open. Operator-supplied evidence is an attestation; Phase 1 does not independently
+is resolved: Phase 1 is operator-only; agent writes belong to Phase 2. Operator-supplied evidence is an attestation; Phase 1 does not independently
 fetch/validate artifact contents or provision an Eval Factory producer credential.
 
 `master_import.py` verifies the Phase 0 snapshot hashes before compiling deterministic
 commands. It imports native release gates/backlog rows, OpenScorpion P0–P9 and AVX, Ariadne
 milestones and operating queues, and this assignment's separate phase 0/1 milestones.
 Source owner unknown remains unassigned; source Done remains unverified. DEC-001/002/003 A
-retain James's source `James 2026-10-13 17:04 BST`. Off-site backup and agent access remain
-open. No demo fixture is submitted by this importer.
+retain James's source `James 2026-10-13 17:04 BST`. Off-site backup remains deferred/open. Agent access is resolved for the pilot:
+operator-only writes in Phase 1, with agent writes in Phase 2. No demo fixture is submitted by this importer.
 
 Validation: `python3 -m unittest discover -s scripts -p 'test_master*.py'` uses an isolated
 socket-only PostgreSQL cluster. No live ledger or other project checkout is used. CI must
