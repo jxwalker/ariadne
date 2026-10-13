@@ -239,6 +239,20 @@ class LedgerContract(unittest.TestCase):
         for kind in ['ci','runtime']:rev=self.ok('evidence',w,rev,evidence=proof(kind))
         self.ok('accept',w,rev)
 
+    def test_display_shapes_and_managed_fields(self):
+        p=self.fixture()
+        body={'goal':'test','policy':p+'policy','criteria':[{'id':p+'shape-c','text':'test'}]}
+        for value in [None,42,'unexpected',[]]:
+            self.assertFalse(self.cmd('create',p+'source-shape',kind='work',parent=p+'m',body=body|{'source':value})['ok'])
+        for value in [None,42,'unexpected',{}]:
+            self.assertFalse(self.cmd('create',p+'options-shape',kind='decision',body={'options':value})['ok'])
+        for patch in [{'waiver':{}},{'splitFrom':{}},{'blockerSince':42},{'acceptedBy':'james'},{'generation':1}]:
+            self.assertFalse(self.cmd('create',p+'managed-shape',kind='work',parent=p+'m',body=body|patch)['ok'])
+        for criterion in [{'id':{},'text':'test'},{'id':42,'text':'test'},{'id':'shape','text':42}]:
+            self.assertFalse(self.cmd('create',p+'criteria-shape',kind='work',parent=p+'m',body=body|{'criteria':[criterion]})['ok'])
+        self.ok('create',p+'source-shape',kind='work',parent=p+'m',body=body|{'source':{}})
+        self.ok('create',p+'options-shape',kind='decision',body={'options':[]})
+
     def test_append_only(self):
         with self.assertRaises(AssertionError):self.sql('DELETE FROM master.journal;',database='ledger_test')
 

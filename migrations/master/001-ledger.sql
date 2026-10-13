@@ -68,16 +68,19 @@ BEGIN
    IF b IS NULL OR jsonb_typeof(b)<>'object' THEN RAISE EXCEPTION 'body required'; END IF;
    IF c->>'kind' IN ('work','baseline') AND coalesce(b->>'state','proposed')<>'proposed' THEN RAISE EXCEPTION 'new scope must be proposed'; END IF;
    IF c->>'kind'='work' THEN
+    IF b ?| ARRAY['generation','waiver','acceptanceMode','acceptedBy','acceptanceCommand','splitFrom','splitChildren','blockerSince'] THEN RAISE EXCEPTION 'managed work fields cannot be supplied'; END IF;
+    IF b ? 'source' AND jsonb_typeof(b->'source') IS DISTINCT FROM 'object' THEN RAISE EXCEPTION 'work source must be an object'; END IF;
     IF b ? 'candidate' AND coalesce(b->>'candidate','') !~ '^[a-f0-9]{40}$' THEN RAISE EXCEPTION 'invalid candidate revision'; END IF;
     IF jsonb_array_length(coalesce(b->'criteria','[]'))=0 OR b->>'policy' IS NULL OR b->>'goal' IS NULL THEN RAISE EXCEPTION 'work requires goal policy criteria'; END IF;
     IF NOT EXISTS(SELECT 1 FROM master.nodes WHERE id=b->>'policy' AND kind='policy') THEN RAISE EXCEPTION 'unknown policy'; END IF;
-    IF EXISTS(SELECT 1 FROM jsonb_array_elements(b->'criteria') x WHERE coalesce(x->>'id','')='' OR coalesce(x->>'text','')='') THEN RAISE EXCEPTION 'criterion id and text required'; END IF;
+    IF EXISTS(SELECT 1 FROM jsonb_array_elements(b->'criteria') x WHERE jsonb_typeof(x->'id') IS DISTINCT FROM 'string' OR jsonb_typeof(x->'text') IS DISTINCT FROM 'string' OR coalesce(x->>'id','')='' OR coalesce(x->>'text','')='') THEN RAISE EXCEPTION 'criterion id and text required'; END IF;
     IF EXISTS(SELECT 1 FROM master.nodes w, jsonb_array_elements(w.body->'criteria') x, jsonb_array_elements(b->'criteria') y WHERE w.kind='work' AND x->>'id'=y->>'id') THEN RAISE EXCEPTION 'criterion identity already exists; use split'; END IF;
     IF (SELECT count(DISTINCT x->>'id') FROM jsonb_array_elements(b->'criteria') x)<>jsonb_array_length(b->'criteria') THEN RAISE EXCEPTION 'duplicate criterion'; END IF;
     IF b ? 'refs' AND (jsonb_typeof(b->'refs') IS DISTINCT FROM 'array' OR EXISTS(SELECT 1 FROM jsonb_array_elements(b->'refs') ref WHERE jsonb_typeof(ref) IS DISTINCT FROM 'object')) THEN RAISE EXCEPTION 'refs must be an array of objects'; END IF;
     b:=b||'{"state":"proposed","generation":1}';
    END IF;
    IF c->>'kind'='baseline' THEN b:=b||'{"state":"proposed"}'; END IF;
+   IF c->>'kind'='decision' AND b ? 'options' AND jsonb_typeof(b->'options') IS DISTINCT FROM 'array' THEN RAISE EXCEPTION 'decision options must be an array'; END IF;
    IF c->>'kind'='external' THEN
     IF coalesce(b->>'state','unresolved')<>'unresolved' THEN RAISE EXCEPTION 'external gap cannot assert acceptance'; END IF;
     b:=b||'{"state":"unresolved"}';

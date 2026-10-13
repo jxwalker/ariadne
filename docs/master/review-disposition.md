@@ -101,3 +101,14 @@ tests cover approval disappearance/status changes, locations, generation changes
 stale evidence and malformed refs. No live mutation executes during testing.
 
 The expanded owner-generation test exposed unordered snapshot arrays during dump/restore equality checks. Snapshot collections are now ordered by stable keys, also making API pagination deterministic. The existing real-PG restart/restore regression verifies it.
+
+
+Codex re-review at ac51e1d55a376e2e129c3234cacef5970dad2106: fixed
+4262316978 (decision options must be arrays) and 4262316995 (work source must be
+an object). Rendering also tolerates malformed legacy source/options/reference/
+waiver/age/lineage metadata, preserving raw records in the API/journal. Work
+creation rejects internally managed acceptance, generation, lineage and blocker
+fields, and criteria require string IDs/text. Regression tests exercise malformed
+payloads and ensure legacy metadata cannot take the portfolio down.
+
+Fresh CodeRabbit review at ac51e1d55a376e2e129c3234cacef5970dad2106: fixed 4262380597. Malformed /work pagination now returns 400 rather than 503, with real-handler HTTP tests for invalid limit/offset.

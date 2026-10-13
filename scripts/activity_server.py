@@ -321,7 +321,8 @@ class Handler(BaseHTTPRequestHandler):
                 if route.path=='/api/master':
                     try:return self.reply(200,api_page(data,filters))
                     except ValueError:return self.reply(400,{'error':'invalid master filter'})
-                raw=render(data,route.path,filters).encode()
+                try:raw=render(data,route.path,filters).encode()
+                except ValueError:return self.reply(400,{'error':'invalid master filter'})
                 self.send_response(200);self.send_header('Content-Type','text/html; charset=utf-8');self.send_header('Content-Length',str(len(raw)));self.send_header('Cache-Control','no-store');self.send_header('X-Content-Type-Options','nosniff');self.send_header('Content-Security-Policy',"default-src 'none'; style-src 'unsafe-inline'; frame-ancestors 'none'");self.end_headers();self.wfile.write(raw);return
             except (BrokenPipeError,ConnectionResetError):return
             except Exception:return self.reply(503,{'error':'ledger unavailable'})

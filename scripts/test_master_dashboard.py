@@ -40,8 +40,9 @@ class MasterDashboard(unittest.TestCase):
                         result=json.load(response);self.assertEqual(len(result['items']),1)
                     with urllib.request.urlopen(base+'/roadmaps') as response:
                         self.assertIn("default-src 'none'",response.headers['Content-Security-Policy'])
-                    with self.assertRaises(urllib.error.HTTPError) as error:urllib.request.urlopen(base+'/api/master?limit=oops')
-                    self.assertEqual(error.exception.code,400)
+                    for route in ['/api/master?limit=oops','/work?limit=oops','/work?offset=oops']:
+                        with self.assertRaises(urllib.error.HTTPError) as error:urllib.request.urlopen(base+route)
+                        self.assertEqual(error.exception.code,400)
                 with patch('master_dashboard.snapshot',side_effect=RuntimeError('unavailable')):
                     with self.assertRaises(urllib.error.HTTPError) as error:urllib.request.urlopen(base+'/roadmaps')
                     self.assertEqual(error.exception.code,503)
@@ -59,3 +60,12 @@ class MasterDashboard(unittest.TestCase):
             self.assertEqual(result['items'][0]['work_id'],'original')
         result=api_page(data,{'collection':['history'],'id':['child']})
         self.assertEqual(result['total'],2)
+
+    def test_malformed_legacy_metadata_does_not_break_rendering(self):
+        for value in [None,42,'unexpected',{'wrong':'shape'}]:
+            data={'nodes':[{'id':'work','kind':'work','revision':1,'body':{'title':'Work','state':'proposed','source':value,'refs':value,'waiver':value,'blockerSince':value,'splitFrom':value,'criteria':[{'id':{}}]}},
+                           {'id':'decision','kind':'decision','revision':1,'body':{'title':'Decision','options':value}}],
+                  'progress':[],'dependencies':[],'history':[],'evidence':[]}
+            for route,filters in [('/work',{}),('/work',{'id':['work']}),('/roadmaps',{})]:
+                result=render(data,route,filters)
+                self.assertIn('Master development portfolio',result)

@@ -11,10 +11,13 @@ def snapshot():
     p=subprocess.run([PSQL,'-XqAt','-v','ON_ERROR_STOP=1','-h',str(pathlib.Path.home()/'.local/state/ariadne-master-pg/socket'),'-p','55432','-U','ariadne_master','-d','ariadne_master'],input='SELECT master.snapshot();',text=True,capture_output=True,timeout=15,env={'PATH':os.defpath,'HOME':str(pathlib.Path.home()),'PGPASSFILE':'/dev/null'})
     if p.returncode:raise RuntimeError('ledger unavailable')
     return json.loads(p.stdout)
+def sequence(value):return value if isinstance(value,list) else []
+def criterion_ids(body):return {c['id'] for c in sequence(body.get('criteria')) if isinstance(c,dict) and isinstance(c.get('id'),str)}
 def esc(value):return html.escape(str(value if value is not None else 'Unknown'),quote=True)
 def link(route,**args):return esc(route+'?'+urlencode(args))
 def age(value):
     if not value:return 'No recorded blocker'
+    if not isinstance(value,str):return 'Unknown blocker age'
     try:
         days=(datetime.now(timezone.utc)-datetime.fromisoformat(value.replace('Z','+00:00'))).total_seconds()/86400
         return f'{max(days,0):.1f} days; original '+esc(value)
@@ -24,6 +27,7 @@ def render(data,route,filters):
     def title(n):return esc(n['body'].get('title',n['id']))
     def source(n):
         s=n['body'].get('source',{})
+        if not isinstance(s,dict):return 'Unstructured source, unverified: '+esc(json.dumps(s))
         return esc(s.get('repository','Assignment'))+' · '+esc(s.get('path','No source path'))+' · observed '+esc(s.get('observed_at'))
     children_by_parent={}
     for n in nodes.values():children_by_parent.setdefault(n.get('parent'),[]).append(n['id'])
@@ -44,7 +48,7 @@ def render(data,route,filters):
         return ''.join('<p class="count">'+c+'</p>' for c in counts) or '<p>No scoped criterion denominator recorded</p>'
     def card(n):
         href=link('/work',id=n['id']) if n['kind']=='work' else link('/roadmaps',node=n['id'])
-        b=n['body'];parts=[f'<article><h3><a href="{href}">{title(n)}</a></h3><p>{esc(n["kind"])} · revision {n["revision"]} · {esc(b.get("state","sourced draft"))}</p>']
+        b=n['body'];refs=[r for r in sequence(b.get('refs')) if isinstance(r,dict)];parts=[f'<article><h3><a href="{href}">{title(n)}</a></h3><p>{esc(n["kind"])} · revision {n["revision"]} · {esc(b.get("state","sourced draft"))}</p>']
         if n['kind']=='baseline':
             p=progress.get(n['id'],{'accepted_criteria':0,'denominator':0})
             parts.append(f'<p class="count">{p["accepted_criteria"]} evidence accepted · {p.get("waived_criteria",0)} waived ({p.get("expired_waived_criteria",0)} expired) mandatory criteria / {p["denominator"]} {"approved" if b.get("state")=="approved" else "proposed"} criteria</p>')
@@ -52,9 +56,9 @@ def render(data,route,filters):
         if n['kind'] in ('product','phase','milestone'):parts.append(denominator(n))
         if n['kind']=='work':
             parts.append(f'<p>Owner: {esc(b.get("owner"))} · {source(n)}</p><p>Source claim: {esc(b.get("sourceStatus"))}</p><p>Next: {esc(b.get("nextAction"))}</p>')
-            parts.append('<p>PR attribution: '+('explicit reference' if any(r.get('kind')=='github_pr' and r.get('url') and not r.get('classification') for r in b.get('refs',[])) else 'mentioned in source text, unverified' if b.get('refs') else 'pre-PR / unattributed')+'</p>')
+            parts.append('<p>PR attribution: '+('explicit reference' if any(r.get('kind')=='github_pr' and r.get('url') and not r.get('classification') for r in refs) else 'mentioned in source text, unverified' if refs else 'pre-PR / unattributed')+'</p>')
             if b.get('scopeExclusion'):parts.append('<p>Excluded from baseline commitments: '+esc(b['scopeExclusion'])+'</p>')
-            if b.get('waiver'):parts.append('<p class="blocked">WAIVER · expiry '+esc(b['waiver'].get('expiresAt'))+'</p><pre>'+esc(json.dumps(b['waiver']))+'</pre>')
+            if isinstance(b.get('waiver'),dict):parts.append('<p class="blocked">WAIVER · expiry '+esc(b['waiver'].get('expiresAt'))+'</p><pre>'+esc(json.dumps(b['waiver']))+'</pre>')
             if b.get('dependencyProvenance'):parts.append('<p>Dependencies: '+esc(json.dumps(b['dependencyProvenance']))+'</p>')
             if n.get('blockers'):parts.append('<p class="blocked">Dependencies: '+esc(json.dumps(n['blockers']))+'</p>')
             if b.get('blockerSince'):parts.append('<p>Blocker age: '+age(b['blockerSince'])+'</p>')
@@ -75,13 +79,13 @@ def render(data,route,filters):
             return ''.join('<article>'+esc(d['dependency_id'])+' · '+esc(nodes.get(d['dependency_id'],{}).get('body',{}).get('state','unresolved'))+chain(d['dependency_id'])+'</article>' for d in edges)
         body+=chain(n['id']) or '<p>No recorded dependencies</p>'
         lineage={n['id']};ancestor=b.get('splitFrom')
-        while ancestor and ancestor not in lineage:
+        while isinstance(ancestor,str) and ancestor and ancestor not in lineage:
             lineage.add(ancestor);ancestor=nodes.get(ancestor,{}).get('body',{}).get('splitFrom')
-        criteria={x['id'] for x in b.get('criteria',[])}
+        criteria=criterion_ids(b)
         refs=[e for e in data['evidence'] if e['work_id']==n['id'] or e['work_id'] in lineage and e['body'].get('criterionId') in criteria]
         associations=[e for e in data.get('acceptanceEvidence',[]) if e['criterion_id'] in criteria and e['work_id'] in lineage]
-        if b.get('splitFrom'):body+='<p>Inherited criterion evidence and acceptance from '+esc(b['splitFrom'])+'; original immutable records retained.</p>'
-        body+='<h2>Run / PR / CI / merge / deploy / Eval Factory references</h2><pre>'+esc(json.dumps({'references':refs+b.get('refs',[]),'selectedAcceptanceEvidence':associations},indent=2))+'</pre>'
+        if isinstance(b.get('splitFrom'),str) and b['splitFrom']:body+='<p>Inherited criterion evidence and acceptance from '+esc(b['splitFrom'])+'; original immutable records retained.</p>'
+        body+='<h2>Run / PR / CI / merge / deploy / Eval Factory references</h2><pre>'+esc(json.dumps({'references':refs+sequence(b.get('refs')),'selectedAcceptanceEvidence':associations},indent=2))+'</pre>'
         body+='<p>Missing references remain unverified. Agent completion alone cannot accept this work.</p><h2>Immutable command history</h2>'
         for j in data['history']:
             if j['target'] in lineage:body+='<article><p>'+esc(j['at'])+' · '+esc(j['actor'])+' · '+esc(j['command_id'])+'</p><pre>'+esc(json.dumps(j,indent=2))+'</pre></article>'
@@ -109,7 +113,7 @@ def render(data,route,filters):
     body+='<h2>Decisions</h2><div class="grid">'
     for n in nodes.values():
         if n['kind']=='decision':
-            b=n['body'];body+='<article><h3>'+esc(n['id'])+' · '+title(n)+'</h3><p>'+esc(b.get('state'))+' · selected '+esc(b.get('resolution'))+'</p><ul>'+''.join('<li>'+esc(o)+'</li>' for o in b.get('options',[]))+'</ul><p>'+esc(b.get('source'))+'</p></article>'
+            b=n['body'];body+='<article><h3>'+esc(n['id'])+' · '+title(n)+'</h3><p>'+esc(b.get('state'))+' · selected '+esc(b.get('resolution'))+'</p><ul>'+''.join('<li>'+esc(o)+'</li>' for o in sequence(b.get('options',[])))+'</ul><p>'+esc(b.get('source'))+'</p></article>'
     body+='</div><h2>External dependencies and gaps</h2>'+''.join(card(n) for n in nodes.values() if n['kind']=='external')
     return page(body)
 def page(body):
@@ -129,9 +133,9 @@ def api_page(data,filters):
         if collection in {'accepted','acceptanceEvidence','evidence','history'}:
             nodes={n['id']:n for n in data.get('nodes',[])}
             body=nodes.get(target,{}).get('body',{})
-            criteria={c['id'] for c in body.get('criteria',[])}
+            criteria=criterion_ids(body)
             ancestor=body.get('splitFrom')
-            while ancestor and ancestor not in lineage:
+            while isinstance(ancestor,str) and ancestor and ancestor not in lineage:
                 lineage.add(ancestor);ancestor=nodes.get(ancestor,{}).get('body',{}).get('splitFrom')
         def matches(record):
             if target in [record.get('id'),record.get('target'),record.get('work_id'),record.get('baseline_id'),record.get('node_id')]:return True
