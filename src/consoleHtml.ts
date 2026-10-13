@@ -17,6 +17,13 @@ export async function generateConsoleHtml(input: {
 }
 
 export function renderConsole(data: ConsoleData): string {
+  // Raw vault evidence stays intact; the rendered projection omits host-local paths,
+  // including paths nested in embedded JSON and operator command text.
+  data = JSON.parse(JSON.stringify(data, (_key, value: unknown) =>
+    typeof value === "string" ? value
+      .replace(/\/(?:Users|home|tmp|var|opt|usr|etc)\/[^\s"'<>]+/g, "[local path]")
+      .replace(/[A-Za-z]:\\(?:Users|Windows|Program Files|ProgramData|tmp|temp|home|var|opt|usr|etc)\\[^\s"'<>]+/gi, "[local path]")
+      : value)) as ConsoleData;
   const repositoryOnly = data.sources.length === 0 && data.tasks.length === 0;
   const latestRun = data.executionRuns.at(-1);
   const latestEvaluation = data.evaluations.at(-1);
@@ -1765,9 +1772,11 @@ meter {
   gap: 10px;
   justify-content: space-between;
 }
+.shell { overflow-wrap: anywhere; }
+.layout > *, .hero > * { min-width: 0; }
 @media (max-width: 980px) {
   .shell { width: min(calc(100vw - 28px), 760px); }
-  .hero, .layout, .workflow { grid-template-columns: 1fr; }
+  .hero, .layout, .workflow { grid-template-columns: minmax(0, 1fr); }
   .workflow-lanes { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .workflow-stage:nth-child(2n) { border-right: 0; }
   .workflow-routes { grid-template-columns: repeat(2, minmax(0, 1fr)); }

@@ -3,7 +3,7 @@ import os from 'node:os';
 import path from 'node:path';
 import { expect, it } from 'vitest';
 import { importGithubSnapshot } from '../src/githubAdapter.js';
-import { generateConsoleHtml } from '../src/consoleHtml.js';
+import { generateConsoleHtml, renderConsole } from '../src/consoleHtml.js';
 it('renders current PR provenance, check state and safe links without reference tasks', async () => {
   const vaultRoot = await fs.mkdtemp(path.join(os.tmpdir(), 'ariadne-activity-'));
   try {
@@ -19,6 +19,10 @@ it('renders current PR provenance, check state and safe links without reference 
     expect(html).toContain('href="https://github.com/test/repo/pull/42"');
     expect(html).not.toContain('href="javascript:');
     expect(result.data.tasks).toHaveLength(0);
+    result.data.projectDir='/home/private/worktree';
+    const safeHtml=renderConsole(result.data);
+    expect(safeHtml).not.toContain('/home/private/worktree');
+    expect(result.data.projectDir).toBe('/home/private/worktree');
     expect(html).toContain('Open populated controls dashboard');
     expect(html).toContain('href="/api/controls"');
     expect(html).toContain('<details data-visual-role="other-vault-metrics"><summary>Other vault metrics</summary>');

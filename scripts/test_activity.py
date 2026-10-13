@@ -216,8 +216,8 @@ class ActivityTests(unittest.TestCase):
         self.control_record(first,'executions','passed-ingest',planId='ingest-plan',liveExitCode=0,postVerificationExitCode=0,finishedAt='2026-10-12T12:02:00Z',rollback='Restore previous release')
         d=controls(self.store,{},[str(first),str(second)],at);rows={r['id']:r for r in d['controls']}
         self.assertEqual(rows['approvals']['status'],'fail');self.assertEqual(rows['approvals']['recordCount'],2)
-        self.assertEqual(rows['plans']['status'],'stale');self.assertEqual(rows['audit']['status'],'fail')
-        self.assertTrue(any(c['recordId']=='old-plan' and 'age ' in c['message'] for c in d['callouts']))
+        self.assertEqual(rows['plans']['status'],'pass');self.assertEqual(rows['audit']['status'],'fail')
+        self.assertFalse(any(c['recordId']=='old-plan' for c in d['callouts']))
         self.assertEqual(rows['dryRuns']['status'],'pass');self.assertEqual(rows['executions']['status'],'pass')
         self.assertEqual(rows['readiness']['status'],'missing');self.assertEqual(rows['executions']['recordCount'],2)
         self.assertEqual(rows['executions']['records'][0]['postVerify'],'passed')
@@ -322,7 +322,7 @@ class ActivityTests(unittest.TestCase):
         self.assertIn('limit_except POST { deny all; }',body);self.assertIn('location / { return 404; }',config)
         pattern=route.strip()[2:]
         self.assertIsNotNone(re.fullmatch(pattern,'/ingest/v1/events'));self.assertIsNotNone(re.fullmatch(pattern,'/ingest/v1/github'))
-        for path in ['/api/insights','/api/runs','/api/sources','/api/activity','/api/controls','/','/assets/activity-dashboard.js','/ingest/v1/events/']:
+        for path in ['/api/insights','/api/runs','/api/sources','/api/activity','/api/controls','/api/alerts','/favicon.ico','/','/assets/activity-dashboard.js','/ingest/v1/events/']:
             self.assertIsNone(re.fullmatch(pattern,path))
 
     def test_http_boundaries(self):
@@ -340,7 +340,7 @@ class ActivityTests(unittest.TestCase):
             with self.assertRaises(urllib.error.HTTPError) as ex:urllib.request.urlopen(urllib.request.Request(base+'/ingest/v1/github',data=payload+b' ',headers=headers))
             self.assertEqual(ex.exception.code,401)
             self.store.process()
-            for route in ['/api/insights?range=24h','/api/runs?stale=show&snapshots=show','/api/sources','/api/activity','/api/controls']:
+            for route in ['/api/insights?range=24h','/api/runs?stale=show&snapshots=show','/api/sources','/api/activity','/api/controls','/api/alerts']:
                 with urllib.request.urlopen(base+route) as r:
                     projection=r.read().decode();self.assertNotIn('unsafe',projection);self.assertNotIn('test-secret',projection);self.assertNotIn('onerror',projection)
             for route in ['/api/insights?range=forever','/api/runs?page=bad','/api/sources?'+('&x=y'*21)]:
@@ -354,8 +354,10 @@ class ActivityTests(unittest.TestCase):
             (self.root/'index.html').write_text('<html><head><meta http-equiv="refresh" content="30"></head><body><main class="shell"><div class="repo-work"><strong>Codex</strong><p>SECRET PROMPT</p><small>Latest update: SECRET OUTPUT</small></div><script type="application/json" id="console-data">'+canonical({'agentTelemetry':[{'sessions':[{'task':'SECRET PROMPT','update':'SECRET OUTPUT'}]}]})+'</script></main></body></html>')
             with urllib.request.urlopen(base+'/') as r:
                 page=r.read().decode();self.assertNotIn('SECRET',page);self.assertNotIn('http-equiv="refresh"',page);self.assertIn('script-src \'self\'',r.headers['Content-Security-Policy'])
+            with urllib.request.urlopen(base+'/favicon.ico') as r:self.assertEqual(r.status,204)
+            self.assertIn('rel="icon"',page)
             self.app.config['ingestOnly']=True
-            for route in ['/','/readyz','/healthz','/api/activity','/api/insights?range=7d','/api/runs?page=1','/api/sources','/api/controls','/assets/activity-dashboard.js']:
+            for route in ['/','/readyz','/healthz','/api/activity','/api/insights?range=7d','/api/runs?page=1','/api/sources','/api/controls','/api/alerts','/favicon.ico','/assets/activity-dashboard.js']:
                 with self.assertRaises(urllib.error.HTTPError) as ex: urllib.request.urlopen(base+route)
                 self.assertEqual(ex.exception.code,404)
         finally:server.shutdown();thread.join();server.server_close()

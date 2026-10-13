@@ -16,12 +16,16 @@ try {
   page.on('request',r=>{if(r.url().includes('/api/insights'))polls++;if(r.isNavigationRequest())navigations++;});
   await page.goto(base,{waitUntil:'networkidle'});
   await page.waitForFunction(()=>document.querySelector('#insight-status').textContent.startsWith('Updated'));
+  await page.waitForFunction(()=>!document.querySelector('#alerts-status').textContent.startsWith('Loading'));
+  assert(await page.locator('#alerts-status').innerText().then(t=>t.includes('current alerts')),'alert panel evaluates real evidence');
+  assert.equal((await page.request.get(base+'/favicon.ico')).status(),204);
   assert.equal(await page.locator('meta[http-equiv="refresh"]').count(),0);
   assert.equal(await page.locator('#durable-activity .charts svg').count(),4);
   const overflow=await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth);
   assert.equal(overflow,false,`page overflow at ${width}px`);
   const liveTop=await page.locator('#insight-live').evaluate(e=>e.getBoundingClientRect().top);
-  assert(liveTop<450,'live summary near top');
+  assert(liveTop<600,'live summary near top after Alerts panel');
+  assert(await page.locator('#alerts-status').evaluate(e=>e.getBoundingClientRect().top)<400,'alerts near top');
   assert.equal(await page.locator('img').evaluateAll(imgs=>imgs.filter(img=>!img.complete||!img.naturalWidth).length),0);
   assert.equal(await page.locator('#insight-runs').evaluate(e=>e.open),false,'activity log starts collapsed');
   await page.locator('#insight-run-summary').click();

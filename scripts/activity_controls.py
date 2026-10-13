@@ -7,15 +7,15 @@ import time
 from collections import Counter
 
 from activity_server import stamp
-from activity_insights import source_name, product
+from activity_insights import source_name, product, hosted_sources
 
 MAX_FILES = 1000
 MAX_BYTES = 1024 * 1024
 MAX_ROWS = 200
 MAX_DETAILS = 100
-THRESHOLDS = {'approvals': 30*86400, 'plans': 86400, 'audit': 86400,
-              'dryRuns': 86400, 'executions': 86400, 'readiness': 86400,
-              'cutover': 86400, 'sources': 7200, 'webhooks': 86400,
+THRESHOLDS = {'approvals': None, 'plans': None, 'audit': None,
+              'dryRuns': None, 'executions': None, 'readiness': None,
+              'cutover': None, 'sources': 7200, 'webhooks': 86400,
               'reconciliation': 7200, 'receipts': 7200}
 FILES = {'approvals': ('approvals', True), 'plans': ('mutation-readiness', True),
          'audit': ('mutation-readiness-audit.json', False),
@@ -78,8 +78,19 @@ def evidence_time(record):
 def grade(state, at, threshold, clock):
     if state in CLOSED: return 'closed'
     if at is None: return 'missing'
-    if clock-at > threshold: return 'stale'
+    if threshold is not None and clock-at > threshold: return 'stale'
     return 'pass' if state in PASS else 'fail' if state in FAIL else 'missing'
+
+
+def record_state(record, category, loaded):
+    status=record.get('status')
+    if category=='plans' and loaded['approvals'].get(record.get('approvalRef'),{}).get('status') in {'rejected','expired'}:
+        return 'retired'
+    if category=='executions' and status=='passed' and (record.get('liveExitCode')!=0 or record.get('liveBufferExceeded') or record.get('postVerify')!='passed'):
+        return 'failed' if (record.get('liveExitCode') is not None and record.get('liveExitCode')!=0) or record.get('liveBufferExceeded') else 'post_verify_failed' if record.get('postVerify')=='failed' else 'empty'
+    if category=='dryRuns' and status=='passed' and record.get('exitCode')!=0:
+        return 'failed' if record.get('exitCode') is not None else 'empty'
+    return status
 
 
 def load(directories, secrets):
@@ -136,13 +147,14 @@ def controls(store, registry, directories=(), at=None):
 
     def row(ident,title,category,state,last,summary,records):
         rows.append({'id':ident,'title':title,'status':state,'lastEvidence':last,
-                     'staleAfterSeconds':THRESHOLDS[category],'summary':summary,
+                     'staleAfterSeconds':THRESHOLDS[category],'informational':category in {'readiness','cutover'},'summary':summary,
                      'recordCount':len(records),'recordsTruncated':len(records)>MAX_DETAILS,'records':records[:MAX_DETAILS]})
         if state in {'missing','stale'}:
             evidence=next((r for r in records if r.get('controlStatus')==state),records[0] if records else {})
             ref=evidence.get('id',ident);when=evidence.get('at',last)
             age=f'; age {max(0,(at-when)/3600):.1f} hours' if when is not None else '; no timestamp/record'
-            callout(ident,ref,f'{title}: {state} evidence (record {ref}{age}; freshness threshold {THRESHOLDS[category]//3600} hours).',state)
+            freshness='informational; adapter evidence deferred' if category in {'readiness','cutover'} else str(THRESHOLDS[category])+' seconds' if THRESHOLDS[category] is not None else 'judged by state and newer evidence'
+            callout(ident,ref,f'{title}: {state} evidence (record {ref}{age}; freshness {freshness}).',state)
 
     for category in FILES:
         records=sorted(loaded[category].values(),key=lambda r:r['at'] or 0,reverse=True)
@@ -152,14 +164,32 @@ def controls(store, registry, directories=(), at=None):
             identity=(r.get('planId') or r['id']) if category in {'dryRuns','executions'} else r['id']
             current.setdefault(identity,r)
         for r in records:
-            status=r.get('status')
-            if category=='plans':
-                decided=loaded['approvals'].get(r.get('approvalRef'),{}).get('status')
-                if decided in {'rejected','expired'}:status=r['status']='retired';r['approvalStatus']=decided
-            if category=='executions' and status=='passed' and (r.get('liveExitCode')!=0 or r.get('liveBufferExceeded') or r.get('postVerify')!='passed'):
-                status='failed' if (r.get('liveExitCode') is not None and r.get('liveExitCode')!=0) or r.get('liveBufferExceeded') else 'post_verify_failed' if r.get('postVerify')=='failed' else 'empty'
-            if category=='dryRuns' and status=='passed' and r.get('exitCode')!=0:status='failed' if r.get('exitCode') is not None else 'empty'
-            r['controlStatus']=grade(status,r['at'],THRESHOLDS[category],at)
+            status=record_state(r,category,loaded)
+            if status=='retired':
+                r['status']='retired';r['approvalStatus']=loaded['approvals'].get(r.get('approvalRef'),{}).get('status')
+            r['controlStatus']='stale' if category in {'readiness','cutover'} else grade(status,r['at'],THRESHOLDS[category],at)
+            # Explicit references and plan identity establish contradiction, never target/timing guesses.
+            if category not in {'readiness','cutover'} and r['controlStatus']=='pass':
+                related=[]
+                for key,other in [('approvalRef','approvals'),('dryRunRef','dryRuns'),('auditRef','audit')]:
+                    if r.get(key) in loaded[other]:related.append((other,loaded[other][r[key]]))
+                if category=='plans':
+                    related.extend((group,x) for group in ['dryRuns','executions'] for x in loaded[group].values() if x.get('planId')==r['id'])
+                if category=='audit':
+                    # Re-auditing is needed only when newer evidence contradicts a named checked plan.
+                    for check in r.get('checks',[]):
+                        if isinstance(check,dict) and check.get('planId') in loaded['plans']:
+                            plan=loaded['plans'][check['planId']];related.append(('plans',plan))
+                            if plan.get('approvalRef') in loaded['approvals']:related.append(('approvals',loaded['approvals'][plan['approvalRef']]))
+                            for group in ['dryRuns','executions']:
+                                related.extend((group,x) for x in loaded[group].values() if x.get('planId')==plan['id'])
+                latest={}
+                for group,x in sorted(related,key=lambda pair:pair[1]['at'] or 0,reverse=True):
+                    latest.setdefault((group,x.get('planId') or x['id']),(group,x))
+                if any((x['at'] or 0)>(r['at'] or 0) and record_state(x,group,loaded) in FAIL-CLOSED for group,x in latest.values()):
+                    r['controlStatus']='fail'
+                    callout(category,r['id'],f"{TITLES[category]}: newer explicitly associated evidence contradicts passed record {r['id']}.",'fail')
+
             if status in FAIL and r['controlStatus']!='closed':
                 historical=current.get(r.get('planId') or r['id']) is not r if category in {'dryRuns','executions'} else False
                 extra=f"; later record {current[r.get('planId') or r['id']]['id']} reports {current[r.get('planId') or r['id']].get('status')}" if historical else ''
@@ -182,25 +212,27 @@ def controls(store, registry, directories=(), at=None):
 
     with store.connect() as db:
         db.execute('BEGIN')  # One consistent read snapshot for all database controls.
+        snapshots={r['name'][9:]:dict(r) for r in db.execute("SELECT * FROM health WHERE name LIKE 'snapshot:%' AND status='connected'")}
         events={r['source']:dict(r) for r in db.execute("SELECT source,count(*) AS events,max(received) AS last,group_concat(DISTINCT json_extract(envelope,'$.agent.product')) AS products FROM events GROUP BY source")}
         tables={r[0] for r in db.execute("SELECT name FROM sqlite_master WHERE type='table'")}
         # Metadata evidence of a scoped hosted provider source; controlled reports never establish onboarding.
-        hosted={r['source'] for r in db.execute("SELECT DISTINCT source FROM events WHERE json_extract(envelope,'$.location.kind')='cloud' AND lower(json_extract(envelope,'$.agent.product')) LIKE '%grok%' AND lower(source) NOT LIKE '%test%' AND lower(source) NOT LIKE '%controlled%' AND lower(json_extract(envelope,'$.runId')) NOT LIKE '%test%' AND lower(json_extract(envelope,'$.runId')) NOT LIKE '%controlled%' AND lower(json_extract(envelope,'$.taskId')) NOT LIKE '%test%' AND lower(json_extract(envelope,'$.taskId')) NOT LIKE '%controlled%' AND lower(json_extract(envelope,'$.label')) NOT LIKE '%controlled%' ")}
+        hosted=hosted_sources(db)
         for ident,registration in registry.items():
             safe_id=text(ident,secrets);name=text(source_name(ident,registration),secrets)
-            e=events.get(ident,{});last=e.get('last');revoked=bool(registration.get('revoked'))
+            e=events.get(ident,{});receipt=e.get('last');snapshot=snapshots.get(ident) if registration.get('provenance')=='read-only local snapshot' else None
+            last=max(receipt or 0,snapshot['at'] if snapshot else 0) or None;revoked=bool(registration.get('revoked'))
             if registration.get('correlationHost') and not registration.get('displayName'):
                 prefix='Collector' if registration.get('provenance')=='read-only local snapshot' else product(e.get('products') or ident)
                 name=text(prefix+' on '+source_name(ident,registration),secrets)
             provider='grok' in ident.lower()
-            state='revoked' if revoked else 'provider-pending' if provider and ident not in hosted else 'never-connected' if last is None else 'registered'
+            state='revoked' if revoked else 'provider-pending' if provider and ident not in hosted else 'never-connected' if last is None else 'connected' if snapshot and at-last<=THRESHOLDS['sources'] else 'quiet' if snapshot else 'registered'
             status='fail' if revoked else 'missing' if state in {'provider-pending','never-connected'} else grade('success',last,THRESHOLDS['sources'],at)
             ref='source:'+safe_id if safe_id!=REDACTED else 'source:registered-'+hashlib.sha256(ident.encode()).hexdigest()[:12]
             detail={'id':ref,'name':name,'registered':True,'revoked':revoked,'state':state,
-                    'lastAccepted':last,'connectionState':'never-connected' if last is None else 'has-accepted-events','acceptedEvents':e.get('events',0),
+                    'lastAccepted':receipt,'snapshotHealth':text(snapshot['detail'],secrets) if snapshot else None,'connectionState':'never-connected' if last is None else 'snapshot-connected' if snapshot else 'has-accepted-events','acceptedEvents':e.get('events',0),
                     'hostedEventObserved':ident in hosted if provider else None,
                     'providerState':('hosted-event-observed' if ident in hosted else 'provider-pending') if provider else None}
-            row(ref,f'Source · {name}','sources',status,last,f"{state}; "+(detail['providerState']+'; ' if provider else '')+f"{e.get('events',0)} accepted events",[detail])
+            row(ref,f'Source · {name}','sources',status,last,f"{state}; "+(detail['snapshotHealth']+'; ' if snapshot else '')+(detail['providerState']+'; ' if provider else '')+f"{e.get('events',0)} accepted events",[detail])
             if status in {'fail','missing'}:callout(ref,ref,f'Source {name}: {state}; '+(detail['providerState']+'; ' if provider else '')+f'{e.get("events",0)} accepted events (record {ref}).',status)
         if not registry:row('sources','Source registrations','sources','missing',None,'No registered sources',[])
 

@@ -3439,7 +3439,8 @@ describe("roadmap adapters", () => {
     expect(syntheticBrowser.report.checks.find((check) => check.id === "operator-evidence-progress")?.status).toBe(
       "passed"
     );
-  });
+  // This integration case launches Chromium repeatedly and exercises a full evidence vault.
+  }, 30000);
 
   it("builds GitHub-specific mutation readiness plans", async () => {
     const { temp, vaultRoot } = await preparedProject();
