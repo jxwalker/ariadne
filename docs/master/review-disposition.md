@@ -51,3 +51,18 @@ Declined/deferred findings:
 CodeRabbit initially reported a quota limit on 170 and in-progress review on 171;
 Copilot reported quota exhaustion. These are unavailable review results, not clean
 reviews. Final external review/CI status is recorded in FREEZE.md.
+
+
+CodeRabbit review of ba544077 (delivered after the first fix push): also fixed
+readiness retry failure propagation, full three-file application rollback with
+bounded readiness retry, exact returned approval path (no newest-file race), and
+positive application connectivity before permission-denial probes. The shared
+retry helper has isolated success/exhaustion tests; no mutation script is run.
+Declined raw snapshot formatting edits (4261783161): snapshots are hash-verified
+raw evidence and must remain byte-preserved. The quota contradiction
+(4261783151) is recorded in import and exclusion, not edited into raw captures.
+Baseline hierarchy finding 4261783185 is stale: product() returns the baseline as
+its second value and imported phases reference that baseline. Real HTTP
+click-through coverage traverses the selected baseline to phases and work.
+CI caught an ambiguous Needs you heading in the new browser check; its selector
+now explicitly targets the level-2 section heading.

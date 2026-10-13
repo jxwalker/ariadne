@@ -12,13 +12,9 @@ DIGEST=$(/usr/bin/sha256sum "$PKG/source-hashes.txt" | cut -d ' ' -f1)
 CHECK_COMMAND="printf '%s\\n' '$DIGEST  $PKG/source-hashes.txt' | /usr/bin/sha256sum --check --status && /usr/bin/sha256sum --check --status '$PKG/source-hashes.txt'"
 case ${1:?plan|audit|dry-run|execute} in
 plan)
- run approval-request --by 'Ariadne Bot (authorization transcription)' --target deployment --action 'Master phase 1 exact-head reversible ledger/dashboard deployment' --risk high --reason "$NOTES; scoped peer auth and live-script permission reaffirmed in James 17:28 BST assignment update" --rollback "Separately audited: env ARIADNE_MASTER_ROLLBACK=confirmed bash $PKG/rollback.sh" --evidence "$EVIDENCE/AUTHORIZATION2.md"
- APPROVAL=$(python3 - "$VAULT" <<'PY'
-import pathlib,sys
-p=pathlib.Path(sys.argv[1])/'projects/ariadne/control/approvals'
-print(max(p.glob('*.json'),key=lambda x:x.stat().st_mtime))
-PY
-)
+ APPROVAL_OUTPUT=$(run approval-request --by 'Ariadne Bot (authorization transcription)' --target deployment --action 'Master phase 1 exact-head reversible ledger/dashboard deployment' --risk high --reason "$NOTES; scoped peer auth and live-script permission reaffirmed in James 17:28 BST assignment update" --rollback "Separately audited: env ARIADNE_MASTER_ROLLBACK=confirmed bash $PKG/rollback.sh" --evidence "$EVIDENCE/AUTHORIZATION2.md")
+ APPROVAL=$(printf '%s\n' "$APPROVAL_OUTPUT" | sed -n 's/^Approval request: \(.*\)\.md$/\1.json/p')
+ [[ -n "$APPROVAL" && -f "$APPROVAL" ]]
  run approval-decision --approval "$APPROVAL" --status approved --by 'Ariadne Bot (transcription of James brief, not a James-authored act)' --notes "$NOTES"
  run mutation-readiness --target deployment --risk high --scope "ARIADNE-MASTER-PILOT-20261013-P01: exact reviewed head $HEAD_SHA; migrate existing ledger, harden DB ownership, local peer map, sourced draft imports, three activity view files + marker; restart only activity; no new access/listener" --approval "$APPROVAL" --auth-evidence "$EVIDENCE/AUTHORIZATION2.md" --dry-run "$CHECK_COMMAND && bash $PKG/dryrun.sh" --live-command "$CHECK_COMMAND && env ARIADNE_MASTER_DEPLOY=confirmed bash $PKG/apply.sh" --post-verify "$CHECK_COMMAND && bash $PKG/verify.sh" --rollback "Separately audited: env ARIADNE_MASTER_ROLLBACK=confirmed bash $PKG/rollback.sh" --notes "$NOTES; all deployment scope/backup/rollback details in reviewed deployment/master/PLAN.md"
  ;;

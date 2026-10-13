@@ -61,4 +61,4 @@ printf '%s\n' "$HEAD_SHA" > "$LIVE/DEPLOYED_COMMIT.new"
 mv "$LIVE/DEPLOYED_COMMIT.new" "$LIVE/DEPLOYED_COMMIT"
 systemctl --user restart ariadne-activity.service
 
-for attempt in $(seq 1 20); do curl -fsS -o /dev/null http://127.0.0.1:18095/readyz && break; sleep 1; done
+wait_ready

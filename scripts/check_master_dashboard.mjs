@@ -25,7 +25,7 @@ try {
     await page.getByRole('link',{name:'Work',exact:true}).click();await shot('work-queues');
     const api=await page.request.get(config.url+'/api/master?limit=2');const data=await api.json();
     if(data.items.length!==2 || !data.nextOffset)throw new Error('pagination failed');
-    await page.goto(config.url+'/');await page.getByRole('heading',{name:'Needs you',exact:true}).waitFor();await shot('operations-overview');
+    await page.goto(config.url+'/');await page.waitForFunction(()=>document.getElementById('insight-status').textContent.startsWith('Updated '));await page.getByRole('heading',{name:'Needs you',exact:true,level:2}).waitFor();await shot('operations-overview');await page.getByRole('heading',{name:'What’s stuck',exact:true,level:2}).waitFor();await shot('operations-blockers');
     for(const view of ['delivery','machines','evidence']){await page.locator(`[data-view="${view}"]`).click();await shot('operations-'+view);}
     await page.close();
   }

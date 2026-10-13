@@ -51,8 +51,8 @@ is transactional and skipped only when its recorded version is present; imports
 replay exact command IDs, and peer map entries are added only once. The original
 pre-apply backup is retained across retries. A different package needs a fresh
 approved plan. Application rollback restores the previous activity server and
-operations dashboard and deployment marker; the added unused master dashboard
-file may remain on disk. Ledger schema/data/journal, database ownership/grants,
+operations dashboard and deployment marker; the master dashboard
+is restored if backed up, otherwise the newly added file is removed. Ledger schema/data/journal, database ownership/grants,
 pg_hba/pg_ident peer map, PG service and backup timer are retained. Dumps made with
 --no-owner --no-acl do not prove ownership/grant restoration; a data recovery plan
 must separately restore and verify those and peer configuration.
