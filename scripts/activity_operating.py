@@ -86,7 +86,7 @@ def pipeline(repo,ev,start,end,policy=None):
         if role=='ci':cohort[ident]=attempts;continue
         name='Dependency update automation' if role=='dependency' else latest.get('name') or 'Unnamed workflow';automation[(role,name)][latest.get('conclusion') or latest.get('status') or 'unknown']+=1
         if role=='cd':other_failures.append({'id':ident,'repo':repo,'title':name,'state':latest.get('conclusion'),'createdAt':ts(latest.get('created_at')),'at':ts(latest.get('updated_at')),'url':link(latest.get('html_url')),'attempt':max(attempts),'branch':latest.get('head_branch'),'sha':latest.get('head_sha')})
-    outcomes=Counter();first=Counter();missing=0;retried=0;queue=[];execution=[];trend=defaultdict(Counter);failures=other_failures;workflows=defaultdict(lambda:Counter());runner_jobs=defaultdict(lambda:Counter())
+    outcomes=Counter();first=Counter();missing=0;retried=0;queue=[];schedule_wait=[];execution=[];trend=defaultdict(Counter);failures=other_failures;workflows=defaultdict(lambda:Counter());runner_jobs=defaultdict(lambda:Counter())
     for ident,attempts in cohort.items():
         latest=attempts[max(attempts)];f=attempts.get(1);conclusion=latest.get('conclusion');created=ts(latest['created_at']);name=latest.get('name') or 'Workflow';workflow=workflows[name]
         outcomes[conclusion or latest.get('status') or 'unknown']+=1;workflow[conclusion or latest.get('status') or 'unknown']+=1
@@ -103,7 +103,8 @@ def pipeline(repo,ev,start,end,policy=None):
         if r!=repo or job.get('run_id') not in cohort:continue
         started=ts(job.get('started_at'));finished=ts(job.get('completed_at'));created=ts(job.get('created_at'))
         if not created:
-            run=cohort[job['run_id']].get(job.get('run_attempt',1));created=ts(run.get('run_started_at') or run.get('created_at')) if run else None
+            run=cohort[job['run_id']].get(job.get('run_attempt',1));scheduled=ts(run.get('run_started_at') or run.get('created_at')) if run else None
+            if started and scheduled and started>=scheduled:schedule_wait.append(started-scheduled)
         if started and created and started>=created:queue.append(started-created)
         if finished and started and finished>=started:execution.append(finished-started)
         name=job.get('runner_name') or 'Runner not assigned';runner_jobs[name]['jobs']+=1
@@ -115,7 +116,7 @@ def pipeline(repo,ev,start,end,policy=None):
     latest_by_branch={}
     for f in sorted(failures,key=lambda r:r['createdAt'] or 0,reverse=True):latest_by_branch.setdefault((f['title'],f['branch']),f)
     failures=[r for r in latest_by_branch.values() if r['state'] in ELIGIBLE-{'success'}]
-    return {'repo':repo,'runs':len(cohort),'allWorkflowRuns':len(all_cohort),'automation':[{'category':role,'name':name,**dict(v)} for (role,name),v in sorted(automation.items())],'completed':completion,'firstPassed':first['success'],'firstEligible':denominator,'firstSuccess':first['success']/denominator if denominator else None,'firstMissing':missing,'eventualPassed':outcomes['success'],'eventualEligible':eventual_eligible,'eventualSuccess':outcomes['success']/eventual_eligible if eventual_eligible else None,'retried':retried,'outcomes':dict(outcomes),'medianQueueSeconds':percentile(queue,.5),'p90QueueSeconds':percentile(queue,.9),'medianExecutionSeconds':percentile(execution,.5),'timingSamples':len(execution),'queueSamples':len(queue),'trend':dict(trend),'failures':sorted(failures,key=lambda r:r['at'] or 0,reverse=True),'workflows':[{'name':n,**dict(v),'firstSuccess':v['firstPassed']/v['firstEligible'] if v['firstEligible'] else None} for n,v in sorted(workflows.items())],'runners':[{'name':n,**dict(v)} for n,v in sorted(runner_jobs.items())],'coverage':collection}
+    return {'repo':repo,'runs':len(cohort),'allWorkflowRuns':len(all_cohort),'automation':[{'category':role,'name':name,**dict(v)} for (role,name),v in sorted(automation.items())],'completed':completion,'firstPassed':first['success'],'firstEligible':denominator,'firstSuccess':first['success']/denominator if denominator else None,'firstMissing':missing,'eventualPassed':outcomes['success'],'eventualEligible':eventual_eligible,'eventualSuccess':outcomes['success']/eventual_eligible if eventual_eligible else None,'retried':retried,'outcomes':dict(outcomes),'medianQueueSeconds':percentile(queue,.5),'p90QueueSeconds':percentile(queue,.9),'medianExecutionSeconds':percentile(execution,.5),'timingSamples':len(execution),'queueSamples':len(queue),'medianScheduleWaitSeconds':percentile(schedule_wait,.5),'scheduleWaitSamples':len(schedule_wait),'trend':dict(trend),'failures':sorted(failures,key=lambda r:r['at'] or 0,reverse=True),'workflows':[{'name':n,**dict(v),'firstSuccess':v['firstPassed']/v['firstEligible'] if v['firstEligible'] else None} for n,v in sorted(workflows.items())],'runners':[{'name':n,**dict(v)} for n,v in sorted(runner_jobs.items())],'coverage':collection}
 
 def operating(store,registry,config,params=None,at=None):
     params=params or {};at=time.time() if at is None else at
@@ -168,6 +169,8 @@ def operating(store,registry,config,params=None,at=None):
             needs.append(action(stable('decision',*key),e['label'],d['question'],d['recipient'],e['repository'],ts(e['occurredAt']) or row['received'],d.get('recommendation') or 'Open the request and choose one of the supplied options.',d.get('url'),kind='explicit-decision',priority=0 if d['blocking'] else 2,options=[clean(v,160) for v in d.get('options',[])],requestId=d['id'],source=clean(reg.get('displayName') or row['source'],128)))
     for repo in active_repos:
         pipeline_data=pipeline(repo,ev,start,at,config.get('workflowPolicies',{}).get(repo));open_prs=[];merged=0;opened=0;merged_trend=Counter()
+        for key in ['workflows','automation','runners']:
+            for item in pipeline_data[key]:item['name']=clean(item['name'],160)
         for (r,number),pr in ev['prs'].items():
             if r!=repo:continue
             created=ts(pr.get('created_at'));merge=ts(pr.get('merged_at'))

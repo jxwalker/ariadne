@@ -7,6 +7,7 @@ import argparse,concurrent.futures,fcntl,json,pathlib,shlex,subprocess,time
 from datetime import datetime,timezone
 from activity_server import Store,canonical
 from activity_reconcile import persist_observations
+from activity_operating import workflow_role
 
 class BudgetExceeded(Exception):pass
 class GitHub:
@@ -94,7 +95,8 @@ def collect_pipeline(store,config,api=None):
                 observations.append((ident,{'kind':'workflow_run','body':{'workflow_run':first}}))
             persist_observations(store,repo,observations);observations=[]
             # Timing diagnostics are an explicit latest-run sample, not a fleet-wide queue percentile.
-            sampled=sorted(current,key=lambda r:r.get('created_at',''),reverse=True)[:config.get('pipelineJobSample',20)]
+            candidates=[r for r in current_by_id.values() if workflow_role(r,config.get('workflowPolicies',{}).get(repo)) in {'ci','cd'}]
+            sampled=sorted(candidates,key=lambda r:r.get('created_at',''),reverse=True)[:config.get('pipelineJobSample',20)]
             for r in sampled:
                 jobs,_=api.pages(f'repos/{repo}/actions/runs/{r["id"]}/jobs?filter=latest','jobs')
                 for j in jobs:j.setdefault('run_attempt',r.get('run_attempt',1))
