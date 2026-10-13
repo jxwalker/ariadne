@@ -134,7 +134,7 @@ def collect(home,host,mappings=None,now=None):
     try:
         from activity_machine_probe import collect as machine_collect
         result['machine']=machine_collect(host,'mac' if __import__('platform').system()=='Darwin' else 'vm')
-    except (ImportError,OSError,ValueError):pass
+    except (ImportError,OSError,ValueError,KeyError,IndexError,ZeroDivisionError):pass
     return result
 
 if __name__=='__main__':
