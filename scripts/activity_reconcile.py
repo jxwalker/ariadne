@@ -34,6 +34,17 @@ def pages(endpoint):
         page,end=decoder.raw_decode(text.lstrip());result.append(page);text=text.lstrip()[end:]
     return result
 
+def persist_observations(store,repo,observations,batch_size=25):
+    # Network work is already outside SQLite. Bound each write lock so ingestion,
+    # snapshot import and the projection worker can commit between GitHub batches.
+    for start in range(0,len(observations),batch_size):
+        with store.connect() as db:
+            for ident,body in observations[start:start+batch_size]:
+                record_observation(db,ident,repo,body,time.time())
+        # SQLite's busy handler backs off to 100 ms. A shorter gap can repeatedly
+        # miss waiting producers and starve them despite nominally small commits.
+        if start+batch_size<len(observations):time.sleep(0.1)
+
 def reconcile(store,repositories):
     for repo in repositories:
         try:
@@ -48,9 +59,8 @@ def reconcile(store,repositories):
                     for route,kind in [(f'pulls/{pr["number"]}/reviews','pull_request_review'),(f'commits/{pr["head"]["sha"]}/check-runs','check_run')]:
                         raw=pages(f'repos/{repo}/{route}?per_page=100')
                         observations.append(('reconcile:'+kind+':'+repo+':'+str(pr['number']),{'kind':kind,'body':{'pull_request':pr,'pages':raw}}))
+            persist_observations(store,repo,observations)
             with store.connect() as db:
-                for ident,body in observations:
-                    record_observation(db,ident,repo,body,time.time())
                 db.execute('INSERT OR REPLACE INTO health VALUES(?,?,?,?)',('github:'+repo,time.time(),'success','All PR pages collected; associated task review/check pages collected; no agent attribution'))
         except Exception:
             with store.connect() as db: db.execute('INSERT OR REPLACE INTO health VALUES(?,?,?,?)',('github:'+repo,time.time(),'error','Read-only API reconciliation failed; inspect host gh access/rate limits'))

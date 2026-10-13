@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """Private durable activity ingestion. Python 3.11+; no third-party dependencies."""
-import argparse, hashlib, hmac, json, os, pathlib, re, signal, sqlite3, threading, time
+import argparse, hashlib, hmac, json, os, pathlib, re, signal, sqlite3, threading, time, weakref
 from datetime import datetime, timezone
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from urllib.parse import urlsplit, parse_qs
@@ -58,9 +58,17 @@ class ClosingConnection(sqlite3.Connection):
 class Store:
     def __init__(self,path):
         self.path=str(path); pathlib.Path(path).parent.mkdir(parents=True,exist_ok=True)
-        with self.connect() as db:
+        # Keep WAL open between requests: closing the last connection checkpoints it,
+        # making unrelated producers compete with repeated checkpoint/DDL work.
+        self._keeper=sqlite3.connect(self.path,timeout=30,check_same_thread=False)
+        self._finalize=weakref.finalize(self,self._keeper.close)
+        self._keeper.execute('PRAGMA synchronous=FULL')
+        if self._keeper.execute('PRAGMA journal_mode').fetchone()[0]!='wal':
+            self._keeper.execute('PRAGMA journal_mode=WAL')
+        if self._keeper.execute('PRAGMA user_version').fetchone()[0]<3:
+            db=self._keeper
             db.executescript('''
-            PRAGMA journal_mode=WAL;
+            BEGIN IMMEDIATE;
             CREATE TABLE IF NOT EXISTS rates(source TEXT, minute INTEGER, requests INTEGER, PRIMARY KEY(source,minute));
             CREATE TABLE IF NOT EXISTS migrations(version INTEGER PRIMARY KEY);
             INSERT OR IGNORE INTO migrations VALUES(1);
@@ -72,11 +80,31 @@ class Store:
             CREATE TABLE IF NOT EXISTS observations(id TEXT PRIMARY KEY, repo TEXT, observed REAL, body TEXT);
             CREATE INDEX IF NOT EXISTS observation_repo ON observations(repo);
             CREATE TABLE IF NOT EXISTS health(name TEXT PRIMARY KEY, at REAL, status TEXT, detail TEXT);
+            CREATE TABLE IF NOT EXISTS nonces(source TEXT, nonce TEXT, digest TEXT, at REAL, PRIMARY KEY(source,nonce));
+            CREATE INDEX IF NOT EXISTS events_run_sequence ON events(source,json_extract(envelope,'$.runId'),json_extract(envelope,'$.sequence'));
+            CREATE INDEX IF NOT EXISTS events_received ON events(received);
+            CREATE INDEX IF NOT EXISTS events_source_received ON events(source,received);
+            CREATE INDEX IF NOT EXISTS events_pending ON events(processed,received,id);
+            CREATE INDEX IF NOT EXISTS webhooks_pending ON webhooks(processed,received);
+            CREATE INDEX IF NOT EXISTS observations_observed ON observations(observed);
+            CREATE INDEX IF NOT EXISTS runs_last ON runs(last);
+            INSERT OR IGNORE INTO migrations VALUES(3);
+            PRAGMA user_version=3;
+            COMMIT;
             ''')
         os.chmod(self.path,0o600)
+    def close(self):
+        self._finalize()
     def connect(self):
-        db=sqlite3.connect(self.path,timeout=10,factory=ClosingConnection); db.row_factory=sqlite3.Row
+        db=sqlite3.connect(self.path,timeout=30,factory=ClosingConnection); db.row_factory=sqlite3.Row
         db.execute('PRAGMA synchronous=FULL'); return db
+    def ready(self):
+        # No projections, row scans, write transactions or schema creation on probes.
+        uri=pathlib.Path(self.path).resolve().as_uri()+'?mode=ro'
+        with sqlite3.connect(uri,uri=True,timeout=0.25,factory=ClosingConnection) as db:
+            db.execute('SELECT version FROM migrations ORDER BY version DESC LIMIT 1').fetchone()
+            db.execute('SELECT id FROM events LIMIT 1').fetchone()
+        return True
     def accept(self,e,raw):
         received=now()
         with self.connect() as db:
@@ -102,6 +130,9 @@ class Store:
             db.execute('INSERT INTO webhooks(id,kind,received,raw) VALUES(?,?,?,?)',(delivery,kind,time.time(),raw))
         return False
     def process(self):
+        with self.connect() as db:
+            pending=db.execute('SELECT 1 FROM events WHERE processed=0 LIMIT 1').fetchone() or db.execute('SELECT 1 FROM webhooks WHERE processed=0 LIMIT 1').fetchone()
+        if not pending:return
         with self.connect() as db:
             db.execute('BEGIN IMMEDIATE')
             for row in db.execute('SELECT * FROM events WHERE processed=0 ORDER BY received,id LIMIT 200').fetchall():
@@ -191,7 +222,6 @@ class App:
         if e['project'] not in source['projects'] or e['repository'] not in source['repositories']: raise PermissionError('repository/project unauthorized')
         # Nonces are bound to a request digest and retained durably; retry identical bodies is safe.
         with self.store.connect() as db:
-            db.execute('CREATE TABLE IF NOT EXISTS nonces(source TEXT, nonce TEXT, digest TEXT, at REAL, PRIMARY KEY(source,nonce))')
             db.execute('BEGIN IMMEDIATE'); db.execute('DELETE FROM nonces WHERE at<?',(time.time()-600,))
             minute=int(time.time()/60);db.execute('DELETE FROM rates WHERE minute<?',(minute-1,))
             rate=db.execute('SELECT requests FROM rates WHERE source=? AND minute=?',(s,minute)).fetchone()
@@ -256,7 +286,7 @@ class Handler(BaseHTTPRequestHandler):
             self.send_response(204);self.send_header('Content-Length','0');self.end_headers();return
         if self.path=='/healthz': return self.reply(200,{'status':'alive'})
         if self.path=='/readyz':
-            try: self.server.app.sources(); self.server.app.store.snapshot({}); return self.reply(200,{'status':'ready'})
+            try: self.server.app.sources(); self.server.app.store.ready(); return self.reply(200,{'status':'ready'})
             except Exception: return self.reply(503,{'status':'unavailable'})
         # On private listener only. It MUST be behind a tailnet HTTPS proxy; never expose this listener publicly.
         route=urlsplit(self.path)
@@ -320,5 +350,5 @@ def main():
     def stop(*_): app.stop.set(); threading.Thread(target=server.shutdown).start()
     signal.signal(signal.SIGTERM,stop); signal.signal(signal.SIGINT,stop)
     try: server.serve_forever()
-    finally: app.stop.set(); worker.join(); server.server_close()
+    finally: app.stop.set(); worker.join(); server.server_close(); app.store.close()
 if __name__=='__main__': main()
