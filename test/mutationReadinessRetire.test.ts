@@ -1,8 +1,9 @@
 import fs from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
+import { createHash } from "node:crypto";
 import { describe, expect, it } from "vitest";
-import { approvalDigest } from "../src/mutationReadiness.js";
+import { planMutationReadiness } from "../src/mutationReadiness.js";
 import { generateMutationReadinessAudit } from "../src/mutationReadinessAudit.js";
 
 describe("mutation-readiness audit retirement", () => {
@@ -48,22 +49,24 @@ describe("mutation-readiness audit retirement", () => {
       await fs.mkdir(path.join(control, "approvals"), { recursive: true });
       await fs.mkdir(path.join(control, "mutation-readiness"), { recursive: true });
       const approvalRef = "approval-2026-10-13T00-00-00-000Z";
-      const approved = { id: approvalRef, project: "ariadne", target: "deployment", status: "approved", action: "exact fixture", decisionBy: "Test operator" };
       const approvalPath = path.join(control, "approvals", `${approvalRef}.json`);
+      const originalApproval = JSON.stringify({ status: "approved", id: approvalRef, project: "ariadne", target: "deployment", action: "Exact test scope", decisionBy: "James", decidedAt: "2026-10-13T00:00:00Z" });
       const evidence = path.join(vaultRoot, "authorization.md");
       await fs.writeFile(evidence, "Isolated test authorization");
       await fs.writeFile(path.join(control, "mutation-readiness", "mutation-readiness-deployment-current.json"), JSON.stringify({
         schemaVersion: 1, id: "mutation-readiness-deployment-current", project: "ariadne", target: "deployment",
-        status: "ready_for_bounded_review", approvalRef, approvalStatus: "approved", approvalDigest: approvalDigest(approved), risk: "high", execute: false,
+        status: "ready_for_bounded_review", approvalRef, approvalStatus: "approved", approvalSha256: createHash("sha256").update(originalApproval).digest("hex"), risk: "high", execute: false,
         authEvidenceRefs: [evidence], evidenceRefs: [], dryRunCommand: "git status --short",
         proposedLiveCommand: "bounded-test-action", postVerificationCommand: "git status --short",
         rollback: "Isolated test rollback", requiredGates: []
       }));
-      await fs.writeFile(approvalPath, JSON.stringify(approved));
+      await fs.writeFile(approvalPath, originalApproval);
       expect((await generateMutationReadinessAudit({ project: "ariadne", vaultRoot })).audit.checks[0].status).toBe("passed");
-      for (const patch of [{ id: "approval-other" }, { project: "other" }, { target: "generic" }, { action: "unrelated" }, { decisionBy: "other" }]) {
-        await fs.writeFile(approvalPath, JSON.stringify({ ...approved, ...patch }));
-        expect((await generateMutationReadinessAudit({ project: "ariadne", vaultRoot })).audit.checks[0].status).toBe("blocked");
+      for (const patch of [{ id: "approval-other" }, { project: "other" }, { target: "github" }, { action: "Other scope" }, { decisionBy: "Ariadne Bot" }, { decidedAt: "2000-01-01" }]) {
+        await fs.writeFile(approvalPath, JSON.stringify({ ...JSON.parse(originalApproval), ...patch }));
+        const changed = (await generateMutationReadinessAudit({ project: "ariadne", vaultRoot })).audit.checks[0];
+        expect(changed.status).toBe("blocked");
+        expect(changed.blockers).toContain("current approval record digest is missing or changed");
       }
       await fs.unlink(approvalPath);
       const missing = (await generateMutationReadinessAudit({ project: "ariadne", vaultRoot })).audit.checks[0];
@@ -73,6 +76,21 @@ describe("mutation-readiness audit retirement", () => {
       expect((await generateMutationReadinessAudit({ project: "ariadne", vaultRoot })).audit.checks[0].status).toBe("blocked");
       await fs.writeFile(approvalPath, JSON.stringify({ status: "rejected" }));
       expect((await generateMutationReadinessAudit({ project: "ariadne", vaultRoot })).audit.checks[0].status).toBe("retired");
+    } finally { await fs.rm(vaultRoot, { recursive: true, force: true }); }
+  });
+  it("captures the exact approved record digest when generating a plan", async () => {
+    const vaultRoot = await fs.mkdtemp(path.join(os.tmpdir(), "ariadne-approval-digest-"));
+    try {
+      const dir = path.join(vaultRoot, "projects", "ariadne", "control", "approvals");
+      await fs.mkdir(dir, { recursive: true });
+      const id = "approval-2026-10-13T00-00-00-001Z";
+      const raw = JSON.stringify({ schemaVersion: 1, id, project: "ariadne", target: "deployment", status: "approved", action: "Exact test scope", decisionBy: "James", decidedAt: "2026-10-13T00:00:00Z" }) + "\n";
+      await fs.writeFile(path.join(dir, `${id}.json`), raw);
+      const auth = path.join(vaultRoot, "auth.md");
+      await fs.writeFile(auth, "Isolated test authorization");
+      const result = await planMutationReadiness({ project: "ariadne", vaultRoot, target: "deployment", risk: "high", scope: "Exact test scope", approvalRef: id, authEvidenceRefs: [auth], evidenceRefs: [], dryRunCommand: "git status --short", proposedLiveCommand: "bounded-test-action", postVerificationCommand: "git status --short", rollback: "Isolated test rollback" });
+      expect(result.plan.approvalSha256).toBe(createHash("sha256").update(raw).digest("hex"));
+      expect((await generateMutationReadinessAudit({ project: "ariadne", vaultRoot })).audit.checks[0].status).toBe("passed");
     } finally { await fs.rm(vaultRoot, { recursive: true, force: true }); }
   });
 });

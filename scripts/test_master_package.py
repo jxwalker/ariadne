@@ -62,3 +62,15 @@ class PackageHelpers(unittest.TestCase):
             with self.assertRaises(ValueError):module.validate_canonical_path(record,pathlib.Path(tmp)/'external.json',vault)
             canonical.unlink();canonical.symlink_to(pathlib.Path(tmp)/'external.json')
             with self.assertRaises(ValueError):module.validate_canonical_path(record,canonical,vault)
+
+    def test_provisioning_approval_is_operation_specific(self):
+        import importlib.util
+        head='a'*40;digest='b'*64
+        record={'status':'approved','project':'ariadne','target':'deployment','decisionBy':'James','decidedAt':'2026-10-13T00:00:00Z','action':f'Master PostgreSQL provision: {head}; manifest {digest}'}
+        for location in [ROOT/'deployment/master/check-approval.py',ROOT/'docs/master/postgres-package/check-approval.py']:
+            spec=importlib.util.spec_from_file_location('provision_check',location)
+            module=importlib.util.module_from_spec(spec);spec.loader.exec_module(module)
+            module.validate(record,head,digest,'postgres-provision')
+            with self.assertRaises(ValueError):module.validate(record,head,digest,'master')
+            with self.assertRaises(ValueError):module.validate(record|{'action':f'Master phase 1 exact-head deployment: {head}; manifest {digest}'},head,digest,'postgres-provision')
+            with self.assertRaises(ValueError):module.validate(record,'c'*40,digest,'postgres-provision')

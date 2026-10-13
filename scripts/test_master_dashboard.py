@@ -70,12 +70,16 @@ class MasterDashboard(unittest.TestCase):
                 result=render(data,route,filters)
                 self.assertIn('Master development portfolio',result)
 
-    def test_work_pagination_preserves_state(self):
-        from html import unescape
-        from urllib.parse import urlparse,parse_qs
-        import re
-        data={'nodes':[{'id':str(i),'kind':'work','revision':1,'body':{'title':str(i),'state':'active' if i<4 else 'proposed'}} for i in range(8)],'progress':[],'dependencies':[],'history':[],'evidence':[]}
-        page=render(data,'/work',{'state':['active'],'offset':['2'],'limit':['2']})
-        links=re.findall(r'href="([^"]+)"[^>]*>(?:Previous|Next)',page)
-        self.assertEqual(len(links),2)
-        for url in links:self.assertEqual(parse_qs(urlparse(unescape(url)).query)['state'],['active'])
+    def test_work_paging_preserves_state_filter(self):
+        from urllib.parse import urlsplit,parse_qs
+        from html.parser import HTMLParser
+        class Links(HTMLParser):
+            def __init__(self):super().__init__();self.hrefs=[]
+            def handle_starttag(self,tag,attrs):
+                if tag=='a':self.hrefs.extend(v for k,v in attrs if k=='href')
+        data={'nodes':[],'progress':[],'history':[],'dependencies':[],'evidence':[]}
+        page=render(data,'/work',{'state':['active'],'limit':['2'],'offset':['2']})
+        parser=Links();parser.feed(page)
+        paging=[parse_qs(urlsplit(href).query) for href in parser.hrefs if 'offset=' in href]
+        self.assertEqual(len(paging),2)
+        self.assertTrue(all(query['state']==['active'] and query['limit']==['2'] for query in paging))

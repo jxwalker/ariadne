@@ -121,6 +121,17 @@ mark inactive waivers. Infinite expiry is rejected. A real-PG regression waits
 for actual expiry, proves downstream rejection, and checks history is unchanged.
 
 
+Codex re-review at c0f6b2ad10e9cec05014e668408c68f585140677: fixed
+4262623892 by binding the complete approval-file SHA-256 into generated readiness
+plans and rechecking it at audit/execution; altered ID/project/target/action/
+decision metadata is rejected, and legacy plans without a digest are blocked.
+Fixed 4262623904/4262623912 by adding exact-operation head/manifest approval and
+independent plan-bound input verification to the historical PG provisioning
+package. Its new prepare helper only writes local package artifacts; no
+provisioning stage is invoked by this assignment. Fixed 4262623947 by retaining
+state in work queue paging links. Tests cover metadata drift, unrelated operation
+approvals and filtered navigation.
+
 ## Combined operator-response release
 
 Codex independently reviewed both stacked PRs and the latest c0f6b2a findings.
