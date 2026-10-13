@@ -97,3 +97,15 @@ class PackageHelpers(unittest.TestCase):
         for data,expected in [({'canRespond':False},0),({'canRespond':True},1)]:
             result=subprocess.run(['python3','-c',command],input=canonical(data),capture_output=True,text=True)
             self.assertEqual(result.returncode,expected)
+
+    def test_stage_rejects_partial_tree_before_archive(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root=pathlib.Path(tmp);head='a'*40
+            (root/'HEAD_SHA').write_text(head);(root/'common.sh').write_text((ROOT/'deployment/master/common.sh').read_text())
+            (root/'stage').mkdir();(root/'stage/obsolete.py').write_text('retained failed-preparation evidence')
+            fake=root/'fake';fake.mkdir();log=root/'archive-called'
+            (fake/'git').write_text('#!/bin/sh\ntouch "'+str(log)+'"\n');(fake/'git').chmod(0o700)
+            env={**os.environ,'PATH':str(fake)+':'+os.environ['PATH'],'ARIADNE_MASTER_REPO':str(root)}
+            result=subprocess.run(['bash','-c','source "$1"; stage','test',str(root/'common.sh')],env=env,capture_output=True)
+            self.assertNotEqual(result.returncode,0);self.assertFalse(log.exists())
+            self.assertEqual((root/'stage/obsolete.py').read_text(),'retained failed-preparation evidence')

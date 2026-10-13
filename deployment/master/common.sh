@@ -12,7 +12,8 @@ export PATH="$PGBIN:$PATH"
 HEAD_SHA=$(cat "$PKG/HEAD_SHA")
 [[ "$HEAD_SHA" =~ ^[a-f0-9]{40}$ ]]
 stage() {
- mkdir -p "$PKG/stage"
+ [[ ! -e "$PKG/stage" && ! -L "$PKG/stage" ]] || { echo 'Use a fresh package; staging tree already exists' >&2; exit 1; }
+ mkdir "$PKG/stage"
  git -C "$REPO" archive "$HEAD_SHA" | tar -x -C "$PKG/stage"
 }
 # Bounded readiness probe: exhausting retries must return failure.
