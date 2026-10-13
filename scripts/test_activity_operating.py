@@ -118,6 +118,24 @@ class OperatingTests(unittest.TestCase):
         self.assertIsNone(row['cpuPercent']);self.assertIsNone(row['diskPercent']);self.assertEqual(row['pressure'],{'memory_full':1.5})
         self.assertEqual([t['name'] for t in row['temperatures']],['CPU']);self.assertIsNone(row['vms'][0]['mem']);self.assertEqual(row['services'],[{'name':'svc','state':'active'}])
         self.assertNotIn('<',canonical(row))
+    def test_resolution_sequence_survives_producer_clock_rollback(self):
+        self.send('decision.requested',decision={'id':'choice','recipient':'james','question':'Choose?','blocking':True})
+        self.send('decision.resolved',seq=1,decision={'id':'choice','recipient':'james','resolution':'Chosen'})
+        with self.store.connect() as db:
+            env=json.loads(db.execute("SELECT envelope FROM events WHERE id='event-1'").fetchone()['envelope'])
+            env['occurredAt']=time.strftime('%Y-%m-%dT%H:%M:%SZ',time.gmtime(self.at-3600))
+            db.execute("UPDATE events SET envelope=? WHERE id='event-1'",(canonical(env),))
+        self.assertEqual(self.read()['needsYou'],[])
+
+    def test_late_lower_sequence_cannot_reopen_resolved_question(self):
+        self.send('decision.resolved',seq=2,decision={'id':'choice','recipient':'james','resolution':'Chosen'})
+        self.send('decision.requested',seq=1,decision={'id':'choice','recipient':'james','question':'Choose?','blocking':True})
+        with self.store.connect() as db:
+            env=json.loads(db.execute("SELECT envelope FROM events WHERE id='event-1'").fetchone()['envelope'])
+            env['occurredAt']=time.strftime('%Y-%m-%dT%H:%M:%SZ',time.gmtime(self.at+300))
+            db.execute("UPDATE events SET envelope=? WHERE id='event-1'",(canonical(env),))
+        self.assertEqual(self.read()['needsYou'],[])
+
     def test_unresolved_question_survives_large_decision_history(self):
         original=self.send('decision.requested',decision={'id':'old-choice','recipient':'james','question':'Still needs an answer','blocking':True})
         rows=[]

@@ -186,18 +186,25 @@ def operating(store,registry,config,params=None,at=None):
         # Resolve only an exact source/request identity; another source cannot close it.
         decisions={}
         # Select current state across the complete lifecycle before any UI/output bound.
-        # The same Python parser handles every ISO form accepted by validate().
+        # Producer sequence is authoritative within a run, including clock rollback.
+        # Across runs, the same parser handles every ISO form accepted by validate().
         db.create_function('ariadne_decision_time',2,lambda stamp,received:ts(stamp) or received,deterministic=True)
         lifecycle=[(json.loads(r['envelope']),r) for r in db.execute("""
-            WITH current_decisions AS (
+            WITH per_run_decisions AS (
+                SELECT id,source,envelope,received,
+                  row_number() OVER (
+                    PARTITION BY source,json_extract(envelope,'$.repository'),json_extract(envelope,'$.decision.id'),json_extract(envelope,'$.runId')
+                    ORDER BY json_extract(envelope,'$.sequence') DESC,received DESC,id DESC
+                  ) AS run_position
+                FROM events
+                WHERE json_extract(envelope,'$.kind') IN ('decision.requested','decision.resolved')
+            ), current_decisions AS (
                 SELECT source,envelope,received,
                   row_number() OVER (
                     PARTITION BY source,json_extract(envelope,'$.repository'),json_extract(envelope,'$.decision.id')
-                    ORDER BY ariadne_decision_time(json_extract(envelope,'$.occurredAt'),received) DESC,
-                             json_extract(envelope,'$.sequence') DESC,received DESC,id DESC
+                    ORDER BY ariadne_decision_time(json_extract(envelope,'$.occurredAt'),received) DESC,received DESC,id DESC
                   ) AS position
-                FROM events
-                WHERE json_extract(envelope,'$.kind') IN ('decision.requested','decision.resolved')
+                FROM per_run_decisions WHERE run_position=1
             )
             SELECT source,envelope,received FROM current_decisions WHERE position=1
         """)]
