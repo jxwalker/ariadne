@@ -200,6 +200,11 @@ BEGIN
    IF old.kind<>'work' THEN RAISE EXCEPTION 'evidence requires work'; END IF;
    b:=c->'evidence';
    IF b->>'id' IS NULL OR b->>'kind' NOT IN ('agent_run','github_pr','ci','merge','deploy','eval','runtime','review','document') OR b->>'uri' IS NULL THEN RAISE EXCEPTION 'invalid evidence'; END IF;
+   IF b ? 'observedAt' THEN
+   IF jsonb_typeof(b->'observedAt') IS DISTINCT FROM 'string' OR NOT isfinite((b->>'observedAt')::timestamptz)
+      OR (b->>'observedAt')::timestamptz>now() THEN RAISE EXCEPTION 'finite non-future observedAt required'; END IF;
+   b:=b||jsonb_build_object('reportedObservedAt',b->>'observedAt','observedAt',to_char((b->>'observedAt')::timestamptz AT TIME ZONE 'UTC','YYYY-MM-DD"T"HH24:MI:SS.US"Z"'));
+   END IF;
    IF b ? 'generation' AND b->>'generation' IS DISTINCT FROM coalesce(old.body->>'generation','1') THEN RAISE EXCEPTION 'evidence generation mismatch'; END IF;
    b:=b||jsonb_build_object('generation',coalesce((old.body->>'generation')::integer,1));
    INSERT INTO master.evidence VALUES(b->>'id',target,b,now());
@@ -285,6 +290,16 @@ CREATE FUNCTION master.snapshot() RETURNS jsonb LANGUAGE sql STABLE SECURITY DEF
  'evidence',coalesce((SELECT jsonb_agg(e ORDER BY e.id) FROM master.evidence e),'[]'),
  'imports',coalesce((SELECT jsonb_agg(i ORDER BY i.id) FROM master.imports i),'[]'),
  'history',coalesce((SELECT jsonb_agg(j ORDER BY sequence) FROM master.journal j),'[]'));
+$$;
+CREATE INDEX operator_response_lookup ON master.nodes((body->>'sourceId'),(body->>'repository'),(body->>'runId')) WHERE kind='decision' AND body->>'origin'='operator-dashboard' AND body->>'state'='resolved';
+CREATE FUNCTION master.operator_replies(source_id text,repo text,run text) RETURNS jsonb LANGUAGE sql STABLE SECURITY DEFINER SET search_path=pg_catalog,master AS $$
+ SELECT coalesce(jsonb_agg(reply ORDER BY resolved_at,command_id),'[]') FROM (
+  SELECT jsonb_build_object('sourceId',body->>'sourceId','repository',body->>'repository','runId',body->>'runId','requestId',body->>'requestId','requestRevision',body->>'requestRevision','resolution',body->>'resolution','resolvedBy',body->>'resolvedBy','resolvedAt',body->>'resolvedAt','commandId',body->>'commandId') reply,
+         (body->>'resolvedAt')::timestamptz resolved_at,body->>'commandId' command_id
+  FROM master.nodes WHERE kind='decision' AND body->>'origin'='operator-dashboard' AND body->>'state'='resolved'
+    AND body->>'sourceId'=source_id AND body->>'repository'=repo AND body->>'runId'=run
+  ORDER BY (body->>'resolvedAt')::timestamptz DESC,body->>'commandId' DESC LIMIT 50
+ ) latest;
 $$;
 REVOKE ALL ON SCHEMA master FROM PUBLIC;
 REVOKE ALL ON ALL TABLES IN SCHEMA master FROM PUBLIC;

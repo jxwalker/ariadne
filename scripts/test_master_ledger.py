@@ -316,6 +316,17 @@ class LedgerContract(unittest.TestCase):
         self.sql("SELECT set_config('ariadne.migration_sha','%s',false);"%digest+source,database=name,raw=True)
         self.assertEqual(self.sql('SELECT to_jsonb(source_sha) FROM master.migrations WHERE version=1;',database=name),digest)
 
+    def test_evidence_dates_are_finite_absolute_and_non_poisoning(self):
+        p=self.fixture();w=p+'w'
+        for value in ['not-a-date','infinity','-infinity',42,'2999-01-01T00:00:00Z']:
+            proof={'id':str(uuid.uuid4()),'kind':'ci','uri':'https://example.invalid/proof','observedAt':value}
+            self.assertFalse(self.cmd('evidence',w,1,evidence=proof)['ok'])
+        proof={'id':str(uuid.uuid4()),'kind':'ci','uri':'https://example.invalid/proof','observedAt':'now'}
+        self.ok('evidence',w,1,evidence=proof)
+        stored=self.sql("SELECT body FROM master.evidence WHERE id='%s';"%proof['id'],database='ledger_test')
+        self.assertEqual(stored['reportedObservedAt'],'now');self.assertNotEqual(stored['observedAt'],'now')
+        self.assertTrue(stored['observedAt'].endswith('Z'))
+
     def test_append_only(self):
         with self.assertRaises(AssertionError):self.sql('DELETE FROM master.journal;',database='ledger_test')
 
@@ -331,18 +342,21 @@ class LedgerContract(unittest.TestCase):
         def write(c):return self.sql("SELECT master.command('james','%s');"%json.dumps(c).replace("'","''"),database='ledger_test')
         actions=OperatorActions(app,read=read,write=write)
         headers={'Tailscale-User-Login':'operator@example','X-Forwarded-For':'100.64.1.10','Origin':'https://dashboard.example'}
-        headers['X-Ariadne-CSRF']=actions.session(headers,'127.0.0.1')['csrfToken']
+        headers['X-Ariadne-CSRF']=actions.session(headers,{'ip':'127.0.0.1','proxyUid':0})['csrfToken']
         question={'sourceId':source,'repo':repo,'runId':p+'run','requestId':p,'requestRevision':'a'*64,'kind':'explicit-decision','title':'Pilot','reason':'Choose a boundary','source':'Ariadne Bot','recommendation':'Operator only','options':['Operator only','Add agents']}
         body={'sourceId':source,'repo':repo,'requestId':p,'requestRevision':'a'*64,'commandId':str(uuid.uuid4()),'resolution':"Operator only; preserve James's decision"}
         with patch('activity_operating.operating',return_value={'needsYou':[question]}):
-            self.assertEqual(actions.answer(headers,'127.0.0.1',body)['decisionId'],p)
-            self.assertTrue(actions.answer(headers,'127.0.0.1',body)['duplicate'])
+            self.assertEqual(actions.answer(headers,{'ip':'127.0.0.1','proxyUid':0},body)['decisionId'],p)
+            self.assertTrue(actions.answer(headers,{'ip':'127.0.0.1','proxyUid':0},body)['duplicate'])
         ledger=read();node=next(n for n in ledger['nodes'] if n['id']==p)
         self.assertEqual(node['revision'],2);self.assertEqual(node['body']['resolution'],body['resolution'])
         self.assertEqual(node['body']['state'],'resolved');self.assertEqual(node['body']['requestRevision'],'a'*64)
         self.assertEqual(hide_answered({'needsYou':[question]},ledger)['needsYou'],[])
         self.assertEqual(actions.replies({'sourceId':source,'repository':repo,'runId':p+'run'})[0]['resolution'],body['resolution'])
         self.assertEqual(actions.replies({'sourceId':'other','repository':repo,'runId':p+'run'}),[])
+        query="SELECT master.operator_replies('%s','%s','%s');"%(source,repo,p+'run')
+        self.assertEqual(self.sql(query,database='ledger_test')[0]['resolution'],body['resolution'])
+        self.assertEqual(self.sql("SELECT master.operator_replies('other','%s','%s');"%(repo,p+'run'),database='ledger_test'),[])
         self.assertEqual(len([n for n in ledger['nodes'] if n['id']==p]),1)
         self.assertEqual(len([j for j in ledger['history'] if j['target']==p]),2)
 

@@ -21,7 +21,7 @@ baseline revision; acceptance counts criteria rather than tickets. Proposed deno
 are displayed separately and never described as approved commitments.
 
 Commands: `create`, `update`, `dependencies`, `transition`, `scope`, `approve`, `split`,
-`evidence`, `accept`, `override`, `import`. Work starts proposed. Ready requires approved
+`evidence`, `accept`, `override`, `resolve`, `renew-waiver`, `import`. Work starts proposed. Ready requires approved
 scope and accepted dependencies; unresolved edges remain visible and block readiness.
 Active follows ready; verification follows active. Agent completion is an observation,
 not acceptance. Acceptance requires candidate-bound, policy-bound, criterion-bound,

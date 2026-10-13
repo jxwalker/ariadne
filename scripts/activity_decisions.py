@@ -17,6 +17,33 @@ from datetime import datetime, timezone
 from master_dashboard import snapshot
 
 
+def kernel_peer_uid(connection):
+    """Authenticate the local TCP peer from Linux kernel ownership, never headers.
+    Root-owned Serve/admin processes are the existing trusted proxy boundary.
+    Missing provenance fails closed; the deployed backend is IPv4 loopback on Linux.
+    """
+    import socket,pathlib
+    try:
+        if connection.family!=socket.AF_INET:return None
+        def address(value):
+            return socket.inet_aton(value[0])[::-1].hex().upper()+':'+format(value[1],'04X')
+        local,remote=address(connection.getpeername()),address(connection.getsockname())
+        for line in pathlib.Path('/proc/net/tcp').read_text().splitlines()[1:]:
+            fields=line.split()
+            if fields[1]==local and fields[2]==remote and fields[3]=='01':return int(fields[7])
+    except (OSError,ValueError,IndexError,AttributeError):pass
+    return None
+
+
+def scoped_replies(event):
+    from master_dashboard import PSQL
+    import os,pathlib,subprocess
+    values=','.join("'"+event[k].replace("'","''")+"'" for k in ('sourceId','repository','runId'))
+    p=subprocess.run([PSQL,'-XqAt','-v','ON_ERROR_STOP=1','-h',str(pathlib.Path.home()/'.local/state/ariadne-master-pg/socket'),'-p','55432','-U','ariadne_master','-d','ariadne_master'],input='SELECT master.operator_replies('+values+');',text=True,capture_output=True,timeout=5,env={'PATH':os.defpath,'HOME':str(pathlib.Path.home()),'PGPASSFILE':'/dev/null'})
+    if p.returncode:raise RuntimeError('Reply ledger unavailable')
+    return json.loads(p.stdout)
+
+
 def decision_id(source, repository, request):
     key = json.dumps([source, repository, request], separators=(',', ':'))
     return 'decision:operator:' + hashlib.sha256(key.encode()).hexdigest()[:48]
@@ -68,13 +95,16 @@ class OperatorActions:
     def __init__(self, app, read=snapshot, write=save_command):
         self.app, self.read, self.write = app, read, write
         self.sessions = {}
+        self.reply_cache = {}
         self.lock = threading.Lock()
 
     def identity(self, headers, client):
         config = self.app.config.get('operatorActions', {})
         if self.app.config.get('disableQueries') or self.app.config.get('ingestOnly') or not config.get('enabled'):
             raise PermissionError('Operator actions unavailable')
-        if not ipaddress.ip_address(client).is_loopback:
+        if not isinstance(client,dict) or client.get('proxyUid')!=0:
+            raise PermissionError('Authenticated local proxy required')
+        if not ipaddress.ip_address(client['ip']).is_loopback:
             raise PermissionError('Trusted local proxy required')
         login = headers.get('Tailscale-User-Login', '').strip().lower()
         if not login or login not in {s.lower() for s in config.get('allowedLogins', [])}:
@@ -176,10 +206,23 @@ class OperatorActions:
         result = self.write(command)
         if not result.get('ok'):
             raise StaleDecision('Response was not recorded: ' + result.get('error', 'conflict'))
+        with self.lock:self.reply_cache.clear()
         return {'recorded': True, 'duplicate': False, 'decisionId': target,
                 'delivery': 'Available to the requesting source on its next signed report.'}
 
     def replies(self, event):
+        if self.read is snapshot:
+            key=tuple(event[k] for k in ('sourceId','repository','runId'));now=time.monotonic()
+            with self.lock:
+                cached=self.reply_cache.get(key)
+                if cached and now-cached[0]<2:return cached[1]
+            result=scoped_replies(event)
+            with self.lock:
+                self.reply_cache={k:v for k,v in self.reply_cache.items() if now-v[0]<2}
+                if len(self.reply_cache)>=256:self.reply_cache.pop(next(iter(self.reply_cache)))
+                self.reply_cache[key]=(now,result)
+            return result
+        # Injected readers support isolated contract fixtures; production never snapshots on ingest.
         result = []
         for node in responses(self.read()):
             b = node['body']

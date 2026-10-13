@@ -278,6 +278,9 @@ class Handler(BaseHTTPRequestHandler):
     def log_message(self,fmt,*args): pass  # bodies/auth never logged
     def reply(self,status,obj):
         raw=canonical(obj).encode(); self.send_response(status); self.send_header('Content-Type','application/json'); self.send_header('Content-Length',str(len(raw))); self.send_header('Cache-Control','no-store'); self.end_headers(); self.wfile.write(raw)
+    def operator_peer(self):
+        from activity_decisions import kernel_peer_uid
+        return {'ip':self.client_address[0],'proxyUid':kernel_peer_uid(self.connection)}
     def do_POST(self):
         try:
             if self.path=='/api/operator-response':
@@ -290,7 +293,7 @@ class Handler(BaseHTTPRequestHandler):
                 self.connection.settimeout(5)
                 raw=self.rfile.read(n)
                 if len(raw)!=n:raise ValueError('truncated body')
-                try:return self.reply(200,controller(self.server.app).answer(self.headers,self.client_address[0],json.loads(raw)))
+                try:return self.reply(200,controller(self.server.app).answer(self.headers,self.operator_peer(),json.loads(raw)))
                 except StaleDecision as exc:return self.reply(409,{'error':str(exc)})
                 except PermissionError as exc:return self.reply(401,{'error':str(exc)})
                 except ValueError as exc:return self.reply(400,{'error':str(exc)})
@@ -346,7 +349,7 @@ class Handler(BaseHTTPRequestHandler):
         if route.path=='/api/operator-session':
             try:
                 from activity_decisions import controller
-                return self.reply(200,controller(self.server.app).session(self.headers,self.client_address[0]))
+                return self.reply(200,controller(self.server.app).session(self.headers,self.operator_peer()))
             except Exception:return self.reply(503,{'error':'Operator ledger unavailable'})
         if len(route.query)>2048: return self.reply(400,{'error':'query too long'})
         try: filters=parse_qs(route.query,max_num_fields=20)

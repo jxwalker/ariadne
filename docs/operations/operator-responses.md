@@ -35,3 +35,6 @@ and report its subsequent progress or blocker. Delivery availability is distinct
 acknowledgement and execution. Phase 2 remains responsible for general agent ledger writes.
 
 Resolved master decisions remain authoritative regardless of their origin. Re-emitting a resolved request ID cannot reopen or overwrite it; an amended question must use a new request ID. Exact duplicate submissions remain idempotent.
+
+Operator HTTP routes require a root-owned local TCP peer, authenticated from Linux kernel socket ownership, before trusting Serve identity/peer headers. Root administrators and the root-owned tailscaled proxy are trusted; unprivileged local processes cannot forge this boundary. Missing kernel provenance fails closed. This does not assert physical human presence or separate same-uid PG command authority.
+Signed-ingest replies use an indexed source/repository/run query, capped at 50 responses and cached for two seconds. Dashboard writes invalidate that cache; the raw ledger journal is not assembled on every heartbeat.
