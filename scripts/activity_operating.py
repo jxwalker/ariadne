@@ -210,7 +210,8 @@ def operating(store,registry,config,params=None,at=None):
             pr_rows.append({'repo':repo,'number':number,'title':title,'draft':bool(pr.get('draft')),'createdAt':created,'updatedAt':ts(pr.get('updated_at')),'author':clean(pr.get('user',{}).get('login','Unknown'),128),'reviewers':[clean(v,128) for v in requested],'url':url,'head':pr.get('head',{}).get('sha'),'branch':clean(pr.get('head',{}).get('ref',''),128)})
             if any(v.lower() in aliases for v in requested):needs.append(action(stable('review',repo,number),title,'GitHub explicitly requests your review; request time has not been collected.',next(v for v in requested if v.lower() in aliases),repo,None,'Review the changes and current checks on GitHub.',url,kind='requested-review',priority=1))
         repo_rows.append({'repo':repo,'openPRs':len(open_prs),'draftPRs':sum(bool(p.get('draft')) for p in open_prs),'opened':opened,'merged':merged,'mergedTrend':dict(merged_trend),'pipeline':pipeline_data,'deploymentCounts':{},'deploymentTrend':{},'observedAt':max((p['_observed'] for p in open_prs),default=None)})
-        failures=pipeline_data['failures']
+        # Current failures come from the latest stored runs, not the performance window.
+        failures=pipeline(repo,ev,0,at,config.get('workflowPolicies',{}).get(repo))['failures']
         current_heads={p.get('head',{}).get('sha') for p in open_prs}
         default_branch=ev['repo_info'].get(repo,{}).get('default_branch')
         for f in failures:

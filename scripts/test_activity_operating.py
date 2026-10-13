@@ -136,4 +136,11 @@ class OperatingTests(unittest.TestCase):
         with self.store.connect() as db:db.execute("UPDATE observations SET repo='_fleet' WHERE id='machine:vm'")
         self.assertNotIn('_fleet',canonical(project(self.store,self.registry,'24h',self.at+1)))
 
+    def test_current_ci_failure_stays_stuck_outside_selected_range(self):
+        fmt=lambda o:time.strftime('%Y-%m-%dT%H:%M:%SZ',time.gmtime(self.at+o))
+        self.observe('info','repo_info',{'default_branch':'main'})
+        self.observe('old','workflow_run',{'workflow_run':{'id':9,'name':'CI','run_attempt':1,'status':'completed','conclusion':'failure','head_branch':'main','head_sha':'abc','created_at':fmt(-3*86400),'updated_at':fmt(-3*86400+60)}})
+        for r in ('24h','7d'):self.assertTrue(any(a['kind']=='ci-failure' for a in self.read(range=r)['blocked']),r)
+        self.assertEqual(self.read(range='24h')['delivery'][0]['pipeline']['runs'],0)
+
 if __name__=='__main__':unittest.main()
