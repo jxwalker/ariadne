@@ -122,7 +122,7 @@ def project(store, registry, range_key='24h', at=None, include_github=True):
         breakdown={key:[{'name':name,'runs':n} for name,n in Counter(r[key] for r in native).most_common()] for key in ['agent','machine','repo']}
         repositories={}; associations=defaultdict(list)
         # Latest reconciliation snapshots avoid counting repeated polls as new PRs or CI runs.
-        observations=db.execute('SELECT repo,observed,body FROM observations WHERE observed BETWEEN ? AND ? ORDER BY observed DESC LIMIT ?', (start,at,MAX_RECORDS+1)) if include_github else []
+        observations=db.execute("SELECT repo,observed,body FROM observations WHERE repo!='_fleet' AND observed BETWEEN ? AND ? ORDER BY observed DESC LIMIT ?", (start,at,MAX_RECORDS+1)) if include_github else []
         for index,row in enumerate(observations):
             if index>=MAX_RECORDS:truncated=True;break
             repo=row['repo'];item=repositories.setdefault(repo,{'repo':repo,'commits':set(),'prs':set(),'checks':{},'observations':0})
