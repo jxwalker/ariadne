@@ -36,7 +36,7 @@ class LedgerContract(unittest.TestCase):
         return result
     def ok(self,*a,**kw):
         r=self.cmd(*a,**kw);self.assertTrue(r['ok'],r);return r['revision']
-    def fixture(self, two_criteria=False):
+    def fixture(self, two_criteria=False, three_criteria=False):
         p='t'+uuid.uuid4().hex[:10]
         self.ok('create',p,kind='product',body={'title':p})
         self.ok('create',p+'b',kind='baseline',parent=p,body={'title':'v1','state':'proposed'})
@@ -44,8 +44,8 @@ class LedgerContract(unittest.TestCase):
         self.ok('create',p+'m',kind='milestone',parent=p+'p',body={'title':'Milestone'})
         self.ok('create',p+'policy',kind='policy',body={'requiredKinds':['ci','runtime'],'maxAgeSeconds':3600})
         for suffix in ['w','x']:
-            self.ok('create',p+suffix,kind='work',parent=p+'m',body={'title':suffix,'goal':'outcome','owner':'agent:bot','policy':p+'policy','criteria':[{'id':p+suffix+'c','text':'works'}]+([{'id':p+suffix+'c2','text':'second outcome'}] if two_criteria and suffix=='w' else []),'candidate':'a'*40})
-        self.ok('scope',p+'b',1,scope=[{'workId':p+'w','criterionId':p+'wc'},{'workId':p+'x','criterionId':p+'xc'}]+([{'workId':p+'w','criterionId':p+'wc2'}] if two_criteria else []),scopeDiff={'added':2})
+            self.ok('create',p+suffix,kind='work',parent=p+'m',body={'title':suffix,'goal':'outcome','owner':'agent:bot','policy':p+'policy','criteria':[{'id':p+suffix+'c','text':'works'}]+([{'id':p+suffix+'c2','text':'second outcome'}] if two_criteria and suffix=='w' else [])+([{'id':p+suffix+'c3','text':'third outcome'}] if three_criteria and suffix=='w' else []),'candidate':'a'*40})
+        self.ok('scope',p+'b',1,scope=[{'workId':p+'w','criterionId':p+'wc'},{'workId':p+'x','criterionId':p+'xc'}]+([{'workId':p+'w','criterionId':p+'wc2'}] if two_criteria else [])+([{'workId':p+'w','criterionId':p+'wc3'}] if three_criteria else []),scopeDiff={'added':2})
         self.ok('approve',p+'b',2)
         return p
     def test_concurrency_idempotency_and_graph(self):
@@ -297,6 +297,30 @@ class LedgerContract(unittest.TestCase):
         entry=self.sql("SELECT to_jsonb(j) FROM master.journal j WHERE target='%s' ORDER BY sequence DESC LIMIT 1;"%w,database='ledger_test')
         self.assertEqual(entry['before_state']['body']['waiver']['expiresAt'],expiry)
         self.assertEqual(entry['after_state']['body']['waiver']['expiresAt'],renewed)
+
+    def test_nested_split_waiver_renewal_updates_progress_and_dashboard(self):
+        p=self.fixture(two_criteria=True,three_criteria=True);w=p+'w';x=p+'x';rev=1
+        for state in ['ready','active','verification']:rev=self.ok('transition',w,rev,state=state)
+        expiry=self.sql("SELECT to_jsonb(now()+interval '3 seconds');",database='ledger_test')
+        rev=self.ok('override',w,rev,waivedCriteria=[p+'wc',p+'wc2',p+'wc3'],risk='Explicit split test risk',expiresAt=expiry)
+        self.ok('dependencies',x,1,dependencies=[w])
+        original=self.sql("SELECT jsonb_agg(a ORDER BY criterion_id) FROM master.accepted a WHERE work_id='%s';"%w,database='ledger_test')
+        self.ok('split',w,rev,children=[{'id':p+'child-a','title':'first two','criteria':[{'id':p+'wc'},{'id':p+'wc2'}]},{'id':p+'child-b','title':'third','criteria':[{'id':p+'wc3'}]}])
+        self.ok('split',p+'child-a',1,children=[{'id':p+'grand-a','title':'first','criteria':[{'id':p+'wc'}]},{'id':p+'grand-b','title':'second','criteria':[{'id':p+'wc2'}]}])
+        self.sql("SELECT pg_sleep(greatest(0,extract(epoch FROM ('%s'::timestamptz-now())))::double precision+0.05);"%expiry,database='ledger_test',raw=True)
+        def progress():return self.sql("SELECT to_jsonb(p) FROM master.progress p WHERE baseline_id='%s';"%(p+'b'),database='ledger_test')
+        self.assertEqual(progress()['expired_waived_criteria'],3)
+        renewed=self.sql("SELECT to_jsonb(now()+interval '1 day');",database='ledger_test')
+        for index,child in enumerate([p+'grand-a',p+'grand-b',p+'child-b']):
+            self.ok('renew-waiver',child,1,risk='Renew the current child risk',expiresAt=renewed)
+            self.assertEqual(progress()['expired_waived_criteria'],2-index)
+        self.assertEqual(self.sql("SELECT master.blockers('%s');"%x,database='ledger_test'),[])
+        self.assertEqual(self.sql("SELECT jsonb_agg(a ORDER BY criterion_id) FROM master.accepted a WHERE work_id='%s';"%w,database='ledger_test'),original)
+        data=self.sql('SELECT master.snapshot();',database='ledger_test')
+        owners={a['criterion_id']:a['waiver_owner_id'] for a in data['accepted'] if a['work_id']==w}
+        self.assertEqual(owners,{p+'wc':p+'grand-a',p+'wc2':p+'grand-b',p+'wc3':p+'child-b'})
+        from master_dashboard import render
+        self.assertIn('3 current waived (0 inactive/expired)',render(data,'/roadmaps',{'node':[p+'b']}))
 
     def test_resolved_decision_cannot_be_overwritten_but_exact_retry_is_safe(self):
         p='decision'+uuid.uuid4().hex[:10];cid=str(uuid.uuid4())

@@ -26,7 +26,7 @@ def render(data,route,filters):
     nodes={n['id']:n for n in data['nodes']};progress={p['baseline_id']:p for p in data['progress']}
     accepted={a['criterion_id'] for a in data.get('accepted',[]) if a.get('evidence_id')}
     waived_rows=[a for a in data.get('accepted',[]) if not a.get('evidence_id')]
-    inactive_waived={a['criterion_id'] for a in waived_rows if nodes.get(a['work_id'],{}).get('waiverInactive',True)}
+    inactive_waived={a['criterion_id'] for a in waived_rows if nodes.get(a.get('waiver_owner_id') or a['work_id'],{}).get('waiverInactive',True)}
     current_waived={a['criterion_id'] for a in waived_rows}-inactive_waived
     def title(n):return esc(n['body'].get('title',n['id']))
     def source(n):

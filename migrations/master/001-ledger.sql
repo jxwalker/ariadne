@@ -270,13 +270,25 @@ CREATE VIEW master.milestones AS SELECT * FROM master.nodes WHERE kind='mileston
 CREATE VIEW master.work_items AS SELECT * FROM master.nodes WHERE kind='work';
 CREATE VIEW master.acceptance_policies AS SELECT * FROM master.nodes WHERE kind='policy';
 CREATE VIEW master.decisions AS SELECT * FROM master.nodes WHERE kind='decision';
+CREATE INDEX work_split_lineage ON master.nodes((body->>'splitFrom')) WHERE kind='work';
+CREATE FUNCTION master.criterion_owner(origin text,criterion text) RETURNS master.nodes LANGUAGE sql STABLE SET search_path=pg_catalog,master AS $$
+ WITH RECURSIVE lineage AS (
+  SELECT n.id,0 depth,ARRAY[n.id] path FROM master.nodes n
+   WHERE n.id=origin AND n.kind='work' AND n.body->'criteria' @> jsonb_build_array(jsonb_build_object('id',criterion))
+  UNION ALL
+  SELECT child.id,parent.depth+1,parent.path||child.id
+   FROM lineage parent JOIN master.nodes child ON child.kind='work' AND child.body->>'splitFrom'=parent.id
+   WHERE NOT child.id=ANY(parent.path) AND child.body->'criteria' @> jsonb_build_array(jsonb_build_object('id',criterion))
+ )
+ SELECT n.* FROM lineage l JOIN master.nodes n ON n.id=l.id ORDER BY l.depth DESC,n.id LIMIT 1;
+$$;
 CREATE VIEW master.progress AS
  SELECT n.id baseline_id,n.body->>'state' baseline_state,count(s.criterion_id) denominator,
  count(a.criterion_id) FILTER (WHERE a.evidence_id IS NOT NULL) accepted_criteria,
  count(a.criterion_id) FILTER (WHERE a.evidence_id IS NULL) waived_criteria,
- count(a.criterion_id) FILTER (WHERE a.evidence_id IS NULL AND master.waiver_inactive(waiver_owner)) expired_waived_criteria FROM master.nodes n
+ count(a.criterion_id) FILTER (WHERE a.evidence_id IS NULL AND (waiver_owner.id IS NULL OR master.waiver_inactive(waiver_owner))) expired_waived_criteria FROM master.nodes n
  LEFT JOIN master.scope s ON s.baseline_id=n.id LEFT JOIN master.accepted a ON a.criterion_id=s.criterion_id
- LEFT JOIN master.nodes waiver_owner ON waiver_owner.id=s.work_id
+ LEFT JOIN LATERAL master.criterion_owner(s.work_id,s.criterion_id) waiver_owner ON true
  WHERE n.kind='baseline' GROUP BY n.id;
 CREATE FUNCTION master.snapshot() RETURNS jsonb LANGUAGE sql STABLE SECURITY DEFINER SET search_path=pg_catalog,master AS $$
  SELECT jsonb_build_object(
@@ -285,7 +297,7 @@ CREATE FUNCTION master.snapshot() RETURNS jsonb LANGUAGE sql STABLE SECURITY DEF
  'dependencies',coalesce((SELECT jsonb_agg(d ORDER BY d.work_id,d.dependency_id) FROM master.dependencies d),'[]'),
  'scope',coalesce((SELECT jsonb_agg(s ORDER BY s.baseline_id,s.criterion_id) FROM master.scope s),'[]'),
  'progress',coalesce((SELECT jsonb_agg(p ORDER BY p.baseline_id) FROM master.progress p),'[]'),
- 'accepted',coalesce((SELECT jsonb_agg(a ORDER BY a.work_id,a.criterion_id) FROM master.accepted a),'[]'),
+ 'accepted',coalesce((SELECT jsonb_agg(to_jsonb(a)||jsonb_build_object('waiver_owner_id',(master.criterion_owner(a.work_id,a.criterion_id)).id) ORDER BY a.work_id,a.criterion_id) FROM master.accepted a),'[]'),
  'acceptanceEvidence',coalesce((SELECT jsonb_agg(a ORDER BY a.work_id,a.criterion_id,a.kind) FROM master.acceptance_evidence a),'[]'),
  'evidence',coalesce((SELECT jsonb_agg(e ORDER BY e.id) FROM master.evidence e),'[]'),
  'imports',coalesce((SELECT jsonb_agg(i ORDER BY i.id) FROM master.imports i),'[]'),
