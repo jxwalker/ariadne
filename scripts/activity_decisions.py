@@ -32,11 +32,12 @@ def responses(data):
 
 def hide_answered(data, ledger):
     data = dict(data)
-    answered = {(n['body']['sourceId'], n['body']['repository'], n['body']['requestId'],
-                 n['body']['requestRevision']) for n in responses(ledger)}
+    answered = {(n['body']['sourceId'], n['body']['repository'], n['body']['requestId']) for n in responses(ledger)}
+    resolved = {n['id'] for n in ledger.get('nodes',[]) if n.get('kind')=='decision' and n.get('body',{}).get('state')=='resolved'}
+    resolved_aliases = {(a['source'],a['alias']) for a in ledger.get('aliases',[]) if a['node_id'] in resolved}
     data['needsYou'] = [a for a in data['needsYou'] if
-                        (a.get('sourceId'), a.get('repo'), a.get('requestId'),
-                         a.get('requestRevision')) not in answered]
+                        (a.get('sourceId'),a.get('repo'),a.get('requestId')) not in answered
+                        and (str(a.get('sourceId'))+'/'+str(a.get('repo')),a.get('requestId')) not in resolved_aliases]
     return data
 
 
@@ -140,6 +141,8 @@ class OperatorActions:
             if prior.get('commandId') == body['commandId'] and prior['resolution'] == reply:
                 return {'recorded': True, 'duplicate': True, 'decisionId': target}
             raise StaleDecision('This question already has an operator response. Refresh to inspect it.')
+        if node and node['body'].get('state')=='resolved':
+            raise StaleDecision('The master decision is already resolved. A new question needs a new request ID.')
         from activity_operating import operating
         current = operating(self.app.store, self.app.sources(), self.app.config,
                             {'repo': [body['repo']]})['needsYou']

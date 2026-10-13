@@ -78,7 +78,7 @@ BEGIN
    IF b IS NULL OR jsonb_typeof(b)<>'object' THEN RAISE EXCEPTION 'body required'; END IF;
    IF c->>'kind' IN ('work','baseline') AND coalesce(b->>'state','proposed')<>'proposed' THEN RAISE EXCEPTION 'new scope must be proposed'; END IF;
    IF c->>'kind'='work' THEN
-    IF b ?| ARRAY['generation','waiver','acceptanceMode','acceptedBy','acceptanceCommand','splitFrom','splitChildren','blockerSince'] THEN RAISE EXCEPTION 'managed work fields cannot be supplied'; END IF;
+    IF b ?| ARRAY['generation','waiver','acceptanceMode','acceptedBy','acceptanceCommand','splitFrom','splitChildren','blockerSince','waiverRenewalCount'] THEN RAISE EXCEPTION 'managed work fields cannot be supplied'; END IF;
     IF b ? 'source' AND jsonb_typeof(b->'source') IS DISTINCT FROM 'object' THEN RAISE EXCEPTION 'work source must be an object'; END IF;
     IF b ? 'candidate' AND coalesce(b->>'candidate','') !~ '^[a-f0-9]{40}$' THEN RAISE EXCEPTION 'invalid candidate revision'; END IF;
     IF jsonb_array_length(coalesce(b->'criteria','[]'))=0 OR b->>'policy' IS NULL OR b->>'goal' IS NULL THEN RAISE EXCEPTION 'work requires goal policy criteria'; END IF;
@@ -228,6 +228,17 @@ BEGIN
     INSERT INTO master.accepted VALUES(target,criterion->>'id',CASE WHEN op='accept' THEN e.id END,cid);
    END LOOP;
    UPDATE master.nodes SET revision=revision+1,body=body||jsonb_build_object('state','accepted','acceptedBy',actor,'acceptanceCommand',cid,'acceptanceMode',CASE WHEN op='override' THEN 'waiver' ELSE 'evidence' END,'waiver',CASE WHEN op='override' THEN jsonb_build_object('reason',c->>'reason','risk',c->>'risk','expiresAt',c->>'expiresAt','criteria',c->'waivedCriteria') ELSE NULL END) WHERE id=target;
+  ELSIF op='renew-waiver' THEN
+   IF actor<>'james' OR old.kind<>'work' OR old.body->>'state'<>'accepted' OR old.body->>'acceptanceMode'<>'waiver'
+      OR NOT master.waiver_inactive(old) THEN RAISE EXCEPTION 'operator renewal of expired waiver required'; END IF;
+   IF length(btrim(coalesce(c->>'reason','')))=0 OR length(btrim(coalesce(c->>'risk','')))=0
+      OR c->>'expiresAt' IS NULL OR NOT isfinite((c->>'expiresAt')::timestamptz)
+      OR (c->>'expiresAt')::timestamptz<=now() THEN RAISE EXCEPTION 'renewal requires explicit reason risk finite future expiry'; END IF;
+   UPDATE master.nodes SET revision=revision+1,
+    body=body||jsonb_build_object('waiver',body->'waiver'||jsonb_build_object('reason',c->>'reason','risk',c->>'risk','expiresAt',c->>'expiresAt','renewedBy',actor,'renewedAt',now(),'renewalCommand',cid),
+                                 'waiverRenewalCount',coalesce((body->>'waiverRenewalCount')::integer,0)+1)
+    WHERE id=target;
+   -- Existing accepted criteria/evidence/candidate remain immutable. Journal captures both waiver terms.
   ELSIF op='import' THEN
    b:=c->'provenance';
    IF b->>'import_id' IS NULL OR coalesce(b->>'sha256','') !~ '^[a-f0-9]{64}$' OR b->>'commit_sha' IS NULL OR b->>'observed_at' IS NULL OR b->>'path' IS NULL OR b->>'reconciliation_reason' IS NULL THEN RAISE EXCEPTION 'incomplete provenance'; END IF;

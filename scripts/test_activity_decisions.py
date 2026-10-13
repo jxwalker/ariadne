@@ -103,11 +103,13 @@ class OperatorResponses(unittest.TestCase):
         self.assertEqual(hide_answered(data, {'nodes': self.nodes})['needsYou'], [])
         self.assertEqual(len(data['needsYou']), 1)
         changed = {**self.question, 'requestRevision': 'b' * 64}
-        self.assertEqual(hide_answered({'needsYou': [changed]}, {'nodes': self.nodes})['needsYou'], [changed])
+        self.assertEqual(hide_answered({'needsYou': [changed]}, {'nodes': self.nodes})['needsYou'], [])
         self.question['requestRevision'] = 'b' * 64
-        self.actions.answer(self.headers, '127.0.0.1', {**self.body, 'requestRevision': 'b' * 64, 'commandId': str(uuid.uuid4())})
-        self.assertEqual(len(self.nodes), 1)
-        self.assertEqual(len(self.commands), 2)
+        with self.assertRaises(StaleDecision):
+            self.actions.answer(self.headers, '127.0.0.1', {**self.body, 'requestRevision': 'b' * 64, 'commandId': str(uuid.uuid4())})
+        self.question['requestId']='new-question'
+        self.actions.answer(self.headers,'127.0.0.1',{**self.body,'requestId':'new-question','requestRevision':'b'*64,'commandId':str(uuid.uuid4())})
+        self.assertEqual(len(self.nodes),2);self.assertEqual(len(self.commands),2)
 
     def test_explicit_alias_updates_the_existing_master_decision(self):
         self.nodes.append({'id':'DEC-006','kind':'decision','revision':1,'body':{'title':'Agent credentials','state':'open'}})
@@ -116,6 +118,14 @@ class OperatorResponses(unittest.TestCase):
         self.assertEqual(len(self.nodes),1);self.assertEqual(self.commands[0]['op'],'resolve')
         self.assertEqual(self.nodes[0]['body']['state'],'resolved')
         self.assertEqual(self.nodes[0]['body']['title'],'Agent credentials')
+
+    def test_imported_resolution_is_authoritative_across_repeated_requests(self):
+        node={'id':'DEC-006','kind':'decision','revision':2,'body':{'title':'Agent credentials','state':'resolved','resolution':'Phase 1 operator only'}}
+        ledger={'nodes':[node],'aliases':[{'source':'box-ariadne-bot/jxwalker/ariadne','alias':'DEC-006','node_id':'DEC-006'}]}
+        self.actions.read=lambda:copy.deepcopy(ledger)
+        with self.assertRaises(StaleDecision):self.actions.answer(self.headers,'127.0.0.1',self.body)
+        self.assertEqual(self.commands,[]);self.assertEqual(node['body']['resolution'],'Phase 1 operator only')
+        self.assertEqual(hide_answered({'needsYou':[self.question]},ledger)['needsYou'],[])
 
     def test_expired_session_does_not_record(self):
         token = self.headers['X-Ariadne-CSRF']

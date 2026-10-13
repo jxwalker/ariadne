@@ -33,3 +33,5 @@ the protected spool file `.operator-decisions.json.state`. A harness should dedu
 `commandId`, check the request revision, process the response within its existing authorization,
 and report its subsequent progress or blocker. Delivery availability is distinct from bot
 acknowledgement and execution. Phase 2 remains responsible for general agent ledger writes.
+
+Resolved master decisions remain authoritative regardless of their origin. Re-emitting a resolved request ID cannot reopen or overwrite it; an amended question must use a new request ID. Exact duplicate submissions remain idempotent.
