@@ -184,7 +184,13 @@ class OperatorActions:
                     event['sourceId'], event['repository'], event['runId']):
                 result.append({k: b[k] for k in ('sourceId', 'repository', 'runId', 'requestId', 'requestRevision', 'resolution',
                                                 'resolvedBy', 'resolvedAt', 'commandId')})
-        return result[-50:]
+        def resolution_order(reply):
+            try:
+                at=datetime.fromisoformat(reply['resolvedAt'].replace('Z','+00:00'))
+                return (at.replace(tzinfo=timezone.utc) if at.tzinfo is None else at, reply['commandId'])
+            except (ValueError,TypeError,AttributeError):
+                return (datetime.min.replace(tzinfo=timezone.utc),reply['commandId'])
+        return sorted(result,key=resolution_order)[-50:]
 
 
 _lock = threading.Lock()

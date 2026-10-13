@@ -154,3 +154,14 @@ class OperatorResponses(unittest.TestCase):
             self.assertEqual(len(self.commands), 1)
         finally:
             server.shutdown();server.server_close();thread.join()
+
+    def test_reply_cap_uses_resolution_time_and_preserves_latest(self):
+        from datetime import datetime,timedelta,timezone
+        base=datetime(2026,10,13,tzinfo=timezone.utc)
+        self.nodes=[{'id':str(60-i),'kind':'decision','body':{'origin':'operator-dashboard','state':'resolved',
+            'sourceId':'box-ariadne-bot','repository':'jxwalker/ariadne','runId':'pilot-run','requestId':str(i),
+            'requestRevision':'a'*64,'resolution':'answer','resolvedBy':'James','resolvedAt':(base+timedelta(minutes=i)).isoformat(),
+            'commandId':str(i)}} for i in range(61)]
+        self.nodes.sort(key=lambda n:n['id'])
+        result=self.actions.replies({'sourceId':'box-ariadne-bot','repository':'jxwalker/ariadne','runId':'pilot-run'})
+        self.assertEqual([r['requestId'] for r in result],[str(i) for i in range(11,61)])

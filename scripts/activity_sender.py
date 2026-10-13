@@ -33,6 +33,20 @@ def deliver(c,raw):
     req=urllib.request.Request(c['endpoint'],data=raw,headers={'Content-Type':'application/json','X-Ariadne-Source':c['sourceId'],'X-Ariadne-Timestamp':ts,'X-Ariadne-Nonce':nonce,'X-Ariadne-Signature':sig})
     with urllib.request.urlopen(req,timeout=5) as r: return json.loads(r.read())
 
+def persist(path, value):
+    """Atomically save a protected receipt before acknowledging its spool event."""
+    tmp=path.with_name('.'+path.name+'.'+uuid.uuid4().hex+'.tmp')
+    try:
+        fd=os.open(tmp,os.O_WRONLY|os.O_CREAT|os.O_EXCL,0o600)
+        with os.fdopen(fd,'w') as f:
+            json.dump(value,f);f.flush();os.fsync(f.fileno())
+        tmp.replace(path)
+        directory=os.open(path.parent,os.O_RDONLY)
+        try:os.fsync(directory)
+        finally:os.close(directory)
+    finally:
+        tmp.unlink(missing_ok=True)
+
 def flush(c):
     spool=pathlib.Path(c['spool']); spool.mkdir(parents=True,exist_ok=True,mode=0o700)
     with open(spool/'.delivery-lock','a') as lock:
@@ -50,18 +64,18 @@ def flush(c):
         files=sorted(spool.glob('*.json'),key=order)
         for p in files[:100]:
             try:
-                receipt=deliver(c,p.read_bytes()); p.unlink(); retry={'at':0,'attempt':0}
-                (spool/'.last-receipt').write_text(json.dumps(receipt))
+                receipt=deliver(c,p.read_bytes())
+                persist(spool/'.last-receipt',receipt)
                 if receipt.get('operatorDecisions'):
                     replies=spool/'.operator-decisions.json.state'
                     known=json.loads(replies.read_text()) if replies.exists() else {}
                     for reply in receipt['operatorDecisions']:
                         known[reply['requestId']+':'+reply['requestRevision']]=reply
-                    replies.write_text(json.dumps(dict(list(known.items())[-100:])))
-                    replies.chmod(0o600)
+                    persist(replies,dict(list(known.items())[-100:]))
+                p.unlink();retry={'at':0,'attempt':0}
             except Exception:
                 retry['attempt']=min(retry['attempt']+1,10); retry['at']=time.time()+min(300,2**retry['attempt']); break
-        state.write_text(json.dumps(retry))
+        persist(state,retry)
 
 HOOKS={'SessionStart':'session.start','UserPromptSubmit':'task.start','PreToolUse':'task.progress','PostToolUse':'task.progress','PostToolUseFailure':'task.progress','Stop':'task.progress','SessionEnd':'session.end','Interrupt':'task.interrupted','SubagentStart':'subagent.start','SubagentStop':'subagent.end'}
 def hook(c,data):
