@@ -104,6 +104,7 @@ class OperatorActions:
         self.app, self.read, self.write = app, read, write
         self.sessions = {}
         self.reply_cache = {}
+        self.reply_generation = 0
         self.lock = threading.Lock()
 
     def identity(self, headers, client):
@@ -214,22 +215,33 @@ class OperatorActions:
         result = self.write(command)
         if not result.get('ok'):
             raise StaleDecision('Response was not recorded: ' + result.get('error', 'conflict'))
-        with self.lock:self.reply_cache.clear()
+        with self.lock:
+            self.reply_generation += 1
+            self.reply_cache.clear()
         return {'recorded': True, 'duplicate': False, 'decisionId': target,
                 'delivery': 'Available to the requesting source on its next signed report.'}
 
     def replies(self, event):
         if self.read is snapshot:
-            key=tuple(event[k] for k in ('sourceId','repository','runId'));now=time.monotonic()
+            key=tuple(event[k] for k in ('sourceId','repository','runId'))
+            for attempt in range(3):
+                now=time.monotonic()
+                with self.lock:
+                    cached=self.reply_cache.get(key)
+                    if cached and now-cached[0]<2:return cached[1]
+                    generation=self.reply_generation
+                result=scoped_replies(event)
+                with self.lock:
+                    if generation!=self.reply_generation:continue
+                    self.cache_replies_locked(key,now,result)
+                    return result
+            # Bound retries under concurrent operator activity. This rare final
+            # query serializes cache publication with answer acknowledgement.
             with self.lock:
-                cached=self.reply_cache.get(key)
-                if cached and now-cached[0]<2:return cached[1]
-            result=scoped_replies(event)
-            with self.lock:
-                self.reply_cache={k:v for k,v in self.reply_cache.items() if now-v[0]<2}
-                if len(self.reply_cache)>=256:self.reply_cache.pop(next(iter(self.reply_cache)))
-                self.reply_cache[key]=(now,result)
-            return result
+                now=time.monotonic()
+                result=scoped_replies(event)
+                self.cache_replies_locked(key,now,result)
+                return result
         # Injected readers support isolated contract fixtures; production never snapshots on ingest.
         result = []
         for node in responses(self.read()):
@@ -245,6 +257,13 @@ class OperatorActions:
             except (ValueError,TypeError,AttributeError):
                 return (datetime.min.replace(tzinfo=timezone.utc),reply['commandId'])
         return sorted(result,key=resolution_order)[-50:]
+
+    def cache_replies_locked(self,key,observed,result):
+        """Caller holds self.lock; the write generation has been checked."""
+        now=time.monotonic()
+        self.reply_cache={k:v for k,v in self.reply_cache.items() if now-v[0]<2}
+        if len(self.reply_cache)>=256:self.reply_cache.pop(next(iter(self.reply_cache)))
+        self.reply_cache[key]=(observed,result)
 
 
 _lock = threading.Lock()

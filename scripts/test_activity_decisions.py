@@ -198,6 +198,29 @@ class OperatorResponses(unittest.TestCase):
             accepted,_=listener.accept()
             with accepted:self.assertEqual(kernel_peer_uid(accepted),os.getuid())
 
+    def test_reply_query_cannot_restore_cache_after_recorded_answer(self):
+        event={'sourceId':'box-ariadne-bot','repository':'jxwalker/ariadne','runId':'pilot-run'}
+        started,released=threading.Event(),threading.Event()
+        calls=[]
+        def query(event):
+            calls.append(event)
+            if len(calls)==1:
+                started.set()
+                self.assertTrue(released.wait(5),'Query barrier timed out')
+                return []  # The snapshot was taken before the operator wrote.
+            return [{'resolution':'Operator only'}]
+        with patch('activity_decisions.snapshot',side_effect=lambda:{'nodes':copy.deepcopy(self.nodes)}) as read,patch('activity_decisions.scoped_replies',side_effect=query):
+            self.actions.read=read
+            with ThreadPoolExecutor(max_workers=1) as pool:
+                result=pool.submit(self.actions.replies,event)
+                try:
+                    self.assertTrue(started.wait(5),'Query did not start')
+                    self.actions.answer(self.headers,self.peer,self.body)
+                finally:released.set()
+                self.assertEqual(result.result(timeout=5),[{'resolution':'Operator only'}])
+            self.assertEqual(self.actions.replies(event),[{'resolution':'Operator only'}])
+            self.assertEqual(len(calls),2,'Old result was not retried or fresh result was not cached')
+
     def test_unprivileged_socket_cannot_forge_operator_identity(self):
         with self.assertRaises(PermissionError):self.actions.answer(self.headers,{'ip':'127.0.0.1','proxyUid':1000},self.body)
         self.assertFalse(self.actions.session(self.headers,{'ip':'127.0.0.1','proxyUid':None})['canRespond'])
