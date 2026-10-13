@@ -103,6 +103,7 @@ BEGIN
       OR b->'requiredKinds' ? 'agent_run' THEN RAISE EXCEPTION 'invalid acceptance policy'; END IF;
    END IF;
    IF c->>'kind' IN ('product','policy','decision','external') AND c->>'parent' IS NOT NULL THEN RAISE EXCEPTION 'root nodes must have no parent'; END IF;
+
    IF c->>'kind' IN ('baseline','phase','milestone','work') AND NOT EXISTS(
     SELECT 1 FROM master.nodes WHERE id=c->>'parent' AND kind=CASE c->>'kind' WHEN 'baseline' THEN 'product' WHEN 'phase' THEN 'baseline' WHEN 'milestone' THEN 'phase' ELSE 'milestone' END)
     THEN RAISE EXCEPTION 'invalid hierarchy'; END IF;
@@ -162,7 +163,7 @@ BEGIN
    UPDATE master.nodes SET body=b,revision=revision+1 WHERE id=target;
   ELSIF op='resolve' THEN
    IF actor<>'james' OR old.kind NOT IN ('external','decision') OR coalesce(c->>'resolution','')='' THEN RAISE EXCEPTION 'operator resolution required'; END IF;
-   UPDATE master.nodes SET body=body||jsonb_build_object('state','resolved','resolution',c->>'resolution','resolvedBy',actor,'resolvedAt',now()),revision=revision+1 WHERE id=target;
+   UPDATE master.nodes SET body=body||CASE WHEN old.kind='decision' AND jsonb_typeof(c->'response')='object' THEN c->'response' ELSE '{}'::jsonb END||jsonb_build_object('state','resolved','resolution',c->>'resolution','resolvedBy',actor,'resolvedAt',now()),revision=revision+1 WHERE id=target;
   ELSIF op='transition' THEN
    IF old.kind<>'work' OR c->>'state' IS NULL OR c->>'state' NOT IN ('ready','active','verification','blocked','waiting','parked','cancelled') THEN RAISE EXCEPTION 'invalid transition'; END IF;
    IF actor<>'james' AND c->>'state'='cancelled' THEN RAISE EXCEPTION 'operator cancellation required'; END IF;

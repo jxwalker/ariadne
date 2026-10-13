@@ -2,8 +2,8 @@
 set -euo pipefail
 umask 077
 PKG=$(cd -- "$(dirname "${BASH_SOURCE[0]}")" && pwd -P)
-REPO=/home/james/workspaces/ariadne-master
-EVIDENCE="$HOME/ariadne-run/master-p1"
+REPO=${ARIADNE_MASTER_REPO:-/home/james/workspaces/ariadne-master}
+EVIDENCE=${ARIADNE_MASTER_EVIDENCE:-$HOME/ariadne-run/master-p1}
 LIVE="$HOME/.local/lib/ariadne-activity"
 PGROOT="$HOME/.local/state/ariadne-master-pg"
 PGBIN=/usr/lib/postgresql/17/bin

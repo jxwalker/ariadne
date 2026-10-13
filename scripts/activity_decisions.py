@@ -17,15 +17,17 @@ from datetime import datetime, timezone
 from master_dashboard import snapshot
 
 
-def decision_id(source, repository, request, revision):
-    key = json.dumps([source, repository, request, revision], separators=(',', ':'))
+def decision_id(source, repository, request):
+    key = json.dumps([source, repository, request], separators=(',', ':'))
     return 'decision:operator:' + hashlib.sha256(key.encode()).hexdigest()[:48]
 
 
 def responses(data):
+    required = {'sourceId', 'repository', 'runId', 'requestId', 'requestRevision',
+                'resolution', 'resolvedBy', 'resolvedAt', 'commandId'}
     return [n for n in data.get('nodes', []) if n.get('kind') == 'decision'
             and n.get('body', {}).get('origin') == 'operator-dashboard'
-            and n['body'].get('state') == 'resolved']
+            and n['body'].get('state') == 'resolved' and required <= n['body'].keys()]
 
 
 def hide_answered(data, ledger):
@@ -125,10 +127,16 @@ class OperatorActions:
         if DECISION_CREDENTIAL.search(reply) or any(s.get('secret') and s['secret'] in reply
                                                   for s in self.app.sources().values()):
             raise ValueError('Credentials must stay outside decision responses')
-        target = decision_id(body['sourceId'], body['repo'], body['requestId'], body['requestRevision'])
         ledger = self.read()
+        namespace = body['sourceId'] + '/' + body['repo']
+        alias = next((a for a in ledger.get('aliases', []) if
+                      a['source'] == namespace and a['alias'] == body['requestId']), None)
+        target = alias['node_id'] if alias else decision_id(body['sourceId'], body['repo'], body['requestId'])
+        node = next((n for n in ledger.get('nodes', []) if n['id'] == target), None)
+        if node and node['kind'] != 'decision':
+            raise StaleDecision('The question mapping is not a decision. Ask the operator to inspect it.')
         prior = next((n['body'] for n in responses(ledger) if n['id'] == target), None)
-        if prior:
+        if prior and prior['requestRevision'] == body['requestRevision']:
             if prior.get('commandId') == body['commandId'] and prior['resolution'] == reply:
                 return {'recorded': True, 'duplicate': True, 'decisionId': target}
             raise StaleDecision('This question already has an operator response. Refresh to inspect it.')
@@ -145,17 +153,24 @@ class OperatorActions:
                  'repository': body['repo'], 'runId': request['runId'],
                  'requestId': body['requestId'], 'requestRevision': body['requestRevision'],
                  'question': request['reason'], 'options': request.get('options', []),
+                 'source': 'Authenticated operator response to '+request.get('source', 'the signed source'),
                  'suggestedResponse': request.get('recommendation'),
                  'suggestedBy': request.get('source'), 'resolution': reply,
                  'resolvedBy': 'James', 'identityProvider': 'tailscale-serve',
                  'identityHash': hashlib.sha256(login.encode()).hexdigest(),
                  'resolvedAt': datetime.now(timezone.utc).isoformat(),
                  'commandId': body['commandId']}
-        result = self.write({'commandId': 'operator-' + body['commandId'], 'op': 'create',
-                             'target': target, 'kind': 'decision', 'expectedRevision': 0,
-                             'reason': 'Authenticated operator response to an exact signed question',
-                             'via': 'operator-dashboard/tailscale-serve',
-                             'body': value})
+        command = {'commandId': 'operator-' + body['commandId'], 'target': target,
+                   'expectedRevision': node['revision'] if node else 0,
+                   'reason': 'Authenticated operator response to an exact signed question',
+                   'via': 'operator-dashboard/tailscale-serve'}
+        if node:
+            value['title'] = node['body'].get('title', value['title'])
+            command.update(op='resolve', resolution=reply, response=value)
+        else:
+            command.update(op='create', kind='decision', body=value,
+                           aliases=[{'source': namespace, 'alias': body['requestId']}])
+        result = self.write(command)
         if not result.get('ok'):
             raise StaleDecision('Response was not recorded: ' + result.get('error', 'conflict'))
         return {'recorded': True, 'duplicate': False, 'decisionId': target,

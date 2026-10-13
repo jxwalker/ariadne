@@ -1,5 +1,23 @@
 # Bounded phase 1 application deployment
 
+This combined candidate includes the ledger and roadmap/dashboard PRs plus operator
+responses requested by James in this Codex chat on 13 October 2026. His latest authorization
+is to review them and merge/deploy only when current checks and reviews are green.
+The plan wrapper requires a separately supplied approval record which names the reviewed
+head and artifact-manifest digest; it cannot create or approve its own authorization.
+Record the original human instruction and the adapter which transcribed it honestly.
+
+The additional application scope is `activity_decisions.py`, `activity_operating.py`,
+`operating_dashboard.js` and `activity_sender.py`, plus the protected `operatorActions`
+configuration. Preparation binds the existing James login and only the two existing Mac
+tailnet addresses into the manifest. Neither cloud bots nor VM identities gain dashboard
+writer access. These responses only create audited decision records through the same
+command API and return bounded replies to the original signed source/repository/run.
+No external action executes through the response button. No new provider, model routing,
+listener, public query endpoint, agent ledger credential or tailnet policy is introduced.
+Rollback restores all seven changed application files and only the operator configuration
+namespace while preserving the ledger and other current configuration.
+
 Expected deployed commit: 2039065d8d9a70983d3470db05adc0db94afea6d
 
 Run prepare.sh in a fresh exact-head package before generating a readiness plan. Preparation only reads live state and runs isolated tests. The plan embeds the manifest SHA-256 literally; its independent system sha256sum checks run before any package script in dry-run, live and post-verification commands. Never regenerate a manifest for an existing plan.

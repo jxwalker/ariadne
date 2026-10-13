@@ -2,7 +2,7 @@
 set -euo pipefail
 source "$(dirname "$0")/common.sh"
 [[ $(cat "$LIVE/DEPLOYED_COMMIT") == "$HEAD_SHA" ]]
-for f in activity_server.py master_dashboard.py operating_dashboard.html; do cmp "$LIVE/scripts/$f" "$PKG/stage/scripts/$f"; done
+for f in activity_server.py master_dashboard.py operating_dashboard.html activity_decisions.py activity_operating.py operating_dashboard.js activity_sender.py; do cmp "$LIVE/scripts/$f" "$PKG/stage/scripts/$f"; done
 for unit in ariadne-activity ariadne-master-pg ariadne-ingest-proxy ariadne-ingest-tunnel; do systemctl --user is-active "$unit"; done
 for endpoint in /readyz / /api/operating /api/runs /api/sources /api/controls /roadmaps /work /api/master; do
  status=$(curl -s -o /dev/null -w '%{http_code}' "http://127.0.0.1:18095$endpoint")

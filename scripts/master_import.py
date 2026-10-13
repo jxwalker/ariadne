@@ -134,7 +134,12 @@ def compile_import():
     if 'work:patent:CREATE-1' in revisions:command('dependencies','work:patent:CREATE-1',dependencies=['external:eval-factory'])
     decisions=[('DEC-001','Patent Studio first pilot milestone',['A: frozen Gate 0 release/restore readiness','B: continued feature acceptance'],'A'),('DEC-002','OpenScorpion next scope',['A: P3/AVX first; quota fairness deferred','B: P8 full-day dogfood first','C: quota fairness first'],'A'),('DEC-003','Pilot portfolio',['A: three products; APCG/Factory dependencies and gaps','B: expand portfolio'],'A'),('DEC-005','Off-site backup',['Approve separately bounded destination/access','Keep local daily dump pending decision'],None),('DEC-006','Agent ledger credentials',['Provision separately scoped agent capabilities','Keep operator-only writes'],None)]
     for id,title,options,resolution in decisions:
-        node(id,'decision',title,options=options,state='resolved' if resolution else 'open',resolution=resolution,source='James 2026-10-13 17:04 BST' if resolution else 'Phase 1 update 2026-10-13 17:28 BST')
+        suffixes={'DEC-001':'dec-001-patent-studio-pilot-slot','DEC-002':'dec-002-openscorpion-next-outcome','DEC-003':'dec-003-pilot-boundary','DEC-005':'dec-005-offsite-backup','DEC-006':'dec-006-agent-ledger-write-credentials'}
+        if id=='DEC-006':resolution='Operator-only writes in Phase 1; agent writes in Phase 2'
+        origin=('James direct instruction in this Codex chat; signed resolution d6d58ec4-714e-4b8c-9711-bf3c1bdff5b7 received 2026-10-13 17:03:54 UTC' if id=='DEC-006' else 'James 2026-10-13 17:04 BST' if resolution else 'Phase 1 update 2026-10-13 17:28 BST')
+        node(id,'decision',title,options=options,state='resolved' if resolution else 'open',resolution=resolution,source=origin)
+        commands[-1]['aliases']=[{'source':'box-ariadne-bot/jxwalker/ariadne','alias':'ariadne-bot-20261013-master-pilot-'+suffixes[id]}]
+        commands[-1]['commandId']='P1-'+hashlib.sha256(json.dumps({k:v for k,v in commands[-1].items() if k!='commandId'},sort_keys=True).encode()).hexdigest()[:48]
     for baseline,entries in scope.items():command('scope',baseline,scope=entries,scopeDiff={'added':len(entries),'approved':False,'reason':'Imported draft; decisions select priorities without approving complete baseline'})
     for meta in manifest:
         if meta['repository'] not in ['jxwalker/patent-studio','jxwalker/openscorpion','jxwalker/ariadne']:continue

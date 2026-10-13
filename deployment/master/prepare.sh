@@ -2,6 +2,18 @@
 set -euo pipefail
 source "$(dirname "$0")/common.sh"
 stage
+OPERATOR_CONFIG=${ARIADNE_OPERATOR_CONFIG:?Supply the reviewed operator identity and Mac allowlist file}
+python3 - "$OPERATOR_CONFIG" <<'PYOPERATOR'
+import ipaddress,json,pathlib,sys
+c=json.loads(pathlib.Path(sys.argv[1]).read_text())
+assert set(c)=={'enabled','origin','allowedLogins','allowedClientIPs'} and c['enabled'] is True
+assert c['origin']=='https://codex-dev.tail7b3a3b.ts.net'
+assert isinstance(c['allowedLogins'],list) and len(c['allowedLogins'])==1 and c['allowedLogins'][0]
+assert isinstance(c['allowedClientIPs'],list) and c['allowedClientIPs']
+assert set(c['allowedClientIPs']) <= {'100.70.60.22','fd7a:115c:a1e0::ed32:3c16','100.74.85.107','fd7a:115c:a1e0::432:556b'}
+for address in c['allowedClientIPs']:ipaddress.ip_address(address)
+PYOPERATOR
+install -m 600 "$OPERATOR_CONFIG" "$PKG/operator-actions.json"
 [[ ! -e "$PKG/stage/node_modules" && ! -L "$PKG/stage/node_modules" ]]
 cp -a "$REPO/node_modules" "$PKG/stage/node_modules"
 "$PKG/stage/node_modules/.bin/tsc" -p "$PKG/stage/tsconfig.json"
@@ -27,6 +39,7 @@ for p in root.rglob('*'):
 pathlib.Path(sys.argv[2]).write_text(json.dumps(links,sort_keys=True))
 PYLINK
 find "$PKG/stage" -type f -print0 | sort -z | xargs -0 sha256sum > "$PKG/source-hashes.txt"
-sha256sum "$PKG/check-approval.py" "$PKG"/*.sh "$PKG/HEAD_SHA" "$PKG/PLAN.md" "$PKG/import-commands.json" "$PKG/dependency-links.json" >> "$PKG/source-hashes.txt"
+sha256sum "$PKG/check-approval.py" "$PKG"/*.sh "$PKG/HEAD_SHA" "$PKG/PLAN.md" "$PKG/import-commands.json" "$PKG/dependency-links.json" "$PKG/operator-actions.json" >> "$PKG/source-hashes.txt"
+
 sha256sum "$PKG/source-hashes.txt"
 printf '%s\n' 'PASS: bounded stage, roles, isolated contracts and existing operations; no live mutation.'

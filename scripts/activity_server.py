@@ -281,6 +281,8 @@ class Handler(BaseHTTPRequestHandler):
                 if len(raw)!=n:raise ValueError('truncated body')
                 try:return self.reply(200,controller(self.server.app).answer(self.headers,self.client_address[0],json.loads(raw)))
                 except StaleDecision as exc:return self.reply(409,{'error':str(exc)})
+                except PermissionError as exc:return self.reply(401,{'error':str(exc)})
+                except ValueError as exc:return self.reply(400,{'error':str(exc)})
                 except RuntimeError:return self.reply(503,{'error':'Operator ledger unavailable; response was not confirmed'})
             if self.path not in {'/ingest/v1/events','/ingest/v1/github'}: return self.reply(404,{'error':'route not found'})
             self.connection.settimeout(5)

@@ -1,7 +1,31 @@
 """Read-only helper tests; never run apply, execute, rollback or any live probe."""
-import pathlib, subprocess, tempfile, unittest
+import hashlib, json, os, pathlib, subprocess, tempfile, unittest
 ROOT=pathlib.Path(__file__).resolve().parents[1]
 class PackageHelpers(unittest.TestCase):
+    def test_plan_cannot_self_approve_or_use_unbound_authorization(self):
+        if not pathlib.Path('/usr/bin/sha256sum').exists():self.skipTest('Deployment-host sha256sum required; validated on the VM and in CI')
+        with tempfile.TemporaryDirectory() as tmp:
+            root=pathlib.Path(tmp);head='a'*40;manifest='isolated test only\n'
+            (root/'source-hashes.txt').write_text(manifest)
+            digest=hashlib.sha256(manifest.encode()).hexdigest()
+            (root/'common.sh').write_text(f'PKG={root}\nREPO={root}\nEVIDENCE={root}\nHEAD_SHA={head}\n')
+            (root/'audited.sh').write_text((ROOT/'deployment/master/audited.sh').read_text())
+            fake=root/'fake';fake.mkdir();log=root/'calls'
+            (fake/'npm').write_text(f'#!/bin/sh\nprintf "%s\\n" "$*" >> {log}\n')
+            (fake/'npm').chmod(0o700)
+            env={**os.environ,'PATH':str(fake)+':'+os.environ['PATH']}
+            result=subprocess.run(['bash',str(root/'audited.sh'),'plan'],env=env,capture_output=True,text=True)
+            self.assertNotEqual(result.returncode,0);self.assertFalse(log.exists())
+            approval={'status':'approved','project':'ariadne','target':'deployment','decisionBy':'James (isolated fixture)',
+                      'action':'deploy '+head,'decisionNotes':'bound fixture '+digest}
+            path=root/'approval.json';path.write_text(json.dumps({**approval,'action':'wrong head'}))
+            result=subprocess.run(['bash',str(root/'audited.sh'),'plan',str(path)],env=env,capture_output=True,text=True)
+            self.assertNotEqual(result.returncode,0);self.assertFalse(log.exists())
+            path.write_text(json.dumps(approval))
+            result=subprocess.run(['bash',str(root/'audited.sh'),'plan',str(path)],env=env,capture_output=True,text=True)
+            self.assertEqual(result.returncode,0,result.stderr)
+            self.assertIn('mutation-readiness',log.read_text())
+            self.assertNotIn('approval-request',log.read_text());self.assertNotIn('approval-decision',log.read_text())
     def test_readiness_retry_success_and_exhaustion(self):
         with tempfile.TemporaryDirectory() as tmp:
             root=pathlib.Path(tmp)

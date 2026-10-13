@@ -18,6 +18,7 @@ pg_dump -Fc --no-owner --no-acl -f "$B/ledger-before.dump"
 cp -a "$LIVE/scripts" "$B/scripts"
 cp -a "$LIVE/DEPLOYED_COMMIT" "$B/DEPLOYED_COMMIT"
 cp -a "$PGROOT/data/pg_hba.conf" "$PGROOT/data/pg_ident.conf" "$B/"
+cp -a "$HOME/.config/ariadne-activity/server.json" "$B/server.json"
 printf '%s\n' "$B" > "$PKG/last-backup"
 fi
 if [[ $(psql -XAt -c "SELECT count(*) FROM pg_namespace WHERE nspname='master'") == 0 ]]; then
@@ -53,10 +54,15 @@ import json,pathlib,sys
 r=json.loads(pathlib.Path(sys.argv[1]).read_text());assert all(x['ok'] for x in r)
 print('PASS: imported',len(r),'commands; all sourced drafts')
 PY
-for f in activity_server.py master_dashboard.py operating_dashboard.html; do
+for f in activity_server.py master_dashboard.py operating_dashboard.html activity_decisions.py activity_operating.py operating_dashboard.js activity_sender.py; do
  install -m 644 "$PKG/stage/scripts/$f" "$LIVE/scripts/$f.new"
  mv "$LIVE/scripts/$f.new" "$LIVE/scripts/$f"
 done
+python3 - "$PKG/operator-actions.json" "$HOME/.config/ariadne-activity/server.json" <<'PYCONFIG'
+import json,pathlib,sys
+path=pathlib.Path(sys.argv[2]);config=json.loads(path.read_text());config['operatorActions']=json.loads(pathlib.Path(sys.argv[1]).read_text())
+tmp=path.with_suffix('.json.new');tmp.write_text(json.dumps(config,indent=2)+'\n');tmp.chmod(0o600);tmp.replace(path)
+PYCONFIG
 printf '%s\n' "$HEAD_SHA" > "$LIVE/DEPLOYED_COMMIT.new"
 mv "$LIVE/DEPLOYED_COMMIT.new" "$LIVE/DEPLOYED_COMMIT"
 systemctl --user restart ariadne-activity.service

@@ -4,6 +4,8 @@ import threading
 import time
 import unittest
 import uuid
+import urllib.error
+import urllib.request
 from concurrent.futures import ThreadPoolExecutor
 from types import SimpleNamespace
 from unittest.mock import patch
@@ -19,8 +21,12 @@ class OperatorResponses(unittest.TestCase):
         self.nodes, self.commands, self.lock = [], [], threading.Lock()
         def write(command):
             with self.lock:
-                if any(n['id'] == command['target'] for n in self.nodes):
-                    return {'ok': False, 'error': 'identity already exists'}
+                old=next((n for n in self.nodes if n['id']==command['target']),None)
+                if old:
+                    if command['op']!='resolve' or old['revision']!=command['expectedRevision']:
+                        return {'ok': False, 'error': 'revision conflict'}
+                    self.commands.append(copy.deepcopy(command));old['body'].update(command['response']);old['revision']+=1
+                    return {'ok':True,'revision':old['revision']}
                 self.commands.append(copy.deepcopy(command))
                 self.nodes.append({'id': command['target'], 'kind': command['kind'],
                                    'revision': 1, 'body': command['body']})
@@ -100,7 +106,16 @@ class OperatorResponses(unittest.TestCase):
         self.assertEqual(hide_answered({'needsYou': [changed]}, {'nodes': self.nodes})['needsYou'], [changed])
         self.question['requestRevision'] = 'b' * 64
         self.actions.answer(self.headers, '127.0.0.1', {**self.body, 'requestRevision': 'b' * 64, 'commandId': str(uuid.uuid4())})
-        self.assertEqual(len(self.nodes), 2)
+        self.assertEqual(len(self.nodes), 1)
+        self.assertEqual(len(self.commands), 2)
+
+    def test_explicit_alias_updates_the_existing_master_decision(self):
+        self.nodes.append({'id':'DEC-006','kind':'decision','revision':1,'body':{'title':'Agent credentials','state':'open'}})
+        self.actions.read=lambda:{'nodes':copy.deepcopy(self.nodes),'aliases':[{'source':'box-ariadne-bot/jxwalker/ariadne','alias':'DEC-006','node_id':'DEC-006'}]}
+        self.actions.answer(self.headers,'127.0.0.1',self.body)
+        self.assertEqual(len(self.nodes),1);self.assertEqual(self.commands[0]['op'],'resolve')
+        self.assertEqual(self.nodes[0]['body']['state'],'resolved')
+        self.assertEqual(self.nodes[0]['body']['title'],'Agent credentials')
 
     def test_expired_session_does_not_record(self):
         token = self.headers['X-Ariadne-CSRF']
@@ -112,3 +127,30 @@ class OperatorResponses(unittest.TestCase):
         with self.assertRaises(ValueError):
             self.actions.answer(self.headers, '127.0.0.1', {**self.body, 'resolution': 'Use Bearer confidential-value'})
         self.assertEqual(self.nodes, [])
+
+    def test_http_response_route_and_ingest_only_denial(self):
+        from activity_server import Handler, ThreadingHTTPServer
+        self.app._operator_actions = self.actions
+        server = ThreadingHTTPServer(('127.0.0.1', 0), Handler)
+        server.app = self.app
+        thread = threading.Thread(target=server.serve_forever, daemon=True); thread.start()
+        base = 'http://127.0.0.1:' + str(server.server_port)
+        try:
+            with urllib.request.urlopen(urllib.request.Request(base+'/api/operator-session', headers=self.headers)) as response:
+                session = json.load(response)
+            headers = {**self.headers, 'X-Ariadne-CSRF': session['csrfToken'], 'Content-Type': 'application/json'}
+            request = urllib.request.Request(base+'/api/operator-response', data=json.dumps(self.body).encode(), headers=headers)
+            with urllib.request.urlopen(request) as response:
+                self.assertTrue(json.load(response)['recorded'])
+            bad = urllib.request.Request(base+'/api/operator-response', data=json.dumps(self.body).encode(), headers={'Content-Type':'application/json','X-Ariadne-Source':'box-ariadne-bot'})
+            with self.assertRaises(urllib.error.HTTPError) as denied: urllib.request.urlopen(bad)
+            self.assertEqual(denied.exception.code, 401)
+            denied.exception.close()
+            self.app.config['ingestOnly'] = True
+            for request in [urllib.request.Request(base+'/api/operator-session'), request]:
+                with self.assertRaises(urllib.error.HTTPError) as denied: urllib.request.urlopen(request)
+                self.assertEqual(denied.exception.code, 404)
+                denied.exception.close()
+            self.assertEqual(len(self.commands), 1)
+        finally:
+            server.shutdown();server.server_close();thread.join()

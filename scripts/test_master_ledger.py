@@ -201,6 +201,15 @@ class LedgerContract(unittest.TestCase):
             self.assertFalse(self.cmd('override',w,rev,waivedCriteria=criteria,risk='risk',expiresAt=expiry)['ok'])
         self.ok('override',w,rev,waivedCriteria=[p+'wc'],risk='risk',expiresAt=expiry)
 
+    def test_root_parent_cannot_break_portfolio_traversal(self):
+        p='root'+uuid.uuid4().hex[:10]
+        self.assertFalse(self.cmd('create',p,kind='product',parent=p,body={'title':'cyclic'})['ok'])
+        self.ok('create',p,kind='product',body={'title':'valid product'})
+        self.assertFalse(self.cmd('create',p+'decision',kind='decision',parent=p,body={'title':'invalid parent'})['ok'])
+        snapshot=self.sql('SELECT master.snapshot();',database='ledger_test')
+        from master_dashboard import render
+        self.assertIn('valid product',render(snapshot,'/roadmaps',{}))
+
     def test_waiver_progress_and_expiry(self):
         p=self.fixture();w=p+'w';rev=1
         for state in ['ready','active','verification']:rev=self.ok('transition',w,rev,state=state)
