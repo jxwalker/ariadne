@@ -1,4 +1,5 @@
 """Real PostgreSQL contract tests in a disposable socket-only cluster, never the live DB."""
+from concurrent.futures import ThreadPoolExecutor
 import json, os, pathlib, shutil, subprocess, tempfile, unittest, uuid
 ROOT=pathlib.Path(__file__).resolve().parents[1]
 
@@ -60,6 +61,20 @@ class LedgerContract(unittest.TestCase):
         self.assertFalse(self.cmd('transition',w,4,state='ready')['ok'])
         self.ok('dependencies',w,4,dependencies=[])
         self.ok('transition',w,5,state='ready')
+    def test_real_competing_writers(self):
+        p=self.fixture();w=p+'w'
+        with ThreadPoolExecutor(max_workers=2) as pool:
+            results=list(pool.map(lambda value:self.cmd('update',w,1,patch={'nextAction':value}),['writer one','writer two']))
+        self.assertEqual(sum(r['ok'] for r in results),1)
+        self.assertTrue(any(r.get('error')=='revision conflict' for r in results))
+
+    def test_application_role_transport(self):
+        self.sql("CREATE ROLE ariadne_master LOGIN; GRANT USAGE ON SCHEMA master TO ariadne_master; GRANT EXECUTE ON FUNCTION master.command(text,jsonb),master.snapshot() TO ariadne_master;",database='ledger_test',raw=True)
+        with self.assertRaises(AssertionError):self.sql('SET SESSION AUTHORIZATION ariadne_master; DELETE FROM master.journal;',database='ledger_test',raw=True)
+        with self.assertRaises(AssertionError):self.sql("SET SESSION AUTHORIZATION ariadne_master; SELECT master.command('agent:bot','{\"commandId\":\"transport-test\",\"target\":\"unknown\"}');",database='ledger_test',raw=True)
+        result=self.sql('SET SESSION AUTHORIZATION ariadne_master; SELECT jsonb_typeof(master.snapshot());',database='ledger_test',raw=True)
+        self.assertIn('object',result)
+
     def test_acceptance_and_permissions(self):
         p=self.fixture();w=p+'w';rev=1
         for state in ['ready','active','verification']:rev=self.ok('transition',w,rev,state=state,actor='agent:bot')

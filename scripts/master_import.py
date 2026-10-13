@@ -52,7 +52,12 @@ def compile_import():
         node(milestone,'milestone', 'Frozen Gate 0 release/restore readiness' if gate=='0' else 'Gate '+gate+' exit',phase,owner='unassigned',source=meta,pilotPriority=gate=='0')
         gates[gate]=milestone
     current='0';i=0
+    checklist_lines=[]
     for line in text.splitlines():
+        if line.startswith('      ') and checklist_lines and checklist_lines[-1].startswith('- ['):
+            checklist_lines[-1]+=' '+line.strip()
+        else:checklist_lines.append(line)
+    for line in checklist_lines:
         heading=re.match(r'^#{2,4}\s+Gate\s+([0ABCD])\b',line,re.I)
         if heading:current=heading[1].upper()
         check=re.match(r'^- \[([ xX])\] (.+)',line)
