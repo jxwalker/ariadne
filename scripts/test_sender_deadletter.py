@@ -56,3 +56,16 @@ class SenderDeadletter(unittest.TestCase):
             with patch('activity_sender.deliver',side_effect=error),redirect_stderr(io.StringIO()):flush(c)
             self.assertTrue((spool/'0.json').exists());self.assertEqual((dead/'0.json').read_text(),'synthetic prior evidence')
             self.assertEqual(dead.stat().st_mode & 0o777,0o700)
+
+    def test_synthetic_destination_sync_failure_preserves_source_and_recovers(self):
+        from activity_sender import quarantine
+        with tempfile.TemporaryDirectory() as directory:
+            spool,c=self.fixture(directory);dead=spool/'spool-deadletter';dead.mkdir(mode=0o700)
+            (dead/'0.reason').write_text('{"status":400}')
+            original=(spool/'0.json').read_bytes()
+            with patch('activity_sender.os.fsync',side_effect=OSError('synthetic sync failure')):
+                with self.assertRaises(OSError):quarantine(spool,spool/'0.json',400)
+            self.assertEqual((spool/'0.json').read_bytes(),original)
+            self.assertEqual((dead/'0.json').read_bytes(),original)
+            with redirect_stderr(io.StringIO()):quarantine(spool,spool/'0.json',400)
+            self.assertFalse((spool/'0.json').exists());self.assertEqual((dead/'0.json').read_bytes(),original)
