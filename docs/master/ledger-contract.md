@@ -89,3 +89,42 @@ Expired or invalid waivers retain immutable acceptance history, but do not satis
 Resolved decision IDs are immutable in the canonical command API. Exact command retries stay idempotent; an amended question or decision must use a new ID and retain its earlier history.
 
 Hierarchy rollups separate current waivers from inactive (expired/invalid) waivers. Governed dry-run evidence is bound to the full readiness plan bytes; editing any field requires fresh reviewed dry-run evidence, and legacy unbound evidence cannot execute.
+
+### Phase 2 slice 1 signed agent contract (proposed deployment)
+
+Migration 002 adds independently revocable capabilities, durable nonce replay protection,
+operator-created explicit bindings and immutable command receipts. It does not enroll
+agents or change installed roles. A separately configured agentCommands transport is
+required; observation sources and operator sessions are not consulted.
+
+POST /api/agent/v1/commands accepts an object with op (update or transition), target,
+repository, nativeKind (task/run), nativeId, expectedRevision, generation, idempotencyKey,
+reason, and patch or state. Update permits nextAction and blocker only. State Done maps
+to verification; accepted and all acceptance/baseline commands remain denied. The native
+alias must explicitly bind that source/repository/task-or-run to the canonical target.
+GET /api/agent/v1/work/<id>?repository=<repo>&nativeKind=<kind>&nativeId=<id> returns the
+capability-scoped allowlisted packet. Handover is null until slice 2; recent receipts
+are limited to this capability/work, and arbitrary observation envelopes, decisions and
+full journal rows are never included. Packet policy revision and ownership generation
+support reconciliation. agentCommands.enabled deliberately governs these signed routes
+independently of ingestOnly/disableQueries, which continue to block private queries;
+a public proxy must expose only exact signed routes from a separately approved plan.
+
+Headers: X-Ariadne-Capability, X-Ariadne-Timestamp (10 decimal Unix seconds, within 300
+seconds), X-Ariadne-Nonce (fresh ID) and X-Ariadne-Signature (hex HMAC-SHA256). Signed bytes
+are timestamp + newline + nonce + newline + method + newline + exact HTTP request target
+(including encoded query) + newline + raw body (empty for GET). This retains the existing
+transport's timestamp/nonce/body convention and additionally binds method and route.
+Consumed nonces are never reused, including failed commands. A retry uses a new nonce
+and the identical payload/idempotency key; identical delivery returns the durable result.
+Rejected receipt IDs retain rejection; reconciliation needs a new key, expected revision
+and current generation. A rotated capability is a new identity: reconcile receipts and
+current state before retrying rather than assuming cross-capability deduplication.
+
+Disabled, invalid, unknown or badly signed credentials return 401; valid command rejection
+returns 409, and denied packets return 403. Scope failures use one generic message. No
+fallback to the operator DB is allowed. Registry keys are protected files, and only key
+references enter SQL. Scope, current owner, explicit binding and capability lifetime are
+rechecked even for receipt retries. Capability key references are immutable at enrollment;
+rotation uses a successor capability. Nonce cleanup after expiry requires separately
+reviewed retention; no pruning of active replay records is implemented.
