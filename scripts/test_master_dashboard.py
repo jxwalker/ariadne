@@ -92,3 +92,9 @@ class MasterDashboard(unittest.TestCase):
             result=render(data,'/roadmaps',{'node':[node]})
             self.assertIn('0 current waived · 1 inactive (expired/invalid) waivers',result)
         self.assertIn('0 current waived (1 inactive/expired)',render(data,'/roadmaps',{'node':['b']}))
+
+    def test_takeover_verification_visible_without_handover(self):
+        data={'nodes':[{'id':'synthetic-work','kind':'work','parent':None,'revision':2,'body':{'state':'active'}}],'progress':[],'agentState':[{'work_id':'synthetic-work','resumed':False,'handover':None,'current':True}]}
+        output=render(data,'/work',{})
+        self.assertIn('pending environment verification',output)
+        self.assertNotIn('Handover: none pending',output)

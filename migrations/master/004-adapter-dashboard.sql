@@ -14,8 +14,8 @@ CREATE OR REPLACE FUNCTION master.snapshot() RETURNS jsonb LANGUAGE sql STABLE S
  SELECT l.work_id,l.generation,l.expires_at,l.released_at,l.resumed,
  c.agent_identity,c.harness,c.execution_source,
  (l.released_at IS NULL AND l.expires_at>clock_timestamp() AND l.generation=(n.body->>'generation')::bigint AND c.revoked_at IS NULL AND c.expires_at>clock_timestamp()) AS current,
- (SELECT jsonb_build_object('at',r.at,'idempotencyKey',r.idempotency_key,'result',r.result) FROM master.agent_command_receipts r WHERE r.payload->>'target'=l.work_id ORDER BY r.at DESC,r.idempotency_key DESC LIMIT 1) AS last_receipt,
- (SELECT max(r.at) FROM master.agent_command_receipts r WHERE r.payload->>'target'=l.work_id AND r.payload->>'op'='update' AND r.result->>'ok'='true') AS last_progress,
+ (SELECT jsonb_build_object('at',r.at,'idempotencyKey',r.idempotency_key,'result',r.result) FROM master.agent_command_receipts r WHERE r.payload->>'target'=l.work_id AND r.capability_id=l.capability_id AND r.payload->'generation'=to_jsonb(l.generation) ORDER BY r.at DESC,r.idempotency_key DESC LIMIT 1) AS last_receipt,
+ (SELECT max(r.at) FROM master.agent_command_receipts r WHERE r.payload->>'target'=l.work_id AND r.capability_id=l.capability_id AND r.payload->'generation'=to_jsonb(l.generation) AND r.payload->>'op'='update' AND r.result->>'ok'='true') AS last_progress,
  (SELECT jsonb_build_object('at',h.at,'generation',h.generation,'body',h.body) FROM master.handovers h WHERE h.work_id=l.work_id ORDER BY h.generation DESC LIMIT 1) AS handover,
  coalesce((SELECT jsonb_agg(e.body ORDER BY e.capability_id,e.command_key) FROM master.retained_agent_evidence e WHERE e.work_id=l.work_id),'[]'::jsonb) AS evidence_refs
  FROM master.work_leases l JOIN master.agent_capabilities c ON c.id=l.capability_id JOIN master.nodes n ON n.id=l.work_id
@@ -24,3 +24,5 @@ CREATE OR REPLACE FUNCTION master.snapshot() RETURNS jsonb LANGUAGE sql STABLE S
  'history',coalesce((SELECT jsonb_agg(j ORDER BY sequence) FROM master.journal j),'[]'));
 $$;
 REVOKE ALL ON FUNCTION master.snapshot() FROM PUBLIC;
+
+CREATE INDEX agent_receipt_target_at ON master.agent_command_receipts ((payload->>'target'),at DESC);

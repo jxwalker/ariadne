@@ -22,7 +22,7 @@ def main():
           SELECT 'synthetic-browser','agent:synthetic-browser','synthetic-Claude','synthetic-local','synthetic-browser',ARRAY['jxwalker/ariadne'],ARRAY[id],ARRAY['packet'],now()+interval '1 hour' FROM master.nodes WHERE kind='work' ORDER BY id LIMIT 1;
           UPDATE master.nodes SET body=body||jsonb_build_object('owner','agent:synthetic-browser','generation',2,'nextAction','Synthetic pre-PR adapter verification','blocker','Synthetic awaiting operator review','blockerSince','2026-10-14T08:00:00Z') WHERE id=(SELECT eligible_work_ids[1] FROM master.agent_capabilities WHERE id='synthetic-browser');
           INSERT INTO master.work_leases SELECT eligible_work_ids[1],id,2,now()+interval '10 minutes',NULL,true FROM master.agent_capabilities WHERE id='synthetic-browser';
-          INSERT INTO master.agent_command_receipts SELECT id,'synthetic-browser-receipt',jsonb_build_object('target',eligible_work_ids[1],'op','update'),'{"ok":true,"synthetic":true}',now() FROM master.agent_capabilities WHERE id='synthetic-browser';
+          INSERT INTO master.agent_command_receipts SELECT id,'synthetic-browser-receipt',jsonb_build_object('target',eligible_work_ids[1],'op','update','generation',2),'{"ok":true,"synthetic":true}',now() FROM master.agent_capabilities WHERE id='synthetic-browser';
         """,database='ledger_test',raw=True)
         with app.store.connect() as db:
             db.execute("INSERT INTO runs VALUES(?,?,?,?,?,?,?,?)",('synthetic-unbound','synthetic-run','synthetic-task',1,'unknown',0,json.dumps({'repository':'jxwalker/ariadne'}),0))

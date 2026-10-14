@@ -107,7 +107,8 @@ class HarnessAdapters(unittest.TestCase):
                 with self.assertRaises(ValueError):Adapter({**a.config,'binding':{}})
                 with self.assertRaises(ValueError):Adapter({**a.config,'credentialKind':'observation'})
                 observer={**a.config,'capabilityId':'synthetic-observer'}
-                self.assertFalse(request(observer,{**a.binding,'op':'packet'}).get('ok',False))
+                for packet in [False,True]:
+                    with self.assertRaises(__import__('urllib.error',fromlist=['HTTPError']).HTTPError):request(observer,{**a.binding,'op':'update','patch':{'nextAction':'synthetic denied'}},packet)
                 unbound=Adapter({**a.config,'binding':{**a.binding,'nativeId':'synthetic-unbound'}})
                 self.assertFalse(unbound.poll()['ok'])
                 c=self.owned(a,c)
@@ -141,6 +142,33 @@ class HarnessAdapters(unittest.TestCase):
             self.assertTrue(self.receipt(b,path)['ok'])
             path=b.command('release',str(uuid.uuid4()),result['revision'],result['generation'])
             self.assertTrue(self.receipt(b,path)['ok'])
+
+    def test_transient_auth_retry_and_explicit_rejection_archival(self):
+        a,c,cap=self.adapter('cloud-bot');c=self.owned(a,c)
+        key='synthetic-auth-retry'
+        path=a.command('update',key,c['expectedRevision'],c['generation'],patch={'nextAction':'synthetic transport recovery'})
+        secret=a.config['secret'];a.config['secret']='synthetic-wrong-auth'
+        a.replay();self.assertTrue(path.exists());self.assertFalse(path.with_name(path.name+'.receipt').exists())
+        a.config['secret']=secret;result=self.receipt(a,path);self.assertTrue(result['ok'])
+        stale=a.command('update','synthetic-archive',result['revision'],c['generation']-1,patch={'nextAction':'synthetic stale'})
+        rejection=self.receipt(a,stale);self.assertFalse(rejection['ok'])
+        a.archive_rejection('synthetic-archive');self.assertFalse(stale.exists())
+        self.assertEqual(json.loads((a.directory/'.reconciled'/stale.name).read_text())['idempotencyKey'],'synthetic-archive')
+        self.assertEqual(json.loads((a.directory/'.reconciled'/(stale.name+'.receipt')).read_text()),rejection)
+        # Explicit archival is not a generation rewrite or resubmission.
+        self.assertEqual(a.poll()['work']['generation'],c['generation'])
+        with self.assertRaises(ValueError):a.archive_rejection(key)
+
+    def test_local_bounds_private_spool_and_identity(self):
+        a,c,cap=self.adapter('claude')
+        with self.assertRaises(ValueError):Adapter({**a.config,'capabilityId':'synthetic-other'})
+        a.directory.chmod(0o755)
+        try:
+            with self.assertRaises(ValueError):Adapter(a.config)
+        finally:a.directory.chmod(0o700)
+        for op,fields in [('receipt',{'assignmentId':{},'state':'started'}),('resume',{'branch':'synthetic','revision':{}}),('retainedEvidence',{'evidence':{'summary':'x'*501}}),('retainedEvidence',{'evidence':{'summary':{'prompt':'SYNTHETIC-FORBIDDEN'}}}),('claim',{'leaseSeconds':True})]:
+            with self.assertRaises(ValueError):a.command(op,str(uuid.uuid4()),c['expectedRevision'],c['generation'],**fields)
+        self.assertFalse(list(a.directory.glob('*.json')))
 
     def test_hook_never_reads_input_and_https_required(self):
         import tempfile
