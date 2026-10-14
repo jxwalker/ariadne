@@ -361,6 +361,7 @@ class ActivityTests(unittest.TestCase):
         import re
         config=(pathlib.Path(__file__).resolve().parents[1]/'deployment/activity/public-ingestion.nginx.example').read_text()
         locations=re.findall(r'location\s+([^{}]+)\{([^{}]*(?:\{[^{}]*\}[^{}]*)*)\}',config)
+        self.assertEqual({route.strip() for route,_ in locations},{'= /ingest/v1/events','= /ingest/v1/github','/'})
         proxy=[(route,body) for route,body in locations if 'proxy_pass' in body]
         self.assertEqual(len(proxy),2)
         routes={route.strip():body for route,body in proxy}
