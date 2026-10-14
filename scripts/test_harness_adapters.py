@@ -252,6 +252,19 @@ class HarnessAdapters(unittest.TestCase):
         result=a.poll();self.assertTrue(result['ok']);self.assertEqual(len(result['work']['recentReceipts']),10)
         self.assertGreater((a.directory/'.packet').stat().st_size,65536)
 
+    def test_malformed_legacy_generation_does_not_break_snapshot(self):
+        a,c,cap=self.adapter('claude');c=self.owned(a,c)
+        for value in ['synthetic-malformed',{'synthetic':'unexpected'},None,True]:
+            encoded=json.dumps(value).replace("'","''")
+            self.sql("UPDATE master.nodes SET body=jsonb_set(body,'{generation}','%s'::jsonb) WHERE id='%s';"%(encoded,c['target']),database='ledger_test',raw=True)
+            snapshot=self.sql('SELECT master.snapshot();',database='ledger_test')
+            state=next(row for row in snapshot['agentState'] if row['work_id']==c['target'])
+            self.assertFalse(state['current'])
+            node=next(row for row in snapshot['nodes'] if row['id']==c['target']);self.assertEqual(node['body']['generation'],value)
+        self.sql("UPDATE master.nodes SET body=body-'generation' WHERE id='%s';"%c['target'],database='ledger_test',raw=True)
+        state=next(row for row in self.sql('SELECT master.snapshot();',database='ledger_test')['agentState'] if row['work_id']==c['target'])
+        self.assertFalse(state['current'])
+
     def test_hook_never_reads_input_and_https_required(self):
         import tempfile
         for harness in ['claude','codex','cloud-bot']:

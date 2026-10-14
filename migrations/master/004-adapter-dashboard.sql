@@ -14,7 +14,7 @@ CREATE OR REPLACE FUNCTION master.snapshot() RETURNS jsonb LANGUAGE sql STABLE S
  'agentState',coalesce((SELECT jsonb_agg(state ORDER BY work_id) FROM (
  SELECT l.work_id,l.generation,l.expires_at,l.released_at,l.resumed,
  c.agent_identity,c.harness,c.execution_source,
- (l.released_at IS NULL AND l.expires_at>clock_timestamp() AND l.generation=(n.body->>'generation')::bigint AND c.revoked_at IS NULL AND c.expires_at>clock_timestamp()) AS current,
+ (l.released_at IS NULL AND l.expires_at>clock_timestamp() AND coalesce(n.body->'generation'=to_jsonb(l.generation),false) AND c.revoked_at IS NULL AND c.expires_at>clock_timestamp()) AS current,
  (SELECT jsonb_build_object('at',r.at,'idempotencyKey',r.idempotency_key,'result',r.result) FROM master.agent_command_receipts r WHERE r.payload->>'target'=l.work_id AND r.capability_id=l.capability_id AND (r.payload->'generation'=to_jsonb(l.generation) OR (r.payload->>'op'='claim' AND r.result->>'ok'='true' AND r.result->'generation'=to_jsonb(l.generation))) ORDER BY r.at DESC,r.idempotency_key DESC LIMIT 1) AS last_receipt,
  (SELECT max(r.at) FROM master.agent_command_receipts r WHERE r.payload->>'target'=l.work_id AND r.capability_id=l.capability_id AND r.payload->'generation'=to_jsonb(l.generation) AND r.payload->>'op'='update' AND r.result->>'ok'='true') AS last_progress,
  (SELECT jsonb_build_object('at',h.at,'generation',h.generation,'body',h.body) FROM master.handovers h WHERE h.work_id=l.work_id ORDER BY h.generation DESC LIMIT 1) AS handover,
