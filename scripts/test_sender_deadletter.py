@@ -95,7 +95,7 @@ class SenderDeadletter(unittest.TestCase):
             with patch('activity_sender.time.time',return_value=retry['at']+1),patch('activity_sender.deliver',side_effect=bad) as deliver,redirect_stderr(io.StringIO()):flush(c)
             self.assertEqual(deliver.call_count,1);self.assertEqual(len(list(spool.glob('*.json'))),4)
             retry=json.loads((spool/'.retry').read_text())
-            with patch('activity_sender.time.time',return_value=retry['at']+1),patch('activity_sender.deliver',return_value={'eventId':'synthetic-ok'}) as deliver:flush(c)
+            with patch('activity_sender.time.time',return_value=retry['at']+1),patch('activity_sender.deliver',return_value={'eventId':'synthetic-ok'}) as deliver:flush(c);flush(c)
             self.assertEqual(deliver.call_count,4);self.assertEqual(list(spool.glob('*.json')),[])
             self.assertFalse(json.loads((spool/'.retry').read_text()).get('paused',False))
 
@@ -155,3 +155,43 @@ class SenderDeadletter(unittest.TestCase):
                 error=urllib.error.HTTPError('https://synthetic.invalid',400,'bad',{},None)
                 with patch('activity_sender.time.time',return_value=now),patch('activity_sender.deliver',side_effect=error),patch('activity_sender.quarantine',side_effect=OSError('synthetic disk')),redirect_stderr(io.StringIO()):flush(c)
                 retry=json.loads((spool/'.retry').read_text());self.assertEqual(retry['attempt'],attempt);self.assertEqual(retry['at'],now+2**attempt)
+
+    def test_synthetic_paused_probe_stays_on_triggering_event(self):
+        with tempfile.TemporaryDirectory() as directory:
+            spool,c=self.fixture(directory)
+            auth=urllib.error.HTTPError('https://synthetic.invalid',401,'bad',{},None)
+            with patch('activity_sender.deliver',side_effect=auth),redirect_stderr(io.StringIO()):flush(c)
+            (spool/'new.json').write_text(json.dumps({'runId':'a-earlier-synthetic','sequence':0}))
+            retry=json.loads((spool/'.retry').read_text());seen=[]
+            def probe(_,raw):seen.append(json.loads(raw)['runId']);raise urllib.error.HTTPError('https://synthetic.invalid',401,'bad',{},None)
+            with patch('activity_sender.time.time',return_value=retry['at']+1),patch('activity_sender.deliver',side_effect=probe),redirect_stderr(io.StringIO()):flush(c)
+            self.assertEqual(seen,['synthetic-run']);self.assertEqual(len(list(spool.glob('*.json'))),3)
+            self.assertFalse((spool/'spool-deadletter').exists())
+
+    def test_synthetic_corrupt_retry_can_be_reset(self):
+        with tempfile.TemporaryDirectory() as directory:
+            spool,c=self.fixture(directory);(spool/'.retry').write_text('synthetic-corruption')
+            with patch('activity_sender.deliver') as deliver,redirect_stderr(io.StringIO()):flush(c)
+            deliver.assert_not_called()
+            reset=spool/'.circuit-reset';reset.touch(mode=0o600)
+            with patch('activity_sender.deliver',return_value={'eventId':'synthetic-ok'}),redirect_stderr(io.StringIO()):flush(c)
+            self.assertEqual(list(spool.glob('*.json')),[]);self.assertFalse(reset.exists())
+
+    def test_synthetic_retry_storage_failure_never_quarantines_or_kills_worker(self):
+        with tempfile.TemporaryDirectory() as directory:
+            spool,c=self.fixture(directory)
+            with patch('activity_sender.persist',side_effect=OSError('synthetic disk')),patch('activity_sender.deliver') as deliver,redirect_stderr(io.StringIO()):flush(c)
+            deliver.assert_not_called();self.assertEqual(len(list(spool.glob('*.json'))),2)
+        with tempfile.TemporaryDirectory() as directory:
+            spool,c=self.fixture(directory)
+            auth=urllib.error.HTTPError('https://synthetic.invalid',403,'bad',{},None)
+            from activity_sender import persist as real_persist
+            calls=[]
+            def fail_trip(path,value):
+                calls.append(value)
+                if value.get('paused'):raise OSError('synthetic disk after response')
+                real_persist(path,value)
+            with patch('activity_sender.persist',side_effect=fail_trip),patch('activity_sender.deliver',side_effect=auth),redirect_stderr(io.StringIO()):flush(c)
+            with patch('activity_sender.deliver') as deliver,redirect_stderr(io.StringIO()):flush(c)
+            deliver.assert_not_called();self.assertFalse((spool/'spool-deadletter').exists())
+            self.assertEqual(len(list(spool.glob('*.json'))),2)

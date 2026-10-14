@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 """Bounded local spool and authenticated HTTPS delivery. Hooks never perform network IO."""
+import math
 import argparse, fcntl, hashlib, hmac, json, os, pathlib, stat, subprocess, sys, time, urllib.error, urllib.request, uuid
 from datetime import datetime, timezone
 from activity_server import validate, canonical
@@ -85,12 +86,27 @@ def quarantine(spool,event,status):
     finally:os.close(descriptor)
     print('Ariadne sender dead-letter: HTTP '+str(status)+' '+labels[status],file=sys.stderr)
 
+_FAILED_RETRY={}
+
+def save_retry(path,retry):
+    # Retain cooldown in this worker if durable storage temporarily fails.
+    _FAILED_RETRY[str(path)]=dict(retry)
+    persist(path,retry)
+    _FAILED_RETRY.pop(str(path),None)
+
 def flush(c):
+    try:_flush(c)
+    except (OSError,ValueError,TypeError,KeyError):
+        print('Ariadne sender: retry storage unavailable; delivery paused, evidence retained',file=sys.stderr)
+
+def _flush(c):
     spool=pathlib.Path(c['spool']); spool.mkdir(parents=True,exist_ok=True,mode=0o700)
     with open(spool/'.delivery-lock','a') as lock:
         try: fcntl.flock(lock,fcntl.LOCK_EX|fcntl.LOCK_NB)
         except BlockingIOError: return
-        state=spool/'.retry'; retry=json.loads(state.read_text()) if state.exists() else {'at':0,'attempt':0}
+        state=spool/'.retry'
+        try:retry=_FAILED_RETRY.get(str(state)) or (json.loads(state.read_text()) if state.exists() else {'at':0,'attempt':0})
+        except (ValueError,OSError):retry=None
         try:
             threshold=int(c.get('permanentFailureThreshold',3))
             backoff=int(c.get('circuitBreakerBackoffSeconds',300))
@@ -105,13 +121,17 @@ def flush(c):
                 print('Ariadne sender circuit breaker: unsafe reset file ignored; require protected regular file',file=sys.stderr)
             else:
                 retry={'at':0,'attempt':0}
-                persist(state,retry) # persist reset before consuming it
+                save_retry(state,retry) # persist reset before consuming it
                 reset.unlink()
                 descriptor=os.open(spool,os.O_RDONLY)
                 try:os.fsync(descriptor)
                 finally:os.close(descriptor)
                 print('Ariadne sender circuit breaker: operator reset consumed',file=sys.stderr)
+        if not isinstance(retry,dict) or not isinstance(retry.get('at'),(int,float)) or not isinstance(retry.get('attempt'),int) or not math.isfinite(retry['at']) or retry['at']<0 or not 0<=retry['attempt']<=10:
+            print('Ariadne sender: invalid retry state; protected operator reset required, backlog retained',file=sys.stderr)
+            return
         if time.time()<retry['at']: return
+        save_retry(state,retry) # storage preflight before any outbound call
         # Filesystem timestamps can tie: preserve each run's producer order.
         def order(path):
             try:
@@ -120,6 +140,12 @@ def flush(c):
             except (OSError,ValueError,KeyError,TypeError):
                 return '~invalid',0
         files=sorted(spool.glob('*.json'),key=order)
+        if retry.get('paused'):
+            probe=retry.get('probeEvent')
+            if not isinstance(probe,str) or pathlib.Path(probe).name!=probe or not probe.endswith('.json') or not (spool/probe).is_file():
+                print('Ariadne sender circuit breaker: probe event unavailable; operator reset required',file=sys.stderr)
+                return
+            files=[spool/probe]
         for p in files[:100]:
             try:
                 receipt=deliver(c,p.read_bytes())
@@ -143,20 +169,20 @@ def flush(c):
                         retry.update(permanent=fingerprint,consecutive=count,paused=still_paused)
                         limit=1 if error.code in {401,403} else threshold
                         if still_paused or count>=limit:
-                            retry.update(paused=True,at=time.time()+backoff,attempt=0)
-                            persist(state,retry)
+                            retry.update(paused=True,at=time.time()+backoff,attempt=0,probeEvent=p.name)
+                            save_retry(state,retry)
                             print('Ariadne sender circuit breaker: paused HTTP '+str(error.code)+' '+labels[error.code]+'; backlog retained; probe after backoff or protected .circuit-reset required',file=sys.stderr)
                             break
                         # A different probe outcome releases the old circuit. Persist streak before quarantine.
                         retry.update(at=0,paused=False)
-                        persist(state,retry)
+                        save_retry(state,retry)
                         try:
                             quarantine(spool,p,error.code)
                         except OSError:
                             print('Ariadne sender dead-letter storage unavailable; preserving evidence with backoff',file=sys.stderr)
                         else:
                             retry.update(at=0,attempt=0)
-                            persist(state,retry)
+                            save_retry(state,retry)
                             continue
                     else:
                         # Transient status differs from the tripping outcome; resume after normal backoff.
@@ -167,7 +193,7 @@ def flush(c):
             except Exception:
                 # Network/storage failure is not an HTTP probe outcome; keep any paused circuit.
                 retry['attempt']=min(retry['attempt']+1,10); retry['at']=time.time()+(backoff if retry.get('paused') else min(300,2**retry['attempt'])); break
-        persist(state,retry)
+        save_retry(state,retry)
 
 HOOKS={'SessionStart':'session.start','UserPromptSubmit':'task.start','PreToolUse':'task.progress','PostToolUse':'task.progress','PostToolUseFailure':'task.progress','Stop':'task.progress','SessionEnd':'session.end','Interrupt':'task.interrupted','SubagentStart':'subagent.start','SubagentStop':'subagent.end'}
 def hook(c,data):
