@@ -361,14 +361,19 @@ class ActivityTests(unittest.TestCase):
         import re
         config=(pathlib.Path(__file__).resolve().parents[1]/'deployment/activity/public-ingestion.nginx.example').read_text()
         locations=re.findall(r'location\s+([^{}]+)\{([^{}]*(?:\{[^{}]*\}[^{}]*)*)\}',config)
+        self.assertEqual({route.strip() for route,_ in locations},{'= /ingest/v1/events','= /ingest/v1/github','/'})
         proxy=[(route,body) for route,body in locations if 'proxy_pass' in body]
-        self.assertEqual(len(proxy),1)
-        route,body=proxy[0];self.assertEqual(route.strip(),'~ ^/ingest/v1/(events|github)$')
-        self.assertIn('limit_except POST { deny all; }',body);self.assertIn('location / { return 404; }',config)
-        pattern=route.strip()[2:]
-        self.assertIsNotNone(re.fullmatch(pattern,'/ingest/v1/events'));self.assertIsNotNone(re.fullmatch(pattern,'/ingest/v1/github'))
-        for path in ['/api/insights','/api/runs','/api/sources','/api/activity','/api/controls','/api/alerts','/favicon.ico','/','/assets/activity-dashboard.js','/ingest/v1/events/']:
-            self.assertIsNone(re.fullmatch(pattern,path))
+        self.assertEqual(len(proxy),2)
+        routes={route.strip():body for route,body in proxy}
+        self.assertEqual(set(routes),{'= /ingest/v1/events','= /ingest/v1/github'})
+        for body in routes.values():self.assertIn('limit_except POST { deny all; }',body)
+        self.assertIn('location / { return 404; }',config)
+        self.assertNotIn('client_max_body_size',routes['= /ingest/v1/events'])
+        self.assertIn('client_max_body_size 2m;',routes['= /ingest/v1/github'])
+        self.assertIn('proxy_read_timeout 5s;',routes['= /ingest/v1/events'])
+        self.assertIn('proxy_read_timeout 35s;',routes['= /ingest/v1/github'])
+        for path in ['/api/agent/v1/commands','/api/master','/api/insights','/api/runs','/api/sources','/api/activity','/api/controls','/api/alerts','/favicon.ico','/','/assets/activity-dashboard.js','/ingest/v1/events/']:
+            self.assertNotIn('= '+path,routes)
 
     def test_http_boundaries(self):
         server=ThreadingHTTPServer(('127.0.0.1',0),Handler);server.app=self.app;thread=threading.Thread(target=server.serve_forever);thread.start();base=f'http://127.0.0.1:{server.server_port}'
