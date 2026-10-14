@@ -27,8 +27,8 @@ DECLARE cap master.agent_capabilities; work master.nodes; lease master.work_leas
 BEGIN
  -- Same transaction lock as operator commands; conflicts and ownership are committed together.
  PERFORM pg_advisory_xact_lock(20261013,1);
+ SELECT * INTO cap FROM master.agent_capabilities WHERE id=cap_id FOR UPDATE;
  lease_now:=clock_timestamp();
- SELECT * INTO cap FROM master.agent_capabilities WHERE id=cap_id;
  IF cap.id IS NULL OR cap.key_ref IS DISTINCT FROM request->>'keyRef' OR cap.revoked_at IS NOT NULL OR cap.issued_at>lease_now OR cap.expires_at<=lease_now THEN RETURN '{"ok":false,"error":"capability unavailable"}'; END IF;
  IF (SELECT count(*) FROM master.agent_nonces WHERE capability_id=cap_id AND at>lease_now-interval '1 minute')>=300 THEN RETURN '{"ok":false,"error":"request rate exceeded"}'; END IF;
  IF nonce_id IS NULL OR nonce_id !~ '^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$' THEN RETURN '{"ok":false,"error":"invalid nonce"}'; END IF;
@@ -50,7 +50,7 @@ BEGIN
   RETURN jsonb_build_object('ok',true,'work',packet||jsonb_build_object('branch',work.body->'branch','candidate',work.body->'candidate','outcome',work.body->'goal','parent',work.parent,'phase',(SELECT parent FROM master.nodes WHERE id=work.parent),'milestone',work.parent,'criteria',work.body->'criteria','pathScope',work.body->'pathScope','policy',work.body->'policy','policyRevision',(SELECT revision FROM master.nodes WHERE id=work.body->>'policy'),'policyRules',(SELECT jsonb_build_object('requiredKinds',body->'requiredKinds','maxAgeSeconds',body->'maxAgeSeconds') FROM master.nodes WHERE id=work.body->>'policy'),'recentReceipts',coalesce((SELECT jsonb_agg(r) FROM (SELECT receipt.idempotency_key,receipt.result,receipt.at FROM master.agent_command_receipts receipt WHERE receipt.capability_id=cap_id AND receipt.payload->>'target'=work.id ORDER BY receipt.at DESC LIMIT 10) r),'[]'::jsonb),'harness',cap.harness,'executionSource',cap.execution_source,'repository',request->>'repository',
    'handover',(SELECT body FROM master.handovers WHERE work_id=work.id ORDER BY generation DESC LIMIT 1),
    'lease',CASE WHEN lease.capability_id=cap_id THEN to_jsonb(lease) ELSE NULL END,
-   'assignments',coalesce((SELECT jsonb_agg(to_jsonb(a) ORDER BY generation) FROM master.assignments a WHERE a.work_id=work.id AND a.capability_id=cap_id AND a.state<>'expired' AND a.expires_at>lease_now),'[]'::jsonb),
+   'assignments',coalesce((SELECT jsonb_agg(to_jsonb(a) ORDER BY generation) FROM master.assignments a WHERE a.work_id=work.id AND a.capability_id=cap_id AND a.state<>'expired' AND (a.state='started' OR a.expires_at>lease_now)),'[]'::jsonb),
    'dependencies',coalesce((SELECT jsonb_agg(dependency_id ORDER BY dependency_id) FROM master.dependencies WHERE work_id=work.id AND dependency_id=ANY(cap.eligible_work_ids)),'[]'::jsonb),
    'hasUnscopedDependencies',EXISTS(SELECT 1 FROM master.dependencies WHERE work_id=work.id AND NOT dependency_id=ANY(cap.eligible_work_ids))));
  END IF;
@@ -73,7 +73,7 @@ BEGIN
    IF jsonb_typeof(work.body->'pathScope') IS DISTINCT FROM 'array' OR jsonb_array_length(work.body->'pathScope') NOT BETWEEN 1 AND 100 THEN RAISE EXCEPTION 'exclusive path scope required'; END IF;
    FOR scope_path IN SELECT jsonb_array_elements_text(work.body->'pathScope') LOOP
     IF scope_path<>'.' AND (scope_path !~ '^[A-Za-z0-9_.-]+(/[A-Za-z0-9_.-]+)*$' OR scope_path ~ '(^|/)\.\.?(/|$)') THEN RAISE EXCEPTION 'invalid path scope'; END IF;
-    IF EXISTS(SELECT 1 FROM master.lease_resources r JOIN master.work_leases l USING(work_id) WHERE l.released_at IS NULL AND l.expires_at>lease_now AND r.repository=request->>'repository' AND (r.path='.' OR scope_path='.' OR r.path=scope_path OR left(r.path,length(scope_path)+1)=scope_path||'/' OR left(scope_path,length(r.path)+1)=r.path||'/')) THEN RAISE EXCEPTION 'exclusive scope conflict'; END IF;
+    IF EXISTS(SELECT 1 FROM master.lease_resources r JOIN master.work_leases l USING(work_id) WHERE l.released_at IS NULL AND l.expires_at>lease_now AND r.repository=request->>'repository' AND (r.path='.' OR scope_path='.' OR r.path=lower(scope_path) OR left(r.path,length(scope_path)+1)=lower(scope_path)||'/' OR left(lower(scope_path),length(r.path)+1)=r.path||'/')) THEN RAISE EXCEPTION 'exclusive scope conflict'; END IF;
    END LOOP;
    UPDATE master.assignments SET state='expired' WHERE (state IN ('offered','received','acknowledged') AND expires_at<=lease_now) OR (work_id=work.id AND generation<(work.body->>'generation')::bigint+1);
    IF (SELECT count(*) FROM master.assignments WHERE capability_id=cap_id AND state IN ('offered','received','acknowledged') AND expires_at>lease_now)>=100 THEN RAISE EXCEPTION 'assignment queue full'; END IF;
@@ -81,12 +81,12 @@ BEGIN
    UPDATE master.nodes SET revision=revision+1,body=body||jsonb_build_object('owner',cap.agent_identity,'generation',(body->>'generation')::bigint+1) WHERE id=work.id RETURNING * INTO work;
    INSERT INTO master.work_leases VALUES(work.id,cap_id,(work.body->>'generation')::bigint,least(lease_now+ttl*interval '1 second',cap.expires_at),NULL,lease.work_id IS NULL) ON CONFLICT(work_id) DO UPDATE SET capability_id=EXCLUDED.capability_id,generation=EXCLUDED.generation,expires_at=EXCLUDED.expires_at,released_at=NULL,resumed=EXCLUDED.resumed;
    DELETE FROM master.lease_resources WHERE work_id=work.id;
-   INSERT INTO master.lease_resources SELECT work.id,request->>'repository',value FROM jsonb_array_elements_text(work.body->'pathScope') ON CONFLICT DO NOTHING;
+   INSERT INTO master.lease_resources SELECT work.id,request->>'repository',lower(value) FROM jsonb_array_elements_text(work.body->'pathScope') ON CONFLICT DO NOTHING;
    INSERT INTO master.assignments VALUES('assignment-'||work.id||'-'||(work.body->>'generation'),work.id,cap_id,(work.body->>'generation')::bigint,'offered',least(lease_now+ttl*interval '1 second',cap.expires_at));
    result:=jsonb_build_object('ok',true,'revision',work.revision,'generation',work.body->'generation','assignmentId','assignment-'||work.id||'-'||(work.body->>'generation'));
   ELSIF op='renew' THEN
    ttl:=coalesce((request->>'leaseSeconds')::integer,300); IF ttl NOT BETWEEN 1 AND 3600 THEN RAISE EXCEPTION 'invalid lease duration'; END IF;
-   IF EXISTS(SELECT 1 FROM master.assignments WHERE work_id=work.id AND generation=lease.generation AND state IN ('offered','received') AND expires_at<=lease_now) THEN RAISE EXCEPTION 'offer expired'; END IF;
+   IF EXISTS(SELECT 1 FROM master.assignments WHERE work_id=work.id AND generation=lease.generation AND state IN ('offered','received','acknowledged') AND expires_at<=lease_now) THEN RAISE EXCEPTION 'offer expired'; END IF;
    UPDATE master.work_leases SET expires_at=least(lease_now+ttl*interval '1 second',cap.expires_at) WHERE work_id=work.id;
    result:=jsonb_build_object('ok',true,'revision',work.revision,'generation',lease.generation);
   ELSIF op='receipt' THEN
@@ -109,8 +109,8 @@ BEGIN
    UPDATE master.work_leases SET released_at=lease_now WHERE work_id=work.id;
    result:=jsonb_build_object('ok',true,'revision',work.revision);
   ELSIF op='resume' THEN
-   SELECT body INTO hand FROM master.handovers WHERE work_id=work.id ORDER BY generation DESC LIMIT 1;
-   IF hand IS NULL THEN hand:=jsonb_build_object('branch',work.body->>'branch','revision',work.body->>'candidate'); END IF;
+   SELECT body INTO hand FROM master.handovers WHERE work_id=work.id AND generation=lease.generation-1;
+   IF hand IS NULL AND work.body->'takeoverBaseline'->>'generation'=(lease.generation-1)::text THEN hand:=work.body->'takeoverBaseline'; END IF;
    IF hand->>'branch' IS NULL OR hand->>'revision' IS NULL THEN RAISE EXCEPTION 'environment baseline unavailable'; END IF;
    IF (hand->>'branch' IS DISTINCT FROM request->>'branch' OR hand->>'revision' IS DISTINCT FROM request->>'revision') THEN RAISE EXCEPTION 'environment mismatch'; END IF;
    UPDATE master.work_leases SET resumed=true WHERE work_id=work.id;
@@ -132,6 +132,7 @@ BEGIN
     IF work.revision IS DISTINCT FROM (request->>'expectedRevision')::integer THEN RAISE EXCEPTION 'revision conflict'; END IF;
     IF op='update' AND (jsonb_typeof(request->'patch') IS DISTINCT FROM 'object' OR (request->'patch')-ARRAY['nextAction','blocker']<>'{}'::jsonb) THEN RAISE EXCEPTION 'patch denied'; END IF;
     result:=master.command(cap.agent_identity,jsonb_build_object('commandId','work-effect-'||encode(sha256(convert_to(jsonb_build_array(work.id,key)::text,'UTF8')),'hex'),'op',op,'target',work.id,'expectedRevision',request->'expectedRevision','reason',request->>'reason','via',cap.execution_source||'/'||cap.harness,'patch',request->'patch','state',CASE WHEN request->>'state'='Done' THEN 'verification' ELSE request->>'state' END));
+    IF NOT coalesce((result->>'ok')::boolean,false) AND coalesce(result->>'error','') NOT IN ('revision conflict','permission denied','invalid transition','operator cancellation required','terminal work','dependencies unresolved or unaccepted','scope not approved','invalid lifecycle order','reason required','immutable scope or invalid patch','accepted work immutable') THEN result:=jsonb_build_object('ok',false,'error','command rejected','current',packet); END IF;
     INSERT INTO master.work_effects VALUES(work.id,key,normalized,result);
    END IF;
   ELSE RAISE EXCEPTION 'operation denied'; END IF;

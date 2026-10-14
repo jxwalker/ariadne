@@ -1,7 +1,7 @@
 """Signed outbound-only command spool. Conflicts require explicit reconciliation.
 No automatic rebasing, generation substitution or execution of work packet actions.
 """
-import hashlib, hmac, json, pathlib, time, urllib.request, urllib.error, uuid, fcntl
+import hashlib, hmac, json, pathlib, time, urllib.request, urllib.error, uuid, fcntl, sys
 from activity_sender import persist
 
 
@@ -54,8 +54,13 @@ def flush(config, transport=send):
                 if not isinstance(command,dict):return
             except (OSError,ValueError):return
             try:result=transport(config,command)
-            except Exception:return
+            except Exception:
+                print('Ariadne agent spool: transport unavailable; commands retained',file=sys.stderr)
+                return
             if not isinstance(result,dict):return
+            if result.get('error') in {'request rate exceeded','invalid nonce','signature replay'}:
+                print('Ariadne agent spool: retryable transport rejection; commands retained',file=sys.stderr)
+                return
             persist(receipt_path,result)
             if not result.get('ok'):return # keep rejected command and current state for operator/client reconciliation
             path.unlink()

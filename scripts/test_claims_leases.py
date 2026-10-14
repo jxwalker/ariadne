@@ -138,6 +138,7 @@ class ClaimsLeases(unittest.TestCase):
         self.assertTrue(self.send(a,owned,'renew',leaseSeconds=30)['ok'])
         time.sleep(1.1)
         self.assertFalse(self.send(a,owned,'receipt',state='started')['ok'])
+        self.assertEqual(self.send(a,owned,'renew')['error'],'offer expired')
 
     def test_synthetic_spool_sequence_and_http_conflict(self):
         import tempfile, pathlib, io, urllib.error
@@ -163,3 +164,42 @@ class ClaimsLeases(unittest.TestCase):
         b,d=self.setup(work=c['target']);new=self.claim(b,d);self.start(b,new)
         self.assertFalse(self.send(b,new,'update',patch={'nextAction':'unverified'})['ok'])
         self.assertEqual(self.send(b,new,'resume',branch='unknown',revision='a'*40)['error'],'environment baseline unavailable')
+
+    def test_synthetic_casefold_scope_and_retryable_throttle(self):
+        a,c=self.setup(['Synthetic/Case']);self.claim(a,c)
+        b,d=self.setup(['synthetic/case/child']);self.assertEqual(self.send(b,d,'claim')['error'],'exclusive scope conflict')
+        import tempfile
+        from agent_spool import enqueue,flush
+        with tempfile.TemporaryDirectory() as directory:
+            path=enqueue(directory,{'idempotencyKey':'synthetic-throttled'})
+            flush({'spool':directory},lambda *_:{'ok':False,'error':'request rate exceeded'})
+            self.assertTrue(path.exists());self.assertFalse(path.with_name(path.name+'.receipt').exists())
+            flush({'spool':directory},lambda *_:{'ok':True});self.assertFalse(path.exists())
+
+    def test_synthetic_stale_handover_requires_operator_baseline(self):
+        a,c=self.setup();owned=self.claim(a,c);self.start(a,owned)
+        hand=dict(branch='synthetic/old',revision='a'*40,changedPaths=[],checks=[],evidenceRefs=[],remainingWork=[],blockers=[],nextAction='resume',localWork=[])
+        self.assertTrue(self.send(a,owned,'handover',handover=hand)['ok'])
+        b,d=self.setup(work=c['target']);second=self.claim(b,d);self.start(b,second)
+        self.assertTrue(self.send(b,second,'resume',branch=hand['branch'],revision=hand['revision'])['ok'])
+        self.sql("UPDATE master.work_leases SET expires_at=clock_timestamp()-interval '1 second' WHERE work_id='%s';"%c['target'],database='ledger_test',raw=True)
+        e,f=self.setup(work=c['target']);third=self.claim(e,f);self.start(e,third)
+        self.assertEqual(self.send(e,third,'resume',branch=hand['branch'],revision=hand['revision'])['error'],'environment baseline unavailable')
+        baseline=dict(generation=second['generation'],branch='synthetic/recovered',revision='b'*40)
+        self.sql("UPDATE master.nodes SET body=body||'%s'::jsonb WHERE id='%s';"%(json.dumps({'takeoverBaseline':baseline}),c['target']),database='ledger_test',raw=True)
+        self.assertTrue(self.send(e,third,'resume',branch=baseline['branch'],revision=baseline['revision'])['ok'])
+
+    def test_synthetic_revocation_serializes_with_requests(self):
+        a,c=self.setup();owned=self.claim(a,c);self.start(a,owned)
+        with ThreadPoolExecutor(1) as pool:
+            future=pool.submit(self.sql,"BEGIN; UPDATE master.agent_capabilities SET revoked_at=clock_timestamp() WHERE id='%s'; SELECT pg_sleep(0.5); COMMIT;"%a,database='ledger_test',raw=True)
+            # Wait until the revocation transaction holds its table lock.
+            deadline=time.monotonic()+3
+            while time.monotonic()<deadline:
+                locked=self.sql("SELECT to_jsonb(EXISTS(SELECT 1 FROM pg_locks WHERE relation='master.agent_capabilities'::regclass AND mode='RowExclusiveLock' AND granted));",database='ledger_test')
+                if locked:break
+                time.sleep(0.01)
+            self.assertTrue(locked)
+            result=self.send(a,owned,'update',patch={'nextAction':'revoked write'})
+            future.result()
+        self.assertEqual(result['error'],'capability unavailable')
