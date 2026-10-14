@@ -191,8 +191,11 @@ def main(harness):
     reconcile=sub.add_parser('archive-rejection');reconcile.add_argument('--key',required=True)
     report=sub.add_parser('report');report.add_argument('--record', required=True)
     if harness in {'codex','claude'}:
-        wrap=sub.add_parser('exec');wrap.add_argument('arguments', nargs=argparse.REMAINDER)
-    args=parser.parse_args()
+        sub.add_parser('exec',add_help=False) # child owns all options, including --help
+    args,passthrough=parser.parse_known_args()
+    if args.action=='exec':
+        args.arguments=passthrough[1:] if passthrough[:1]==['--'] else passthrough
+    elif passthrough:parser.error('unsupported adapter arguments')
     try:
         config=protected_json(args.config)
         if config.get('harness') != harness: raise ValueError('harness mismatch')

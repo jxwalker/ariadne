@@ -216,6 +216,16 @@ class HarnessAdapters(unittest.TestCase):
             with self.assertRaisesRegex(ValueError,'credential in payload'):a.command('retainedEvidence',str(uuid.uuid4()),c['expectedRevision'],c['generation'],evidence={'summary':secret})
         self.assertFalse(list(a.directory.glob('*.json')))
 
+    def test_wrapper_forwards_option_first_child_arguments(self):
+        from harness_adapter import main
+        for harness,child_prefix in [('codex',['codex','exec']),('claude',['claude'])]:
+            a,c,cap=self.adapter(harness)
+            config=self.dir/('synthetic-wrapper-'+harness);config.write_text(json.dumps({k:v for k,v in a.config.items() if k!='secret'}));config.chmod(0o600)
+            for forwarded in [['--help'],['--model','synthetic-model','--ephemeral'],['--','--model','synthetic-model']]:
+                with patch('sys.argv',['adapter','--config',str(config),'exec',*forwarded]),patch('harness_adapter.subprocess.call',return_value=0) as child:
+                    self.assertEqual(main(harness),0)
+                    self.assertEqual(child.call_args.args[0],child_prefix+(forwarded[1:] if forwarded[0]=='--' else forwarded))
+
     def test_hook_never_reads_input_and_https_required(self):
         import tempfile
         for harness in ['claude','codex','cloud-bot']:
