@@ -69,11 +69,15 @@ def quarantine(spool,event,status):
                         'at':datetime.now(timezone.utc).isoformat()})
     os.chmod(event,0o600)
     if not target.exists():os.link(event,target)
-    event.unlink()
-    for directory in (deadletter,spool):
+    # Destination must be durable before removing the original spool link.
+    for directory in (deadletter,):
         descriptor=os.open(directory,os.O_RDONLY)
         try:os.fsync(descriptor)
         finally:os.close(descriptor)
+    event.unlink()
+    descriptor=os.open(spool,os.O_RDONLY)
+    try:os.fsync(descriptor)
+    finally:os.close(descriptor)
     print('Ariadne sender dead-letter: HTTP '+str(status)+' '+labels[status],file=sys.stderr)
 
 def flush(c):
@@ -108,7 +112,7 @@ def flush(c):
                         try:
                             quarantine(spool,p,error.code)
                         except OSError:
-                            print('Ariadne sender dead-letter storage unavailable; retaining event with backoff',file=sys.stderr)
+                            print('Ariadne sender dead-letter storage unavailable; preserving evidence with backoff',file=sys.stderr)
                         else:
                             retry={'at':0,'attempt':0}
                             continue
