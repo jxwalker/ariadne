@@ -30,3 +30,5 @@ in proposed and must resume the environment, deliberately report `ready`, then
 `start` (active). The `ready` report is a normal scoped transition and cannot
 adopt a baseline or acceptance. A handover or takeover baseline refers to the
 preceding lease fence.
+
+Unexpected SQL failures keep the agent receipt generic. The operator-only journal retains the original SQLSTATE and message under privateDiagnostic; scoped work packets and recent agent receipts exclude that diagnostic. Operator recovery failures follow the same boundary.

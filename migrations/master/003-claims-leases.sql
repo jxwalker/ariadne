@@ -26,6 +26,7 @@ DECLARE cap master.agent_capabilities; work master.nodes; lease master.work_leas
  op text:=request->>'op'; key text:=request->>'idempotencyKey'; role_name text; result jsonb; packet jsonb; normalized jsonb;
  scope_path text; ttl integer; lease_now timestamptz; hand jsonb; effect master.work_effects; first_owner boolean;
  next_fence bigint; before_state jsonb; after_state jsonb; claim_id text;
+ private_diagnostic jsonb; diagnostic_message text; diagnostic_state text;
 BEGIN
  -- Same transaction lock as operator commands; conflicts and ownership are committed together.
  PERFORM pg_advisory_xact_lock(20261013,1);
@@ -164,8 +165,10 @@ BEGIN
    END IF;
   ELSE RAISE EXCEPTION 'operation denied'; END IF;
  EXCEPTION WHEN OTHERS THEN
+  GET STACKED DIAGNOSTICS diagnostic_message=MESSAGE_TEXT, diagnostic_state=RETURNED_SQLSTATE;
   before_state:=NULL;after_state:=NULL;
   IF SQLERRM NOT IN ('lease ownership conflict','lease fence conflict','revision conflict','work not eligible','work already claimed','exclusive path scope required','invalid path scope','exclusive scope conflict','assignment queue full','invalid lease duration','offer expired','offer expired or unavailable','invalid receipt','receipt order conflict','complete bounded handover required','environment mismatch','environment baseline unavailable','bounded retained evidence required','environment verification required','assignment not started','idempotency payload conflict','patch denied','operation denied','retained evidence capacity reached') THEN
+   private_diagnostic:=jsonb_build_object('privateDiagnostic',jsonb_build_object('sqlstate',diagnostic_state,'message',diagnostic_message));
    result:=jsonb_build_object('ok',false,'error','command rejected','current',packet);
   ELSE result:=jsonb_build_object('ok',false,'error',SQLERRM,'current',packet); END IF;
  END;
@@ -176,7 +179,7 @@ BEGIN
   INSERT INTO master.commands(id,actor,payload,result) VALUES(claim_id,cap.agent_identity,request,result);
   INSERT INTO master.outbox(command_id,body) VALUES(claim_id,jsonb_build_object('commandId',claim_id,'target',work.id,'result',result));
  END IF;
- INSERT INTO master.journal(command_id,actor,via,target,before_state,after_state,result) VALUES(claim_id,cap.agent_identity,cap.execution_source||'/'||cap.harness,coalesce(work.id,'[missing target]'),before_state,after_state,result);
+ INSERT INTO master.journal(command_id,actor,via,target,before_state,after_state,result) VALUES(claim_id,cap.agent_identity,cap.execution_source||'/'||cap.harness,coalesce(work.id,'[missing target]'),before_state,after_state,result||coalesce(private_diagnostic,'{}'::jsonb));
  RETURN result;
 END $$;
 REVOKE ALL ON FUNCTION master.agent_request(text,text,jsonb) FROM PUBLIC;
@@ -186,6 +189,7 @@ CREATE FUNCTION master.record_takeover_baseline(actor_id text, request jsonb) RE
 LANGUAGE plpgsql SECURITY DEFINER SET search_path=pg_catalog,master AS $$
 DECLARE work master.nodes; prior master.commands; result jsonb; before_state jsonb; after_state jsonb;
  cid text:=request->>'commandId'; baseline jsonb:=request->'baseline';
+ private_diagnostic jsonb; diagnostic_message text; diagnostic_state text;
 BEGIN
  IF session_user NOT IN ('james','ariadne_master') OR actor_id IS DISTINCT FROM 'james' THEN RAISE EXCEPTION 'operator recovery required'; END IF;
  PERFORM pg_advisory_xact_lock(20261013,1);
@@ -206,11 +210,13 @@ BEGIN
   after_state:=master.node_state(work);
   result:=jsonb_build_object('ok',true,'revision',work.revision);
  EXCEPTION WHEN OTHERS THEN
+  GET STACKED DIAGNOSTICS diagnostic_message=MESSAGE_TEXT, diagnostic_state=RETURNED_SQLSTATE;
   IF SQLERRM IN ('recovery work unavailable','revision conflict','bounded recovery reason required','invalid takeover baseline') THEN result:=jsonb_build_object('ok',false,'error',SQLERRM);
-  ELSE result:='{"ok":false,"error":"recovery command rejected"}'; END IF;
+  ELSE result:='{"ok":false,"error":"recovery command rejected"}';
+   private_diagnostic:=jsonb_build_object('privateDiagnostic',jsonb_build_object('sqlstate',diagnostic_state,'message',diagnostic_message)); END IF;
  END;
  INSERT INTO master.commands(id,actor,payload,result) VALUES(cid,actor_id,request,result);
- INSERT INTO master.journal(command_id,actor,via,target,before_state,after_state,result) VALUES(cid,actor_id,'operator-recovery',coalesce(work.id,'[missing target]'),before_state,after_state,result);
+ INSERT INTO master.journal(command_id,actor,via,target,before_state,after_state,result) VALUES(cid,actor_id,'operator-recovery',coalesce(work.id,'[missing target]'),before_state,after_state,result||coalesce(private_diagnostic,'{}'::jsonb));
  INSERT INTO master.outbox(command_id,body) VALUES(cid,jsonb_build_object('commandId',cid,'target',work.id,'result',result));
  RETURN result;
 END $$;

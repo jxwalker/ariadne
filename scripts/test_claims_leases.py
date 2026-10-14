@@ -77,6 +77,28 @@ class ClaimsLeases(unittest.TestCase):
         self.assertEqual(self.send(cap,stale,'claim')['error'],'lease fence conflict')
         self.assertGreater(self.claim(cap,owned)['generation'],owned['generation'])
 
+    def test_unexpected_errors_are_private_and_do_not_apply_work(self):
+        cap,c=self.setup();bad={**c,'leaseSeconds':'diagnostic-fixture'}
+        result=self.request(cap,bad)
+        self.assertEqual(result['error'],'command rejected')
+        self.assertNotIn('privateDiagnostic',result)
+        receipt=self.sql("SELECT result FROM master.agent_command_receipts WHERE capability_id='%s' AND idempotency_key='%s';"%(cap,bad['idempotencyKey']),database='ledger_test')
+        self.assertEqual(receipt,result)
+        record=self.sql("SELECT result FROM master.journal WHERE target='%s' ORDER BY sequence DESC LIMIT 1;"%c['target'],database='ledger_test')
+        self.assertEqual(record['privateDiagnostic']['sqlstate'],'22P02')
+        self.assertIn('diagnostic-fixture',record['privateDiagnostic']['message'])
+        self.assertEqual(self.sql("SELECT to_jsonb(count(*)) FROM master.work_leases WHERE work_id='%s';"%c['target'],database='ledger_test'),0)
+        packet=self.send(cap,c,'packet')
+        self.assertNotIn('privateDiagnostic',json.dumps(packet))
+        self.assertNotIn('diagnostic-fixture',json.dumps(packet))
+        recover=dict(commandId='synthetic-diagnostic-'+cap,target=c['target'],expectedRevision='recovery-fixture',reason='synthetic diagnostic',baseline={})
+        response=self.sql("SET SESSION AUTHORIZATION ariadne_master; SELECT master.record_takeover_baseline('james','%s');"%json.dumps(recover),database='ledger_test')
+        self.assertEqual(response['error'],'recovery command rejected')
+        self.assertNotIn('privateDiagnostic',response)
+        recovered=self.sql("SELECT result FROM master.journal WHERE command_id='%s';"%recover['commandId'],database='ledger_test')
+        self.assertEqual(recovered['privateDiagnostic']['sqlstate'],'22P02')
+        self.assertIn('recovery-fixture',recovered['privateDiagnostic']['message'])
+
     def test_same_owner_reclaim_preserves_ownership_bound_evidence(self):
         cap,c=self.setup();owned=self.claim(cap,c);work=c['target']
         generation=self.sql("SELECT body->'generation' FROM master.nodes WHERE id='%s';"%work,database='ledger_test')
