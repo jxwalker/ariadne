@@ -68,6 +68,8 @@ class ClaimsLeases(unittest.TestCase):
         replay={**new,'op':'update','patch':update['patch'],'idempotencyKey':'synthetic-effect'}
         self.assertEqual(self.request(b,replay),r)
         human_rev=self.ok('update',c['target'],new['expectedRevision'],patch={'nextAction':'human edit while offline'})
+        # Applied effect recovery must precede stale revision rejection.
+        self.assertEqual(self.request(b,replay),r)
         stale=self.send(b,new,'update',patch={'nextAction':'offline overwrite'})
         self.assertEqual(stale['error'],'revision conflict');self.assertEqual(stale['current']['revision'],human_rev)
         self.assertEqual(self.send(b,new,'packet')['work']['nextAction'],'human edit while offline')
@@ -92,7 +94,7 @@ class ClaimsLeases(unittest.TestCase):
         b,d=self.setup(work=c['target']);new=self.claim(b,d)
         before=self.send(b,new,'packet')['work']
         self.pg_run('pg_ctl','-D',str(self.data),'-l',str(self.dir/'postgres.log'),'-m','fast','-w','restart')
-        self.assertEqual(before,self.send(b,new,'packet')['work'])
+        after=self.send(b,new,'packet')['work'];before.pop('recentReceipts');after.pop('recentReceipts');self.assertEqual(before,after)
         dump=self.dir/'slice2.dump';self.pg_run('pg_dump','-h',str(self.socket),'-p','55433','-d','ledger_test','-Fc','-f',str(dump));self.sql('CREATE DATABASE slice2_restore;')
         self.pg_run('pg_restore','-h',str(self.socket),'-p','55433','-d','slice2_restore',str(dump))
         literal=json.dumps(command).replace("'","''")
@@ -129,3 +131,35 @@ class ClaimsLeases(unittest.TestCase):
         with tempfile.TemporaryDirectory() as directory:
             for index in range(100):enqueue(directory,{'idempotencyKey':'synthetic-'+str(index)})
             with self.assertRaisesRegex(ValueError,'spool full'):enqueue(directory,{'idempotencyKey':'synthetic-overflow'})
+
+    def test_synthetic_acknowledged_offer_cannot_start_after_expiry(self):
+        a,c=self.setup();owned=self.claim(a,c,leaseSeconds=1)
+        for state in ['received','acknowledged']:self.assertTrue(self.send(a,owned,'receipt',state=state)['ok'])
+        self.assertTrue(self.send(a,owned,'renew',leaseSeconds=30)['ok'])
+        time.sleep(1.1)
+        self.assertFalse(self.send(a,owned,'receipt',state='started')['ok'])
+
+    def test_synthetic_spool_sequence_and_http_conflict(self):
+        import tempfile, pathlib, io, urllib.error
+        from unittest.mock import patch
+        from agent_spool import enqueue,flush,send
+        with tempfile.TemporaryDirectory() as directory:
+            for index in range(3):enqueue(directory,{'idempotencyKey':'synthetic-order-'+str(index),'index':index})
+            seen=[]
+            flush({'spool':directory},lambda _,c:seen.append(c['index']) or {'ok':True})
+            self.assertEqual(seen,[0,1,2])
+            bad=enqueue(directory,{'idempotencyKey':'synthetic-rejected'})
+            flush({'spool':directory},lambda *_:{'ok':False,'current':{'revision':9}})
+            with patch('agent_spool.send') as transport:
+                flush({'spool':directory},transport);transport.assert_not_called()
+            self.assertTrue(bad.exists())
+        error=urllib.error.HTTPError('https://synthetic.invalid',409,'conflict',{},io.BytesIO(b'{"ok":false,"current":{"revision":9}}'))
+        with patch('urllib.request.urlopen',side_effect=error):
+            result=send({'origin':'https://synthetic.invalid','capabilityId':'synthetic','secret':'synthetic'}, {'idempotencyKey':'synthetic'})
+            self.assertEqual(result['current']['revision'],9)
+
+    def test_synthetic_takeover_without_handover_requires_environment(self):
+        a,c=self.setup();owned=self.claim(a,c,leaseSeconds=1);time.sleep(1.1)
+        b,d=self.setup(work=c['target']);new=self.claim(b,d);self.start(b,new)
+        self.assertFalse(self.send(b,new,'update',patch={'nextAction':'unverified'})['ok'])
+        self.assertEqual(self.send(b,new,'resume',branch='unknown',revision='a'*40)['error'],'environment baseline unavailable')

@@ -287,7 +287,7 @@ class Handler(BaseHTTPRequestHandler):
                 from agent_commands import handle
                 if self.headers.get('Transfer-Encoding') or not self.headers.get('Content-Length'):return self.reply(411,{'error':'content length required'})
                 n=int(self.headers['Content-Length'])
-                if not 0<n<=4096:return self.reply(413,{'error':'body too large'})
+                if not 0<n<=32768:return self.reply(413,{'error':'body too large'})
                 if self.headers.get('Content-Type','').split(';')[0]!='application/json':return self.reply(415,{'error':'JSON required'})
                 self.connection.settimeout(5)
                 raw=self.rfile.read(n)
