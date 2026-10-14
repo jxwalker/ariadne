@@ -18,13 +18,16 @@ class ClaimsLeases(unittest.TestCase):
     def setUpClass(cls):
         agents.AgentCommands.setUpClass.__func__(cls)
         cls.sql((ROOT/'migrations/master/003-claims-leases.sql').read_text(),database='ledger_test',raw=True)
+        cls.sql('GRANT EXECUTE ON FUNCTION master.record_takeover_baseline(text,jsonb) TO ariadne_master;',database='ledger_test',raw=True)
 
     def setup(self,paths=None,work=None,role='implementer'):
+        new_work=work is None
         if work is None:
             p=self.fixture();work=p+'w'
             self.ok('transition',work,1,state='ready')
             self.sql("UPDATE master.nodes SET body=body||'%s'::jsonb WHERE id='%s';"%(json.dumps({'source':{'repository':'jxwalker/ariadne'},'pathScope':paths or ['synthetic/'+p]}),work),database='ledger_test',raw=True)
         cap='synthetic-'+uuid.uuid4().hex;source=cap+'-source'
+        if new_work:self.sql("UPDATE master.nodes SET body=body||jsonb_build_object('owner','agent:%s') WHERE id='%s';"%(cap,work),database='ledger_test',raw=True)
         ops=['packet','claim','renew','release','handover','resume','receipt','update','transition','retainedEvidence','review','evaluate']
         self.sql("INSERT INTO master.agent_capabilities(id,agent_identity,harness,execution_source,key_ref,repositories,eligible_work_ids,allowed_operations,expires_at) VALUES('%s','agent:%s','synthetic-codex','%s','%s',ARRAY['jxwalker/ariadne'],ARRAY['%s'],ARRAY[%s],now()+interval '1 hour'); INSERT INTO master.agent_roles VALUES('%s','%s');"%(cap,cap,source,cap,work,','.join("'%s'"%v for v in ops),cap,role),database='ledger_test',raw=True)
         self.sql("SET SESSION AUTHORIZATION ariadne_master; SELECT master.bind_work('%s','jxwalker/ariadne','run','%s','%s','synthetic-approved');"%(source,cap,work),database='ledger_test',raw=True)
@@ -186,7 +189,11 @@ class ClaimsLeases(unittest.TestCase):
         e,f=self.setup(work=c['target']);third=self.claim(e,f);self.start(e,third)
         self.assertEqual(self.send(e,third,'resume',branch=hand['branch'],revision=hand['revision'])['error'],'environment baseline unavailable')
         baseline=dict(generation=second['generation'],branch='synthetic/recovered',revision='b'*40)
-        self.sql("UPDATE master.nodes SET body=body||'%s'::jsonb WHERE id='%s';"%(json.dumps({'takeoverBaseline':baseline}),c['target']),database='ledger_test',raw=True)
+        recovery={'commandId':'synthetic-recovery-'+e,'target':c['target'],'expectedRevision':third['expectedRevision'],'reason':'synthetic inspected recovered environment','baseline':baseline}
+        query="SET SESSION AUTHORIZATION ariadne_master; SELECT master.record_takeover_baseline('james','%s');"%json.dumps(recovery)
+        recovered=self.sql(query,database='ledger_test');self.assertTrue(recovered['ok'],recovered)
+        self.assertEqual(self.sql(query,database='ledger_test'),recovered)
+        third['expectedRevision']=recovered['revision']
         self.assertTrue(self.send(e,third,'resume',branch=baseline['branch'],revision=baseline['revision'])['ok'])
 
     def test_synthetic_revocation_serializes_with_requests(self):
@@ -203,3 +210,41 @@ class ClaimsLeases(unittest.TestCase):
             result=self.send(a,owned,'update',patch={'nextAction':'revoked write'})
             future.result()
         self.assertEqual(result['error'],'capability unavailable')
+
+    def test_synthetic_success_receipt_recovery_and_bounded_cache(self):
+        import tempfile
+        from agent_spool import enqueue,flush
+        from activity_sender import persist
+        from unittest.mock import patch
+        with tempfile.TemporaryDirectory() as directory:
+            path=enqueue(directory,{'idempotencyKey':'synthetic-success-crash'})
+            receipt=path.with_name(path.name+'.receipt');persist(receipt,{'ok':True,'revision':4})
+            with patch('agent_spool.send') as transport:
+                flush({'spool':directory},transport);transport.assert_not_called()
+            self.assertFalse(path.exists());self.assertEqual(json.loads(receipt.read_text())['revision'],4)
+            for index in range(110):
+                enqueue(directory,{'idempotencyKey':'synthetic-many-'+str(index)})
+                flush({'spool':directory},lambda *_:{'ok':True})
+            import pathlib
+            self.assertLessEqual(len(list(pathlib.Path(directory).glob('*.receipt'))),100)
+
+    def test_synthetic_operator_recovery_boundaries(self):
+        a,c=self.setup();owned=self.claim(a,c)
+        baseline={'generation':owned['generation']-1,'branch':'synthetic/recovery','revision':'c'*40}
+        req={'commandId':'synthetic-op-'+a,'target':c['target'],'expectedRevision':owned['expectedRevision']-1,'reason':'synthetic','baseline':baseline}
+        q=lambda r:"SET SESSION AUTHORIZATION ariadne_master; SELECT master.record_takeover_baseline('james','%s');"%json.dumps(r)
+        self.assertEqual(self.sql(q(req),database='ledger_test')['error'],'revision conflict')
+        bad={**req,'commandId':'synthetic-bad-'+a,'expectedRevision':owned['expectedRevision'],'baseline':{**baseline,'generation':-1}}
+        self.assertEqual(self.sql(q(bad),database='ledger_test')['error'],'invalid takeover baseline')
+        self.assertFalse(self.send(a,owned,'record_takeover_baseline',baseline=baseline)['ok'])
+
+    def test_synthetic_parallel_overlap_and_database_queue_cap(self):
+        scope='synthetic/concurrent-'+uuid.uuid4().hex
+        a,c=self.setup([scope]);b,d=self.setup([scope+'/child'])
+        with ThreadPoolExecutor(2) as pool:results=list(pool.map(lambda pair:self.send(*pair,'claim'),[(a,c),(b,d)]))
+        self.assertEqual(sum(r['ok'] for r in results),1)
+        self.assertTrue(any(r.get('error')=='exclusive scope conflict' for r in results))
+        cap,req=self.setup()
+        # Synthetic fill of durable pending offers isolates the queue boundary.
+        self.sql("INSERT INTO master.assignments SELECT 'synthetic-full-%s-'||n,'%s','%s',n,'offered',now()+interval '1 hour' FROM generate_series(100,199) n;"%(cap,req['target'],cap),database='ledger_test',raw=True)
+        self.assertEqual(self.send(cap,req,'claim')['error'],'assignment queue full')

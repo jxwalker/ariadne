@@ -16,7 +16,7 @@ def enqueue(directory, command):
             path=matches[0]
             if json.loads(path.read_text())!=command:raise ValueError('idempotency payload conflict')
             return path
-        if len(list(directory.glob('*.json')))+len(list(directory.glob('*.receipt')))>=100:raise ValueError('command spool full; archive retained receipts explicitly')
+        if len(list(directory.glob('*.json')))>=100:raise ValueError('command spool full')
         sequence=directory/'.sequence'
         number=int(sequence.read_text())+1 if sequence.exists() else 1
         persist(sequence,number)
@@ -48,7 +48,12 @@ def flush(config, transport=send):
         except BlockingIOError:return
         for path in sorted(directory.glob('*.json')):
             receipt_path=directory/(path.name+'.receipt')
-            if receipt_path.exists() and not json.loads(receipt_path.read_text()).get('ok'):return
+            if receipt_path.exists():
+                try:saved=json.loads(receipt_path.read_text())
+                except (OSError,ValueError):return
+                if not isinstance(saved,dict) or not saved.get('ok'):return
+                path.unlink() # durable success survives credential rotation or expiry; never resend
+                continue
             try:
                 command=json.loads(path.read_text())
                 if not isinstance(command,dict):return
@@ -64,3 +69,6 @@ def flush(config, transport=send):
             persist(receipt_path,result)
             if not result.get('ok'):return # keep rejected command and current state for operator/client reconciliation
             path.unlink()
+            # Server keeps authoritative receipts. Bound the local successful receipt cache.
+            completed=[p for p in sorted(directory.glob('*.receipt')) if not p.with_name(p.name.removesuffix('.receipt')).exists()]
+            for old in completed[:-100]:old.unlink()

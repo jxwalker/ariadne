@@ -23,7 +23,7 @@ CREATE FUNCTION master.agent_request(cap_id text, nonce_id text, request jsonb) 
 LANGUAGE plpgsql SECURITY DEFINER SET search_path=pg_catalog,master AS $$
 DECLARE cap master.agent_capabilities; work master.nodes; lease master.work_leases; offer master.assignments; prior master.agent_command_receipts;
  op text:=request->>'op'; key text:=request->>'idempotencyKey'; role_name text; result jsonb; packet jsonb; normalized jsonb;
- scope_path text; ttl integer; lease_now timestamptz; hand jsonb; effect master.work_effects;
+ scope_path text; ttl integer; lease_now timestamptz; hand jsonb; effect master.work_effects; first_owner boolean;
 BEGIN
  -- Same transaction lock as operator commands; conflicts and ownership are committed together.
  PERFORM pg_advisory_xact_lock(20261013,1);
@@ -47,7 +47,7 @@ BEGIN
  END IF;
  IF op='packet' THEN
   IF result IS NOT NULL THEN RETURN result; END IF;
-  RETURN jsonb_build_object('ok',true,'work',packet||jsonb_build_object('branch',work.body->'branch','candidate',work.body->'candidate','outcome',work.body->'goal','parent',work.parent,'phase',(SELECT parent FROM master.nodes WHERE id=work.parent),'milestone',work.parent,'criteria',work.body->'criteria','pathScope',work.body->'pathScope','policy',work.body->'policy','policyRevision',(SELECT revision FROM master.nodes WHERE id=work.body->>'policy'),'policyRules',(SELECT jsonb_build_object('requiredKinds',body->'requiredKinds','maxAgeSeconds',body->'maxAgeSeconds') FROM master.nodes WHERE id=work.body->>'policy'),'recentReceipts',coalesce((SELECT jsonb_agg(r) FROM (SELECT receipt.idempotency_key,receipt.result,receipt.at FROM master.agent_command_receipts receipt WHERE receipt.capability_id=cap_id AND receipt.payload->>'target'=work.id ORDER BY receipt.at DESC LIMIT 10) r),'[]'::jsonb),'harness',cap.harness,'executionSource',cap.execution_source,'repository',request->>'repository',
+  RETURN jsonb_build_object('ok',true,'work',packet||jsonb_build_object('takeoverBaseline',work.body->'takeoverBaseline','blocker',work.body->'blocker','branch',work.body->'branch','candidate',work.body->'candidate','outcome',work.body->'goal','parent',work.parent,'phase',(SELECT parent FROM master.nodes WHERE id=work.parent),'milestone',work.parent,'criteria',work.body->'criteria','pathScope',work.body->'pathScope','policy',work.body->'policy','policyRevision',(SELECT revision FROM master.nodes WHERE id=work.body->>'policy'),'policyRules',(SELECT jsonb_build_object('requiredKinds',body->'requiredKinds','maxAgeSeconds',body->'maxAgeSeconds') FROM master.nodes WHERE id=work.body->>'policy'),'recentReceipts',coalesce((SELECT jsonb_agg(r) FROM (SELECT receipt.idempotency_key,receipt.result,receipt.at FROM master.agent_command_receipts receipt WHERE receipt.capability_id=cap_id AND receipt.payload->>'target'=work.id ORDER BY receipt.at DESC LIMIT 10) r),'[]'::jsonb),'harness',cap.harness,'executionSource',cap.execution_source,'repository',request->>'repository',
    'handover',(SELECT body FROM master.handovers WHERE work_id=work.id ORDER BY generation DESC LIMIT 1),
    'lease',CASE WHEN lease.capability_id=cap_id THEN to_jsonb(lease) ELSE NULL END,
    'assignments',coalesce((SELECT jsonb_agg(to_jsonb(a) ORDER BY generation) FROM master.assignments a WHERE a.work_id=work.id AND a.capability_id=cap_id AND a.state<>'expired' AND (a.state='started' OR a.expires_at>lease_now)),'[]'::jsonb),
@@ -78,8 +78,9 @@ BEGIN
    UPDATE master.assignments SET state='expired' WHERE (state IN ('offered','received','acknowledged') AND expires_at<=lease_now) OR (work_id=work.id AND generation<(work.body->>'generation')::bigint+1);
    IF (SELECT count(*) FROM master.assignments WHERE capability_id=cap_id AND state IN ('offered','received','acknowledged') AND expires_at>lease_now)>=100 THEN RAISE EXCEPTION 'assignment queue full'; END IF;
    ttl:=coalesce((request->>'leaseSeconds')::integer,300); IF ttl NOT BETWEEN 1 AND 3600 THEN RAISE EXCEPTION 'invalid lease duration'; END IF;
+   first_owner:=lease.work_id IS NULL AND work.body->>'owner'=cap.agent_identity AND NOT EXISTS(SELECT 1 FROM master.handovers WHERE work_id=work.id);
    UPDATE master.nodes SET revision=revision+1,body=body||jsonb_build_object('owner',cap.agent_identity,'generation',(body->>'generation')::bigint+1) WHERE id=work.id RETURNING * INTO work;
-   INSERT INTO master.work_leases VALUES(work.id,cap_id,(work.body->>'generation')::bigint,least(lease_now+ttl*interval '1 second',cap.expires_at),NULL,lease.work_id IS NULL) ON CONFLICT(work_id) DO UPDATE SET capability_id=EXCLUDED.capability_id,generation=EXCLUDED.generation,expires_at=EXCLUDED.expires_at,released_at=NULL,resumed=EXCLUDED.resumed;
+   INSERT INTO master.work_leases VALUES(work.id,cap_id,(work.body->>'generation')::bigint,least(lease_now+ttl*interval '1 second',cap.expires_at),NULL,first_owner) ON CONFLICT(work_id) DO UPDATE SET capability_id=EXCLUDED.capability_id,generation=EXCLUDED.generation,expires_at=EXCLUDED.expires_at,released_at=NULL,resumed=EXCLUDED.resumed;
    DELETE FROM master.lease_resources WHERE work_id=work.id;
    INSERT INTO master.lease_resources SELECT work.id,request->>'repository',lower(value) FROM jsonb_array_elements_text(work.body->'pathScope') ON CONFLICT DO NOTHING;
    INSERT INTO master.assignments VALUES('assignment-'||work.id||'-'||(work.body->>'generation'),work.id,cap_id,(work.body->>'generation')::bigint,'offered',least(lease_now+ttl*interval '1 second',cap.expires_at));
@@ -148,5 +149,39 @@ BEGIN
 END $$;
 REVOKE ALL ON FUNCTION master.agent_request(text,text,jsonb) FROM PUBLIC;
 DO $$ BEGIN IF EXISTS(SELECT 1 FROM pg_roles WHERE rolname='ariadne_agent_transport') THEN GRANT EXECUTE ON FUNCTION master.agent_request(text,text,jsonb) TO ariadne_agent_transport; END IF; END $$;
+-- Supported operator recovery path, separate from all signed agent operations.
+CREATE FUNCTION master.record_takeover_baseline(actor_id text, request jsonb) RETURNS jsonb
+LANGUAGE plpgsql SECURITY DEFINER SET search_path=pg_catalog,master AS $$
+DECLARE work master.nodes; prior master.commands; result jsonb; before_state jsonb; after_state jsonb;
+ cid text:=request->>'commandId'; baseline jsonb:=request->'baseline';
+BEGIN
+ IF session_user NOT IN ('james','ariadne_master') OR actor_id IS DISTINCT FROM 'james' THEN RAISE EXCEPTION 'operator recovery required'; END IF;
+ PERFORM pg_advisory_xact_lock(20261013,1);
+ IF cid IS NULL OR cid !~ '^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$' THEN RETURN '{"ok":false,"error":"command ID required"}'; END IF;
+ SELECT * INTO prior FROM master.commands WHERE id=cid;
+ IF FOUND THEN
+  IF prior.actor=actor_id AND prior.payload=request THEN RETURN prior.result; END IF;
+  RETURN '{"ok":false,"error":"command ID payload conflict"}';
+ END IF;
+ SELECT * INTO work FROM master.nodes WHERE id=request->>'target' FOR UPDATE;
+ before_state:=master.node_state(work);
+ BEGIN
+  IF work.kind IS DISTINCT FROM 'work' OR work.body->>'state' IN ('accepted','cancelled','superseded') THEN RAISE EXCEPTION 'recovery work unavailable'; END IF;
+  IF work.revision IS DISTINCT FROM (request->>'expectedRevision')::integer THEN RAISE EXCEPTION 'revision conflict'; END IF;
+  IF coalesce(request->>'reason','')='' OR length(request->>'reason')>500 THEN RAISE EXCEPTION 'bounded recovery reason required'; END IF;
+  IF jsonb_typeof(baseline) IS DISTINCT FROM 'object' OR baseline-ARRAY['generation','branch','revision']<>'{}'::jsonb OR NOT baseline ?& ARRAY['generation','branch','revision'] OR jsonb_typeof(baseline->'generation') IS DISTINCT FROM 'number' OR baseline->>'generation' IS DISTINCT FROM ((work.body->>'generation')::bigint-1)::text OR coalesce(baseline->>'branch','')='' OR length(baseline->>'branch')>200 OR coalesce(baseline->>'revision','') !~ '^[a-f0-9]{40}$' THEN RAISE EXCEPTION 'invalid takeover baseline'; END IF;
+  UPDATE master.nodes SET revision=revision+1,body=body||jsonb_build_object('takeoverBaseline',baseline) WHERE id=work.id RETURNING * INTO work;
+  after_state:=master.node_state(work);
+  result:=jsonb_build_object('ok',true,'revision',work.revision);
+ EXCEPTION WHEN OTHERS THEN
+  IF SQLERRM IN ('recovery work unavailable','revision conflict','bounded recovery reason required','invalid takeover baseline') THEN result:=jsonb_build_object('ok',false,'error',SQLERRM);
+  ELSE result:='{"ok":false,"error":"recovery command rejected"}'; END IF;
+ END;
+ INSERT INTO master.commands(id,actor,payload,result) VALUES(cid,actor_id,request,result);
+ INSERT INTO master.journal(command_id,actor,via,target,before_state,after_state,result) VALUES(cid,actor_id,'operator-recovery',coalesce(work.id,'[missing target]'),before_state,after_state,result);
+ INSERT INTO master.outbox(command_id,body) VALUES(cid,jsonb_build_object('commandId',cid,'target',work.id,'result',result));
+ RETURN result;
+END $$;
+REVOKE ALL ON FUNCTION master.record_takeover_baseline(text,jsonb) FROM PUBLIC;
 INSERT INTO master.migrations(version) VALUES(3);
 COMMIT;
