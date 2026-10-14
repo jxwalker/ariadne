@@ -1,0 +1,17 @@
+# Adapter command contract
+
+Synthetic-tested, not enrolled. Entry points: `scripts/claude_adapter.py`, `scripts/codex_adapter.py`, `scripts/cloud_bot_adapter.py`. Each uses shared `harness_adapter.py` and slice-2 `agent_spool.py`. No model invocation is required to report deliberate operational metadata.
+
+A mode-0600 config names `harness`, `credentialKind` (`agent-command` only), `capabilityId`, `origin` (HTTPS), `credentialFile` (mode-0600 JSON with secret), `spool` (private directory) and `binding` with exact `target`, `repository`, `nativeKind` (`run` or `task`), `nativeId`. Server approval of that binding is independently required. Credentials and raw event bodies are never placed in spool or output. Config/binding mistakes produce fixed errors without echoing inputs.
+
+Commands:
+
+- `--config <file> hook SessionStart` (or Stop/SessionEnd): fixed local event/time/binding only; stdin untouched; no command credential read or server write.
+- `--config <file> poll`: signed GET for the explicit bound work packet, saved locally as `.packet`; no assignment execution or implicit acknowledgement.
+- `--config <file> report --record <file>`: queue a protected deliberate operational record; never extract metadata from transcripts/prompts/tool streams.
+- `--config <file> replay`: signed POST in durable enqueue order; success receipts rotate at 100; rejected receipt/command stays retained and blocks further writes. Network failure retains backlog. Inspect the returned current state locally before explicit reconciliation; never auto-rebase.
+- Claude/Codex `--config <file> exec ...`: launcher fallback, inherits standard streams; fixed SessionStart/SessionEnd presence without inspecting child inputs/outputs. Codex invokes `codex exec`; Claude invokes `claude`. Child exit code preserved.
+
+A report has `op`, stable `key`, integer `expected_revision`, integer `generation` plus operation fields: claim/renew (`leaseSeconds` optional), release, receipt (`assignmentId`, `state` received/acknowledged/started), start (active), update (`patch` nextAction/blocker only), done (verification), resume (`branch`, commit `revision`), handover (`handover` exact required keys from slice 2), retainedEvidence/review/evaluate (`evidence` allowlisted references). The server checks current capability scope/role, binding, expected revision and generation on every command. An agent cannot assign another owner or adopt baselines, acceptance criteria, waivers or acceptance. Release/handover must be deliberate, never guessed from process exit. Meaningful update text is bounded and must be operational metadata, not copied harness content.
+
+Use successful claim/command receipts to prepare the next record with the correct revision/generation; do not reuse a key with a different payload. Polling current state does not authorize overwriting a human edit. A stale generation or expired lease must stop progress until operator-approved recovery and the successor's explicit environment resume. Durable authoritative receipts remain server-side even after local cache rotation. One spool per binding/capability is required; do not repoint a pending spool at another identity/work item. Protected directories and isolated OS identity remain enrollment prerequisites, not established adversarial same-uid isolation.

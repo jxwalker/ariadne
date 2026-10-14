@@ -22,6 +22,18 @@ def age(value):
         days=(datetime.now(timezone.utc)-datetime.fromisoformat(value.replace('Z','+00:00'))).total_seconds()/86400
         return f'{max(days,0):.1f} days; original '+esc(value)
     except (ValueError,TypeError):return 'Unknown blocker age'
+def safe_ref(value):
+    if isinstance(value,dict):value=value.get('uri',value.get('url'))
+    if isinstance(value,str) and value.startswith('https://'):
+        return '<a href="'+esc(value)+'" rel="noreferrer">'+esc(value)+'</a>'
+    return esc(value)
+
+def unbound_activity(store, bindings):
+    bound={(b.get('execution_source'),b.get('repository'),b.get('native_kind'),b.get('native_id')) for b in bindings}
+    with store.connect() as db:
+        rows=db.execute("SELECT source,run,task,last,json_extract(envelope,'$.repository') AS repository FROM runs ORDER BY last DESC LIMIT 100").fetchall()
+    return [dict(r) for r in rows if (r['source'],r['repository'],'run',r['run']) not in bound and (r['source'],r['repository'],'task',r['task']) not in bound]
+
 def render(data,route,filters):
     nodes={n['id']:n for n in data['nodes']};progress={p['baseline_id']:p for p in data['progress']}
     accepted={a['criterion_id'] for a in data.get('accepted',[]) if a.get('evidence_id')}
@@ -48,6 +60,18 @@ def render(data,route,filters):
                 ids={s['criterion_id'] for s in entries}
                 counts.append(str(len(ids&accepted))+' evidence accepted · '+str(len(ids&current_waived))+' current waived · '+str(len(ids&inactive_waived))+' inactive (expired/invalid) waivers / '+str(len(ids))+' '+esc(p['baseline_state'])+' criteria · '+esc(baseline))
         return ''.join('<p class="count">'+c+'</p>' for c in counts) or '<p>No scoped criterion denominator recorded</p>'
+    agent_states={a['work_id']:a for a in data.get('agentState',[]) if isinstance(a,dict)}
+    def agent_state(n):
+        a=agent_states.get(n['id'])
+        if not a:return '<p>Agent activity: unbound / unattributed; no command lease recorded</p>'
+        hand=a.get('handover') or {}; pending=bool(hand) and (a.get('released_at') or not a.get('resumed'))
+        return ('<p>Holder: '+esc(a.get('agent_identity'))+' · harness '+esc(a.get('harness'))+' · source '+esc(a.get('execution_source'))+'</p>'
+          +'<p>Generation: '+esc(a.get('generation'))+' · lease '+('current' if a.get('current') else 'stale / released')+' · expiry '+esc(a.get('expires_at'))+'</p>'
+          +'<p>Last meaningful progress: '+esc(a.get('last_progress'))+' · separate from lifecycle presence</p>'
+          +'<p>Last command receipt: '+esc(json.dumps(a.get('last_receipt')))+' (transport/effect receipt; not acceptance)</p>'
+          +'<p>Handover: '+('pending environment verification' if pending else 'none pending')+'</p>'
+          +('<details><summary>Preserved handover</summary><pre>'+esc(json.dumps(hand,indent=2))+'</pre></details>' if hand else '')
+          +'<p>Evidence links: '+(' · '.join(safe_ref(e.get('evidence',e) if isinstance(e,dict) else e) for e in sequence(a.get('evidence_refs'))) or 'none recorded')+'</p>')
     def card(n):
         href=link('/work',id=n['id']) if n['kind']=='work' else link('/roadmaps',node=n['id'])
         b=n['body'];refs=[r for r in sequence(b.get('refs')) if isinstance(r,dict)];parts=[f'<article><h3><a href="{href}">{title(n)}</a></h3><p>{esc(n["kind"])} · revision {n["revision"]} · {esc(b.get("state","sourced draft"))}</p>']
@@ -60,6 +84,8 @@ def render(data,route,filters):
             parts.append('<p>Approved denominator: '+(str(p['denominator']) if b.get('state')=='approved' else 'none — awaiting James')+'</p><details><summary>Scope diff</summary><pre>'+esc(json.dumps(b.get('scopeDiff',{}),indent=2))+'</pre></details>')
         if n['kind'] in ('product','phase','milestone'):parts.append(denominator(n))
         if n['kind']=='work':
+            parts.append(agent_state(n))
+            parts.append('<p>Blocker: '+esc(b.get('blocker'))+'</p>')
             parts.append(f'<p>Owner: {esc(b.get("owner"))} · {source(n)}</p><p>Source claim: {esc(b.get("sourceStatus"))}</p><p>Next: {esc(b.get("nextAction"))}</p>')
             parts.append('<p>PR attribution: '+('explicit reference' if any(r.get('kind')=='github_pr' and r.get('url') and not r.get('classification') for r in refs) else 'mentioned in source text, unverified' if refs else 'pre-PR / unattributed')+'</p>')
             if b.get('scopeExclusion'):parts.append('<p>Excluded from baseline commitments: '+esc(b['scopeExclusion'])+'</p>')
@@ -115,6 +141,12 @@ def render(data,route,filters):
             body+='<p>Three pilot products. Imported roadmaps are proposed; source Done claims have no accepted scope without required evidence and James approval.</p>'
             children=[n for n in nodes.values() if n['kind']=='product']
         body+='<div class="grid">'+''.join(card(n) for n in children)+'</div>'
+    body+='<h2>Binding coverage</h2><p>Only explicit operator-approved native identities bind work. Unattributed observations are not progress. Correct or approve mappings through the operator binding path.</p><p>Recorded bindings: '+str(len(data.get('workBindings',[])))+'</p>'
+    body+='<h2>Unbound activity</h2><p>Latest 100 observed runs checked against exact bindings. No title-based mapping or ownership is inferred.</p>'
+    if data.get('unboundActivity') is None:body+='<p>Observation coverage unavailable</p>'
+    elif not data['unboundActivity']:body+='<p>No unbound runs in this bounded observation window</p>'
+    for activity in data.get('unboundActivity') or []:
+        body+='<article><p>Source '+esc(activity.get('source'))+' · repository '+esc(activity.get('repository'))+' · run '+esc(activity.get('run'))+' · native task '+esc(activity.get('task'))+'</p><p>Unattributed activity; proposed mapping: none. Operator action: select an exact canonical work ID, review repository/source/run binding, then approve through master.bind_work. Observation does not grant command authority.</p></article>'
     body+='<h2>Decisions</h2><div class="grid">'
     for n in nodes.values():
         if n['kind']=='decision':
@@ -128,7 +160,7 @@ def page(body):
 def api_page(data,filters):
     """Bounded collection API; detailed records require explicit collection and target filters."""
     collection=filters.get('collection',['nodes'])[0]
-    allowed={'nodes','history','evidence','imports','progress','accepted','acceptanceEvidence','scope','dependencies','aliases'}
+    allowed={'nodes','history','evidence','imports','progress','accepted','acceptanceEvidence','scope','dependencies','aliases','agentState','workBindings'}
     if collection not in allowed:raise ValueError('invalid collection')
     offset=max(0,int(filters.get('offset',['0'])[0]));limit=min(100,max(1,int(filters.get('limit',['50'])[0])))
     records=data.get(collection,[])

@@ -23,6 +23,9 @@ try {
     await page.locator('article h3 a[href^="/work?"]').first().click();
     await page.getByRole('heading',{name:'Immutable command history'}).waitFor();await shot('work-details');
     await page.getByRole('link',{name:'Work',exact:true}).click();await shot('work-queues');
+    await page.getByText('Holder: agent:synthetic-browser', {exact:false}).first().waitFor();
+    await page.getByText('Source synthetic-unbound', {exact:false}).waitFor();
+    await shot('synthetic-adapter-ownership-and-unbound');
     const api=await page.request.get(config.url+'/api/master?limit=2');const data=await api.json();
     if(data.items.length!==2 || !data.nextOffset)throw new Error('pagination failed');
     // Transport-only fixture: session discovery fails once, then recovers.
