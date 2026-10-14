@@ -49,6 +49,11 @@ def handle(app, headers, raw, method, path, request):
         return False
     if contains_secret(request) or enrollment['secret'].encode() in raw:
         raise PermissionError('credential in payload')
+    if set(request) - {'op','target','repository','nativeKind','nativeId','expectedRevision','generation','idempotencyKey','reason','patch','state'}:
+        raise ValueError('unsupported command fields')
+    for value in [request.get('reason'), *request.get('patch', {}).values()] if isinstance(request.get('patch', {}), dict) else []:
+        if value is not None and (not isinstance(value, str) or len(value)>500):
+            raise ValueError('bounded operational text required')
     def literal(value):
         # Hex has no SQL metacharacters, independent of server string settings.
         return "convert_from(decode('"+value.encode('utf-8').hex()+"','hex'),'UTF8')"
