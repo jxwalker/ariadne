@@ -273,6 +273,14 @@ class App:
                     evaluate(self.store,self.sources(),self.config)
             except Exception as exc: print('processor failure:',type(exc).__name__,flush=True)
 
+def agent_response_status(result):
+    if result.get('ok'):return 200
+    error=result.get('error')
+    if error in {'work scope denied','operation denied','role operation denied'}:return 403
+    if error=='request rate exceeded':return 429
+    if error in {'patch denied','idempotency key required','invalid nonce'}:return 400
+    return 409
+
 class Handler(BaseHTTPRequestHandler):
     server_version='AriadneActivity/1'
     def log_message(self,fmt,*args): pass  # bodies/auth never logged
@@ -283,6 +291,19 @@ class Handler(BaseHTTPRequestHandler):
         return {'ip':self.client_address[0],'proxyUid':kernel_peer_uid(self.connection)}
     def do_POST(self):
         try:
+            if self.path=='/api/agent/v1/commands':
+                from agent_commands import handle
+                if self.headers.get('Transfer-Encoding') or not self.headers.get('Content-Length'):return self.reply(411,{'error':'content length required'})
+                n=int(self.headers['Content-Length'])
+                if not 0<n<=32768:return self.reply(413,{'error':'body too large'})
+                if self.headers.get('Content-Type','').split(';')[0]!='application/json':return self.reply(415,{'error':'JSON required'})
+                self.connection.settimeout(5)
+                raw=self.rfile.read(n)
+                if len(raw)!=n:raise ValueError('truncated body')
+                request=json.loads(raw)
+                if not isinstance(request,dict) or request.get('op')=='packet':raise ValueError('invalid command')
+                result=handle(self.server.app,self.headers,raw,'POST',self.path,request)
+                return self.reply(agent_response_status(result),result)
             if self.path=='/api/operator-response':
                 if self.server.app.config.get('disableQueries') or self.server.app.config.get('ingestOnly'):return self.reply(404,{'error':'route not found'})
                 from activity_decisions import controller, StaleDecision
@@ -329,6 +350,17 @@ class Handler(BaseHTTPRequestHandler):
         except (ValueError,TypeError,KeyError): self.reply(400,{'error':'invalid or conflicting event'})
         except Exception: self.reply(503,{'error':'unavailable'})
     def do_GET(self):
+        if self.path.startswith('/api/agent/v1/work/'):
+            from agent_commands import handle
+            try:
+                route=urlsplit(self.path);filters=parse_qs(route.query,strict_parsing=True)
+                if set(filters)!={'repository','nativeKind','nativeId'} or any(len(v)!=1 for v in filters.values()):raise ValueError('invalid scope')
+                request={'op':'packet','target':route.path.removeprefix('/api/agent/v1/work/'),'repository':filters['repository'][0],'nativeKind':filters['nativeKind'][0],'nativeId':filters['nativeId'][0]}
+                result=handle(self.server.app,self.headers,b'','GET',self.path,request)
+                return self.reply(agent_response_status(result),result)
+            except PermissionError:return self.reply(401,{'error':'unauthorized'})
+            except ValueError:return self.reply(400,{'error':'invalid packet request'})
+            except Exception:return self.reply(503,{'error':'agent ledger unavailable'})
         if self.server.app.config.get('ingestOnly'): return self.reply(404,{'error':'route not found'})
         if self.path=='/assets/activity-dashboard.js':
             raw=pathlib.Path(__file__).with_name('operating_dashboard.js').read_bytes()
@@ -355,12 +387,14 @@ class Handler(BaseHTTPRequestHandler):
         try: filters=parse_qs(route.query,max_num_fields=20)
         except ValueError:return self.reply(400,{'error':'too many query fields'})
         if route.path in {'/roadmaps','/work','/api/master'}:
-            from master_dashboard import snapshot,render,api_page
+            from master_dashboard import snapshot,render,api_page,unbound_activity
             try:
                 data=snapshot()
                 if route.path=='/api/master':
                     try:return self.reply(200,api_page(data,filters))
                     except ValueError:return self.reply(400,{'error':'invalid master filter'})
+                try:data['unboundActivity']=unbound_activity(self.server.app.store,data.get('workBindings',[]),self.server.app.sources())
+                except Exception:data['unboundActivity']=None
                 try:raw=render(data,route.path,filters).encode()
                 except ValueError:return self.reply(400,{'error':'invalid master filter'})
                 self.send_response(200);self.send_header('Content-Type','text/html; charset=utf-8');self.send_header('Content-Length',str(len(raw)));self.send_header('Cache-Control','no-store');self.send_header('X-Content-Type-Options','nosniff');self.send_header('Content-Security-Policy',"default-src 'none'; style-src 'unsafe-inline'; frame-ancestors 'none'");self.end_headers();self.wfile.write(raw);return

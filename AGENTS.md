@@ -43,3 +43,18 @@ Blocked without the full mutation gate:
 - executing generated live commands
 
 Mutation-capable paths must use `mutation-readiness`, pass `mutation-readiness-audit`, record approval and dry-run evidence, and execute only through `mutation-execute` or a target-specific `*-mutation-execute` wrapper with an exact `--confirm-plan` match.
+
+## Enrolled Phase 2 work reporting
+
+An operator-approved Phase 2 assignment may use its independently revocable,
+repository- and work-scoped capability for routine work packets, claims, leases,
+receipts, progress, blockers, handover and submission for verification through
+the signed agent command API. These commands are checked against the approved
+native task/run binding, expected revision and ownership generation, and retain
+transactional receipts and journal evidence. They do not execute work-packet
+actions or grant acceptance authority. They do not require a new infrastructure
+mutation plan for every progress report.
+
+Capability enrollment, hook installation, process/database isolation, public
+route changes, repository pushes/merges and deployment still require the full
+mutation gate above. Observation enrollment does not grant command authority.

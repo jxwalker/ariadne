@@ -89,3 +89,81 @@ Expired or invalid waivers retain immutable acceptance history, but do not satis
 Resolved decision IDs are immutable in the canonical command API. Exact command retries stay idempotent; an amended question or decision must use a new ID and retain its earlier history.
 
 Hierarchy rollups separate current waivers from inactive (expired/invalid) waivers. Governed dry-run evidence is bound to the full readiness plan bytes; editing any field requires fresh reviewed dry-run evidence, and legacy unbound evidence cannot execute.
+
+### Phase 2 slice 1 signed agent contract (proposed deployment)
+
+Migration 002 adds independently revocable capabilities, durable nonce replay protection,
+operator-created explicit bindings and immutable command receipts. It does not enroll
+agents or change installed roles. A separately configured agentCommands transport is
+required; observation sources and operator sessions are not consulted.
+
+POST /api/agent/v1/commands accepts an object with op (update or transition), target,
+repository, nativeKind (task/run), nativeId, expectedRevision, generation, idempotencyKey,
+reason, and patch or state. Update permits nextAction and blocker only. State Done maps
+to verification; accepted and all acceptance/baseline commands remain denied. The native
+alias must explicitly bind that source/repository/task-or-run to the canonical target.
+GET /api/agent/v1/work/<id>?repository=<repo>&nativeKind=<kind>&nativeId=<id> returns the
+capability-scoped allowlisted packet. Handover is null until slice 2; recent receipts
+are limited to this capability/work, and arbitrary observation envelopes, decisions and
+full journal rows are never included. Packet policy revision and ownership generation
+support reconciliation. agentCommands.enabled deliberately governs these signed routes
+independently of ingestOnly/disableQueries, which continue to block private queries;
+a public proxy must expose only exact signed routes from a separately approved plan.
+
+Headers: X-Ariadne-Capability, X-Ariadne-Timestamp (10 decimal Unix seconds, within 300
+seconds), X-Ariadne-Nonce (fresh ID) and X-Ariadne-Signature (hex HMAC-SHA256). Signed bytes
+are timestamp + newline + nonce + newline + capability ID + newline + method + newline + exact HTTP request target
+(including encoded query) + newline + raw body (empty for GET). This retains the existing
+transport's timestamp/nonce/body convention and additionally binds method and route.
+Consumed nonces are never reused, including failed commands. A retry uses a new nonce
+and the identical payload/idempotency key; identical delivery returns the durable result.
+Rejected receipt IDs retain rejection; reconciliation needs a new key, expected revision
+and current generation. A rotated capability is a new identity: reconcile receipts and
+current state before retrying rather than assuming cross-capability deduplication.
+
+Disabled, invalid, unknown or badly signed credentials return 401; valid command rejection
+returns 409 for conflicts, 403 for denied scope/operation, or 400 for invalid patch/key; denied packets return 403. Scope failures use one generic message. No
+fallback to the operator DB is allowed. Registry keys are protected files, and only key
+references enter SQL. Scope, current owner, explicit binding and capability lifetime are
+rechecked even for receipt retries. Capability key references are immutable at enrollment;
+rotation uses a successor capability. Nonce cleanup after expiry requires separately
+reviewed retention; no pruning of active replay records is implemented.
+
+Bindings are immutable aliases. Correct an erroneous binding by revoking the associated capability and enrolling an approved new native identity; aliases are never silently repointed. Dependency IDs outside capability eligibility are hidden, with an unscoped-dependency flag retained. Capability identity, key reference and scope are immutable; only first revocation is allowed. Nonces are append-only. Same-uid operator-equivalent processes remain outside this capability boundary. Authenticated request-rate hardening and reviewed retention remain rollout prerequisites.
+
+Authenticated scope/operation rejections with valid idempotency keys also receive immutable receipts and journal entries. Later binding approval does not turn a rejected key into a successful command; reconciliation needs a new key. Current scope is still rechecked before returning any existing receipt. Unexpected SQL error text remains private journal evidence and is replaced with a generic error in agent receipts.
+
+### Phase 2 lease fences and evidence ownership
+
+The signed slice-2 wire field `generation` is the per-claim lease fence, returned
+by the scoped packet or claim receipt. It increases on every successful claim.
+`work.ownerGeneration`, `work_leases.owner_generation`, and the canonical node
+`body.generation` retain the ownership generation used by evidence and acceptance.
+A same-owner reclaim preserves that ownership generation and prior valid evidence.
+Changing owner advances it and returns the work to proposed; after environment
+resume the enrolled owner deliberately reports ready before active, with ordinary
+approved-scope and dependency checks. No baseline or acceptance is adopted by a claim.
+
+A claim requires the current wire fence and expected work revision. Every later
+leased write verifies the fence, recorded ownership generation, owner, capability
+and live lease. A rejected claim changes no node, lease, resource or assignment.
+A successful claim commits its immutable command result, exact before/after
+node journal states, outbound record, lease, assignment and receipt atomically.
+Duplicate delivery returns that receipt without another effect. Operator takeover
+baselines and handover generations refer to the preceding lease fence.
+
+Handover branch and nextAction strings and every collection element are bounded
+at 500 characters by the server as well as the adapter. Retained evidence keeps
+its authenticated capability, agent, harness, execution source, role, declared
+lease fence and command key in the private projection. It remains a contribution,
+not evidence acceptance or proof attributed to the successor. Role denials use
+HTTP 403; signed request throttling uses 429 on both packet and command routes.
+
+A successful cached receipt is not current lease authority. After expiry, release
+(for an operation requiring a live lease), supersession or an ownership edit, the
+API returns a lease conflict with the original immutable result explicitly named
+historicalReceipt. It does not rewrite that result or repeat its effect. Inert
+retained/review/evaluation contributions remain scoped idempotent history. A live
+exact retry still returns the original result. Path scopes must contain actual
+JSON strings before canonical path validation; numbers, booleans, nulls and
+containers are never coerced into directory names.

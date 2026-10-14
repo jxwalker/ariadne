@@ -15,6 +15,17 @@ def main():
         assert all(r['ok'] for r in results),results
         registry=LedgerContract.dir/'sources.json';registry.write_text('{}');registry.chmod(0o600)
         app=App({'database':str(LedgerContract.dir/'activity.db'),'credentials':str(registry),'githubRepositories':['jxwalker/ariadne'],'machines':[]})
+        for migration in ['002-agent-commands.sql','003-claims-leases.sql','004-adapter-dashboard.sql']:
+            LedgerContract.sql((pathlib.Path(__file__).resolve().parents[1]/'migrations/master'/migration).read_text(),database='ledger_test',raw=True)
+        # Deliberately synthetic agent-held pre-PR work; never a production receipt claim.
+        LedgerContract.sql("""INSERT INTO master.agent_capabilities(id,agent_identity,harness,execution_source,key_ref,repositories,eligible_work_ids,allowed_operations,expires_at)
+          SELECT 'synthetic-browser','agent:synthetic-browser','synthetic-Claude','synthetic-local','synthetic-browser',ARRAY['jxwalker/ariadne'],ARRAY[id],ARRAY['packet'],now()+interval '1 hour' FROM master.nodes WHERE kind='work' ORDER BY id LIMIT 1;
+          UPDATE master.nodes SET body=body||jsonb_build_object('owner','agent:synthetic-browser','generation',2,'state','active','title','Synthetic pre-PR agent work','refs','[]'::jsonb,'nextAction','Synthetic pre-PR adapter verification','blocker','Synthetic awaiting operator review','blockerSince','2026-10-14T08:00:00Z') WHERE id=(SELECT eligible_work_ids[1] FROM master.agent_capabilities WHERE id='synthetic-browser');
+          INSERT INTO master.work_leases SELECT eligible_work_ids[1],id,2,2,now()+interval '10 minutes',NULL,true FROM master.agent_capabilities WHERE id='synthetic-browser';
+          INSERT INTO master.agent_command_receipts SELECT id,'synthetic-browser-receipt',jsonb_build_object('target',eligible_work_ids[1],'op','update','generation',2),'{"ok":true,"synthetic":true}',now() FROM master.agent_capabilities WHERE id='synthetic-browser';
+        """,database='ledger_test',raw=True)
+        with app.store.connect() as db:
+            db.execute("INSERT INTO runs VALUES(?,?,?,?,?,?,?,?)",('synthetic-unbound','synthetic-run','synthetic-task',1,'unknown',0,json.dumps({'repository':'jxwalker/ariadne'}),0))
         server=ThreadingHTTPServer(('127.0.0.1',0),Handler);server.app=app;server.daemon_threads=True
         # Replace only the PG transport: production handler, render, CSP and links are exercised.
         def isolated_snapshot():return LedgerContract.sql('SELECT master.snapshot();',database='ledger_test')

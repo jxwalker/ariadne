@@ -1,0 +1,34 @@
+# Adapter command contract
+
+Synthetic-tested, not enrolled. Entry points: `scripts/claude_adapter.py`, `scripts/codex_adapter.py`, `scripts/cloud_bot_adapter.py`. Each uses shared `harness_adapter.py` and slice-2 `agent_spool.py`. No model invocation is required to report deliberate operational metadata.
+
+A mode-0600 config names `harness`, `credentialKind` (`agent-command` only), `capabilityId`, `origin` (HTTPS), `credentialFile` (mode-0600 JSON with secret), `spool` (private directory) and `binding` with exact `target`, `repository`, `nativeKind` (`run` or `task`), `nativeId`. Server approval of that binding is independently required. Credentials and raw event bodies are never placed in spool or output. Config/binding mistakes produce fixed errors without echoing inputs.
+
+Commands:
+
+- `--config <file> hook SessionStart` (or Stop/SessionEnd): fixed local event/time/binding only; stdin untouched; no command credential read or server write.
+- `--config <file> poll`: signed GET for the explicit bound work packet, saved locally as `.packet` (bounded at 1 MiB to accommodate ten permitted handover receipts and current handover; operator work-packet metadata must fit that bound); no assignment execution or implicit acknowledgement.
+- `--config <file> report --record <file>`: queue a protected deliberate operational record; never extract metadata from transcripts/prompts/tool streams.
+- `--config <file> replay`: signed POST in durable enqueue order; success receipts rotate at 100; rejected receipt/command stays retained and blocks further writes. Network failure retains backlog. Inspect the returned current state locally before explicit reconciliation; never auto-rebase.
+- `--config <file> archive-rejection --key <key>`: explicit reconciliation after reviewing current state. Archives both rejected command and receipt under `.reconciled/` before removing them from the active queue. Does not resend, overwrite a revision or revive a stale owner. New deliberate reports require a new key. A deterministic HTTP 400 without a ledger result is labelled localOnly transport-validation evidence, retained for explicit archival, never represented as a ledger receipt. Transient authentication failures are retained for retry without an authoritative rejection receipt.
+- Claude/Codex `--config <file> exec ...`: launcher fallback, inherits standard streams; fixed SessionStart/SessionEnd presence without inspecting child inputs/outputs. Codex invokes `codex exec`; Claude invokes `claude`. Binding, harness and private spool identity validation deliberately fails closed before launching; run the harness directly if operating without enrollment. Once validated, normal child exit code is preserved; signals use conventional 128+signal status. Presence-write failure does not stop a correctly bound launcher.
+
+A report has `op`, stable `key`, integer `expected_revision`, integer `generation` plus operation fields: claim/renew (`leaseSeconds` optional), release, receipt (`assignmentId`, `state` received/acknowledged/started), start (active), update (`patch` nextAction/blocker only), done (verification), resume (`branch`, commit `revision`), handover (`handover` exact required keys from slice 2), retainedEvidence/review/evaluate (`evidence` allowlisted references). The server checks current capability scope/role, binding, expected revision and generation on every command. An agent cannot assign another owner or adopt baselines, acceptance criteria, waivers or acceptance. Release/handover must be deliberate, never guessed from process exit. Meaningful update text is bounded and must be operational metadata, not copied harness content.
+
+Use successful claim/command receipts to prepare the next record with the correct revision/generation; do not reuse a key with a different payload. Polling current state does not authorize overwriting a human edit. A stale generation or expired lease must stop progress until operator-approved recovery and the successor's explicit environment resume. Durable authoritative receipts remain server-side even after local cache rotation. Private directory permissions and a durable binding/capability/harness identity marker are checked. One spool per binding/capability is required; do not repoint a pending spool at another identity/work item. Protected directories and isolated OS identity remain enrollment prerequisites, not established adversarial same-uid isolation.
+
+Live installation/enrollment is an infrastructure mutation and requires the full mutation-readiness audit/approval/dry-run/exact-plan execution gate. This slice calls no production adapter. Once separately enrolled for exact eligible work, routine work-state reports use the signed capability command path specified by the Phase 2 brief (A/D journal and generation fencing); they do not execute an infrastructure plan, push/merge, change services or accept outcomes. No adapter operation executes packet actions or changes infrastructure.
+
+The unbound queue resolves an observation source only through its exact operator-maintained `executionSource` or existing `correlationHost` registration, then compares repository and native run/task ID to approved bindings. An absent mapping remains unattributed. Neither registration nor a displayed binding grants command authority.
+
+The report/receipt wire `generation` is the current lease fence, distinct from
+`work.ownerGeneration` and the ledger's ownership/evidence generation. Poll or
+use successful receipts to obtain the fence; do not substitute it automatically
+when an existing queued command is rejected. Every claim advances the fence.
+Same-owner reclaim retains valid ownership-bound evidence; a changed owner starts
+in proposed and must resume the environment, deliberately report `ready`, then
+`start` (active). The `ready` report is a normal scoped transition and cannot
+adopt a baseline or acceptance. A handover or takeover baseline refers to the
+preceding lease fence.
+
+Unexpected SQL failures keep the agent receipt generic. The operator-only journal retains the original SQLSTATE and message under privateDiagnostic; scoped work packets and recent agent receipts exclude that diagnostic. Operator recovery failures follow the same boundary.

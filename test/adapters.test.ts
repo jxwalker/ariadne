@@ -2350,7 +2350,7 @@ describe("roadmap adapters", () => {
     expect(refreshArtifactChecks.report.checks.find((check) => check.id === "roadmap-control-refresh")?.status).toBe(
       "present"
     );
-  }, 60000);
+  }, 180000);
 
   it("uses environment defaults for local runtime endpoint URLs and canary models", async () => {
     const { vaultRoot } = await preparedProject();

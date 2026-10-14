@@ -92,3 +92,33 @@ class MasterDashboard(unittest.TestCase):
             result=render(data,'/roadmaps',{'node':[node]})
             self.assertIn('0 current waived · 1 inactive (expired/invalid) waivers',result)
         self.assertIn('0 current waived (1 inactive/expired)',render(data,'/roadmaps',{'node':['b']}))
+
+    def test_takeover_verification_visible_without_handover(self):
+        data={'nodes':[{'id':'synthetic-work','kind':'work','parent':None,'revision':2,'body':{'state':'active'}}],'progress':[],'agentState':[{'work_id':'synthetic-work','resumed':False,'handover':None,'current':True}]}
+        output=render(data,'/work',{})
+        self.assertIn('pending environment verification',output)
+        self.assertNotIn('Handover: none pending',output)
+
+    def test_unbound_uses_exact_registered_execution_source(self):
+        import json,pathlib,tempfile
+        from activity_server import Store
+        from master_dashboard import unbound_activity
+        with tempfile.TemporaryDirectory() as directory:
+            store=Store(str(pathlib.Path(directory)/'synthetic.db'))
+            try:
+                with store.connect() as db:
+                    for run,repo in [('exact','jxwalker/ariadne'),('same-title','jxwalker/ariadne'),('wrong-repo','jxwalker/openscorpion')]:
+                        db.execute('INSERT INTO runs VALUES(?,?,?,?,?,?,?,?)',('synthetic-live-claude',run,'task-'+run,1,'unknown',1,json.dumps({'repository':repo}),0))
+                bindings=[{'execution_source':'synthetic-host','repository':'jxwalker/ariadne','native_kind':'run','native_id':'exact'}]
+                rows=unbound_activity(store,bindings,{'synthetic-live-claude':{'correlationHost':'synthetic-host'}})
+                self.assertEqual({r['run'] for r in rows},{'same-title','wrong-repo'})
+                self.assertEqual(len(unbound_activity(store,bindings,{})),3)
+                direct=[{**bindings[0],'execution_source':'synthetic-live-claude'}]
+                self.assertEqual(len(unbound_activity(store,direct,{})),3) # source ID is not an execution mapping
+            finally:store.close()
+
+    def test_historical_handover_not_pending_after_verified_release(self):
+        data={'nodes':[{'id':'synthetic-work','kind':'work','parent':None,'revision':3,'body':{'state':'active'}}],'progress':[],'agentState':[{'work_id':'synthetic-work','generation':3,'resumed':True,'released_at':'2026-10-14T08:00:00Z','handover':{'generation':2,'body':{}},'current':False}]}
+        self.assertIn('Handover: none pending',render(data,'/work',{}))
+        data['agentState'][0]['handover']['generation']=3
+        self.assertIn('pending environment verification',render(data,'/work',{}))
