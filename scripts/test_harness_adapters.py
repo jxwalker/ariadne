@@ -207,6 +207,15 @@ class HarnessAdapters(unittest.TestCase):
                 result=subprocess.run(['python3','-I','-c',"import sys;sys.path.insert(0,'.');import "+entry.removesuffix('.py')],cwd=directory,capture_output=True,text=True)
                 self.assertEqual(result.returncode,0,result.stderr)
 
+    def test_decoded_credential_values_never_enter_spool(self):
+        a,c,cap=self.adapter('claude')
+        for secret in ['synthetic-quote-"key','synthetic-backslash-\\key','synthetic-unicode-ékey']:
+            a.config['secret']=secret
+            for fields in [{'patch':{'nextAction':'synthetic '+secret}},{'patch':{'blocker':secret}}]:
+                with self.assertRaisesRegex(ValueError,'credential in payload'):a.command('update',str(uuid.uuid4()),c['expectedRevision'],c['generation'],**fields)
+            with self.assertRaisesRegex(ValueError,'credential in payload'):a.command('retainedEvidence',str(uuid.uuid4()),c['expectedRevision'],c['generation'],evidence={'summary':secret})
+        self.assertFalse(list(a.directory.glob('*.json')))
+
     def test_hook_never_reads_input_and_https_required(self):
         import tempfile
         for harness in ['claude','codex','cloud-bot']:

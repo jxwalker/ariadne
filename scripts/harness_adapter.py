@@ -134,7 +134,13 @@ class Adapter:
                    'idempotencyKey': key, 'expectedRevision': expected_revision, 'generation': generation,
                    'reason': 'deliberate adapter report', **fields}
         if op in {'done','start'}: payload['state']='verification' if op=='done' else 'active'
-        if self.config.get('secret') and self.config['secret'] in json.dumps(payload): raise ValueError('credential in payload')
+        secret=self.config.get('secret')
+        def contains_secret(value):
+            if isinstance(value,str):return secret in value
+            if isinstance(value,dict):return any(contains_secret(k) or contains_secret(v) for k,v in value.items())
+            if isinstance(value,list):return any(contains_secret(v) for v in value)
+            return False
+        if isinstance(secret,str) and secret and contains_secret(payload):raise ValueError('credential in payload')
         return enqueue(self.directory, payload)
 
     def replay(self):
