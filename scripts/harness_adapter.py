@@ -65,8 +65,9 @@ def request(config, command, packet=False):
             raise
         response = error
     with response:
-        body = response.read(65537)
-        if len(body) > 65536: raise ValueError('response too large')
+        limit=1024*1024 if packet else 65536 # ten permitted 16KiB handover receipts plus packet metadata
+        body = response.read(limit+1)
+        if len(body)>limit:raise ValueError('response too large')
         result=json.loads(body)
         if not isinstance(result,dict) or type(result.get('ok')) is not bool:
             if response.code==400:return {'ok':False,'error':'transport validation rejected','transportStatus':400,'localOnly':True}

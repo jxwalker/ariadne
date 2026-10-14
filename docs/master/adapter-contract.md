@@ -7,7 +7,7 @@ A mode-0600 config names `harness`, `credentialKind` (`agent-command` only), `ca
 Commands:
 
 - `--config <file> hook SessionStart` (or Stop/SessionEnd): fixed local event/time/binding only; stdin untouched; no command credential read or server write.
-- `--config <file> poll`: signed GET for the explicit bound work packet, saved locally as `.packet`; no assignment execution or implicit acknowledgement.
+- `--config <file> poll`: signed GET for the explicit bound work packet, saved locally as `.packet` (bounded at 1 MiB to accommodate ten permitted handover receipts and current handover; operator work-packet metadata must fit that bound); no assignment execution or implicit acknowledgement.
 - `--config <file> report --record <file>`: queue a protected deliberate operational record; never extract metadata from transcripts/prompts/tool streams.
 - `--config <file> replay`: signed POST in durable enqueue order; success receipts rotate at 100; rejected receipt/command stays retained and blocks further writes. Network failure retains backlog. Inspect the returned current state locally before explicit reconciliation; never auto-rebase.
 - `--config <file> archive-rejection --key <key>`: explicit reconciliation after reviewing current state. Archives both rejected command and receipt under `.reconciled/` before removing them from the active queue. Does not resend, overwrite a revision or revive a stale owner. New deliberate reports require a new key. A deterministic HTTP 400 without a ledger result is labelled localOnly transport-validation evidence, retained for explicit archival, never represented as a ledger receipt. Transient authentication failures are retained for retry without an authoritative rejection receipt.

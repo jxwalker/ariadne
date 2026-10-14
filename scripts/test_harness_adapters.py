@@ -241,6 +241,17 @@ class HarnessAdapters(unittest.TestCase):
             with self.assertRaises(SystemExit) as result:main('codex')
             self.assertEqual(result.exception.code,2)
 
+    def test_large_valid_receipt_history_packet_is_saved(self):
+        a,c,cap=self.adapter('cloud-bot');c=self.owned(a,c)
+        hand=dict(branch='synthetic/large',revision='a'*40,changedPaths=[],checks=[],evidenceRefs=[],remainingWork=['synthetic '+('x'*480)]*25,blockers=[],nextAction='synthetic resume',localWork=[])
+        # Synthetic immutable history fixtures with permitted bounded handover-result shapes.
+        for index in range(10):
+            result=json.dumps({'ok':True,'handover':hand}).replace("'","''")
+            payload=json.dumps({'op':'handover','target':c['target'],'generation':c['generation']}).replace("'","''")
+            self.sql("INSERT INTO master.agent_command_receipts VALUES('%s','synthetic-large-%s','%s','%s',clock_timestamp());"%(cap,index,payload,result),database='ledger_test',raw=True)
+        result=a.poll();self.assertTrue(result['ok']);self.assertEqual(len(result['work']['recentReceipts']),10)
+        self.assertGreater((a.directory/'.packet').stat().st_size,65536)
+
     def test_hook_never_reads_input_and_https_required(self):
         import tempfile
         for harness in ['claude','codex','cloud-bot']:
