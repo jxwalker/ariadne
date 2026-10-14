@@ -260,3 +260,10 @@ class ClaimsLeases(unittest.TestCase):
             persist(path.with_name(path.name+'.receipt'),{'ok':True})
             with patch('agent_spool.send') as transport:flush({'spool':directory},transport);transport.assert_not_called()
             self.assertEqual(len(list(pathlib.Path(directory).glob('*.receipt'))),100)
+
+    def test_synthetic_evidence_is_bounded_references_and_handover_strings(self):
+        a,c=self.setup();owned=self.claim(a,c)
+        self.assertFalse(self.send(a,owned,'retainedEvidence',evidence={'prompt':'synthetic forbidden transcript'})['ok'])
+        self.assertFalse(self.send(a,owned,'retainedEvidence',evidence={'summary':'x'*501})['ok'])
+        hand=dict(branch={'bad':'type'},revision='a'*40,changedPaths=[],checks=[],evidenceRefs=[],remainingWork=[],blockers=[],nextAction='resume',localWork=[])
+        self.assertEqual(self.send(a,owned,'handover',handover=hand)['error'],'complete bounded handover required')
