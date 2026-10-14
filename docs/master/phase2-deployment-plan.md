@@ -1,0 +1,15 @@
+# Phase 2 slice 1 deployment proposal
+
+Plan only. Do not install, restart, enroll or execute during this assignment. Merge and deployment require separate operator decisions. Three imported baselines remain proposed.
+
+After review/merge, pin the reviewed PR A head and SHA-256 manifest of migration 002, agent_commands.py and activity_server.py. Preserve current deployed script bytes and configuration in a protected backup; take a custom-format ledger dump plus separately protected role/grant configuration. Verify a socket-only disposable restore including journal and existing operator responses. Off-host backup coverage remains deferred; a local backup is not offsite protection.
+
+Apply only migrations/master/002-agent-commands.sql transactionally using the existing schema owner through the audited mutation path. Never modify migration 001. Provision a distinct non-superuser ariadne_agent_transport identity with peer mapping from a separately isolated transport OS identity, database connect and master schema usage, and EXECUTE only on master.agent_request(text,text,jsonb). It must have no table privileges, command(), snapshot(), operator response or DDL privileges. The new function calls the existing command with authenticated capability identity; session_user must remain the distinct transport role. Do not grant the operator role an agent impersonation bypass. Recheck pg_proc ownership, SECURITY DEFINER search_path and PUBLIC revocations.
+
+Configure agentCommands only after the transport-role boundary is available: enabled, keyRegistry, and database socket/port/user/name. Registry is independently enrolled; no fallback to observation sources or operator credentials. HTTPS proxy exposure must be narrowly signed routes; do not expose private master/dashboard/session APIs. The existing monolithic server currently runs under James; separate process/OS identity wiring needs an approved concrete deployment package before live rollout. This proposal does not assert that isolation already exists.
+
+Verify existing Python/TS suites, isolated restore, HTTP signed requests, denied observations, stale revisions/generations, expired/revoked credentials, duplicate receipts and scoped packets. Check existing collectors/webhooks/operator responses remain healthy. Record actual head, hashes and receipt evidence; synthetic coverage does not demonstrate live work.
+
+Rollback: disable agentCommands and restore prior application/configuration bytes through a separately approved plan; revoke capabilities. Retain migration tables, new work state, command journal, nonce and receipt rows. Never down-migrate or restore an old dump over newer ledger state. Investigate and reconcile retained state before re-enabling.
+
+Prepare exact reviewed commands with npm run ariadne -- mutation-readiness --project ariadne, then mutation-readiness-audit and mutation-dry-run. No approval is presumed; enrollment, code merge, installation and verified operation are separate milestones. Exact confirmation and approved execution are future operator work.

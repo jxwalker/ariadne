@@ -283,6 +283,18 @@ class Handler(BaseHTTPRequestHandler):
         return {'ip':self.client_address[0],'proxyUid':kernel_peer_uid(self.connection)}
     def do_POST(self):
         try:
+            if self.path=='/api/agent/v1/commands':
+                from agent_commands import handle
+                if self.headers.get('Transfer-Encoding') or not self.headers.get('Content-Length'):return self.reply(411,{'error':'content length required'})
+                n=int(self.headers['Content-Length'])
+                if not 0<n<=4096:return self.reply(413,{'error':'body too large'})
+                self.connection.settimeout(5)
+                raw=self.rfile.read(n)
+                if len(raw)!=n:raise ValueError('truncated body')
+                request=json.loads(raw)
+                if not isinstance(request,dict) or request.get('op')=='packet':raise ValueError('invalid command')
+                result=handle(self.server.app,self.headers,raw,'POST',self.path,request)
+                return self.reply(200 if result.get('ok') else 409,result)
             if self.path=='/api/operator-response':
                 if self.server.app.config.get('disableQueries') or self.server.app.config.get('ingestOnly'):return self.reply(404,{'error':'route not found'})
                 from activity_decisions import controller, StaleDecision
@@ -329,6 +341,17 @@ class Handler(BaseHTTPRequestHandler):
         except (ValueError,TypeError,KeyError): self.reply(400,{'error':'invalid or conflicting event'})
         except Exception: self.reply(503,{'error':'unavailable'})
     def do_GET(self):
+        if self.path.startswith('/api/agent/v1/work/'):
+            from agent_commands import handle
+            try:
+                route=urlsplit(self.path);filters=parse_qs(route.query,strict_parsing=True)
+                if set(filters)!={'repository'} or len(filters['repository'])!=1:raise ValueError('invalid scope')
+                request={'op':'packet','target':route.path.removeprefix('/api/agent/v1/work/'),'repository':filters['repository'][0]}
+                result=handle(self.server.app,self.headers,b'','GET',self.path,request)
+                return self.reply(200 if result.get('ok') else 403,result)
+            except PermissionError:return self.reply(401,{'error':'unauthorized'})
+            except ValueError:return self.reply(400,{'error':'invalid packet request'})
+            except Exception:return self.reply(503,{'error':'agent ledger unavailable'})
         if self.server.app.config.get('ingestOnly'): return self.reply(404,{'error':'route not found'})
         if self.path=='/assets/activity-dashboard.js':
             raw=pathlib.Path(__file__).with_name('operating_dashboard.js').read_bytes()
