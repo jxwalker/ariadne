@@ -88,14 +88,14 @@ BEGIN
  ELSIF request->'generation' IS DISTINCT FROM work.body->'generation' THEN result:='{"ok":false,"error":"ownership generation conflict"}';
  ELSIF request->>'op'='update' AND (jsonb_typeof(request->'patch') IS DISTINCT FROM 'object' OR
  (request->'patch')-ARRAY['nextAction','blocker'] <> '{}'::jsonb) THEN result:='{"ok":false,"error":"patch denied"}';
- ELSIF request->>'op' NOT IN ('update','transition') THEN result:='{"ok":false,"error":"operation denied"}';
+ ELSIF coalesce(request->>'op','') NOT IN ('update','transition') THEN result:='{"ok":false,"error":"operation denied"}';
  ELSE
   c:=jsonb_build_object('commandId','agent-'||encode(sha256(convert_to(jsonb_build_array(cap_id,key)::text,'UTF8')),'hex'),'op',request->>'op','target',work.id,
    'expectedRevision',request->'expectedRevision','reason',request->>'reason','via',cap.execution_source||'/'||cap.harness);
   IF request->>'op'='update' THEN c:=c||jsonb_build_object('patch',request->'patch');
   ELSE c:=c||jsonb_build_object('state',CASE WHEN request->>'state'='Done' THEN 'verification' ELSE request->>'state' END); END IF;
   result:=master.command(cap.agent_identity,c);
-  IF NOT coalesce((result->>'ok')::boolean,false) AND result->>'error' NOT IN
+  IF NOT coalesce((result->>'ok')::boolean,false) AND coalesce(result->>'error','') NOT IN
    ('revision conflict','permission denied','invalid transition','operator cancellation required','terminal work',
     'dependencies unresolved or unaccepted','scope not approved','invalid lifecycle order','reason required',
     'immutable scope or invalid patch','accepted work immutable')
@@ -104,7 +104,7 @@ BEGIN
  IF c IS NULL THEN
   INSERT INTO master.journal(command_id,actor,via,target,result) VALUES(
    'agent-'||encode(sha256(convert_to(jsonb_build_array(cap_id,key)::text,'UTF8')),'hex'),cap.agent_identity,
-   cap.execution_source||'/'||cap.harness,request->>'target',result);
+   cap.execution_source||'/'||cap.harness,coalesce(request->>'target','[missing target]'),result);
  END IF;
  INSERT INTO master.agent_command_receipts VALUES(cap_id,key,request,result,now());
  RETURN result;

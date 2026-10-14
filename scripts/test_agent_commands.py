@@ -82,6 +82,15 @@ class AgentCommands(unittest.TestCase):
         self.assertEqual(self.request(cap,{**c,'patch':{'nextAction':'changed'}})['error'],'idempotency payload conflict')
         self.assertTrue(self.request(cap,{**c,'idempotencyKey':str(uuid.uuid4())})['ok'])
 
+    def test_synthetic_malformed_command_retains_rejection_and_nonce(self):
+        cap,c=self.setup_cap()
+        for field in ['target','op']:
+            malformed={**c,'idempotencyKey':str(uuid.uuid4())};malformed.pop(field)
+            nonce=str(uuid.uuid4());denied=self.request(cap,malformed,nonce)
+            self.assertFalse(denied['ok']);self.assertEqual(self.request(cap,malformed),denied)
+            self.assertEqual(self.request(cap,malformed,nonce)['error'],'signature replay')
+        self.assertEqual(self.sql("SELECT to_jsonb(count(*)) FROM master.agent_command_receipts WHERE capability_id='%s';"%cap,database='ledger_test'),2)
+
     def test_synthetic_concurrent_duplicate_has_one_effect(self):
         from concurrent.futures import ThreadPoolExecutor
         cap,c=self.setup_cap()
