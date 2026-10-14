@@ -126,6 +126,28 @@ class ClaimsLeases(unittest.TestCase):
             self.assertEqual(self.send(cap,owned,'handover',handover={**hand,field:'x'*501})['error'],'complete bounded handover required')
         self.assertEqual(self.sql("SELECT to_jsonb(count(*)) FROM master.handovers WHERE work_id='%s';"%c['target'],database='ledger_test'),0)
         self.assertTrue(self.send(cap,owned,'handover',handover=hand)['ok'])
+
+    def test_obsolete_success_receipts_are_history_not_lease_authority(self):
+        cap,c=self.setup();claim=self.request(cap,c);self.assertTrue(claim['ok'])
+        self.assertEqual(self.request(cap,c),claim) # Live exact retry remains idempotent.
+        self.sql("UPDATE master.work_leases SET expires_at=clock_timestamp()-interval '1 second' WHERE work_id='%s';"%c['target'],database='ledger_test',raw=True)
+        cached=self.request(cap,c)
+        self.assertFalse(cached['ok']);self.assertEqual(cached['historicalReceipt'],claim)
+        successor,d=self.setup(work=c['target']);self.claim(successor,d)
+        self.assertEqual(self.request(cap,c)['historicalReceipt'],claim)
+        stored=self.sql("SELECT result FROM master.agent_command_receipts WHERE capability_id='%s' AND idempotency_key='%s';"%(cap,c['idempotencyKey']),database='ledger_test')
+        self.assertEqual(stored,claim)
+        self.assertEqual(self.sql("SELECT to_jsonb(count(*)) FROM master.commands WHERE result->>'assignmentId'='%s';"%claim['assignmentId'],database='ledger_test'),1)
+
+    def test_path_scope_requires_actual_json_strings(self):
+        for value in (123,True,None,{},[]):
+            with self.subTest(value=type(value).__name__):
+                cap,c=self.setup()
+                encoded=json.dumps([value]).replace("'","''")
+                self.sql("UPDATE master.nodes SET body=jsonb_set(body,'{pathScope}','%s'::jsonb) WHERE id='%s';"%(encoded,c['target']),database='ledger_test',raw=True)
+                self.assertEqual(self.request(cap,c)['error'],'invalid path scope')
+                self.assertEqual(self.sql("SELECT to_jsonb(count(*)) FROM master.work_leases WHERE work_id='%s';"%c['target'],database='ledger_test'),0)
+        cap,c=self.setup(['123']);self.claim(cap,c) # An explicitly supplied numeric directory name is still a string.
     def test_expiry_takeover_stale_owner_and_evidence(self):
         a,c=self.setup();owned=self.claim(a,c,leaseSeconds=1);time.sleep(1.1)
         b,d=self.setup(work=c['target']);new=self.claim(b,d);self.assertGreater(new['generation'],owned['generation'])
@@ -178,7 +200,8 @@ class ClaimsLeases(unittest.TestCase):
         self.pg_run('pg_restore','-h',str(self.socket),'-p','55433','-d','slice2_restore',str(dump))
         literal=json.dumps(command).replace("'","''")
         restored=self.sql("SELECT master.agent_request('%s','%s','%s');"%(a,uuid.uuid4(),literal),database='slice2_restore')
-        self.assertEqual(restored,r)
+        self.assertFalse(restored['ok'])
+        self.assertEqual(restored['historicalReceipt'],r) # Restore retains the effect, not a superseded lease grant.
         for table in ['commands','assignments','assignment_receipts','handovers','work_effects']:
             q='SELECT to_jsonb(count(*)) FROM master.'+table+';'
             self.assertEqual(self.sql(q,database='ledger_test'),self.sql(q,database='slice2_restore'))

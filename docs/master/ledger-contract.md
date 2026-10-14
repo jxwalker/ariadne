@@ -158,3 +158,12 @@ its authenticated capability, agent, harness, execution source, role, declared
 lease fence and command key in the private projection. It remains a contribution,
 not evidence acceptance or proof attributed to the successor. Role denials use
 HTTP 403; signed request throttling uses 429 on both packet and command routes.
+
+A successful cached receipt is not current lease authority. After expiry, release
+(for an operation requiring a live lease), supersession or an ownership edit, the
+API returns a lease conflict with the original immutable result explicitly named
+historicalReceipt. It does not rewrite that result or repeat its effect. Inert
+retained/review/evaluation contributions remain scoped idempotent history. A live
+exact retry still returns the original result. Path scopes must contain actual
+JSON strings before canonical path validation; numbers, booleans, nulls and
+containers are never coerced into directory names.

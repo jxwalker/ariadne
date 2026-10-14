@@ -61,6 +61,15 @@ BEGIN
  IF FOUND THEN
   IF prior.payload IS DISTINCT FROM request THEN RETURN '{"ok":false,"error":"idempotency payload conflict"}'; END IF;
   IF result IS NOT NULL THEN RETURN result; END IF;
+  -- Preserve the committed receipt without presenting obsolete lease authority as current.
+  IF prior.result->>'ok'='true' AND op NOT IN ('retainedEvidence','review','evaluate')
+  AND (lease.capability_id IS DISTINCT FROM cap_id
+    OR lease.generation IS DISTINCT FROM CASE WHEN op='claim' THEN (prior.result->>'generation')::bigint ELSE (prior.payload->>'generation')::bigint END
+    OR work.body->'generation' IS DISTINCT FROM to_jsonb(lease.owner_generation)
+    OR work.body->>'owner' IS DISTINCT FROM cap.agent_identity
+    OR lease.expires_at<=lease_now
+    OR (op NOT IN ('release','handover') AND lease.released_at IS NOT NULL))
+  THEN RETURN jsonb_build_object('ok',false,'error','lease ownership conflict','historicalReceipt',prior.result,'current',packet); END IF;
   RETURN prior.result;
  END IF;
  IF result IS NULL THEN
@@ -77,6 +86,7 @@ BEGIN
    IF coalesce(work.body->>'state','') NOT IN ('ready','active') OR master.blockers(work.id)<>'[]'::jsonb THEN RAISE EXCEPTION 'work not eligible'; END IF;
    IF lease.released_at IS NULL AND lease.expires_at>lease_now THEN RAISE EXCEPTION 'work already claimed'; END IF;
    IF jsonb_typeof(work.body->'pathScope') IS DISTINCT FROM 'array' OR jsonb_array_length(work.body->'pathScope') NOT BETWEEN 1 AND 100 THEN RAISE EXCEPTION 'exclusive path scope required'; END IF;
+   IF EXISTS(SELECT 1 FROM jsonb_array_elements(work.body->'pathScope') value WHERE jsonb_typeof(value) IS DISTINCT FROM 'string') THEN RAISE EXCEPTION 'invalid path scope'; END IF;
    FOR scope_path IN SELECT jsonb_array_elements_text(work.body->'pathScope') LOOP
     IF scope_path<>'.' AND (scope_path !~ '^[A-Za-z0-9_.-]+(/[A-Za-z0-9_.-]+)*$' OR scope_path ~ '(^|/)\.\.?(/|$)') THEN RAISE EXCEPTION 'invalid path scope'; END IF;
     IF EXISTS(SELECT 1 FROM master.lease_resources r JOIN master.work_leases l USING(work_id) WHERE l.released_at IS NULL AND l.expires_at>lease_now AND r.repository=request->>'repository' AND (r.path='.' OR scope_path='.' OR r.path=lower(scope_path) OR left(r.path,length(scope_path)+1)=lower(scope_path)||'/' OR left(lower(scope_path),length(r.path)+1)=r.path||'/')) THEN RAISE EXCEPTION 'exclusive scope conflict'; END IF;
