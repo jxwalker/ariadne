@@ -186,12 +186,12 @@ def main(harness):
     parser=argparse.ArgumentParser(description='Explicitly bound '+harness+' work adapter',allow_abbrev=False)
     parser.add_argument('--config', required=True)
     sub=parser.add_subparsers(dest='action', required=True)
-    hook=sub.add_parser('hook');hook.add_argument('event', choices=sorted(EVENTS))
-    sub.add_parser('poll');sub.add_parser('replay')
-    reconcile=sub.add_parser('archive-rejection');reconcile.add_argument('--key',required=True)
-    report=sub.add_parser('report');report.add_argument('--record', required=True)
+    hook=sub.add_parser('hook',allow_abbrev=False);hook.add_argument('event', choices=sorted(EVENTS))
+    sub.add_parser('poll',allow_abbrev=False);sub.add_parser('replay',allow_abbrev=False)
+    reconcile=sub.add_parser('archive-rejection',allow_abbrev=False);reconcile.add_argument('--key',required=True)
+    report=sub.add_parser('report',allow_abbrev=False);report.add_argument('--record', required=True)
     if harness in {'codex','claude'}:
-        sub.add_parser('exec',add_help=False) # child owns all options, including --help
+        sub.add_parser('exec',add_help=False,allow_abbrev=False) # child owns all options, including --help
     argv=__import__('sys').argv[1:]
     action_position=0
     while action_position<len(argv):
@@ -224,15 +224,17 @@ def main(harness):
             record=protected_json(args.record)
             adapter.command(**record); print('Ariadne command queued')
         elif args.action=='exec':
-            try:adapter.lifecycle('SessionStart')
-            except Exception:print('Ariadne session-start presence unavailable',file=__import__('sys').stderr)
-            try: code=subprocess.call((['codex','exec'] if harness=='codex' else ['claude'])+args.arguments) # inherit streams; never inspect them
+            try:
+                try:adapter.lifecycle('SessionStart')
+                except Exception:print('Ariadne session-start presence unavailable',file=__import__('sys').stderr)
+                code=subprocess.call((['codex','exec'] if harness=='codex' else ['claude'])+args.arguments) # inherit streams; never inspect them
             except KeyboardInterrupt:code=130
             finally:
                 try:adapter.lifecycle('SessionEnd')
-                except Exception:print('Ariadne session-end presence unavailable',file=__import__('sys').stderr)
+                except (Exception,KeyboardInterrupt):print('Ariadne session-end presence unavailable',file=__import__('sys').stderr)
             return code if code>=0 else 128-code
         return 0
+    except KeyboardInterrupt:return 130
     except Exception:
         print('Ariadne adapter unavailable; inspect binding/configuration/receipts', file=__import__('sys').stderr)
         return 1

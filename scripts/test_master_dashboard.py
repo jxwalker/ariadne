@@ -116,3 +116,9 @@ class MasterDashboard(unittest.TestCase):
                 direct=[{**bindings[0],'execution_source':'synthetic-live-claude'}]
                 self.assertEqual(len(unbound_activity(store,direct,{})),3) # source ID is not an execution mapping
             finally:store.close()
+
+    def test_historical_handover_not_pending_after_verified_release(self):
+        data={'nodes':[{'id':'synthetic-work','kind':'work','parent':None,'revision':3,'body':{'state':'active'}}],'progress':[],'agentState':[{'work_id':'synthetic-work','generation':3,'resumed':True,'released_at':'2026-10-14T08:00:00Z','handover':{'generation':2,'body':{}},'current':False}]}
+        self.assertIn('Handover: none pending',render(data,'/work',{}))
+        data['agentState'][0]['handover']['generation']=3
+        self.assertIn('pending environment verification',render(data,'/work',{}))

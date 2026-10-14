@@ -71,7 +71,7 @@ def render(data,route,filters):
     def agent_state(n):
         a=agent_states.get(n['id'])
         if not a:return '<p>Agent activity: unbound / unattributed; no command lease recorded</p>'
-        hand=a.get('handover') or {}; pending=not a.get('resumed') or bool(hand) and bool(a.get('released_at'))
+        hand=a.get('handover') or {}; pending=not a.get('resumed') or bool(hand) and bool(a.get('released_at')) and hand.get('generation')==a.get('generation')
         return ('<p>Holder: '+esc(a.get('agent_identity'))+' · harness '+esc(a.get('harness'))+' · source '+esc(a.get('execution_source'))+'</p>'
           +'<p>Generation: '+esc(a.get('generation'))+' · lease '+('current' if a.get('current') else 'stale / released')+' · expiry '+esc(a.get('expires_at'))+'</p>'
           +'<p>Last meaningful progress: '+esc(a.get('last_progress'))+' · separate from lifecycle presence</p>'

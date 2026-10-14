@@ -235,6 +235,11 @@ class HarnessAdapters(unittest.TestCase):
                 self.assertEqual(result.exception.code,2);child.assert_not_called()
         with patch('sys.argv',['adapter','--config='+str(config),'exec','--help']),patch('harness_adapter.subprocess.call',side_effect=KeyboardInterrupt):
             self.assertEqual(main('codex'),130)
+        with patch('sys.argv',['adapter','--config',str(config),'exec']),patch('harness_adapter.Adapter.lifecycle',side_effect=KeyboardInterrupt),patch('harness_adapter.subprocess.call') as child:
+            self.assertEqual(main('codex'),130);child.assert_not_called()
+        with patch('sys.argv',['adapter','--config',str(config),'report','--rec','synthetic']),patch('sys.stderr'):
+            with self.assertRaises(SystemExit) as result:main('codex')
+            self.assertEqual(result.exception.code,2)
 
     def test_hook_never_reads_input_and_https_required(self):
         import tempfile
