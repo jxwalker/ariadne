@@ -109,7 +109,7 @@ class HarnessAdapters(unittest.TestCase):
                 observer={**a.config,'capabilityId':'synthetic-observer'}
                 for packet in [False,True]:
                     with self.assertRaises(__import__('urllib.error',fromlist=['HTTPError']).HTTPError):request(observer,{**a.binding,'op':'update','patch':{'nextAction':'synthetic denied'}},packet)
-                unbound=Adapter({**a.config,'binding':{**a.binding,'nativeId':'synthetic-unbound'}})
+                unbound=Adapter({**a.config,'spool':str(a.directory)+'-unbound','binding':{**a.binding,'nativeId':'synthetic-unbound'}})
                 self.assertFalse(unbound.poll()['ok'])
                 c=self.owned(a,c)
                 stale=a.command('update',str(uuid.uuid4()),c['expectedRevision'],c['generation']-1,patch={'nextAction':'synthetic stale'})
