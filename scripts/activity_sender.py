@@ -73,6 +73,26 @@ def flush(c):
                         known[reply['requestId']+':'+reply['requestRevision']]=reply
                     persist(replies,dict(list(known.items())[-100:]))
                 p.unlink();retry={'at':0,'attempt':0}
+            except urllib.error.HTTPError as error:
+                if error.code in {400,401,403,404,409,413,422}:
+                    deadletter=spool.parent/'spool-deadletter'
+                    deadletter.mkdir(parents=True,exist_ok=True,mode=0o700)
+                    os.chmod(deadletter,0o700)
+                    # Fixed labels only: arbitrary upstream error bodies can contain secrets.
+                    labels={400:'invalid request',401:'unauthorized',403:'forbidden',404:'route not found',
+                            409:'conflicting event',413:'body too large',422:'unprocessable event'}
+                    reason={'status':error.code,'serverError':labels[error.code],
+                            'at':datetime.now(timezone.utc).isoformat()}
+                    persist(deadletter/(p.stem+'.reason'),reason)
+                    os.chmod(p,0o600)
+                    p.replace(deadletter/p.name)
+                    directory=os.open(deadletter,os.O_RDONLY)
+                    try:os.fsync(directory)
+                    finally:os.close(directory)
+                    print('Ariadne sender dead-letter: HTTP '+str(error.code)+' '+labels[error.code],file=sys.stderr)
+                    retry={'at':0,'attempt':0}
+                    continue
+                retry['attempt']=min(retry['attempt']+1,10); retry['at']=time.time()+min(300,2**retry['attempt']); break
             except Exception:
                 retry['attempt']=min(retry['attempt']+1,10); retry['at']=time.time()+min(300,2**retry['attempt']); break
         persist(state,retry)
