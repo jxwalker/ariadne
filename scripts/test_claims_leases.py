@@ -267,3 +267,29 @@ class ClaimsLeases(unittest.TestCase):
         self.assertFalse(self.send(a,owned,'retainedEvidence',evidence={'summary':'x'*501})['ok'])
         hand=dict(branch={'bad':'type'},revision='a'*40,changedPaths=[],checks=[],evidenceRefs=[],remainingWork=[],blockers=[],nextAction='resume',localWork=[])
         self.assertEqual(self.send(a,owned,'handover',handover=hand)['error'],'complete bounded handover required')
+
+    def test_synthetic_duplicate_enqueue_and_flush_are_serialized(self):
+        import tempfile,pathlib,threading
+        from unittest.mock import patch
+        from agent_spool import enqueue,flush
+        with tempfile.TemporaryDirectory() as directory:
+            command={'idempotencyKey':'synthetic-producer-race'};path=enqueue(directory,command)
+            reading=threading.Event();release=threading.Event();delivered=threading.Event();finished=threading.Event()
+            original=pathlib.Path.read_text
+            def read(p,*args,**kwargs):
+                if p==path and threading.current_thread().name=='synthetic-producer':
+                    reading.set();release.wait(3)
+                return original(p,*args,**kwargs)
+            def producer():threading.current_thread().name='synthetic-producer';return enqueue(directory,command)
+            def consumer():
+                flush({'spool':directory},lambda *_:delivered.set() or {'ok':True});finished.set()
+            with patch.object(pathlib.Path,'read_text',read),ThreadPoolExecutor(2) as pool:
+                produced=pool.submit(producer)
+                self.assertTrue(reading.wait(2));consumed=pool.submit(consumer)
+                try:
+                    self.assertTrue(delivered.wait(2))
+                    self.assertFalse(finished.wait(0.1))
+                    self.assertTrue(path.exists())
+                finally:release.set()
+                self.assertEqual(produced.result(),path);consumed.result()
+            self.assertFalse(path.exists())

@@ -47,6 +47,14 @@ def prune_receipts(directory):
     for old in completed[:-100]:old.unlink()
 
 
+def complete(directory,path):
+    # The producer holds this same lock while locating/reading duplicate commands.
+    with open(directory/'.enqueue-lock','a') as lock:
+        fcntl.flock(lock,fcntl.LOCK_EX)
+        path.unlink()
+        prune_receipts(directory)
+
+
 def flush(config, transport=send):
     directory=pathlib.Path(config['spool']);directory.mkdir(parents=True,exist_ok=True,mode=0o700)
     with open(directory/'.flush-lock','a') as lock:
@@ -59,8 +67,7 @@ def flush(config, transport=send):
                 try:saved=json.loads(receipt_path.read_text())
                 except (OSError,ValueError):return
                 if not isinstance(saved,dict) or not saved.get('ok'):return
-                path.unlink() # durable success survives credential rotation or expiry; never resend
-                prune_receipts(directory)
+                complete(directory,path) # durable success survives credential rotation or expiry; never resend
                 continue
             try:
                 command=json.loads(path.read_text())
@@ -76,5 +83,4 @@ def flush(config, transport=send):
                 return
             persist(receipt_path,result)
             if not result.get('ok'):return # keep rejected command and current state for operator/client reconciliation
-            path.unlink()
-            prune_receipts(directory)
+            complete(directory,path)
