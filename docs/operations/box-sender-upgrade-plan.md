@@ -13,3 +13,5 @@ Rollback through a separately approved plan: quiesce the same sender, atomically
 No installation is authorized here. Exact host path, service identity, full installed hash, approved merged candidate and operator approval are prerequisites for a runnable live package. Prepare only with the canonical `npm run ariadne -- mutation-readiness --project ariadne`, audit and dry-run; no mutation-execute invocation in this assignment.
 
 Synthetic tests cover one bad event followed by success, a 20-event 401/403 backlog retained byte-for-byte, threshold/probe persistence, configurable threshold, protected reset, different HTTP probe outcomes and existing quarantine durability failures. This remains a source upgrade proposal, not installation evidence.
+
+Invalid breaker settings pause delivery with a fixed reason while retaining the backlog. Unsafe reset files are ignored and left for correction; they cannot terminate the worker or bypass backoff. A full producer spool reports its existing 1,000-event cap explicitly; operators must reconcile capacity during prolonged outages. Completed reset removal is directory-synced.

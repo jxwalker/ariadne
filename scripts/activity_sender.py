@@ -15,7 +15,9 @@ def enqueue(c,kind,run,task,summary='',parent=None,session=None,operating=None):
     spool=pathlib.Path(c['spool']); spool.mkdir(parents=True,exist_ok=True,mode=0o700)
     with open(spool/'.lock','a') as lock:
         fcntl.flock(lock,fcntl.LOCK_EX)
-        if len(list(spool.glob('*.json')))>=1000: return None
+        if len(list(spool.glob('*.json')))>=1000:
+            print('Ariadne sender: spool capacity reached; new event not enqueued',file=sys.stderr)
+            return None
         state=spool/'sequence.json.state'; seqs=json.loads(state.read_text()) if state.exists() else {}; seq=seqs.get(run,-1)+1; seqs[run]=seq
         tmp=spool/'.sequence.tmp'; tmp.write_text(json.dumps(seqs)); tmp.replace(state)
         e={'schemaVersion':1,'eventId':str(uuid.uuid4()),'sourceId':c['sourceId'],'agent':c['agent'],'project':c['project'],'repository':c['repository'],'taskId':task,'runId':run,'sequence':seq,'occurredAt':datetime.now(timezone.utc).isoformat(),'kind':kind,'label':c.get('label','Repository activity')[:160],'summary':summary[:500]}
@@ -89,18 +91,26 @@ def flush(c):
         try: fcntl.flock(lock,fcntl.LOCK_EX|fcntl.LOCK_NB)
         except BlockingIOError: return
         state=spool/'.retry'; retry=json.loads(state.read_text()) if state.exists() else {'at':0,'attempt':0}
-        threshold=int(c.get('permanentFailureThreshold',3))
-        backoff=int(c.get('circuitBreakerBackoffSeconds',300))
-        if not 1<=threshold<=100 or not 1<=backoff<=86400:raise ValueError('invalid circuit breaker settings')
+        try:
+            threshold=int(c.get('permanentFailureThreshold',3))
+            backoff=int(c.get('circuitBreakerBackoffSeconds',300))
+            if not 1<=threshold<=100 or not 1<=backoff<=86400:raise ValueError()
+        except (ValueError,TypeError,OverflowError):
+            print('Ariadne sender circuit breaker: invalid settings; delivery paused, backlog retained',file=sys.stderr)
+            return
         reset=spool/'.circuit-reset'
         if reset.exists():
             metadata=reset.lstat()
             if not stat.S_ISREG(metadata.st_mode) or metadata.st_uid!=os.geteuid() or metadata.st_mode & 0o077:
-                raise ValueError('operator circuit reset must be a protected regular file')
-            retry={'at':0,'attempt':0}
-            persist(state,retry) # persist reset before consuming it
-            reset.unlink()
-            print('Ariadne sender circuit breaker: operator reset consumed',file=sys.stderr)
+                print('Ariadne sender circuit breaker: unsafe reset file ignored; require protected regular file',file=sys.stderr)
+            else:
+                retry={'at':0,'attempt':0}
+                persist(state,retry) # persist reset before consuming it
+                reset.unlink()
+                descriptor=os.open(spool,os.O_RDONLY)
+                try:os.fsync(descriptor)
+                finally:os.close(descriptor)
+                print('Ariadne sender circuit breaker: operator reset consumed',file=sys.stderr)
         if time.time()<retry['at']: return
         # Filesystem timestamps can tie: preserve each run's producer order.
         def order(path):
@@ -128,7 +138,7 @@ def flush(c):
                         labels={400:'invalid-request',401:'authentication',403:'authentication',404:'route',409:'conflict',413:'body-size',422:'unprocessable'}
                         fingerprint={'status':error.code,'class':labels[error.code]}
                         same=retry.get('permanent')==fingerprint
-                        count=retry.get('consecutive',0)+1 if same else 1
+                        count=min(100,retry.get('consecutive',0)+1) if same else 1
                         still_paused=retry.get('paused',False) and same
                         retry.update(permanent=fingerprint,consecutive=count,paused=still_paused)
                         limit=1 if error.code in {401,403} else threshold
@@ -138,13 +148,15 @@ def flush(c):
                             print('Ariadne sender circuit breaker: paused HTTP '+str(error.code)+' '+labels[error.code]+'; backlog retained; probe after backoff or protected .circuit-reset required',file=sys.stderr)
                             break
                         # A different probe outcome releases the old circuit. Persist streak before quarantine.
-                        retry.update(at=0,attempt=0,paused=False)
+                        retry.update(at=0,paused=False)
                         persist(state,retry)
                         try:
                             quarantine(spool,p,error.code)
                         except OSError:
                             print('Ariadne sender dead-letter storage unavailable; preserving evidence with backoff',file=sys.stderr)
                         else:
+                            retry.update(at=0,attempt=0)
+                            persist(state,retry)
                             continue
                     else:
                         # Transient status differs from the tripping outcome; resume after normal backoff.
