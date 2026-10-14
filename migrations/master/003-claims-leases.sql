@@ -68,6 +68,9 @@ BEGIN
   END IF;
   IF op NOT IN ('retainedEvidence','review','evaluate','update','transition') AND work.revision IS DISTINCT FROM (request->>'expectedRevision')::integer THEN RAISE EXCEPTION 'revision conflict'; END IF;
   IF op='claim' THEN
+   IF jsonb_typeof(request->'generation') IS DISTINCT FROM 'number'
+   OR request->'generation' IS DISTINCT FROM work.body->'generation'
+   THEN RAISE EXCEPTION 'ownership generation conflict'; END IF;
    IF coalesce(work.body->>'state','') NOT IN ('ready','active') OR master.blockers(work.id)<>'[]'::jsonb THEN RAISE EXCEPTION 'work not eligible'; END IF;
    IF lease.released_at IS NULL AND lease.expires_at>lease_now THEN RAISE EXCEPTION 'work already claimed'; END IF;
    IF jsonb_typeof(work.body->'pathScope') IS DISTINCT FROM 'array' OR jsonb_array_length(work.body->'pathScope') NOT BETWEEN 1 AND 100 THEN RAISE EXCEPTION 'exclusive path scope required'; END IF;
@@ -138,7 +141,7 @@ BEGIN
    END IF;
   ELSE RAISE EXCEPTION 'operation denied'; END IF;
  EXCEPTION WHEN OTHERS THEN
-  IF SQLERRM NOT IN ('lease ownership conflict','revision conflict','work not eligible','work already claimed','exclusive path scope required','invalid path scope','exclusive scope conflict','assignment queue full','invalid lease duration','offer expired','offer expired or unavailable','invalid receipt','receipt order conflict','complete bounded handover required','environment mismatch','environment baseline unavailable','bounded retained evidence required','environment verification required','assignment not started','idempotency payload conflict','patch denied','operation denied','retained evidence capacity reached') THEN
+  IF SQLERRM NOT IN ('lease ownership conflict','ownership generation conflict','revision conflict','work not eligible','work already claimed','exclusive path scope required','invalid path scope','exclusive scope conflict','assignment queue full','invalid lease duration','offer expired','offer expired or unavailable','invalid receipt','receipt order conflict','complete bounded handover required','environment mismatch','environment baseline unavailable','bounded retained evidence required','environment verification required','assignment not started','idempotency payload conflict','patch denied','operation denied','retained evidence capacity reached') THEN
    result:=jsonb_build_object('ok',false,'error','command rejected','current',packet);
   ELSE result:=jsonb_build_object('ok',false,'error',SQLERRM,'current',packet); END IF;
  END;

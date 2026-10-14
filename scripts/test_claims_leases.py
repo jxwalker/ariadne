@@ -50,6 +50,32 @@ class ClaimsLeases(unittest.TestCase):
         self.assertFalse(self.send(cap,{**req,'expectedRevision':winner['revision']},'claim')['ok'])
         other,e=self.setup(['synthetic/shared/child']);self.assertEqual(self.send(other,e,'claim')['error'],'exclusive scope conflict')
         sibling,f=self.setup(['synthetic/shared-other']);self.claim(sibling,f)
+
+    def test_claim_generation_is_required_and_rejections_have_no_effect(self):
+        for value in ['missing', 'stale', 'future', None, True, '0', {}, []]:
+            with self.subTest(generation=value):
+                cap,c=self.setup()
+                if value=='missing':c.pop('generation')
+                elif value=='stale':c['generation']-=1
+                elif value=='future':c['generation']+=1
+                else:c['generation']=value
+                before=self.sql("SELECT to_jsonb(n) FROM master.nodes n WHERE id='%s';"%c['target'],database='ledger_test')
+                result=self.request(cap,c)
+                self.assertFalse(result['ok'],result)
+                self.assertEqual(result['error'],'ownership generation conflict')
+                self.assertEqual(self.request(cap,c),result)
+                self.assertEqual(self.sql("SELECT to_jsonb(n) FROM master.nodes n WHERE id='%s';"%c['target'],database='ledger_test'),before)
+                for table in ('work_leases','lease_resources','assignments'):
+                    self.assertEqual(self.sql("SELECT to_jsonb(count(*)) FROM master.%s WHERE work_id='%s';"%(table,c['target']),database='ledger_test'),0)
+                fixed={**c,'generation':before['body']['generation'],'idempotencyKey':str(uuid.uuid4())}
+                self.assertTrue(self.request(cap,fixed)['ok'])
+
+    def test_superseded_generation_cannot_reclaim_released_work(self):
+        cap,c=self.setup();owned=self.claim(cap,c)
+        self.assertTrue(self.send(cap,owned,'release')['ok'])
+        stale={**owned,'generation':c['generation']}
+        self.assertEqual(self.send(cap,stale,'claim')['error'],'ownership generation conflict')
+        self.assertGreater(self.claim(cap,owned)['generation'],owned['generation'])
     def test_expiry_takeover_stale_owner_and_evidence(self):
         a,c=self.setup();owned=self.claim(a,c,leaseSeconds=1);time.sleep(1.1)
         b,d=self.setup(work=c['target']);new=self.claim(b,d);self.assertGreater(new['generation'],owned['generation'])
