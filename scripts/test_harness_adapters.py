@@ -31,6 +31,7 @@ class HarnessAdapters(unittest.TestCase):
     def setUpClass(cls):
         claims.ClaimsLeases.setUpClass.__func__(cls)
         cls.sql((ROOT/'migrations/master/004-adapter-dashboard.sql').read_text(),database='ledger_test',raw=True)
+        assert cls.sql('SELECT to_jsonb(count(*)) FROM master.migrations WHERE version=4;',database='ledger_test')==1
         cls.sql('CREATE ROLE ariadne_agent_transport LOGIN; GRANT USAGE ON SCHEMA master TO ariadne_agent_transport; GRANT EXECUTE ON FUNCTION master.agent_request(text,text,jsonb) TO ariadne_agent_transport;',database='ledger_test',raw=True)
         cls.keys=cls.dir/'adapter-keys';cls.keys.write_text('{}');cls.keys.chmod(0o600)
         cert,key=cls.dir/'cert.pem',cls.dir/'key.pem'
@@ -63,6 +64,9 @@ class HarnessAdapters(unittest.TestCase):
     def owned(self,a,c):
         path=a.command('claim',str(uuid.uuid4()),c['expectedRevision'],c['generation'])
         result=self.receipt(a,path);self.assertTrue(result['ok'],result)
+        snapshot=self.sql('SELECT master.snapshot();',database='ledger_test')
+        state=next(row for row in snapshot['agentState'] if row['work_id']==c['target'])
+        self.assertEqual(state['last_receipt']['result'],result) # claim receipt establishes the incremented lease generation
         c={**c,'expectedRevision':result['revision'],'generation':result['generation'],'assignmentId':result['assignmentId']}
         for state in ['received','acknowledged','started']:
             path=a.command('receipt',str(uuid.uuid4()),c['expectedRevision'],c['generation'],assignmentId=c['assignmentId'],state=state)
@@ -169,6 +173,22 @@ class HarnessAdapters(unittest.TestCase):
         for op,fields in [('receipt',{'assignmentId':{},'state':'started'}),('resume',{'branch':'synthetic','revision':{}}),('retainedEvidence',{'evidence':{'summary':'x'*501}}),('retainedEvidence',{'evidence':{'summary':{'prompt':'SYNTHETIC-FORBIDDEN'}}}),('claim',{'leaseSeconds':True})]:
             with self.assertRaises(ValueError):a.command(op,str(uuid.uuid4()),c['expectedRevision'],c['generation'],**fields)
         self.assertFalse(list(a.directory.glob('*.json')))
+
+    def test_transport_validation_reconciliation_and_success_receipt_race(self):
+        from activity_sender import persist
+        from harness_adapter import main
+        a,c,cap=self.adapter('codex')
+        # A deterministic HTTP-layer validation failure is local evidence, not a ledger receipt.
+        result=request(a.config,{**a.binding,'op':'packet'})
+        self.assertEqual(result['transportStatus'],400);self.assertTrue(result['localOnly'])
+        path=a.command('release','synthetic-local-rejection',c['expectedRevision'],c['generation'])
+        a.transport=lambda *_:result;self.receipt(a,path);a.archive_rejection('synthetic-local-rejection')
+        path=a.command('release','synthetic-race-success',c['expectedRevision'],c['generation'])
+        persist(path.with_name(path.name+'.receipt'),{'ok':True})
+        with patch('harness_adapter.flush'):self.assertEqual(a.replay(),[])
+        config=self.dir/'synthetic-exec-config';config.write_text(json.dumps({k:v for k,v in a.config.items() if k!='secret'}));config.chmod(0o600)
+        with patch('sys.argv',['adapter','--config',str(config),'exec']),patch('harness_adapter.Adapter.lifecycle',side_effect=OSError()),patch('harness_adapter.subprocess.call',return_value=7):
+            self.assertEqual(main('codex'),7)
 
     def test_hook_never_reads_input_and_https_required(self):
         import tempfile

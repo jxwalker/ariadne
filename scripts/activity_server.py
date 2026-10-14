@@ -387,7 +387,7 @@ class Handler(BaseHTTPRequestHandler):
                 if route.path=='/api/master':
                     try:return self.reply(200,api_page(data,filters))
                     except ValueError:return self.reply(400,{'error':'invalid master filter'})
-                try:data['unboundActivity']=unbound_activity(self.server.app.store,data.get('workBindings',[]))
+                try:data['unboundActivity']=unbound_activity(self.server.app.store,data.get('workBindings',[]),self.server.app.sources())
                 except Exception:data['unboundActivity']=None
                 try:raw=render(data,route.path,filters).encode()
                 except ValueError:return self.reply(400,{'error':'invalid master filter'})

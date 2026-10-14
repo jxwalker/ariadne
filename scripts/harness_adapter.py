@@ -68,7 +68,9 @@ def request(config, command, packet=False):
         body = response.read(65537)
         if len(body) > 65536: raise ValueError('response too large')
         result=json.loads(body)
-        if not isinstance(result,dict) or type(result.get('ok')) is not bool:raise ValueError('authoritative receipt unavailable')
+        if not isinstance(result,dict) or type(result.get('ok')) is not bool:
+            if response.code==400:return {'ok':False,'error':'transport validation rejected','transportStatus':400,'localOnly':True}
+            raise ValueError('authoritative receipt unavailable')
         return result
 
 
@@ -140,7 +142,9 @@ class Adapter:
         rejected = []
         for path in sorted(self.directory.glob('*.json')):
             receipt = path.with_name(path.name+'.receipt')
-            if receipt.exists(): rejected.append(json.loads(receipt.read_text()))
+            try:result=json.loads(receipt.read_text())
+            except FileNotFoundError:continue # concurrent successful completion
+            if not result.get('ok'):rejected.append(result)
         return rejected # includes current state; never rebase or replace generation
 
     def archive_rejection(self, key):
@@ -204,12 +208,13 @@ def main(harness):
             record=protected_json(args.record)
             adapter.command(**record); print('Ariadne command queued')
         elif args.action=='exec':
-            adapter.lifecycle('SessionStart')
+            try:adapter.lifecycle('SessionStart')
+            except Exception:print('Ariadne session-start presence unavailable',file=__import__('sys').stderr)
             try: code=subprocess.call((['codex','exec'] if harness=='codex' else ['claude'])+args.arguments) # inherit streams; never inspect them
             finally:
                 try:adapter.lifecycle('SessionEnd')
                 except Exception:print('Ariadne session-end presence unavailable',file=__import__('sys').stderr)
-            return code
+            return code if code>=0 else 128-code
         return 0
     except Exception:
         print('Ariadne adapter unavailable; inspect binding/configuration/receipts', file=__import__('sys').stderr)

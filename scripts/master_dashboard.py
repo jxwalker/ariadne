@@ -28,11 +28,18 @@ def safe_ref(value):
         return '<a href="'+esc(value)+'" rel="noreferrer">'+esc(value)+'</a>'
     return esc(value)
 
-def unbound_activity(store, bindings):
+def unbound_activity(store, bindings, registrations=None):
     bound={(b.get('execution_source'),b.get('repository'),b.get('native_kind'),b.get('native_id')) for b in bindings}
     with store.connect() as db:
         rows=db.execute("SELECT source,run,task,last,json_extract(envelope,'$.repository') AS repository FROM runs ORDER BY last DESC LIMIT 100").fetchall()
-    return [dict(r) for r in rows if (r['source'],r['repository'],'run',r['run']) not in bound and (r['source'],r['repository'],'task',r['task']) not in bound]
+    unbound=[]
+    for row in rows:
+        r=dict(row);registration=(registrations or {}).get(r['source'],{})
+        # Exact operator-maintained source registration, never host/title/time inference.
+        execution_source=registration.get('executionSource') or registration.get('correlationHost') or r['source']
+        r['executionSource']=execution_source
+        if (execution_source,r['repository'],'run',r['run']) not in bound and (execution_source,r['repository'],'task',r['task']) not in bound:unbound.append(r)
+    return unbound
 
 def render(data,route,filters):
     nodes={n['id']:n for n in data['nodes']};progress={p['baseline_id']:p for p in data['progress']}
@@ -146,7 +153,7 @@ def render(data,route,filters):
     if data.get('unboundActivity') is None:body+='<p>Observation coverage unavailable</p>'
     elif not data['unboundActivity']:body+='<p>No unbound runs in this bounded observation window</p>'
     for activity in data.get('unboundActivity') or []:
-        body+='<article><p>Source '+esc(activity.get('source'))+' · repository '+esc(activity.get('repository'))+' · run '+esc(activity.get('run'))+' · native task '+esc(activity.get('task'))+'</p><p>Unattributed activity; proposed mapping: none. Operator action: select an exact canonical work ID, review repository/source/run binding, then approve through master.bind_work. Observation does not grant command authority.</p></article>'
+        body+='<article><p>Source '+esc(activity.get('source'))+' · registered execution source '+esc(activity.get('executionSource'))+' · repository '+esc(activity.get('repository'))+' · run '+esc(activity.get('run'))+' · native task '+esc(activity.get('task'))+'</p><p>Unattributed activity; proposed mapping: none. Operator action: select an exact canonical work ID, review repository/source/run binding, then approve through master.bind_work. Observation does not grant command authority.</p></article>'
     body+='<h2>Decisions</h2><div class="grid">'
     for n in nodes.values():
         if n['kind']=='decision':

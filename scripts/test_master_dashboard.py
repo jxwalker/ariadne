@@ -98,3 +98,19 @@ class MasterDashboard(unittest.TestCase):
         output=render(data,'/work',{})
         self.assertIn('pending environment verification',output)
         self.assertNotIn('Handover: none pending',output)
+
+    def test_unbound_uses_exact_registered_execution_source(self):
+        import json,pathlib,tempfile
+        from activity_server import Store
+        from master_dashboard import unbound_activity
+        with tempfile.TemporaryDirectory() as directory:
+            store=Store(str(pathlib.Path(directory)/'synthetic.db'))
+            try:
+                with store.connect() as db:
+                    for run,repo in [('exact','jxwalker/ariadne'),('same-title','jxwalker/ariadne'),('wrong-repo','jxwalker/openscorpion')]:
+                        db.execute('INSERT INTO runs VALUES(?,?,?,?,?,?,?,?)',('synthetic-live-claude',run,'task-'+run,1,'unknown',1,json.dumps({'repository':repo}),0))
+                bindings=[{'execution_source':'synthetic-host','repository':'jxwalker/ariadne','native_kind':'run','native_id':'exact'}]
+                rows=unbound_activity(store,bindings,{'synthetic-live-claude':{'correlationHost':'synthetic-host'}})
+                self.assertEqual({r['run'] for r in rows},{'same-title','wrong-repo'})
+                self.assertEqual(len(unbound_activity(store,bindings,{})),3)
+            finally:store.close()
