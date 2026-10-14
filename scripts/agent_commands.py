@@ -51,7 +51,7 @@ def handle(app, headers, raw, method, path, request):
         return False
     if contains_secret(request) or enrollment['secret'].encode() in raw:
         raise PermissionError('credential in payload')
-    if set(request) - {'op','target','repository','nativeKind','nativeId','expectedRevision','generation','idempotencyKey','reason','patch','state'}:
+    if set(request) - {'op','target','repository','nativeKind','nativeId','expectedRevision','generation','idempotencyKey','reason','patch','state','leaseSeconds','assignmentId','handover','branch','revision','evidence'}:
         raise ValueError('unsupported command fields')
     values = [request.get('reason')]
     if isinstance(request.get('patch'), dict): values.extend(request['patch'].values())
