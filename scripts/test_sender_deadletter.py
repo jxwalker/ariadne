@@ -195,3 +195,16 @@ class SenderDeadletter(unittest.TestCase):
             with patch('activity_sender.deliver') as deliver,redirect_stderr(io.StringIO()):flush(c)
             deliver.assert_not_called();self.assertFalse((spool/'spool-deadletter').exists())
             self.assertEqual(len(list(spool.glob('*.json'))),2)
+
+    def test_synthetic_malformed_breaker_fields_fail_before_delivery(self):
+        variants=[{'at':10**400},{'at':float('nan')},{'consecutive':None},{'consecutive':'bad'},{'paused':'yes'},{'paused':True},{'permanent':{'status':400,'class':'unknown'}},{'probeEvent':'../outside.json'}]
+        for variant in variants:
+            with self.subTest(variant=variant),tempfile.TemporaryDirectory() as directory:
+                spool,c=self.fixture(directory)
+                state={'at':0,'attempt':0,'permanent':{'status':400,'class':'invalid-request'},'consecutive':1,'paused':False,**variant}
+                (spool/'.retry').write_text(json.dumps(state))
+                with patch('activity_sender.deliver') as deliver,redirect_stderr(io.StringIO()):flush(c)
+                deliver.assert_not_called();self.assertEqual(len(list(spool.glob('*.json'))),2)
+                (spool/'.circuit-reset').touch(mode=0o600)
+                with patch('activity_sender.deliver',return_value={'eventId':'synthetic-ok'}),redirect_stderr(io.StringIO()):flush(c)
+                self.assertEqual(list(spool.glob('*.json')),[])

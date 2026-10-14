@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
 """Bounded local spool and authenticated HTTPS delivery. Hooks never perform network IO."""
-import math
 import argparse, fcntl, hashlib, hmac, json, os, pathlib, stat, subprocess, sys, time, urllib.error, urllib.request, uuid
 from datetime import datetime, timezone
 from activity_server import validate, canonical
@@ -94,6 +93,25 @@ def save_retry(path,retry):
     persist(path,retry)
     _FAILED_RETRY.pop(str(path),None)
 
+def valid_retry(retry):
+    if not isinstance(retry,dict) or set(retry)-{'at','attempt','permanent','consecutive','paused','probeEvent'}:return False
+    # Range comparison avoids float conversion overflow for corrupt JSON integers.
+    if type(retry.get('at')) not in (int,float) or not 0<=retry['at']<=253402300799:return False
+    if type(retry.get('attempt')) is not int or not 0<=retry['attempt']<=10:return False
+    if type(retry.get('paused',False)) is not bool:return False
+    count=retry.get('consecutive',0)
+    if type(count) is not int or not 0<=count<=100:return False
+    fingerprint=retry.get('permanent')
+    if fingerprint is not None:
+        labels={400:'invalid-request',401:'authentication',403:'authentication',404:'route',409:'conflict',413:'body-size',422:'unprocessable'}
+        if not isinstance(fingerprint,dict) or set(fingerprint)!={'status','class'} or type(fingerprint['status']) is not int:return False
+        if fingerprint['status'] not in labels or fingerprint['class']!=labels[fingerprint['status']] or count<1:return False
+    elif count or retry.get('paused'):return False
+    probe=retry.get('probeEvent')
+    if probe is not None and (not isinstance(probe,str) or pathlib.Path(probe).name!=probe or not probe.endswith('.json')):return False
+    if retry.get('paused') and not probe:return False
+    return True
+
 def flush(c):
     try:_flush(c)
     except (OSError,ValueError,TypeError,KeyError):
@@ -127,7 +145,7 @@ def _flush(c):
                 try:os.fsync(descriptor)
                 finally:os.close(descriptor)
                 print('Ariadne sender circuit breaker: operator reset consumed',file=sys.stderr)
-        if not isinstance(retry,dict) or not isinstance(retry.get('at'),(int,float)) or not isinstance(retry.get('attempt'),int) or not math.isfinite(retry['at']) or retry['at']<0 or not 0<=retry['attempt']<=10:
+        if not valid_retry(retry):
             print('Ariadne sender: invalid retry state; protected operator reset required, backlog retained',file=sys.stderr)
             return
         if time.time()<retry['at']: return
