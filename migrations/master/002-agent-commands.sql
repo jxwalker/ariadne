@@ -11,6 +11,18 @@ CREATE TABLE master.agent_capabilities (
  CHECK(isfinite(issued_at) AND isfinite(expires_at) AND expires_at>issued_at));
 CREATE TABLE master.agent_nonces(capability_id text REFERENCES master.agent_capabilities(id), nonce text NOT NULL,
  at timestamptz NOT NULL DEFAULT now(), PRIMARY KEY(capability_id,nonce));
+CREATE FUNCTION master.capability_lifecycle() RETURNS trigger LANGUAGE plpgsql AS $$
+BEGIN
+ IF TG_OP='DELETE' THEN RAISE EXCEPTION 'capabilities retained'; END IF;
+ IF to_jsonb(NEW)-'revoked_at' IS DISTINCT FROM to_jsonb(OLD)-'revoked_at'
+ OR OLD.revoked_at IS NOT NULL AND NEW.revoked_at IS DISTINCT FROM OLD.revoked_at
+ THEN RAISE EXCEPTION 'capability immutable; rotate with a successor'; END IF;
+ RETURN NEW;
+END $$;
+CREATE TRIGGER capability_lifecycle BEFORE UPDATE OR DELETE ON master.agent_capabilities
+ FOR EACH ROW EXECUTE FUNCTION master.capability_lifecycle();
+CREATE TRIGGER agent_nonces_immutable BEFORE UPDATE OR DELETE ON master.agent_nonces
+ FOR EACH ROW EXECUTE FUNCTION master.immutable();
 CREATE TABLE master.work_bindings(execution_source text NOT NULL, repository text NOT NULL CHECK(repository IN ('jxwalker/patent-studio','jxwalker/openscorpion','jxwalker/ariadne')),
  native_kind text NOT NULL CHECK(native_kind IN ('task','run')), native_id text NOT NULL,
  work_id text NOT NULL REFERENCES master.nodes(id), created_by text NOT NULL CHECK(created_by='james'),
@@ -57,7 +69,8 @@ BEGIN
    'policy',work.body->>'policy','policyRevision',(SELECT revision FROM master.nodes WHERE id=work.body->>'policy'),
    'policyRules',(SELECT jsonb_build_object('requiredKinds',body->'requiredKinds','maxAgeSeconds',body->'maxAgeSeconds') FROM master.nodes WHERE id=work.body->>'policy'),
    'handover',NULL,
-   'dependencies',coalesce((SELECT jsonb_agg(dependency_id ORDER BY dependency_id) FROM master.dependencies WHERE work_id=work.id),'[]'::jsonb),
+   'hasUnscopedDependencies',EXISTS(SELECT 1 FROM master.dependencies WHERE work_id=work.id AND NOT dependency_id=ANY(cap.eligible_work_ids)),
+   'dependencies',coalesce((SELECT jsonb_agg(dependency_id ORDER BY dependency_id) FROM master.dependencies WHERE work_id=work.id AND dependency_id=ANY(cap.eligible_work_ids)),'[]'::jsonb),
    'recentReceipts',coalesce((SELECT jsonb_agg(r) FROM (SELECT receipt.idempotency_key,receipt.result,receipt.at FROM master.agent_command_receipts receipt
       WHERE receipt.capability_id=cap_id AND receipt.payload->>'target'=work.id ORDER BY receipt.at DESC LIMIT 10) r),'[]'::jsonb),
    'state',work.body->>'state','nextAction',work.body->>'nextAction'));

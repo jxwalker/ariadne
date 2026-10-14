@@ -112,7 +112,7 @@ a public proxy must expose only exact signed routes from a separately approved p
 
 Headers: X-Ariadne-Capability, X-Ariadne-Timestamp (10 decimal Unix seconds, within 300
 seconds), X-Ariadne-Nonce (fresh ID) and X-Ariadne-Signature (hex HMAC-SHA256). Signed bytes
-are timestamp + newline + nonce + newline + method + newline + exact HTTP request target
+are timestamp + newline + nonce + newline + capability ID + newline + method + newline + exact HTTP request target
 (including encoded query) + newline + raw body (empty for GET). This retains the existing
 transport's timestamp/nonce/body convention and additionally binds method and route.
 Consumed nonces are never reused, including failed commands. A retry uses a new nonce
@@ -128,3 +128,5 @@ references enter SQL. Scope, current owner, explicit binding and capability life
 rechecked even for receipt retries. Capability key references are immutable at enrollment;
 rotation uses a successor capability. Nonce cleanup after expiry requires separately
 reviewed retention; no pruning of active replay records is implemented.
+
+Bindings are immutable aliases. Correct an erroneous binding by revoking the associated capability and enrolling an approved new native identity; aliases are never silently repointed. Dependency IDs outside capability eligibility are hidden, with an unscoped-dependency flag retained. Capability identity, key reference and scope are immutable; only first revocation is allowed. Nonces are append-only. Same-uid operator-equivalent processes remain outside this capability boundary. Authenticated request-rate hardening and reviewed retention remain rollout prerequisites.
