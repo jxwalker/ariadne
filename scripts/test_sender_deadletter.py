@@ -63,7 +63,7 @@ class SenderDeadletter(unittest.TestCase):
             spool,c=self.fixture(directory);dead=spool/'spool-deadletter';dead.mkdir(mode=0o700)
             (dead/'0.reason').write_text('{"status":400}')
             original=(spool/'0.json').read_bytes()
-            with patch('activity_sender.os.fsync',side_effect=OSError('synthetic sync failure')):
+            with patch('activity_sender.os.fsync',side_effect=[None,OSError('synthetic sync failure')]):
                 with self.assertRaises(OSError):quarantine(spool,spool/'0.json',400)
             self.assertEqual((spool/'0.json').read_bytes(),original)
             self.assertEqual((dead/'0.json').read_bytes(),original)

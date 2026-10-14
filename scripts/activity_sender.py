@@ -68,9 +68,12 @@ def quarantine(spool,event,status):
         persist(reason,{'status':status,'serverError':labels[status],
                         'at':datetime.now(timezone.utc).isoformat()})
     os.chmod(event,0o600)
+    descriptor=os.open(event,os.O_RDONLY | os.O_NOFOLLOW)
+    try:os.fsync(descriptor)
+    finally:os.close(descriptor)
     if not target.exists():os.link(event,target)
     # Destination must be durable before removing the original spool link.
-    for directory in (deadletter,):
+    for directory in (deadletter,spool):
         descriptor=os.open(directory,os.O_RDONLY)
         try:os.fsync(descriptor)
         finally:os.close(descriptor)
