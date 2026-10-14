@@ -41,11 +41,18 @@ def send(config, command):
         finally:error.close()
 
 
+def prune_receipts(directory):
+    # Server keeps authoritative receipts; only completed local cache entries rotate.
+    completed=[p for p in sorted(directory.glob('*.receipt')) if not p.with_name(p.name.removesuffix('.receipt')).exists()]
+    for old in completed[:-100]:old.unlink()
+
+
 def flush(config, transport=send):
     directory=pathlib.Path(config['spool']);directory.mkdir(parents=True,exist_ok=True,mode=0o700)
     with open(directory/'.flush-lock','a') as lock:
         try:fcntl.flock(lock,fcntl.LOCK_EX|fcntl.LOCK_NB)
         except BlockingIOError:return
+        prune_receipts(directory)
         for path in sorted(directory.glob('*.json')):
             receipt_path=directory/(path.name+'.receipt')
             if receipt_path.exists():
@@ -53,6 +60,7 @@ def flush(config, transport=send):
                 except (OSError,ValueError):return
                 if not isinstance(saved,dict) or not saved.get('ok'):return
                 path.unlink() # durable success survives credential rotation or expiry; never resend
+                prune_receipts(directory)
                 continue
             try:
                 command=json.loads(path.read_text())
@@ -69,6 +77,4 @@ def flush(config, transport=send):
             persist(receipt_path,result)
             if not result.get('ok'):return # keep rejected command and current state for operator/client reconciliation
             path.unlink()
-            # Server keeps authoritative receipts. Bound the local successful receipt cache.
-            completed=[p for p in sorted(directory.glob('*.receipt')) if not p.with_name(p.name.removesuffix('.receipt')).exists()]
-            for old in completed[:-100]:old.unlink()
+            prune_receipts(directory)

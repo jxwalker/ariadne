@@ -248,3 +248,15 @@ class ClaimsLeases(unittest.TestCase):
         # Synthetic fill of durable pending offers isolates the queue boundary.
         self.sql("INSERT INTO master.assignments SELECT 'synthetic-full-%s-'||n,'%s','%s',n,'offered',now()+interval '1 hour' FROM generate_series(100,199) n;"%(cap,req['target'],cap),database='ledger_test',raw=True)
         self.assertEqual(self.send(cap,req,'claim')['error'],'assignment queue full')
+
+    def test_synthetic_cache_pruned_after_recovered_success(self):
+        import tempfile,pathlib
+        from agent_spool import enqueue,flush
+        from activity_sender import persist
+        from unittest.mock import patch
+        with tempfile.TemporaryDirectory() as directory:
+            for index in range(100):persist(pathlib.Path(directory)/('00000000000000000000-'+str(index)+'.json.receipt'),{'ok':True})
+            path=enqueue(directory,{'idempotencyKey':'synthetic-cache-crash'})
+            persist(path.with_name(path.name+'.receipt'),{'ok':True})
+            with patch('agent_spool.send') as transport:flush({'spool':directory},transport);transport.assert_not_called()
+            self.assertEqual(len(list(pathlib.Path(directory).glob('*.receipt'))),100)
