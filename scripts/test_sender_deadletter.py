@@ -19,10 +19,11 @@ class SenderDeadletter(unittest.TestCase):
                 error=urllib.error.HTTPError('https://synthetic.invalid',status,'synthetic-secret-error',{},io.BytesIO(b'synthetic-secret-body'))
                 with patch('activity_sender.deliver',side_effect=[error,{'eventId':'synthetic-success'}]) as deliver,redirect_stderr(stderr):flush(c)
                 self.assertEqual(deliver.call_count,2);self.assertEqual(list(spool.glob('*.json')),[])
-                dead=spool.parent/'spool-deadletter';reason=json.loads((dead/'0.reason').read_text())
+                dead=spool/'spool-deadletter';reason=json.loads((dead/'0.reason').read_text())
                 self.assertEqual(reason['status'],status);self.assertTrue((dead/'0.json').exists())
                 self.assertNotIn('synthetic-secret',str(reason)+stderr.getvalue());self.assertNotIn('summary',str(reason))
                 self.assertEqual((dead/'0.json').stat().st_mode & 0o777,0o600)
+                self.assertEqual((dead/'0.reason').stat().st_mode & 0o777,0o600)
                 self.assertEqual(dead.stat().st_mode & 0o777,0o700)
                 self.assertEqual(json.loads((spool/'.retry').read_text())['attempt'],0)
 
@@ -35,4 +36,23 @@ class SenderDeadletter(unittest.TestCase):
                 with patch('activity_sender.deliver',side_effect=error) as deliver:flush(c)
                 self.assertEqual(deliver.call_count,1);self.assertEqual(len(list(spool.glob('*.json'))),2)
                 self.assertEqual(json.loads((spool/'.retry').read_text())['attempt'],1)
-                self.assertFalse((spool.parent/'spool-deadletter').exists())
+                self.assertFalse((spool/'spool-deadletter').exists())
+
+    def test_synthetic_storage_failure_retains_head_and_backoff(self):
+        with tempfile.TemporaryDirectory() as directory:
+            spool,c=self.fixture(directory)
+            body=io.BytesIO(b'synthetic-upstream')
+            error=urllib.error.HTTPError('https://synthetic.invalid',400,'invalid',{},body)
+            with patch('activity_sender.deliver',side_effect=error),patch('activity_sender.quarantine',side_effect=OSError('synthetic full disk')),redirect_stderr(io.StringIO()):flush(c)
+            self.assertTrue(body.closed)
+            self.assertEqual(len(list(spool.glob('*.json'))),2)
+            self.assertEqual(json.loads((spool/'.retry').read_text())['attempt'],1)
+
+    def test_synthetic_collision_preserves_original_and_existing_evidence(self):
+        with tempfile.TemporaryDirectory() as directory:
+            spool,c=self.fixture(directory);dead=spool/'spool-deadletter';dead.mkdir(mode=0o755)
+            (dead/'0.json').write_text('synthetic prior evidence')
+            error=urllib.error.HTTPError('https://synthetic.invalid',400,'invalid',{},None)
+            with patch('activity_sender.deliver',side_effect=error),redirect_stderr(io.StringIO()):flush(c)
+            self.assertTrue((spool/'0.json').exists());self.assertEqual((dead/'0.json').read_text(),'synthetic prior evidence')
+            self.assertEqual(dead.stat().st_mode & 0o777,0o700)

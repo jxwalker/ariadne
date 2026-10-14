@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """Bounded local spool and authenticated HTTPS delivery. Hooks never perform network IO."""
-import argparse, fcntl, hashlib, hmac, json, os, pathlib, subprocess, sys, time, urllib.error, urllib.request, uuid
+import argparse, fcntl, hashlib, hmac, json, os, pathlib, stat, subprocess, sys, time, urllib.error, urllib.request, uuid
 from datetime import datetime, timezone
 from activity_server import validate, canonical
 
@@ -47,6 +47,35 @@ def persist(path, value):
     finally:
         tmp.unlink(missing_ok=True)
 
+def quarantine(spool,event,status):
+    # Keep protected storage on the same filesystem and under the delivery lock.
+    deadletter=spool/'spool-deadletter'
+    deadletter.mkdir(exist_ok=True,mode=0o700)
+    metadata=deadletter.lstat()
+    if not stat.S_ISDIR(metadata.st_mode) or metadata.st_uid!=os.geteuid():
+        raise OSError('unsafe dead-letter directory')
+    os.chmod(deadletter,0o700)
+    target=deadletter/event.name
+    if not target.exists() and len(list(deadletter.glob('*.json')))>=10000:
+        raise OSError('dead-letter capacity reached')
+    labels={400:'invalid request',401:'unauthorized',403:'forbidden',404:'route not found',
+            409:'conflicting event',413:'body too large',422:'unprocessable event'}
+    # Preserve evidence on a filename collision; recover an interrupted identical move.
+    if target.exists() and (target.is_symlink() or target.read_bytes()!=event.read_bytes()):
+        raise OSError('dead-letter identity conflict')
+    reason=deadletter/(event.stem+'.reason')
+    if not reason.exists():
+        persist(reason,{'status':status,'serverError':labels[status],
+                        'at':datetime.now(timezone.utc).isoformat()})
+    os.chmod(event,0o600)
+    if not target.exists():os.link(event,target)
+    event.unlink()
+    for directory in (deadletter,spool):
+        descriptor=os.open(directory,os.O_RDONLY)
+        try:os.fsync(descriptor)
+        finally:os.close(descriptor)
+    print('Ariadne sender dead-letter: HTTP '+str(status)+' '+labels[status],file=sys.stderr)
+
 def flush(c):
     spool=pathlib.Path(c['spool']); spool.mkdir(parents=True,exist_ok=True,mode=0o700)
     with open(spool/'.delivery-lock','a') as lock:
@@ -74,25 +103,18 @@ def flush(c):
                     persist(replies,dict(list(known.items())[-100:]))
                 p.unlink();retry={'at':0,'attempt':0}
             except urllib.error.HTTPError as error:
-                if error.code in {400,401,403,404,409,413,422}:
-                    deadletter=spool.parent/'spool-deadletter'
-                    deadletter.mkdir(parents=True,exist_ok=True,mode=0o700)
-                    os.chmod(deadletter,0o700)
-                    # Fixed labels only: arbitrary upstream error bodies can contain secrets.
-                    labels={400:'invalid request',401:'unauthorized',403:'forbidden',404:'route not found',
-                            409:'conflicting event',413:'body too large',422:'unprocessable event'}
-                    reason={'status':error.code,'serverError':labels[error.code],
-                            'at':datetime.now(timezone.utc).isoformat()}
-                    persist(deadletter/(p.stem+'.reason'),reason)
-                    os.chmod(p,0o600)
-                    p.replace(deadletter/p.name)
-                    directory=os.open(deadletter,os.O_RDONLY)
-                    try:os.fsync(directory)
-                    finally:os.close(directory)
-                    print('Ariadne sender dead-letter: HTTP '+str(error.code)+' '+labels[error.code],file=sys.stderr)
-                    retry={'at':0,'attempt':0}
-                    continue
-                retry['attempt']=min(retry['attempt']+1,10); retry['at']=time.time()+min(300,2**retry['attempt']); break
+                try:
+                    if error.code in {400,401,403,404,409,413,422}:
+                        try:
+                            quarantine(spool,p,error.code)
+                        except OSError:
+                            print('Ariadne sender dead-letter storage unavailable; retaining event with backoff',file=sys.stderr)
+                        else:
+                            retry={'at':0,'attempt':0}
+                            continue
+                    retry['attempt']=min(retry['attempt']+1,10); retry['at']=time.time()+min(300,2**retry['attempt']); break
+                finally:
+                    error.close()
             except Exception:
                 retry['attempt']=min(retry['attempt']+1,10); retry['at']=time.time()+min(300,2**retry['attempt']); break
         persist(state,retry)
