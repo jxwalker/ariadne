@@ -122,7 +122,7 @@ and current generation. A rotated capability is a new identity: reconcile receip
 current state before retrying rather than assuming cross-capability deduplication.
 
 Disabled, invalid, unknown or badly signed credentials return 401; valid command rejection
-returns 409, and denied packets return 403. Scope failures use one generic message. No
+returns 409 for conflicts, 403 for denied scope/operation, or 400 for invalid patch/key; denied packets return 403. Scope failures use one generic message. No
 fallback to the operator DB is allowed. Registry keys are protected files, and only key
 references enter SQL. Scope, current owner, explicit binding and capability lifetime are
 rechecked even for receipt retries. Capability key references are immutable at enrollment;
@@ -130,3 +130,5 @@ rotation uses a successor capability. Nonce cleanup after expiry requires separa
 reviewed retention; no pruning of active replay records is implemented.
 
 Bindings are immutable aliases. Correct an erroneous binding by revoking the associated capability and enrolling an approved new native identity; aliases are never silently repointed. Dependency IDs outside capability eligibility are hidden, with an unscoped-dependency flag retained. Capability identity, key reference and scope are immutable; only first revocation is allowed. Nonces are append-only. Same-uid operator-equivalent processes remain outside this capability boundary. Authenticated request-rate hardening and reviewed retention remain rollout prerequisites.
+
+Authenticated scope/operation rejections with valid idempotency keys also receive immutable receipts and journal entries. Later binding approval does not turn a rejected key into a successful command; reconciliation needs a new key. Current scope is still rechecked before returning any existing receipt. Unexpected SQL error text remains private journal evidence and is replaced with a generic error in agent receipts.

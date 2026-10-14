@@ -19,6 +19,7 @@ BEGIN
  THEN RAISE EXCEPTION 'capability immutable; rotate with a successor'; END IF;
  RETURN NEW;
 END $$;
+REVOKE ALL ON FUNCTION master.capability_lifecycle() FROM PUBLIC;
 CREATE TRIGGER capability_lifecycle BEFORE UPDATE OR DELETE ON master.agent_capabilities
  FOR EACH ROW EXECUTE FUNCTION master.capability_lifecycle();
 CREATE TRIGGER agent_nonces_immutable BEFORE UPDATE OR DELETE ON master.agent_nonces
@@ -57,9 +58,10 @@ BEGIN
  OR NOT EXISTS(SELECT 1 FROM master.work_bindings binding WHERE binding.execution_source=cap.execution_source
    AND binding.repository=request->>'repository' AND binding.native_kind=request->>'nativeKind'
    AND binding.native_id=request->>'nativeId' AND binding.work_id=work.id)
- THEN RETURN '{"ok":false,"error":"work scope denied"}'; END IF;
- IF NOT coalesce(request->>'op'=ANY(cap.allowed_operations),false) THEN RETURN '{"ok":false,"error":"operation denied"}'; END IF;
+ THEN result:='{"ok":false,"error":"work scope denied"}'; END IF;
+ IF result IS NULL AND NOT coalesce(request->>'op'=ANY(cap.allowed_operations),false) THEN result:='{"ok":false,"error":"operation denied"}'; END IF;
  IF request->>'op'='packet' THEN
+  IF result IS NOT NULL THEN RETURN result; END IF;
   -- Deliberately allowlisted fields: no unrelated history, source observations or decisions.
   RETURN jsonb_build_object('ok',true,'work',jsonb_build_object('id',work.id,'revision',work.revision,
    'generation',work.body->'generation','owner',cap.agent_identity,'harness',cap.harness,'executionSource',cap.execution_source,
@@ -78,10 +80,12 @@ BEGIN
  IF key IS NULL OR key !~ '^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$' THEN RETURN '{"ok":false,"error":"idempotency key required"}'; END IF;
  SELECT * INTO previous FROM master.agent_command_receipts WHERE capability_id=cap_id AND idempotency_key=key;
  IF FOUND THEN
-  IF previous.payload=request THEN RETURN previous.result; END IF;
-  RETURN '{"ok":false,"error":"idempotency payload conflict"}';
+  IF previous.payload IS DISTINCT FROM request THEN RETURN '{"ok":false,"error":"idempotency payload conflict"}'; END IF;
+  IF result IS NOT NULL THEN RETURN result; END IF;
+  RETURN previous.result;
  END IF;
- IF request->'generation' IS DISTINCT FROM work.body->'generation' THEN result:='{"ok":false,"error":"ownership generation conflict"}';
+ IF result IS NOT NULL THEN NULL;
+ ELSIF request->'generation' IS DISTINCT FROM work.body->'generation' THEN result:='{"ok":false,"error":"ownership generation conflict"}';
  ELSIF request->>'op'='update' AND (jsonb_typeof(request->'patch') IS DISTINCT FROM 'object' OR
  (request->'patch')-ARRAY['nextAction','blocker'] <> '{}'::jsonb) THEN result:='{"ok":false,"error":"patch denied"}';
  ELSIF request->>'op' NOT IN ('update','transition') THEN result:='{"ok":false,"error":"operation denied"}';
@@ -91,6 +95,16 @@ BEGIN
   IF request->>'op'='update' THEN c:=c||jsonb_build_object('patch',request->'patch');
   ELSE c:=c||jsonb_build_object('state',CASE WHEN request->>'state'='Done' THEN 'verification' ELSE request->>'state' END); END IF;
   result:=master.command(cap.agent_identity,c);
+  IF NOT coalesce((result->>'ok')::boolean,false) AND result->>'error' NOT IN
+   ('revision conflict','permission denied','invalid transition','operator cancellation required','terminal work',
+    'dependencies unresolved or unaccepted','scope not approved','invalid lifecycle order','reason required',
+    'immutable scope or invalid patch','accepted work immutable')
+  THEN result:='{"ok":false,"error":"command rejected"}'; END IF;
+ END IF;
+ IF c IS NULL THEN
+  INSERT INTO master.journal(command_id,actor,via,target,result) VALUES(
+   'agent-'||encode(sha256(convert_to(jsonb_build_array(cap_id,key)::text,'UTF8')),'hex'),cap.agent_identity,
+   cap.execution_source||'/'||cap.harness,request->>'target',result);
  END IF;
  INSERT INTO master.agent_command_receipts VALUES(cap_id,key,request,result,now());
  RETURN result;

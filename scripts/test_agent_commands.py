@@ -54,6 +54,9 @@ class AgentCommands(unittest.TestCase):
         self.sql("CREATE ROLE ariadne_agent_transport LOGIN; GRANT USAGE ON SCHEMA master TO ariadne_agent_transport; GRANT EXECUTE ON FUNCTION master.agent_request(text,text,jsonb) TO ariadne_agent_transport;",database='ledger_test',raw=True)
         for sql in ["SELECT master.command('james','{}');",'SELECT master.snapshot();','SELECT * FROM master.agent_capabilities;',"SET SESSION AUTHORIZATION ariadne_master; SELECT master.bind_work('a','b','run','c','d','e');"]:
             with self.assertRaises(AssertionError):self.sql('SET SESSION AUTHORIZATION ariadne_agent_transport;'+sql,database='ledger_test',raw=True)
+        self.sql("CREATE ROLE synthetic_nonoperator LOGIN; GRANT USAGE ON SCHEMA master TO synthetic_nonoperator; GRANT EXECUTE ON FUNCTION master.bind_work(text,text,text,text,text,text) TO synthetic_nonoperator;",database='ledger_test',raw=True)
+        with self.assertRaisesRegex(AssertionError,'operator binding required'):
+            self.sql("SET SESSION AUTHORIZATION synthetic_nonoperator; SELECT master.bind_work('a','b','run','c','d','e');",database='ledger_test',raw=True)
         r=self.sql("SET SESSION AUTHORIZATION ariadne_agent_transport; SELECT master.agent_request('%s','synthetic-granted-nonce','%s');"%(cap,json.dumps(c)),database='ledger_test')
         self.assertTrue(r['ok'],r)
 
@@ -70,6 +73,14 @@ class AgentCommands(unittest.TestCase):
         self.assertEqual(len(packet['recentReceipts']),1)
         self.assertEqual(packet['recentReceipts'][0]['idempotency_key'],c['idempotencyKey'])
         with self.assertRaises(AssertionError):self.sql("DELETE FROM master.agent_nonces WHERE capability_id='%s';"%cap,database='ledger_test',raw=True)
+
+    def test_synthetic_rejected_key_stays_rejected_after_binding_approval(self):
+        cap,c=self.setup_cap();c['nativeId']='synthetic-late-binding'+cap
+        denied=self.request(cap,c);self.assertFalse(denied['ok'])
+        self.sql("SET SESSION AUTHORIZATION ariadne_master; SELECT master.bind_work('synthetic-source','jxwalker/ariadne','run','%s','%s','synthetic-approval');"%(c['nativeId'],c['target']),database='ledger_test',raw=True)
+        self.assertEqual(self.request(cap,c),denied)
+        self.assertEqual(self.request(cap,{**c,'patch':{'nextAction':'changed'}})['error'],'idempotency payload conflict')
+        self.assertTrue(self.request(cap,{**c,'idempotencyKey':str(uuid.uuid4())})['ok'])
 
     def test_synthetic_concurrent_duplicate_has_one_effect(self):
         from concurrent.futures import ThreadPoolExecutor
@@ -146,7 +157,7 @@ class TransportAuthentication(__import__('unittest').TestCase):
                     self.assertEqual(send('POST','/api/agent/v1/commands',b'{"op":"update"}',False)[0],401)
                     self.assertEqual(send('GET','/api/master')[0],404)
                 with patch('agent_commands.query',return_value={'ok':False,'error':'work scope denied'}):
-                    self.assertEqual(send('POST','/api/agent/v1/commands',b'{"op":"update"}')[0],409)
+                    self.assertEqual(send('POST','/api/agent/v1/commands',b'{"op":"update"}')[0],403)
                     self.assertEqual(send('GET','/api/agent/v1/work/synthetic-work?repository=jxwalker%2Fariadne&nativeKind=run&nativeId=synthetic-run')[0],403)
                 with patch('agent_commands.query',return_value={'ok':False,'error':'signature replay'}):
                     self.assertEqual(send('POST','/api/agent/v1/commands',b'{"op":"update"}')[0],401)

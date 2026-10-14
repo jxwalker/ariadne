@@ -295,7 +295,9 @@ class Handler(BaseHTTPRequestHandler):
                 request=json.loads(raw)
                 if not isinstance(request,dict) or request.get('op')=='packet':raise ValueError('invalid command')
                 result=handle(self.server.app,self.headers,raw,'POST',self.path,request)
-                return self.reply(200 if result.get('ok') else 409,result)
+                error=result.get('error')
+                status=200 if result.get('ok') else 403 if error in {'work scope denied','operation denied'} else 400 if error in {'patch denied','idempotency key required'} else 409
+                return self.reply(status,result)
             if self.path=='/api/operator-response':
                 if self.server.app.config.get('disableQueries') or self.server.app.config.get('ingestOnly'):return self.reply(404,{'error':'route not found'})
                 from activity_decisions import controller, StaleDecision
