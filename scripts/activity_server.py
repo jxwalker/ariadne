@@ -345,8 +345,8 @@ class Handler(BaseHTTPRequestHandler):
             from agent_commands import handle
             try:
                 route=urlsplit(self.path);filters=parse_qs(route.query,strict_parsing=True)
-                if set(filters)!={'repository'} or len(filters['repository'])!=1:raise ValueError('invalid scope')
-                request={'op':'packet','target':route.path.removeprefix('/api/agent/v1/work/'),'repository':filters['repository'][0]}
+                if set(filters)!={'repository','nativeKind','nativeId'} or any(len(v)!=1 for v in filters.values()):raise ValueError('invalid scope')
+                request={'op':'packet','target':route.path.removeprefix('/api/agent/v1/work/'),'repository':filters['repository'][0],'nativeKind':filters['nativeKind'][0],'nativeId':filters['nativeId'][0]}
                 result=handle(self.server.app,self.headers,b'','GET',self.path,request)
                 return self.reply(200 if result.get('ok') else 403,result)
             except PermissionError:return self.reply(401,{'error':'unauthorized'})

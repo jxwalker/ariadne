@@ -8,10 +8,10 @@ CREATE TABLE master.agent_capabilities (
  allowed_operations text[] NOT NULL CHECK(allowed_operations <@ ARRAY['update','transition','packet']::text[]),
  issued_at timestamptz NOT NULL DEFAULT now(), expires_at timestamptz NOT NULL,
  revoked_at timestamptz, rotation_predecessor text REFERENCES master.agent_capabilities(id),
- CHECK(expires_at>issued_at));
+ CHECK(isfinite(issued_at) AND isfinite(expires_at) AND expires_at>issued_at));
 CREATE TABLE master.agent_nonces(capability_id text REFERENCES master.agent_capabilities(id), nonce text NOT NULL,
  at timestamptz NOT NULL DEFAULT now(), PRIMARY KEY(capability_id,nonce));
-CREATE TABLE master.work_bindings(execution_source text NOT NULL, repository text NOT NULL,
+CREATE TABLE master.work_bindings(execution_source text NOT NULL, repository text NOT NULL CHECK(repository IN ('jxwalker/patent-studio','jxwalker/openscorpion','jxwalker/ariadne')),
  native_kind text NOT NULL CHECK(native_kind IN ('task','run')), native_id text NOT NULL,
  work_id text NOT NULL REFERENCES master.nodes(id), created_by text NOT NULL CHECK(created_by='james'),
  approval_reference text NOT NULL CHECK(length(approval_reference)>0), created_at timestamptz NOT NULL DEFAULT now(),
@@ -42,6 +42,9 @@ BEGIN
  OR work.body->>'owner' IS DISTINCT FROM cap.agent_identity
  OR NOT coalesce(request->>'repository'=ANY(cap.repositories),false)
  OR work.body->'source'->>'repository' IS DISTINCT FROM request->>'repository'
+ OR NOT EXISTS(SELECT 1 FROM master.work_bindings binding WHERE binding.execution_source=cap.execution_source
+   AND binding.repository=request->>'repository' AND binding.native_kind=request->>'nativeKind'
+   AND binding.native_id=request->>'nativeId' AND binding.work_id=work.id)
  THEN RETURN '{"ok":false,"error":"work scope denied"}'; END IF;
  IF NOT coalesce(request->>'op'=ANY(cap.allowed_operations),false) THEN RETURN '{"ok":false,"error":"operation denied"}'; END IF;
  IF request->>'op'='packet' THEN
@@ -52,6 +55,8 @@ BEGIN
    'criteria',work.body->'criteria','pathScope',work.body->'pathScope',
    'milestone',work.parent,'phase',(SELECT parent FROM master.nodes WHERE id=work.parent),
    'policy',work.body->>'policy','policyRevision',(SELECT revision FROM master.nodes WHERE id=work.body->>'policy'),
+   'policyRules',(SELECT jsonb_build_object('requiredKinds',body->'requiredKinds','maxAgeSeconds',body->'maxAgeSeconds') FROM master.nodes WHERE id=work.body->>'policy'),
+   'handover',NULL,
    'dependencies',coalesce((SELECT jsonb_agg(dependency_id ORDER BY dependency_id) FROM master.dependencies WHERE work_id=work.id),'[]'::jsonb),
    'recentReceipts',coalesce((SELECT jsonb_agg(r) FROM (SELECT receipt.idempotency_key,receipt.result,receipt.at FROM master.agent_command_receipts receipt
       WHERE receipt.capability_id=cap_id AND receipt.payload->>'target'=work.id ORDER BY receipt.at DESC LIMIT 10) r),'[]'::jsonb),
@@ -68,7 +73,7 @@ BEGIN
  (request->'patch')-ARRAY['nextAction','blocker'] <> '{}'::jsonb) THEN result:='{"ok":false,"error":"patch denied"}';
  ELSIF request->>'op' NOT IN ('update','transition') THEN result:='{"ok":false,"error":"operation denied"}';
  ELSE
-  c:=jsonb_build_object('commandId','agent-'||md5(cap_id||':'||key),'op',request->>'op','target',work.id,
+  c:=jsonb_build_object('commandId','agent-'||encode(sha256(convert_to(jsonb_build_array(cap_id,key)::text,'UTF8')),'hex'),'op',request->>'op','target',work.id,
    'expectedRevision',request->'expectedRevision','reason',request->>'reason','via',cap.execution_source||'/'||cap.harness);
   IF request->>'op'='update' THEN c:=c||jsonb_build_object('patch',request->'patch');
   ELSE c:=c||jsonb_build_object('state',CASE WHEN request->>'state'='Done' THEN 'verification' ELSE request->>'state' END); END IF;
