@@ -193,6 +193,20 @@ class HarnessAdapters(unittest.TestCase):
         with patch('sys.argv',['adapter','--config',str(bad),'exec']),patch('harness_adapter.subprocess.call') as child:
             self.assertEqual(main('codex'),1);child.assert_not_called() # explicitly bound launcher fails closed on setup
 
+    def test_colon_work_id_poll_and_isolated_enrollment_package(self):
+        import shutil,tempfile
+        p=self.fixture();work=p+'w:synthetic-adapter'
+        self.ok('create',work,kind='work',parent=p+'m',body={'title':'synthetic colon work','goal':'synthetic polling','owner':'agent:bot','source':{'repository':'jxwalker/ariadne'},'policy':p+'policy','criteria':[{'id':work+'c','text':'synthetic'}]})
+        a,c,cap=self.adapter('codex',work=work)
+        self.assertEqual(a.poll()['work']['id'],work)
+        for entry in ['claude_adapter.py','codex_adapter.py','cloud_bot_adapter.py']:
+            with tempfile.TemporaryDirectory() as directory:
+                for file in [entry,'harness_adapter.py','agent_spool.py','activity_sender.py','activity_server.py']:
+                    shutil.copy2(ROOT/'scripts'/file,pathlib.Path(directory)/file)
+                # -I omits the script directory; use explicit insertion without any source checkout imports.
+                result=subprocess.run(['python3','-I','-c',"import sys;sys.path.insert(0,'.');import "+entry.removesuffix('.py')],cwd=directory,capture_output=True,text=True)
+                self.assertEqual(result.returncode,0,result.stderr)
+
     def test_hook_never_reads_input_and_https_required(self):
         import tempfile
         for harness in ['claude','codex','cloud-bot']:

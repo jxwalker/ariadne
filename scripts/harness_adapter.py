@@ -46,7 +46,7 @@ def request(config, command, packet=False):
     route = '/api/agent/v1/commands'
     raw = json.dumps(command, sort_keys=True, separators=(',', ':')).encode()
     if packet:
-        route = '/api/agent/v1/work/' + urllib.parse.quote(command['target'], safe='') + '?' + urllib.parse.urlencode({k: command[k] for k in ('repository', 'nativeKind', 'nativeId')})
+        route = '/api/agent/v1/work/' + urllib.parse.quote(command['target'], safe=':') + '?' + urllib.parse.urlencode({k: command[k] for k in ('repository', 'nativeKind', 'nativeId')})
         raw = b''
     ts, nonce, cap = str(int(time.time())), str(uuid.uuid4()), config['capabilityId']
     signed = (ts+'\n'+nonce+'\n'+cap+'\n'+method+'\n'+route+'\n').encode()+raw
