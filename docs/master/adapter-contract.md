@@ -20,3 +20,13 @@ Use successful claim/command receipts to prepare the next record with the correc
 Live installation/enrollment is an infrastructure mutation and requires the full mutation-readiness audit/approval/dry-run/exact-plan execution gate. This slice calls no production adapter. Once separately enrolled for exact eligible work, routine work-state reports use the signed capability command path specified by the Phase 2 brief (A/D journal and generation fencing); they do not execute an infrastructure plan, push/merge, change services or accept outcomes. No adapter operation executes packet actions or changes infrastructure.
 
 The unbound queue resolves an observation source only through its exact operator-maintained `executionSource` or existing `correlationHost` registration, then compares repository and native run/task ID to approved bindings. An absent mapping remains unattributed. Neither registration nor a displayed binding grants command authority.
+
+The report/receipt wire `generation` is the current lease fence, distinct from
+`work.ownerGeneration` and the ledger's ownership/evidence generation. Poll or
+use successful receipts to obtain the fence; do not substitute it automatically
+when an existing queued command is rejected. Every claim advances the fence.
+Same-owner reclaim retains valid ownership-bound evidence; a changed owner starts
+in proposed and must resume the environment, deliberately report `ready`, then
+`start` (active). The `ready` report is a normal scoped transition and cannot
+adopt a baseline or acceptance. A handover or takeover baseline refers to the
+preceding lease fence.

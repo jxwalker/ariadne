@@ -32,7 +32,7 @@ class ClaimsLeases(unittest.TestCase):
         self.sql("INSERT INTO master.agent_capabilities(id,agent_identity,harness,execution_source,key_ref,repositories,eligible_work_ids,allowed_operations,expires_at) VALUES('%s','agent:%s','synthetic-codex','%s','%s',ARRAY['jxwalker/ariadne'],ARRAY['%s'],ARRAY[%s],now()+interval '1 hour'); INSERT INTO master.agent_roles VALUES('%s','%s');"%(cap,cap,source,cap,work,','.join("'%s'"%v for v in ops),cap,role),database='ledger_test',raw=True)
         self.sql("SET SESSION AUTHORIZATION ariadne_master; SELECT master.bind_work('%s','jxwalker/ariadne','run','%s','%s','synthetic-approved');"%(source,cap,work),database='ledger_test',raw=True)
         rev=self.sql("SELECT to_jsonb(revision) FROM master.nodes WHERE id='%s';"%work,database='ledger_test')
-        gen=self.sql("SELECT body->'generation' FROM master.nodes WHERE id='%s';"%work,database='ledger_test')
+        gen=self.sql("SELECT coalesce((SELECT to_jsonb(generation) FROM master.work_leases WHERE work_id='%s'),(SELECT body->'generation' FROM master.nodes WHERE id='%s'));"%(work,work),database='ledger_test')
         return cap,dict(target=work,repository='jxwalker/ariadne',nativeKind='run',nativeId=cap,keyRef=cap,op='claim',expectedRevision=rev,generation=gen,idempotencyKey=str(uuid.uuid4()),reason='synthetic')
     def send(self,cap,c,op,**kw):
         return self.request(cap,{**c,'op':op,'idempotencyKey':str(uuid.uuid4()),**kw})
@@ -62,7 +62,7 @@ class ClaimsLeases(unittest.TestCase):
                 before=self.sql("SELECT to_jsonb(n) FROM master.nodes n WHERE id='%s';"%c['target'],database='ledger_test')
                 result=self.request(cap,c)
                 self.assertFalse(result['ok'],result)
-                self.assertEqual(result['error'],'ownership generation conflict')
+                self.assertEqual(result['error'],'lease fence conflict')
                 self.assertEqual(self.request(cap,c),result)
                 self.assertEqual(self.sql("SELECT to_jsonb(n) FROM master.nodes n WHERE id='%s';"%c['target'],database='ledger_test'),before)
                 for table in ('work_leases','lease_resources','assignments'):
@@ -74,8 +74,58 @@ class ClaimsLeases(unittest.TestCase):
         cap,c=self.setup();owned=self.claim(cap,c)
         self.assertTrue(self.send(cap,owned,'release')['ok'])
         stale={**owned,'generation':c['generation']}
-        self.assertEqual(self.send(cap,stale,'claim')['error'],'ownership generation conflict')
+        self.assertEqual(self.send(cap,stale,'claim')['error'],'lease fence conflict')
         self.assertGreater(self.claim(cap,owned)['generation'],owned['generation'])
+
+    def test_same_owner_reclaim_preserves_ownership_bound_evidence(self):
+        cap,c=self.setup();owned=self.claim(cap,c);work=c['target']
+        generation=self.sql("SELECT body->'generation' FROM master.nodes WHERE id='%s';"%work,database='ledger_test')
+        rev=owned['expectedRevision']
+        for kind in ('ci','runtime'):
+            rev=self.ok('evidence',work,rev,evidence={'id':str(uuid.uuid4()),'kind':kind,'criterionId':work+'c','candidate':'a'*40,'policy':work[:-1]+'policy','status':'passed','synthetic':False,'sha256':'a'*64,'observedAt':self.sql('SELECT to_jsonb(now());',database='ledger_test'),'uri':'https://example.invalid/synthetic-fixture'})
+        owned['expectedRevision']=rev
+        self.assertTrue(self.send(cap,owned,'release')['ok'])
+        again=self.claim(cap,owned)
+        self.assertGreater(again['generation'],owned['generation'])
+        self.assertEqual(self.sql("SELECT body->'generation' FROM master.nodes WHERE id='%s';"%work,database='ledger_test'),generation)
+        baseline=dict(generation=owned['generation'],branch='synthetic/preserved',revision='a'*40)
+        req=dict(commandId='synthetic-preserved-'+cap,target=work,expectedRevision=again['expectedRevision'],reason='synthetic explicit recovery',baseline=baseline)
+        recovered=self.sql("SET SESSION AUTHORIZATION ariadne_master; SELECT master.record_takeover_baseline('james','%s');"%json.dumps(req),database='ledger_test')
+        self.assertTrue(recovered['ok'],recovered);again['expectedRevision']=recovered['revision'];self.start(cap,again)
+        self.assertTrue(self.send(cap,again,'resume',branch=baseline['branch'],revision=baseline['revision'])['ok'])
+        for state in ('active','verification'):
+            result=self.send(cap,again,'transition',state=state);self.assertTrue(result['ok'],result);again['expectedRevision']=result['revision']
+        self.ok('accept',work,again['expectedRevision']) # Isolated fixture proves old valid ownership evidence remains usable.
+
+    def test_new_owner_claim_is_proposed_and_audited_atomically(self):
+        cap,c=self.setup();owned=self.claim(cap,c);work=c['target']
+        self.assertTrue(self.send(cap,owned,'release')['ok'])
+        successor,d=self.setup(work=work)
+        before=self.sql("SELECT master.node_state(n) FROM master.nodes n WHERE id='%s';"%work,database='ledger_test')
+        result=self.request(successor,d);self.assertTrue(result['ok'],result)
+        after=self.sql("SELECT master.node_state(n) FROM master.nodes n WHERE id='%s';"%work,database='ledger_test')
+        self.assertEqual(after['body']['state'],'proposed')
+        self.assertEqual(after['body']['generation'],before['body']['generation']+1)
+        row=self.sql("SELECT to_jsonb(j) FROM master.journal j WHERE target='%s' AND result->>'assignmentId'='%s';"%(work,result['assignmentId']),database='ledger_test')
+        self.assertEqual(row['before_state'],before);self.assertEqual(row['after_state'],after)
+        cid=row['command_id']
+        for table,column in [('commands','id'),('outbox','command_id')]:
+            self.assertEqual(self.sql("SELECT to_jsonb(count(*)) FROM master.%s WHERE %s='%s';"%(table,column,cid),database='ledger_test'),1)
+        self.assertEqual(self.request(successor,d),result)
+        self.assertEqual(self.sql("SELECT to_jsonb(count(*)) FROM master.journal WHERE command_id='%s';"%cid,database='ledger_test'),1)
+
+    def test_handover_enforces_each_field_without_the_adapter(self):
+        cap,c=self.setup();owned=self.claim(cap,c)
+        hand=dict(branch='synthetic/direct',revision='a'*40,changedPaths=[],checks=[],evidenceRefs=[],remainingWork=[],blockers=[],nextAction='synthetic resume',localWork=[])
+        for field in ('changedPaths','checks','evidenceRefs','remainingWork','blockers','localWork'):
+            for value in ({'transcript':'synthetic disallowed'},1,None,True,'x'*501):
+                with self.subTest(field=field,value=type(value).__name__):
+                    result=self.send(cap,owned,'handover',handover={**hand,field:[value]})
+                    self.assertEqual(result.get('error'),'complete bounded handover required')
+        for field in ('branch','nextAction'):
+            self.assertEqual(self.send(cap,owned,'handover',handover={**hand,field:'x'*501})['error'],'complete bounded handover required')
+        self.assertEqual(self.sql("SELECT to_jsonb(count(*)) FROM master.handovers WHERE work_id='%s';"%c['target'],database='ledger_test'),0)
+        self.assertTrue(self.send(cap,owned,'handover',handover=hand)['ok'])
     def test_expiry_takeover_stale_owner_and_evidence(self):
         a,c=self.setup();owned=self.claim(a,c,leaseSeconds=1);time.sleep(1.1)
         b,d=self.setup(work=c['target']);new=self.claim(b,d);self.assertGreater(new['generation'],owned['generation'])
@@ -211,6 +261,7 @@ class ClaimsLeases(unittest.TestCase):
         self.assertTrue(self.send(a,owned,'handover',handover=hand)['ok'])
         b,d=self.setup(work=c['target']);second=self.claim(b,d);self.start(b,second)
         self.assertTrue(self.send(b,second,'resume',branch=hand['branch'],revision=hand['revision'])['ok'])
+        ready=self.send(b,second,'transition',state='ready');self.assertTrue(ready['ok'],ready);second['expectedRevision']=ready['revision']
         self.sql("UPDATE master.work_leases SET expires_at=clock_timestamp()-interval '1 second' WHERE work_id='%s';"%c['target'],database='ledger_test',raw=True)
         e,f=self.setup(work=c['target']);third=self.claim(e,f);self.start(e,third)
         self.assertEqual(self.send(e,third,'resume',branch=hand['branch'],revision=hand['revision'])['error'],'environment baseline unavailable')

@@ -29,3 +29,12 @@ For expiry without handover, the operator records a generation-bound recovery br
 PR E adds migration 004-adapter-dashboard.sql after 001–003, with read-only snapshot projection and no agent grant. Preserve all earlier migration bytes. Pin final reviewed E head plus SHA-256 manifest for migrations 002–004, master_dashboard.py, harness_adapter.py, claude_adapter.py, codex_adapter.py, cloud_bot_adapter.py and dependencies. Apply only missing additive migrations through the existing approval gate; verify snapshot still private and transport cannot call it. Stage adapter files only through the per-machine [harness enrollment plan](phase2-harness-enrollment-plan.md); do not enroll inaccessible/unknown machines from an assumed path.
 
 Verify desktop/mobile synthetic local browser evidence and all Python/TS suites. Dashboard state differentiates current leases, stale/released holders, receipts, blockers and handover verification. Unbound/unattributed activity stays unknown; synthetic receipts do not establish genuine production pre-PR work. Rollback restores application/hook bytes and revokes command capabilities while retaining migration 004, bindings, spool, journal, assignments and receipts. No baseline or outcome acceptance can be granted by adapters. The A+D+E mutation-readiness artifact remains approval_required and execute=false; no plan execution or live dry-run is authorized here.
+
+Final review separates lease fences from canonical ownership generations in the
+not-yet-installed migration 003. The signed wire generation remains a claim
+fence, while ownerGeneration remains the evidence/acceptance generation. Verify
+same-owner evidence survives reclaim, a changed owner returns to proposed,
+claims atomically journal exact before/after state and outbound records, direct
+handover requests obey field bounds, and stale contributions retain their own
+authorship in the private dashboard. The live inventory still has only migration
+001; do not edit already-installed migration bytes.

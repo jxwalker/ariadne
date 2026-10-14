@@ -68,17 +68,26 @@ def render(data,route,filters):
                 counts.append(str(len(ids&accepted))+' evidence accepted · '+str(len(ids&current_waived))+' current waived · '+str(len(ids&inactive_waived))+' inactive (expired/invalid) waivers / '+str(len(ids))+' '+esc(p['baseline_state'])+' criteria · '+esc(baseline))
         return ''.join('<p class="count">'+c+'</p>' for c in counts) or '<p>No scoped criterion denominator recorded</p>'
     agent_states={a['work_id']:a for a in data.get('agentState',[]) if isinstance(a,dict)}
+    def contribution(entry):
+        if not isinstance(entry,dict):return safe_ref(entry)
+        body=entry.get('body',entry)
+        ref=body.get('evidence',body) if isinstance(body,dict) else body
+        if 'capabilityId' not in entry:return safe_ref(ref)
+        return (safe_ref(ref)+' · contribution by '+esc(entry.get('agentIdentity'))
+          +' · harness '+esc(entry.get('harness'))+' · source '+esc(entry.get('executionSource'))
+          +' · role '+esc(entry.get('role'))+' · declared lease fence '+esc(entry.get('generation'))
+          +' · receipt '+esc(entry.get('commandKey'))+' (retained contribution; not acceptance)')
     def agent_state(n):
         a=agent_states.get(n['id'])
         if not a:return '<p>Agent activity: unbound / unattributed; no command lease recorded</p>'
         hand=a.get('handover') or {}; pending=not a.get('resumed') or bool(hand) and bool(a.get('released_at')) and hand.get('generation')==a.get('generation')
         return ('<p>Holder: '+esc(a.get('agent_identity'))+' · harness '+esc(a.get('harness'))+' · source '+esc(a.get('execution_source'))+'</p>'
-          +'<p>Generation: '+esc(a.get('generation'))+' · lease '+('current' if a.get('current') else 'stale / released')+' · expiry '+esc(a.get('expires_at'))+'</p>'
+          +'<p>Ownership generation: '+esc(a.get('owner_generation'))+' · lease fence '+esc(a.get('generation'))+' · lease '+('current' if a.get('current') else 'stale / released')+' · expiry '+esc(a.get('expires_at'))+'</p>'
           +'<p>Last meaningful progress: '+esc(a.get('last_progress'))+' · separate from lifecycle presence</p>'
           +'<p>Last command receipt: '+esc(json.dumps(a.get('last_receipt')))+' (transport/effect receipt; not acceptance)</p>'
           +'<p>Handover: '+('pending environment verification' if pending else 'none pending')+'</p>'
           +('<details><summary>Preserved handover</summary><pre>'+esc(json.dumps(hand,indent=2))+'</pre></details>' if hand else '')
-          +'<p>Evidence links: '+(' · '.join(safe_ref(e.get('evidence',e) if isinstance(e,dict) else e) for e in sequence(a.get('evidence_refs'))) or 'none recorded')+'</p>')
+          +'<p>Evidence links: '+(' · '.join(contribution(e) for e in sequence(a.get('evidence_refs'))) or 'none recorded')+'</p>')
     def card(n):
         href=link('/work',id=n['id']) if n['kind']=='work' else link('/roadmaps',node=n['id'])
         b=n['body'];refs=[r for r in sequence(b.get('refs')) if isinstance(r,dict)];parts=[f'<article><h3><a href="{href}">{title(n)}</a></h3><p>{esc(n["kind"])} · revision {n["revision"]} · {esc(b.get("state","sourced draft"))}</p>']

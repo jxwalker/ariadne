@@ -132,3 +132,29 @@ reviewed retention; no pruning of active replay records is implemented.
 Bindings are immutable aliases. Correct an erroneous binding by revoking the associated capability and enrolling an approved new native identity; aliases are never silently repointed. Dependency IDs outside capability eligibility are hidden, with an unscoped-dependency flag retained. Capability identity, key reference and scope are immutable; only first revocation is allowed. Nonces are append-only. Same-uid operator-equivalent processes remain outside this capability boundary. Authenticated request-rate hardening and reviewed retention remain rollout prerequisites.
 
 Authenticated scope/operation rejections with valid idempotency keys also receive immutable receipts and journal entries. Later binding approval does not turn a rejected key into a successful command; reconciliation needs a new key. Current scope is still rechecked before returning any existing receipt. Unexpected SQL error text remains private journal evidence and is replaced with a generic error in agent receipts.
+
+### Phase 2 lease fences and evidence ownership
+
+The signed slice-2 wire field `generation` is the per-claim lease fence, returned
+by the scoped packet or claim receipt. It increases on every successful claim.
+`work.ownerGeneration`, `work_leases.owner_generation`, and the canonical node
+`body.generation` retain the ownership generation used by evidence and acceptance.
+A same-owner reclaim preserves that ownership generation and prior valid evidence.
+Changing owner advances it and returns the work to proposed; after environment
+resume the enrolled owner deliberately reports ready before active, with ordinary
+approved-scope and dependency checks. No baseline or acceptance is adopted by a claim.
+
+A claim requires the current wire fence and expected work revision. Every later
+leased write verifies the fence, recorded ownership generation, owner, capability
+and live lease. A rejected claim changes no node, lease, resource or assignment.
+A successful claim commits its immutable command result, exact before/after
+node journal states, outbound record, lease, assignment and receipt atomically.
+Duplicate delivery returns that receipt without another effect. Operator takeover
+baselines and handover generations refer to the preceding lease fence.
+
+Handover branch and nextAction strings and every collection element are bounded
+at 500 characters by the server as well as the adapter. Retained evidence keeps
+its authenticated capability, agent, harness, execution source, role, declared
+lease fence and command key in the private projection. It remains a contribution,
+not evidence acceptance or proof attributed to the successor. Role denials use
+HTTP 403; signed request throttling uses 429 on both packet and command routes.

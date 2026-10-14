@@ -273,6 +273,14 @@ class App:
                     evaluate(self.store,self.sources(),self.config)
             except Exception as exc: print('processor failure:',type(exc).__name__,flush=True)
 
+def agent_response_status(result):
+    if result.get('ok'):return 200
+    error=result.get('error')
+    if error in {'work scope denied','operation denied','role operation denied'}:return 403
+    if error=='request rate exceeded':return 429
+    if error in {'patch denied','idempotency key required','invalid nonce'}:return 400
+    return 409
+
 class Handler(BaseHTTPRequestHandler):
     server_version='AriadneActivity/1'
     def log_message(self,fmt,*args): pass  # bodies/auth never logged
@@ -295,9 +303,7 @@ class Handler(BaseHTTPRequestHandler):
                 request=json.loads(raw)
                 if not isinstance(request,dict) or request.get('op')=='packet':raise ValueError('invalid command')
                 result=handle(self.server.app,self.headers,raw,'POST',self.path,request)
-                error=result.get('error')
-                status=200 if result.get('ok') else 403 if error in {'work scope denied','operation denied'} else 400 if error in {'patch denied','idempotency key required'} else 409
-                return self.reply(status,result)
+                return self.reply(agent_response_status(result),result)
             if self.path=='/api/operator-response':
                 if self.server.app.config.get('disableQueries') or self.server.app.config.get('ingestOnly'):return self.reply(404,{'error':'route not found'})
                 from activity_decisions import controller, StaleDecision
@@ -351,7 +357,7 @@ class Handler(BaseHTTPRequestHandler):
                 if set(filters)!={'repository','nativeKind','nativeId'} or any(len(v)!=1 for v in filters.values()):raise ValueError('invalid scope')
                 request={'op':'packet','target':route.path.removeprefix('/api/agent/v1/work/'),'repository':filters['repository'][0],'nativeKind':filters['nativeKind'][0],'nativeId':filters['nativeId'][0]}
                 result=handle(self.server.app,self.headers,b'','GET',self.path,request)
-                return self.reply(200 if result.get('ok') else 403,result)
+                return self.reply(agent_response_status(result),result)
             except PermissionError:return self.reply(401,{'error':'unauthorized'})
             except ValueError:return self.reply(400,{'error':'invalid packet request'})
             except Exception:return self.reply(503,{'error':'agent ledger unavailable'})

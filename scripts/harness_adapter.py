@@ -25,7 +25,7 @@ EVENTS = {'SessionStart', 'UserPromptSubmit', 'PreToolUse', 'PostToolUse',
 FIELDS = {
     'claim': {'leaseSeconds'}, 'renew': {'leaseSeconds'}, 'release': set(),
     'resume': {'branch', 'revision'}, 'receipt': {'assignmentId', 'state'},
-    'update': {'patch'}, 'start': set(), 'done': set(), 'handover': {'handover'},
+    'update': {'patch'}, 'ready': set(), 'start': set(), 'done': set(), 'handover': {'handover'},
     'retainedEvidence': {'evidence'}, 'review': {'evidence'}, 'evaluate': {'evidence'},
 }
 
@@ -131,10 +131,10 @@ class Adapter:
             evidence = fields.get('evidence')
             if not isinstance(evidence, dict) or set(evidence)-{'uri','sha256','summary','kind','candidate','synthetic','status'}: raise ValueError('evidence references required')
             if len(json.dumps(evidence))>4000 or any(not (type(v) is bool if k=='synthetic' else text(v)) for k,v in evidence.items()):raise ValueError('bounded evidence references required')
-        payload = {**self.binding, 'op': 'transition' if op in {'done','start'} else op,
+        payload = {**self.binding, 'op': 'transition' if op in {'done','start','ready'} else op,
                    'idempotencyKey': key, 'expectedRevision': expected_revision, 'generation': generation,
                    'reason': 'deliberate adapter report', **fields}
-        if op in {'done','start'}: payload['state']='verification' if op=='done' else 'active'
+        if op in {'done','start','ready'}: payload['state']={'done':'verification','start':'active','ready':'ready'}[op]
         secret=self.config.get('secret')
         def contains_secret(value):
             if isinstance(value,str):return secret in value

@@ -265,6 +265,42 @@ class HarnessAdapters(unittest.TestCase):
         state=next(row for row in self.sql('SELECT master.snapshot();',database='ledger_test')['agentState'] if row['work_id']==c['target'])
         self.assertFalse(state['current'])
 
+    def test_evidence_attribution_survives_a_successor_claim(self):
+        a,c,cap=self.adapter('claude');c=self.owned(a,c)
+        result=request(a.config,{**a.binding,'op':'retainedEvidence','idempotencyKey':'synthetic-attributed','expectedRevision':c['expectedRevision'],'generation':c['generation'],'reason':'synthetic author contribution','evidence':{'uri':'https://example.invalid/synthetic-prior-proof'}})
+        self.assertTrue(result['ok'],result)
+        path=a.command('handover','synthetic-attributed-handover',c['expectedRevision'],c['generation'],handover=dict(branch='synthetic/attribution',revision='a'*40,changedPaths=[],checks=[],evidenceRefs=[],remainingWork=[],blockers=[],nextAction='synthetic resume',localWork=[]))
+        self.assertTrue(self.receipt(a,path)['ok'])
+        b,d,next_cap=self.adapter('codex',work=c['target'])
+        path=b.command('claim','synthetic-attributed-successor',d['expectedRevision'],d['generation']);self.assertTrue(self.receipt(b,path)['ok'])
+        snapshot=self.sql('SELECT master.snapshot();',database='ledger_test')
+        state=next(x for x in snapshot['agentState'] if x['work_id']==c['target'])
+        self.assertEqual(state['capability_id'],next_cap)
+        ref=state['evidence_refs'][0]
+        self.assertEqual(ref['capabilityId'],cap);self.assertEqual(ref['generation'],c['generation'])
+        self.assertEqual(ref['agentIdentity'],'agent:'+cap)
+        self.assertNotEqual(ref['agentIdentity'],state['agent_identity'])
+        from master_dashboard import render
+        html=render(snapshot,'/work',{'id':[c['target']]})
+        self.assertIn('contribution by agent:'+cap,html)
+        self.assertIn('https://example.invalid/synthetic-prior-proof',html)
+
+    def test_real_signed_routes_distinguish_role_denials_and_throttles(self):
+        import urllib.error,urllib.request
+        a,c,cap=self.adapter('cloud-bot');c=self.owned(a,c)
+        codes=[];original=urllib.request.OpenerDirector.open
+        def observed(opener,*args,**kwargs):
+            try:return original(opener,*args,**kwargs)
+            except urllib.error.HTTPError as error:codes.append(error.code);raise
+        payload={**a.binding,'op':'review','idempotencyKey':'synthetic-role-denial','expectedRevision':c['expectedRevision'],'generation':c['generation'],'reason':'synthetic denied role','evidence':{'uri':'https://example.invalid/synthetic'}}
+        with patch('urllib.request.OpenerDirector.open',observed):
+            self.assertEqual(request(a.config,payload)['error'],'role operation denied')
+        self.assertEqual(codes,[403])
+        self.sql("INSERT INTO master.agent_nonces SELECT '%s','synthetic-throttle-'||n,clock_timestamp() FROM generate_series(1,300) n;"%cap,database='ledger_test',raw=True)
+        for packet in (False,True):
+            with self.assertRaises(urllib.error.HTTPError) as error:request(a.config,a.binding if packet else payload,packet)
+            self.assertEqual(error.exception.code,429);error.exception.close()
+
     def test_hook_never_reads_input_and_https_required(self):
         import tempfile
         for harness in ['claude','codex','cloud-bot']:
