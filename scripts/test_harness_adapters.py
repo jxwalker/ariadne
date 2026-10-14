@@ -189,6 +189,9 @@ class HarnessAdapters(unittest.TestCase):
         config=self.dir/'synthetic-exec-config';config.write_text(json.dumps({k:v for k,v in a.config.items() if k!='secret'}));config.chmod(0o600)
         with patch('sys.argv',['adapter','--config',str(config),'exec']),patch('harness_adapter.Adapter.lifecycle',side_effect=OSError()),patch('harness_adapter.subprocess.call',return_value=7):
             self.assertEqual(main('codex'),7)
+        bad=self.dir/'synthetic-bad-exec-config';bad.write_text(json.dumps({**a.config,'binding':{}}));bad.chmod(0o600)
+        with patch('sys.argv',['adapter','--config',str(bad),'exec']),patch('harness_adapter.subprocess.call') as child:
+            self.assertEqual(main('codex'),1);child.assert_not_called() # explicitly bound launcher fails closed on setup
 
     def test_hook_never_reads_input_and_https_required(self):
         import tempfile

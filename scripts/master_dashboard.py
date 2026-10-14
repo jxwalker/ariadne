@@ -36,9 +36,9 @@ def unbound_activity(store, bindings, registrations=None):
     for row in rows:
         r=dict(row);registration=(registrations or {}).get(r['source'],{})
         # Exact operator-maintained source registration, never host/title/time inference.
-        execution_source=registration.get('executionSource') or registration.get('correlationHost') or r['source']
+        execution_source=registration.get('executionSource') or registration.get('correlationHost')
         r['executionSource']=execution_source
-        if (execution_source,r['repository'],'run',r['run']) not in bound and (execution_source,r['repository'],'task',r['task']) not in bound:unbound.append(r)
+        if not execution_source or (execution_source,r['repository'],'run',r['run']) not in bound and (execution_source,r['repository'],'task',r['task']) not in bound:unbound.append(r)
     return unbound
 
 def render(data,route,filters):

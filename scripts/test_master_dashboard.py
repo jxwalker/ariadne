@@ -113,4 +113,6 @@ class MasterDashboard(unittest.TestCase):
                 rows=unbound_activity(store,bindings,{'synthetic-live-claude':{'correlationHost':'synthetic-host'}})
                 self.assertEqual({r['run'] for r in rows},{'same-title','wrong-repo'})
                 self.assertEqual(len(unbound_activity(store,bindings,{})),3)
+                direct=[{**bindings[0],'execution_source':'synthetic-live-claude'}]
+                self.assertEqual(len(unbound_activity(store,direct,{})),3) # source ID is not an execution mapping
             finally:store.close()
