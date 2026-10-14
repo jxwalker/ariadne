@@ -13,7 +13,7 @@ class SenderDeadletter(unittest.TestCase):
         return spool,{'spool':str(spool)}
 
     def test_synthetic_permanent_errors_do_not_block_next_event(self):
-        for status in [400,401,403,404,409,413,422]:
+        for status in [400,404,409,413,422]:
             with self.subTest(status=status), tempfile.TemporaryDirectory() as directory:
                 spool,c=self.fixture(directory);stderr=io.StringIO()
                 error=urllib.error.HTTPError('https://synthetic.invalid',status,'synthetic-secret-error',{},io.BytesIO(b'synthetic-secret-body'))
@@ -69,3 +69,54 @@ class SenderDeadletter(unittest.TestCase):
             self.assertEqual((dead/'0.json').read_bytes(),original)
             with redirect_stderr(io.StringIO()):quarantine(spool,spool/'0.json',400)
             self.assertFalse((spool/'0.json').exists());self.assertEqual((dead/'0.json').read_bytes(),original)
+
+    def test_synthetic_auth_backlog_remains_intact(self):
+        for status in [401,403]:
+            with self.subTest(status=status),tempfile.TemporaryDirectory() as directory:
+                spool,c=self.fixture(directory)
+                for index in range(2,20):(spool/(str(index)+'.json')).write_text(json.dumps({'runId':'synthetic-run','sequence':index}))
+                original={p.name:p.read_bytes() for p in spool.glob('*.json')}
+                error=urllib.error.HTTPError('https://synthetic.invalid',status,'sensitive',{},None)
+                with patch('activity_sender.deliver',side_effect=error) as deliver,redirect_stderr(io.StringIO()):flush(c);flush(c)
+                self.assertEqual(deliver.call_count,1)
+                self.assertEqual(original,{p.name:p.read_bytes() for p in spool.glob('*.json')})
+                self.assertFalse((spool/'spool-deadletter').exists())
+                retry=json.loads((spool/'.retry').read_text());self.assertTrue(retry['paused']);self.assertEqual(retry['consecutive'],1)
+
+    def test_synthetic_same_failure_threshold_and_probe(self):
+        with tempfile.TemporaryDirectory() as directory:
+            spool,c=self.fixture(directory)
+            for index in range(2,6):(spool/(str(index)+'.json')).write_text(json.dumps({'runId':'synthetic-run','sequence':index}))
+            def bad(*_):raise urllib.error.HTTPError('https://synthetic.invalid',422,'sensitive',{},None)
+            with patch('activity_sender.deliver',side_effect=bad) as deliver,redirect_stderr(io.StringIO()):flush(c)
+            self.assertEqual(deliver.call_count,3);self.assertEqual(len(list(spool.glob('*.json'))),4)
+            self.assertEqual(len(list((spool/'spool-deadletter').glob('*.json'))),2)
+            retry=json.loads((spool/'.retry').read_text())
+            with patch('activity_sender.time.time',return_value=retry['at']+1),patch('activity_sender.deliver',side_effect=bad) as deliver,redirect_stderr(io.StringIO()):flush(c)
+            self.assertEqual(deliver.call_count,1);self.assertEqual(len(list(spool.glob('*.json'))),4)
+            retry=json.loads((spool/'.retry').read_text())
+            with patch('activity_sender.time.time',return_value=retry['at']+1),patch('activity_sender.deliver',return_value={'eventId':'synthetic-ok'}) as deliver:flush(c)
+            self.assertEqual(deliver.call_count,4);self.assertEqual(list(spool.glob('*.json')),[])
+            self.assertFalse(json.loads((spool/'.retry').read_text()).get('paused',False))
+
+    def test_synthetic_configurable_threshold_and_operator_reset(self):
+        with tempfile.TemporaryDirectory() as directory:
+            spool,c=self.fixture(directory);c['permanentFailureThreshold']=1
+            error=urllib.error.HTTPError('https://synthetic.invalid',400,'bad',{},None)
+            with patch('activity_sender.deliver',side_effect=error),redirect_stderr(io.StringIO()):flush(c)
+            self.assertEqual(len(list(spool.glob('*.json'))),2)
+            reset=spool/'.circuit-reset';reset.write_text('synthetic operator reset');reset.chmod(0o600)
+            with patch('activity_sender.deliver',return_value={'eventId':'synthetic-ok'}),redirect_stderr(io.StringIO()):flush(c)
+            self.assertFalse(reset.exists());self.assertEqual(list(spool.glob('*.json')),[])
+
+    def test_synthetic_different_probe_outcome_resumes_with_backoff(self):
+        with tempfile.TemporaryDirectory() as directory:
+            spool,c=self.fixture(directory)
+            auth=urllib.error.HTTPError('https://synthetic.invalid',401,'bad',{},None)
+            with patch('activity_sender.deliver',side_effect=auth),redirect_stderr(io.StringIO()):flush(c)
+            retry=json.loads((spool/'.retry').read_text())
+            transient=urllib.error.HTTPError('https://synthetic.invalid',500,'transient',{},None)
+            with patch('activity_sender.time.time',return_value=retry['at']+1),patch('activity_sender.deliver',side_effect=transient):flush(c)
+            retry=json.loads((spool/'.retry').read_text());self.assertFalse(retry['paused']);self.assertEqual(len(list(spool.glob('*.json'))),2)
+            with patch('activity_sender.time.time',return_value=retry['at']+1),patch('activity_sender.deliver',return_value={'eventId':'synthetic-ok'}):flush(c)
+            self.assertEqual(list(spool.glob('*.json')),[])

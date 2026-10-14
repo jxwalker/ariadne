@@ -89,6 +89,18 @@ def flush(c):
         try: fcntl.flock(lock,fcntl.LOCK_EX|fcntl.LOCK_NB)
         except BlockingIOError: return
         state=spool/'.retry'; retry=json.loads(state.read_text()) if state.exists() else {'at':0,'attempt':0}
+        threshold=int(c.get('permanentFailureThreshold',3))
+        backoff=int(c.get('circuitBreakerBackoffSeconds',300))
+        if not 1<=threshold<=100 or not 1<=backoff<=86400:raise ValueError('invalid circuit breaker settings')
+        reset=spool/'.circuit-reset'
+        if reset.exists():
+            metadata=reset.lstat()
+            if not stat.S_ISREG(metadata.st_mode) or metadata.st_uid!=os.geteuid() or metadata.st_mode & 0o077:
+                raise ValueError('operator circuit reset must be a protected regular file')
+            retry={'at':0,'attempt':0}
+            persist(state,retry) # persist reset before consuming it
+            reset.unlink()
+            print('Ariadne sender circuit breaker: operator reset consumed',file=sys.stderr)
         if time.time()<retry['at']: return
         # Filesystem timestamps can tie: preserve each run's producer order.
         def order(path):
@@ -112,18 +124,37 @@ def flush(c):
             except urllib.error.HTTPError as error:
                 try:
                     if error.code in {400,401,403,404,409,413,422}:
+                        # Fixed local classes only: never store response bodies, URLs or error text.
+                        labels={400:'invalid-request',401:'authentication',403:'authentication',404:'route',409:'conflict',413:'body-size',422:'unprocessable'}
+                        fingerprint={'status':error.code,'class':labels[error.code]}
+                        same=retry.get('permanent')==fingerprint
+                        count=retry.get('consecutive',0)+1 if same else 1
+                        still_paused=retry.get('paused',False) and same
+                        retry.update(permanent=fingerprint,consecutive=count,paused=still_paused)
+                        limit=1 if error.code in {401,403} else threshold
+                        if still_paused or count>=limit:
+                            retry.update(paused=True,at=time.time()+backoff,attempt=0)
+                            persist(state,retry)
+                            print('Ariadne sender circuit breaker: paused HTTP '+str(error.code)+' '+labels[error.code]+'; backlog retained; probe after backoff or protected .circuit-reset required',file=sys.stderr)
+                            break
+                        # A different probe outcome releases the old circuit. Persist streak before quarantine.
+                        retry.update(at=0,attempt=0,paused=False)
+                        persist(state,retry)
                         try:
                             quarantine(spool,p,error.code)
                         except OSError:
                             print('Ariadne sender dead-letter storage unavailable; preserving evidence with backoff',file=sys.stderr)
                         else:
-                            retry={'at':0,'attempt':0}
                             continue
+                    else:
+                        # Transient status differs from the tripping outcome; resume after normal backoff.
+                        retry.pop('permanent',None);retry.pop('consecutive',None);retry['paused']=False
                     retry['attempt']=min(retry['attempt']+1,10); retry['at']=time.time()+min(300,2**retry['attempt']); break
                 finally:
                     error.close()
             except Exception:
-                retry['attempt']=min(retry['attempt']+1,10); retry['at']=time.time()+min(300,2**retry['attempt']); break
+                # Network/storage failure is not an HTTP probe outcome; keep any paused circuit.
+                retry['attempt']=min(retry['attempt']+1,10); retry['at']=time.time()+(backoff if retry.get('paused') else min(300,2**retry['attempt'])); break
         persist(state,retry)
 
 HOOKS={'SessionStart':'session.start','UserPromptSubmit':'task.start','PreToolUse':'task.progress','PostToolUse':'task.progress','PostToolUseFailure':'task.progress','Stop':'task.progress','SessionEnd':'session.end','Interrupt':'task.interrupted','SubagentStart':'subagent.start','SubagentStop':'subagent.end'}
