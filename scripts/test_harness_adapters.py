@@ -226,6 +226,16 @@ class HarnessAdapters(unittest.TestCase):
                     self.assertEqual(main(harness),0)
                     self.assertEqual(child.call_args.args[0],child_prefix+(forwarded[1:] if forwarded[0]=='--' else forwarded))
 
+    def test_wrapper_rejects_prefix_typos_and_handles_interrupt(self):
+        from harness_adapter import main
+        a,c,cap=self.adapter('codex');config=self.dir/'synthetic-prefix-config';config.write_text(json.dumps({k:v for k,v in a.config.items() if k!='secret'}));config.chmod(0o600)
+        for args in [['--config',str(config),'--bogus','exec'],['--conf',str(config),'exec']]:
+            with patch('sys.argv',['adapter',*args]),patch('harness_adapter.subprocess.call') as child,patch('sys.stderr'):
+                with self.assertRaises(SystemExit) as result:main('codex')
+                self.assertEqual(result.exception.code,2);child.assert_not_called()
+        with patch('sys.argv',['adapter','--config='+str(config),'exec','--help']),patch('harness_adapter.subprocess.call',side_effect=KeyboardInterrupt):
+            self.assertEqual(main('codex'),130)
+
     def test_hook_never_reads_input_and_https_required(self):
         import tempfile
         for harness in ['claude','codex','cloud-bot']:

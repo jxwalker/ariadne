@@ -183,7 +183,7 @@ class Adapter:
 
 
 def main(harness):
-    parser=argparse.ArgumentParser(description='Explicitly bound '+harness+' work adapter')
+    parser=argparse.ArgumentParser(description='Explicitly bound '+harness+' work adapter',allow_abbrev=False)
     parser.add_argument('--config', required=True)
     sub=parser.add_subparsers(dest='action', required=True)
     hook=sub.add_parser('hook');hook.add_argument('event', choices=sorted(EVENTS))
@@ -192,10 +192,17 @@ def main(harness):
     report=sub.add_parser('report');report.add_argument('--record', required=True)
     if harness in {'codex','claude'}:
         sub.add_parser('exec',add_help=False) # child owns all options, including --help
-    args,passthrough=parser.parse_known_args()
-    if args.action=='exec':
+    argv=__import__('sys').argv[1:]
+    action_position=0
+    while action_position<len(argv):
+        if argv[action_position]=='--config':action_position+=2
+        elif argv[action_position].startswith('--config='):action_position+=1
+        else:break
+    if action_position<len(argv) and argv[action_position]=='exec' and harness in {'codex','claude'}:
+        args=parser.parse_args(argv[:action_position+1])
+        passthrough=argv[action_position+1:]
         args.arguments=passthrough[1:] if passthrough[:1]==['--'] else passthrough
-    elif passthrough:parser.error('unsupported adapter arguments')
+    else:args=parser.parse_args(argv)
     try:
         config=protected_json(args.config)
         if config.get('harness') != harness: raise ValueError('harness mismatch')
@@ -220,6 +227,7 @@ def main(harness):
             try:adapter.lifecycle('SessionStart')
             except Exception:print('Ariadne session-start presence unavailable',file=__import__('sys').stderr)
             try: code=subprocess.call((['codex','exec'] if harness=='codex' else ['claude'])+args.arguments) # inherit streams; never inspect them
+            except KeyboardInterrupt:code=130
             finally:
                 try:adapter.lifecycle('SessionEnd')
                 except Exception:print('Ariadne session-end presence unavailable',file=__import__('sys').stderr)
