@@ -1,0 +1,59 @@
+{
+  "classification": "read-only journal excerpts, not synthetic",
+  "unit": "ariadne-ingest-proxy",
+  "command": "journalctl --user -u ariadne-ingest-proxy -n 300 --no-pager -o json",
+  "exitCode": 0,
+  "selection": "Only fixed error phrases for GitHub route, timestamps and message hashes retained; URLs/bodies/headers omitted; six representative excerpts committed, full safe excerpt evidence retained in assignment run",
+  "excerpts": [
+    {
+      "timestampUs": "1791879899789290",
+      "route": "/ingest/v1/github",
+      "excerpt": "upstream timed out (110: Connection timed out) while reading response header from upstream",
+      "messageSha256": "6b28341825ac92c7c5b22495164c8ebf4edae0c4fde8d07c49cec04aebec9057"
+    },
+    {
+      "timestampUs": "1791881498804868",
+      "route": "/ingest/v1/github",
+      "excerpt": "upstream timed out (110: Connection timed out) while reading response header from upstream",
+      "messageSha256": "33a3ada9fc8abfe37ce810f633ec0cf6bd074156daae3ec39a7a21a5967aa473"
+    },
+    {
+      "timestampUs": "1791882058046109",
+      "route": "/ingest/v1/github",
+      "excerpt": "upstream timed out (110: Connection timed out) while reading response header from upstream",
+      "messageSha256": "84f9a5c70b362b946c56f7750c3ad6b96bf401f102f4d9696a7e7a9b70fa1176"
+    },
+    {
+      "timestampUs": "1791958844605493",
+      "route": "/ingest/v1/github",
+      "excerpt": "upstream timed out (110: Connection timed out) while reading response header from upstream",
+      "messageSha256": "ce634dbf62c48ad723618a697709d0b70e1c04a697b2488ce5a7881eecf394b8"
+    },
+    {
+      "timestampUs": "1791958844662945",
+      "route": "/ingest/v1/github",
+      "excerpt": "upstream timed out (110: Connection timed out) while reading response header from upstream",
+      "messageSha256": "18c7caa502431a1fd8e69d7f3a7f5802e9158a6400cb86561df3eaf9de9612bc"
+    },
+    {
+      "timestampUs": "1791959120344235",
+      "route": "/ingest/v1/github",
+      "excerpt": "upstream timed out (110: Connection timed out) while reading response header from upstream",
+      "messageSha256": "7aa4ff73724c6dfe9192f822de7cf7fb826d5f5969a0e15774af7054a1367a48"
+    }
+  ],
+  "totalMatchingExcerpts": 142,
+  "phraseCounts": {
+    "upstream timed out (110: Connection timed out) while reading response header from upstream": 134,
+    "client intended to send too large body: 158686 bytes": 1,
+    "client intended to send too large body: 80536 bytes": 1,
+    "client intended to send too large body: 158706 bytes": 1,
+    "client intended to send too large body: 91098 bytes": 1,
+    "client intended to send too large body: 91094 bytes": 1,
+    "client intended to send too large body: 91392 bytes": 1,
+    "client intended to send too large body: 91368 bytes": 1,
+    "client intended to send too large body: 82573 bytes": 1
+  },
+  "fullSafeExcerptSha256": "420a9a9f705e639b8a10205ef1eb0bbe2984d9b3bc825102ed3c51911af1ed55",
+  "fullSafeExcerptArtifact": "~/ariadne-run/p02/webhook-journal-safe-excerpts.json"
+}
