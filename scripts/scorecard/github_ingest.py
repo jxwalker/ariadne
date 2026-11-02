@@ -119,12 +119,11 @@ def collect(db, client):
             policies = {}
             for pr in client.get(f'repos/{repo}/pulls?state=all&sort=updated&direction=desc&per_page=100'):
                 previous = existing.get((repo, pr['number']))
-                if previous and previous.get('updated_at') == pr.get('updated_at'):
-                    previous['checks'] = [check for commit in previous.get('commits', []) for check in commit_checks(client, repo, commit['sha'])]
-                    prs.append(previous)
-                    continue
+                unchanged = previous and previous.get('updated_at') == pr.get('updated_at')
                 base = f"repos/{repo}/pulls/{pr['number']}"
-                pr = client.get(base)[0]
+                pr = dict(previous) if unchanged else client.get(base)[0]
+                # Branch policy changes independently of PR updated_at. Refresh
+                # once per branch per collection, including unavailable policies.
                 branch = pr.get('base', {}).get('ref')
                 if branch and branch not in policies:
                     try:
@@ -137,9 +136,10 @@ def collect(db, client):
                         policies[branch] = None
                         print(f'{repo}: required-check policy unavailable; CI denominator unknown')
                 pr['required_checks'] = policies.get(branch)
-                pr['reviews'] = client.get(base + '/reviews?per_page=100')
-                pr['commits'] = client.get(base + '/commits?per_page=100')
-                pr['files'] = [f['filename'] for f in client.get(base + '/files?per_page=100')]
+                if not unchanged:
+                    pr['reviews'] = client.get(base + '/reviews?per_page=100')
+                    pr['commits'] = client.get(base + '/commits?per_page=100')
+                    pr['files'] = [f['filename'] for f in client.get(base + '/files?per_page=100')]
                 # Retain historical evidence; CI projection is explicitly per final head commit.
                 pr['checks'] = [check for commit in pr['commits'] for check in commit_checks(client, repo, commit['sha'])]
                 prs.append(pr)

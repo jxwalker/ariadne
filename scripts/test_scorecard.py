@@ -33,7 +33,7 @@ class Scorecard(unittest.TestCase):
         self.assertEqual(rows(db, 'gh_revert_link')[0]['original_pr'],1)
         first = project(db)
         self.assertEqual(first, project(db))
-        self.assertEqual(sum(r.get('reverts',0) for r in first),1)
+        self.assertEqual(sum(r.get('reverts',0) for r in first),0)
         self.assertEqual(sum(r.get('suspected_fixups',0) for r in first),1)
         self.assertEqual(sum(r.get('human_review_rounds',0) for r in first),4)
         self.assertEqual(sum(r.get('first_ci_pass',0) for r in first),0)
@@ -42,6 +42,23 @@ class Scorecard(unittest.TestCase):
         self.assertEqual(ci(dict(bundle['prs'][0],required_checks=[])), (None,None))
         with self.assertRaises(sqlite3.IntegrityError):
             db.execute("INSERT INTO sc_pr_attribution VALUES ('x','x','{}','invented')")
+
+    def test_only_merged_reverts_charge_original_bot(self):
+        bundle = json.loads((ROOT/'test/fixtures/scorecard/ariadne.json').read_text())
+        reverting = next(pr for pr in bundle['prs'] if pr['number'] == 3)
+        merged_at = '2026-10-03T12:00:00Z'
+        db = connect(':memory:'); self.addCleanup(db.close)
+        for state, merged in [('open', None), ('closed', None), ('closed', merged_at)]:
+            with self.subTest(state=state, merged=merged):
+                reverting.update(state=state, merged_at=merged,
+                                 closed_at=merged_at if state == 'closed' else None)
+                ingest(db, [bundle])
+                self.assertTrue(rows(db, 'gh_revert_link'))
+                metrics = project(db)
+                charged = [r for r in metrics if r.get('reverts')]
+                self.assertEqual(sum(r.get('reverts', 0) for r in metrics), int(bool(merged)))
+                if merged:
+                    self.assertEqual(charged[0]['bot'], 'box-ariadne-bot')
 
     def test_public_private_and_incremental(self):
         db=connect(':memory:'); self.addCleanup(db.close)
@@ -96,13 +113,18 @@ class Scorecard(unittest.TestCase):
         bundle=json.loads((ROOT/'test/fixtures/scorecard/ariadne.json').read_text())
         pr=dict(bundle['prs'][0],base={'ref':'main'})
         calls=[]
+        policy = ['test']
         class Fake:
             token=None
             def get(self,path):
                 calls.append(path)
                 if path=='repos/jxwalker/ariadne': return [{'private':False}]
                 if path.count('/')==2: return [{'private':True}]
-                if '/protection/' in path: return [{'contexts':['test'],'checks':[]}]
+                if '/protection/' in path:
+                    if policy is None:
+                        import urllib.error
+                        raise urllib.error.HTTPError(path, 403, 'unavailable', {}, None)
+                    return [{'contexts':policy,'checks':[]}]
                 if '/statuses?' in path: return []
                 if '/check-runs?' in path: return pr['checks']
                 if '/reviews?' in path: return pr['reviews']
@@ -120,3 +142,19 @@ class Scorecard(unittest.TestCase):
         self.assertTrue(any('/check-runs?' in path for path in calls))
         self.assertTrue(any('/statuses?' in path for path in calls))
         self.assertEqual(len(rows(db,'gh_pr')),1)
+
+        for policy, expected_ci in [(['test', 'new-required'], (None, None)),
+                                    (None, (None, None)),
+                                    (['test'], (False, True))]:
+            with self.subTest(policy=policy):
+                calls.clear()
+                with patch('builtins.print'):
+                    ingest(db, collect(db, Fake()))
+                stored = rows(db, 'gh_pr')[0]
+                self.assertEqual(stored['required_checks'], sorted(policy) if policy is not None else None)
+                self.assertEqual(ci(stored), expected_ci)
+                self.assertTrue(any('/protection/' in path for path in calls))
+                self.assertFalse(any('/reviews?' in path for path in calls))
+                self.assertFalse(any('/commits?' in path for path in calls))
+                self.assertTrue(any('/check-runs?' in path for path in calls))
+                self.assertEqual(stored['updated_at'], pr['updated_at'])

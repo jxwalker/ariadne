@@ -82,11 +82,12 @@ def project(db):
 def _project(db):
     prs = rows(db, 'gh_pr')
     groups = collections.defaultdict(lambda: collections.Counter())
+    originals = {(p['repo'], p['number']): p for p in prs}
     revert_targets = collections.defaultdict(set)
     for link in rows(db, 'gh_revert_link'):
-        if link.get('original_pr') is not None:
+        reverting = originals.get((link['repo'], link['pr']))
+        if link.get('original_pr') is not None and reverting and reverting.get('merged_at'):
             revert_targets[(link['repo'], link['original_pr'])].add(link['pr'])
-    originals = {(p['repo'], p['number']): p for p in prs}
 
     db.execute('DELETE FROM sc_pr_attribution')
     db.execute('DELETE FROM sc_daily_metrics')

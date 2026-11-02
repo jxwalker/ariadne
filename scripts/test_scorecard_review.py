@@ -93,6 +93,7 @@ class ReviewFixes(unittest.TestCase):
         self.assertEqual(rows(self.db,'gh_review'),before)
 
     def test_reverts_charge_original_bot_and_day_once(self):
+        self.bundle['prs'][2]['merged_at'] = '2026-10-03T12:00:00Z'
         self.bundle['prs'][2]['labels'] = ['bot:box-scorpion-build-bot']
         self.bundle['prs'][2]['title'] = 'Revert "example"'
         self.bundle['prs'][2]['body'] = '#1'
