@@ -18,33 +18,37 @@ def ci(pr):
               and c.get('head_sha') == pr.get('head', {}).get('sha')]
     if any(not any(c['name'] == name for c in checks) for name in required):
         return None, None
-    # Keep suite/attempt identity. Occurrences support single-context histories;
-    # ambiguous multi-context reruns without attempt evidence remain unknown.
-    suites = collections.defaultdict(list)
-    occurrences = collections.Counter()
-    for check in sorted(checks, key=lambda c: (c.get('completed_at') or '', str(c['id']))):
-        suite = (check.get('check_suite') or {}).get('id')
-        kind = check.get('evidence_type', 'check_run')
-        identity = (kind, suite, check.get('run_attempt'))
-        occurrence_key = (identity, check['name'])
-        attempt = occurrences[occurrence_key]
-        occurrences[occurrence_key] += 1
-        suites[(identity, attempt)].append(check)
-    completed = [runs for runs in suites.values() if all(c.get('status') == 'completed' for c in runs)]
-    completed.sort(key=lambda runs: max(c['completed_at'] for c in runs))
-    first = None
-    ambiguous = len(required) > 1 and any(
-        count > 1 and identity[2] is None
-        for (identity, name), count in occurrences.items())
-    if completed and not ambiguous and set(required) <= {c['name'] for c in completed[0]}:
-        first = all(any(c['name'] == name and c.get('conclusion') == 'success' for c in completed[0]) for name in required)
+    # Each required context may belong to a different workflow/suite. Select
+    # its first completed attempt independently, never a later passing rerun.
+    first_results = []
+    for name in required:
+        runs = [c for c in checks if c['name'] == name]
+        identities = collections.Counter(
+            (c.get('evidence_type', 'check_run'),
+             (c.get('check_suite') or {}).get('id'), c.get('run_attempt'))
+            for c in runs)
+        ambiguous = len(required) > 1 and any(
+            count > 1 and identity[2] is None
+            for identity, count in identities.items())
+        completed = sorted(
+            (c for c in runs if c.get('status') == 'completed' and c.get('completed_at')),
+            key=lambda c: (c['completed_at'], str(c['id'])))
+        first_results.append(None if ambiguous or not completed else
+                             completed[0].get('conclusion') == 'success')
+    first = None if None in first_results else all(first_results)
     eventual = None
     if pr.get('merged_at'):
         eventual = True
         for name in required:
             runs = sorted((c for c in checks if c['name'] == name and c.get('completed_at') and c['completed_at'] <= pr['merged_at']),
                           key=lambda c: (c['completed_at'], str(c['id'])))
-            eventual &= bool(runs and runs[-1].get('status') == 'completed' and runs[-1].get('conclusion') == 'success')
+            # A pending rerun has no completion timestamp. Include it unless
+            # its start/creation evidence places it strictly after the merge.
+            pending = any(
+                c['name'] == name and c.get('status') != 'completed'
+                and (c.get('started_at') or c.get('created_at') or '') <= pr['merged_at']
+                for c in checks)
+            eventual &= bool(not pending and runs and runs[-1].get('status') == 'completed' and runs[-1].get('conclusion') == 'success')
     return first, eventual
 
 

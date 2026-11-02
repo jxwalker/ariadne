@@ -33,6 +33,37 @@ class ReviewFixes(unittest.TestCase):
             check['check_suite']['id'] = 1
         self.assertEqual(ci(pr), (False, False))
 
+    def test_required_contexts_across_suites_count_in_denominator(self):
+        pr = self.bundle['prs'][0]
+        pr['required_checks'] = ['a', 'b']
+        pr['checks'] = [dict(id=i, name=name, conclusion='success',
+            check_suite={'id':i}, run_attempt=1, head_sha=pr['head']['sha'],
+            status='completed', completed_at=f'2026-10-01T0{i+3}:00:00Z')
+            for i, name in enumerate(['a', 'b'], 1)]
+        self.assertEqual(ci(pr), (True, True))
+        ingest(self.db, [dict(self.bundle, prs=[pr])])
+        row = next(r for r in project(self.db) if r.get('merged'))
+        self.assertEqual((row['first_ci_known'], row['first_ci_pass']), (1, 1))
+        pr['checks'][0]['conclusion'] = 'failure'
+        pr['checks'].append(dict(pr['checks'][0], id=3, run_attempt=2,
+            conclusion='success', completed_at='2026-10-01T06:00:00Z'))
+        self.assertEqual(ci(pr), (False, True))
+
+    def test_pending_check_run_at_merge_never_passes(self):
+        pr = self.bundle['prs'][0]
+        baseline = ci(pr)
+        for status in ('queued', 'in_progress'):
+            for started in (None, '2026-10-01T07:00:00Z'):
+                with self.subTest(status=status, started=started):
+                    pending = dict(pr['checks'][-1], id=999, status=status,
+                        conclusion=None, completed_at=None, started_at=started)
+                    candidate = dict(pr, checks=pr['checks'] + [pending])
+                    self.assertIs(ci(candidate)[1], False)
+                    ingest(self.db, [dict(self.bundle, prs=[candidate])])
+                    self.assertEqual(sum(r['merge_ci_pass'] for r in project(self.db)), 0)
+        pending['started_at'] = '2026-10-02T00:00:00Z'
+        self.assertEqual(ci(dict(pr, checks=pr['checks'] + [pending]))[1], baseline[1])
+
     def test_ci_is_per_final_head(self):
         pr = self.bundle['prs'][0]
         pr['checks'][0]['head_sha'] = 'old-head'

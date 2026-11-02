@@ -19,7 +19,10 @@ jobs:
       - run: npm run check && npm test && npm run build
       - name: Require PostgreSQL for real ledger tests
         run: test -n "$(find /usr/lib/postgresql -path '*/bin/initdb' -print -quit)"
-      - run: python -m unittest discover -s scripts -p 'test_*.py'
+      - name: Run Python tests with PostgreSQL driver
+        run: |
+          python -m pip install 'psycopg[binary]==3.2.10'
+          python -m unittest discover -s scripts -p 'test_*.py'
       - run: node scripts/check_scorecard_dashboard.mjs
       - run: node scripts/check_master_dashboard.mjs master-browser-evidence
       - uses: actions/upload-artifact@v4

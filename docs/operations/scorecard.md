@@ -51,17 +51,24 @@ privileges. The existing dashboard helper shells out to psql for the canonical
 master API; this projection deliberately does not call that API.
 
 Daily rows carry binding_quality. Merge rate is merged / (merged + closed-unmerged)
-on their outcome dates; opened counts use creation dates. CI metrics use completed
-required checks on the PR head SHA, first completion per check and latest completion
-before merge. Unknown required-check policy produces unknown CI, never an assumed
-pass. REST collection reads legacy branch-protection required status checks when
-available; ruleset-only requirements remain unsupported/unknown. required_checks
-can also be supplied in reviewed evidence/fixtures. Rates must be recomputed from numerator
-and denominator totals across dates. Review rounds count CHANGES_REQUESTED plus
-commits after first review (push approximation); bot review counts are separate.
-Revert links detect standard `This reverts commit` messages and Revert PRs with
-explicit PR references; links resolve original PRs only when unambiguous. Revert
-counts describe revert PRs authored in the row, deduplicated across link types. Suspected fix-ups need
+on their outcome dates; opened counts use creation dates. CI metrics use the
+final PR head SHA and explicit required contexts. First-pass CI evaluates the
+first completed attempt of each required context independently across suites;
+all must succeed. Missing contexts or ambiguous multi-context rerun evidence
+remain unknown and are excluded from the first-pass denominator. Eventual CI
+uses each context's latest completion at or before merge; pending reruns at
+merge prevent a pass (also when their start time is unavailable). Reruns known
+to start after merge do not affect that outcome. Unknown required-check policy
+produces unknown CI, never an assumed pass. REST collection reads legacy
+branch-protection required status checks when available; ruleset-only requirements
+remain unsupported/unknown. required_checks can also be supplied in reviewed
+evidence/fixtures. Rates must be recomputed from numerator and denominator totals
+across dates. Review rounds count CHANGES_REQUESTED reviews separately for bots
+and humans; commits are not treated as push events. Revert links detect standard
+`This reverts commit` messages and Revert PRs with explicit PR references; links
+resolve original PRs only when unambiguous. Revert counts charge the original
+PR's bot and outcome date, counting each reverting PR once across link types.
+Suspected fix-ups need
 a reference, overlapping files and creation within seven days of original merge.
 Fix-up counts are labelled estimates. No agent productivity ranking is produced.
 Source-only and unbound are shown with distinct colours; neither is coverage.

@@ -1,4 +1,4 @@
-"""Explicit source hints only. Trailer keys ignore case; source IDs do not."""
+"""Explicit source hints only. Trailer and label keys ignore case; source IDs do not."""
 import re
 
 
@@ -25,7 +25,7 @@ def trailers(message):
 
 def attribute(messages, labels, known):
     values = [v for message in messages for v in trailers(message)]
-    values += [label[4:] for label in labels if label.startswith('bot:')]
+    values += [label[4:] for label in labels if label[:4].lower() == 'bot:']
     unique = set(values)
     if len(unique) > 1:
         return 'unattributed', 'unbound', 'conflict'
