@@ -17,6 +17,12 @@ class ActivityTests(unittest.TestCase):
     def accept(self,e): validate(e); return self.store.accept(e,canonical(e).encode())
     def headers(self,raw,ts=None,nonce='nonce'):
         ts=str(ts or int(time.time())); return {'X-Ariadne-Source':'test','X-Ariadne-Timestamp':ts,'X-Ariadne-Nonce':nonce,'X-Ariadne-Signature':hmac.new(b'test-secret',ts.encode()+b'\n'+nonce.encode()+b'\n'+raw,hashlib.sha256).hexdigest()}
+    def test_heartbeat_keeps_latest_explicit_same_run_reference(self):
+        self.accept(event()|{'pr':7,'branch':'feature','commit':'a'*40});self.accept(event('heartbeat',1));self.accept(event('heartbeat',2));self.store.process()
+        e=self.store.snapshot({})['runs'][0]['event'];self.assertEqual((e.get('pr'),e.get('branch'),e.get('commit')),(7,'feature','a'*40));self.assertEqual(e['kind'],'heartbeat')
+        self.accept(event('task.progress',3)|{'pr':8});self.store.process();e=self.store.snapshot({})['runs'][0]['event'];self.assertEqual((e['pr'],e['branch']),(8,'feature'))
+        self.accept(event('heartbeat',0,'other'));self.store.process();other=[r for r in self.store.snapshot({})['runs'] if r['event']['runId']=='other'][0]['event'];self.assertNotIn('pr',other)
+
     def test_signature_scope_rotation_replay(self):
         e=event(); raw=canonical(e).encode(); headers=self.headers(raw); self.app.authenticate(headers,raw,e)
         with self.assertRaises(PermissionError): self.app.authenticate(headers,raw+b' ',e)

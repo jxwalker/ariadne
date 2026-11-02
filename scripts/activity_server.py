@@ -7,6 +7,7 @@ from urllib.parse import urlsplit, parse_qs
 
 KINDS = {'task.start','task.progress','heartbeat','task.blocked','task.resumed','task.interrupted','task.completed','task.failed','session.start','session.end','subagent.start','subagent.end'}
 OPERATING_KINDS = KINDS | {'decision.requested','decision.resolved'}
+REFERENCE_FIELDS = ('pr','branch','commit')
 OPERATING_FIELDS = {'stage','nextStep','blockerCategory','owner','decision','classification'}
 TERMINAL = {'agent-reported completion','agent-reported failure'}
 FIELDS = {'schemaVersion','eventId','sourceId','agent','project','repository','taskId','runId','parentRunId','sequence','occurredAt','kind','label','summary','location','branch','commit','pr','evidenceLinks','sessionId'}
@@ -172,7 +173,13 @@ class Store:
                     state=old['state'] if old else 'unknown'; gaps=(old['gaps'] if old else 0)+ (max(0,e['sequence']-old['seq']-1) if old else 0)
                     if state not in TERMINAL:
                         state={'task.start':'working','task.progress':'working','task.resumed':'working','task.blocked':'blocked','task.interrupted':'interrupted','task.completed':'agent-reported completion','task.failed':'agent-reported failure','session.end':'unknown','subagent.end':'unknown'}.get(e['kind'],state)
-                    db.execute('INSERT OR REPLACE INTO runs VALUES(?,?,?,?,?,?,?,?)',(e['sourceId'],e['runId'],e['taskId'],e['sequence'],state,row['received'],row['envelope'],gaps))
+                    envelope=row['envelope']
+                    if old:
+                        # Keep the latest explicit same-run PR/branch/commit when a later event (e.g. heartbeat) omits them.
+                        # Reference association only; never implies authorship. A later explicit value replaces it.
+                        prior=json.loads(old['envelope']);carried={k:prior[k] for k in REFERENCE_FIELDS if k in prior and k not in e}
+                        if carried:envelope=canonical(e|carried)
+                    db.execute('INSERT OR REPLACE INTO runs VALUES(?,?,?,?,?,?,?,?)',(e['sourceId'],e['runId'],e['taskId'],e['sequence'],state,row['received'],envelope,gaps))
                 db.execute('UPDATE events SET processed=1 WHERE id=?',(row['id'],))
             for row in db.execute('SELECT * FROM webhooks WHERE processed=0 ORDER BY received LIMIT 100').fetchall():
                 body=json.loads(row['raw']); repo=body.get('repository',{}).get('full_name')
