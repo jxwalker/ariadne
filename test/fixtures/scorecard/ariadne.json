@@ -1,0 +1,249 @@
+{
+  "repo": "jxwalker/ariadne",
+  "prs": [
+    {
+      "number": 1,
+      "title": "Example",
+      "body": "",
+      "created_at": "2026-10-01T00:00:00Z",
+      "updated_at": "2026-10-08T00:00:00Z",
+      "merged_at": "2026-10-01T12:00:00Z",
+      "closed_at": null,
+      "head": {
+        "sha": "1111111111111111111111111111111111111111"
+      },
+      "files": [
+        "src/example.ts"
+      ],
+      "labels": [],
+      "required_checks": [
+        "test"
+      ],
+      "commits": [
+        {
+          "sha": "1111111111111111111111111111111111111111",
+          "commit": {
+            "message": "Change\n\nBot: box-ariadne-bot",
+            "committer": {
+              "date": "2026-10-01T04:00:00Z"
+            }
+          }
+        }
+      ],
+      "reviews": [
+        {
+          "id": 1,
+          "state": "CHANGES_REQUESTED",
+          "submitted_at": "2026-10-01T01:00:00Z",
+          "user": {
+            "type": "User"
+          }
+        }
+      ],
+      "checks": [
+        {
+          "id": 10,
+          "name": "test",
+          "head_sha": "1111111111111111111111111111111111111111",
+          "status": "completed",
+          "conclusion": "failure",
+          "completed_at": "2026-10-01T05:00:00Z"
+        },
+        {
+          "id": 11,
+          "name": "test",
+          "head_sha": "1111111111111111111111111111111111111111",
+          "status": "completed",
+          "conclusion": "success",
+          "completed_at": "2026-10-01T06:00:00Z"
+        }
+      ]
+    },
+    {
+      "number": 2,
+      "title": "Example",
+      "body": "#1 fix follow-up",
+      "created_at": "2026-10-02T00:00:00Z",
+      "updated_at": "2026-10-08T00:00:00Z",
+      "merged_at": "2026-10-02T12:00:00Z",
+      "closed_at": null,
+      "head": {
+        "sha": "2222222222222222222222222222222222222222"
+      },
+      "files": [
+        "src/example.ts"
+      ],
+      "labels": [
+        {
+          "name": "bot:box-ariadne-bot"
+        }
+      ],
+      "required_checks": [
+        "test"
+      ],
+      "commits": [
+        {
+          "sha": "2222222222222222222222222222222222222222",
+          "commit": {
+            "message": "Change",
+            "committer": {
+              "date": "2026-10-02T04:00:00Z"
+            }
+          }
+        }
+      ],
+      "reviews": [
+        {
+          "id": 2,
+          "state": "CHANGES_REQUESTED",
+          "submitted_at": "2026-10-02T01:00:00Z",
+          "user": {
+            "type": "User"
+          }
+        }
+      ],
+      "checks": [
+        {
+          "id": 20,
+          "name": "test",
+          "head_sha": "2222222222222222222222222222222222222222",
+          "status": "completed",
+          "conclusion": "failure",
+          "completed_at": "2026-10-02T05:00:00Z"
+        },
+        {
+          "id": 21,
+          "name": "test",
+          "head_sha": "2222222222222222222222222222222222222222",
+          "status": "completed",
+          "conclusion": "success",
+          "completed_at": "2026-10-02T06:00:00Z"
+        }
+      ]
+    },
+    {
+      "number": 3,
+      "title": "Example",
+      "body": "",
+      "created_at": "2026-10-03T00:00:00Z",
+      "updated_at": "2026-10-08T00:00:00Z",
+      "merged_at": null,
+      "closed_at": "2026-10-05T00:00:00Z",
+      "head": {
+        "sha": "3333333333333333333333333333333333333333"
+      },
+      "files": [
+        "src/example.ts"
+      ],
+      "labels": [
+        {
+          "name": "superseded"
+        }
+      ],
+      "required_checks": [
+        "test"
+      ],
+      "commits": [
+        {
+          "sha": "3333333333333333333333333333333333333333",
+          "commit": {
+            "message": "This reverts commit 1111111111111111111111111111111111111111",
+            "committer": {
+              "date": "2026-10-03T04:00:00Z"
+            }
+          }
+        }
+      ],
+      "reviews": [
+        {
+          "id": 3,
+          "state": "CHANGES_REQUESTED",
+          "submitted_at": "2026-10-03T01:00:00Z",
+          "user": {
+            "type": "User"
+          }
+        }
+      ],
+      "checks": [
+        {
+          "id": 30,
+          "name": "test",
+          "head_sha": "3333333333333333333333333333333333333333",
+          "status": "completed",
+          "conclusion": "failure",
+          "completed_at": "2026-10-03T05:00:00Z"
+        },
+        {
+          "id": 31,
+          "name": "test",
+          "head_sha": "3333333333333333333333333333333333333333",
+          "status": "completed",
+          "conclusion": "success",
+          "completed_at": "2026-10-03T06:00:00Z"
+        }
+      ]
+    },
+    {
+      "number": 4,
+      "title": "Example",
+      "body": "",
+      "created_at": "2026-10-04T00:00:00Z",
+      "updated_at": "2026-10-08T00:00:00Z",
+      "merged_at": null,
+      "closed_at": null,
+      "head": {
+        "sha": "4444444444444444444444444444444444444444"
+      },
+      "files": [
+        "src/example.ts"
+      ],
+      "labels": [
+        {
+          "name": "bot:box-scorpion-build-bot"
+        }
+      ],
+      "required_checks": [
+        "test"
+      ],
+      "commits": [
+        {
+          "sha": "4444444444444444444444444444444444444444",
+          "commit": {
+            "message": "Change\n\nBot: box-ariadne-bot",
+            "committer": {
+              "date": "2026-10-04T04:00:00Z"
+            }
+          }
+        }
+      ],
+      "reviews": [
+        {
+          "id": 4,
+          "state": "CHANGES_REQUESTED",
+          "submitted_at": "2026-10-04T01:00:00Z",
+          "user": {
+            "type": "User"
+          }
+        }
+      ],
+      "checks": [
+        {
+          "id": 40,
+          "name": "test",
+          "head_sha": "4444444444444444444444444444444444444444",
+          "status": "completed",
+          "conclusion": "failure",
+          "completed_at": "2026-10-04T05:00:00Z"
+        },
+        {
+          "id": 41,
+          "name": "test",
+          "head_sha": "4444444444444444444444444444444444444444",
+          "status": "completed",
+          "conclusion": "success",
+          "completed_at": "2026-10-04T06:00:00Z"
+        }
+      ]
+    }
+  ]
+}

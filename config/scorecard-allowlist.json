@@ -1,0 +1,9 @@
+{
+  "repositories": {
+    "jxwalker/ariadne": {"registered": true},
+    "jxwalker/patent-studio": {"registered": true},
+    "jxwalker/openscorpion": {"registered": true},
+    "jxwalker/tech-demos": {"registered": false, "coverage": "github-only"}
+  },
+  "sources": ["box-ariadne-bot", "box-scorpion-build-bot", "box-scorpion-verifier", "box-patent-studio-ui-bot", "codex-dev-live-claude", "codex-dev-live-codex", "codex-dev-grok-cli", "grok-hosted-pending"]
+}

@@ -1,0 +1,3 @@
+BEGIN;
+DROP SCHEMA scorecard CASCADE;
+COMMIT;
