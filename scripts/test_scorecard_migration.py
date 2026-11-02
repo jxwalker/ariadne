@@ -30,5 +30,36 @@ class ScorecardMigration(unittest.TestCase):
             sql('SET ROLE scorecard_reader; SELECT * FROM master.journal;',database='ledger_test',raw=True)
         self.assertEqual(sql('SELECT count(*) FROM master.journal;',database='ledger_test'),before)
         sql((ROOT/'migrations/master/005-scorecard-rollback.sql').read_text(),database='ledger_test',raw=True)
+        sql((ROOT/'migrations/master/005-scorecard-rollback.sql').read_text(),database='ledger_test',raw=True)
         self.assertEqual(sql("SELECT count(*) FROM information_schema.schemata WHERE schema_name='scorecard';",database='ledger_test'),0)
         self.assertEqual(sql('SELECT count(*) FROM master.journal;',database='ledger_test'),before)
+
+    def test_psycopg_roundtrip_and_recovery(self):
+        try:
+            import psycopg
+        except ImportError:
+            self.skipTest('Optional psycopg driver unavailable')
+        from scorecard.storage import connect, rows
+        from scorecard.github_ingest import ingest
+        from scorecard.scorecard_project import project
+        from unittest.mock import patch
+        import json
+        sql = ledger.LedgerContract.sql
+        sql((ROOT/'migrations/master/005-scorecard.sql').read_text(), database='ledger_test', raw=True)
+        db = connect(f'postgresql:///ledger_test?host={ledger.LedgerContract.socket}&port=55433')
+        try:
+            bundle = json.loads((ROOT/'test/fixtures/scorecard/ariadne.json').read_text())
+            ingest(db, [bundle])
+            expected = project(db)
+            self.assertEqual(len(rows(db, 'gh_pr')), 4)
+            with patch('scorecard.scorecard_project.attribute', side_effect=ValueError('invalid')):
+                with self.assertRaises(ValueError): project(db)
+            self.assertEqual(db.execute('SHOW search_path').fetchone()[0], 'scorecard')
+            self.assertEqual(project(db), expected)
+            with patch('scorecard.github_ingest.put', side_effect=ValueError('invalid')):
+                with self.assertRaises(ValueError): ingest(db, [bundle])
+            ingest(db, [bundle])
+            self.assertEqual(project(db), expected)
+        finally:
+            db.close()
+            sql((ROOT/'migrations/master/005-scorecard-rollback.sql').read_text(), database='ledger_test', raw=True)

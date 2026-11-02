@@ -14,16 +14,38 @@ def ci(pr):
     required = pr.get('required_checks')
     if not required:
         return None, None
-    checks = [c for c in pr.get('checks', []) if c['name'] in required and c.get('status') == 'completed' and c.get('head_sha') == pr.get('head', {}).get('sha')]
-    first, eventual = [], []
-    for name in required:
-        runs = sorted([c for c in checks if c['name'] == name], key=lambda c: (c['completed_at'], c['id']))
-        if not runs:
-            return None, None
-        first.append(runs[0]['conclusion'] == 'success')
-        at_merge = [c for c in runs if pr.get('merged_at') and c['completed_at'] <= pr['merged_at']]
-        eventual.append(at_merge[-1]['conclusion'] == 'success' if at_merge else False)
-    return all(first), all(eventual) if pr.get('merged_at') else None
+    checks = [c for c in pr.get('checks', []) if c['name'] in required
+              and c.get('head_sha') == pr.get('head', {}).get('sha')]
+    if any(not any(c['name'] == name for c in checks) for name in required):
+        return None, None
+    # Keep suite/attempt identity. Occurrences support single-context histories;
+    # ambiguous multi-context reruns without attempt evidence remain unknown.
+    suites = collections.defaultdict(list)
+    occurrences = collections.Counter()
+    for check in sorted(checks, key=lambda c: (c.get('completed_at') or '', str(c['id']))):
+        suite = (check.get('check_suite') or {}).get('id')
+        kind = check.get('evidence_type', 'check_run')
+        identity = (kind, suite, check.get('run_attempt'))
+        occurrence_key = (identity, check['name'])
+        attempt = occurrences[occurrence_key]
+        occurrences[occurrence_key] += 1
+        suites[(identity, attempt)].append(check)
+    completed = [runs for runs in suites.values() if all(c.get('status') == 'completed' for c in runs)]
+    completed.sort(key=lambda runs: max(c['completed_at'] for c in runs))
+    first = None
+    ambiguous = len(required) > 1 and any(
+        count > 1 and identity[2] is None
+        for (identity, name), count in occurrences.items())
+    if completed and not ambiguous and set(required) <= {c['name'] for c in completed[0]}:
+        first = all(any(c['name'] == name and c.get('conclusion') == 'success' for c in completed[0]) for name in required)
+    eventual = None
+    if pr.get('merged_at'):
+        eventual = True
+        for name in required:
+            runs = sorted((c for c in checks if c['name'] == name and c.get('completed_at') and c['completed_at'] <= pr['merged_at']),
+                          key=lambda c: (c['completed_at'], str(c['id'])))
+            eventual &= bool(runs and runs[-1].get('status') == 'completed' and runs[-1].get('conclusion') == 'success')
+    return first, eventual
 
 
 def project(db):
@@ -37,6 +59,12 @@ def project(db):
 def _project(db):
     prs = rows(db, 'gh_pr')
     groups = collections.defaultdict(lambda: collections.Counter())
+    revert_targets = collections.defaultdict(set)
+    for link in rows(db, 'gh_revert_link'):
+        if link.get('original_pr') is not None:
+            revert_targets[(link['repo'], link['original_pr'])].add(link['pr'])
+    originals = {(p['repo'], p['number']): p for p in prs}
+
     db.execute('DELETE FROM sc_pr_attribution')
     db.execute('DELETE FROM sc_daily_metrics')
     for pr in prs:
@@ -48,11 +76,11 @@ def _project(db):
         events = [('opened', pr['created_at']), ('merged', pr.get('merged_at')), ('closed_unmerged', pr.get('closed_at') if not pr.get('merged_at') else None)]
         first, eventual = ci(pr)
         reviews = pr.get('reviews', [])
-        first_review = min((r['submitted_at'] for r in reviews if r.get('submitted_at')), default='9999')
-        rounds = sum(r['state'] == 'CHANGES_REQUESTED' for r in reviews) + sum(c.get('commit', {}).get('committer', {}).get('date', '') > first_review for c in pr.get('commits', []))
         day = (pr.get('merged_at') or pr.get('closed_at') or pr['created_at'])[:10]
         counter = groups[(repo, bot, quality, day)]
-        counter['review_rounds'] += rounds
+        # GitHub commit timestamps cannot establish push events. Count review
+        # requests separately by reviewer type; do not label commits as pushes.
+        counter['reverts'] += len(revert_targets[(repo, pr['number'])])
         counter['superseded'] += any((l.get('name') if isinstance(l, dict) else l) == 'superseded' for l in pr.get('labels', []))
         counter['bot_reviews'] += sum(r.get('user', {}).get('type') == 'Bot' for r in reviews)
         counter['human_reviews'] += sum(r.get('user', {}).get('type') != 'Bot' for r in reviews)
@@ -65,19 +93,16 @@ def _project(db):
         counter['first_ci_pass'] += first is True
         counter['merge_ci_known'] += eventual is not None
         counter['merge_ci_pass'] += eventual is True
-        reverted = False
-        for link in rows(db, 'gh_revert_link'):
-            if link['repo'] == repo and link['pr'] == pr['number']:
-                if not reverted:
-                    counter['reverts'] += 1
-                reverted = True
+        counter['bot_review_rounds'] += sum(r['state'] == 'CHANGES_REQUESTED' and r.get('user', {}).get('type') == 'Bot' for r in reviews)
+        counter['human_review_rounds'] += sum(r['state'] == 'CHANGES_REQUESTED' and r.get('user', {}).get('type') != 'Bot' for r in reviews)
 
-        # Heuristic only: explicit reference + overlapping files within seven days.
-        for original in prs:
-            if original['repo'] != repo or not original.get('merged_at') or original['number'] == pr['number']:
+        # Look up only explicit references instead of scanning every PR pair.
+        for number in set(re.findall(r'#(\d+)\b', pr.get('body') or '')):
+            original = originals.get((repo, int(number)))
+            if not original or not original.get('merged_at') or original['number'] == pr['number']:
                 continue
             delta = datetime.datetime.fromisoformat(pr['created_at'].replace('Z', '+00:00')) - datetime.datetime.fromisoformat(original['merged_at'].replace('Z', '+00:00'))
-            if 0 <= delta.total_seconds() <= 7*86400 and set(pr.get('files', [])) & set(original.get('files', [])) and re.search(r"#" + str(original['number']) + r"\b", pr.get('body') or ''):
+            if 0 <= delta.total_seconds() <= 7*86400 and set(pr.get('files', [])) & set(original.get('files', [])):
                 counter['suspected_fixups'] += 1
     output = []
     for (repo, bot, quality, day), counts in sorted(groups.items()):

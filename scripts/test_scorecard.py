@@ -33,7 +33,7 @@ class Scorecard(unittest.TestCase):
         self.assertEqual(first, project(db))
         self.assertEqual(sum(r.get('reverts',0) for r in first),1)
         self.assertEqual(sum(r.get('suspected_fixups',0) for r in first),1)
-        self.assertEqual(sum(r.get('review_rounds',0) for r in first),8)
+        self.assertEqual(sum(r.get('human_review_rounds',0) for r in first),4)
         self.assertEqual(sum(r.get('first_ci_pass',0) for r in first),0)
         self.assertEqual(sum(r.get('merge_ci_pass',0) for r in first),2)
         self.assertTrue(all(r['binding_quality'] in ('source-only','unbound') for r in first))
@@ -63,7 +63,7 @@ class Scorecard(unittest.TestCase):
         self.assertNotIn('REFERENCES master.',sql)
         self.assertNotIn('INSERT INTO master.',sql)
         self.assertEqual(sql.count('CREATE TABLE scorecard.'),7)
-        self.assertIn('DROP SCHEMA scorecard CASCADE',(ROOT/'migrations/master/005-scorecard-rollback.sql').read_text())
+        self.assertIn('DROP SCHEMA IF EXISTS scorecard CASCADE',(ROOT/'migrations/master/005-scorecard-rollback.sql').read_text())
 
     def test_rest_pagination_tls_and_rate_limits(self):
         import io
@@ -72,12 +72,13 @@ class Scorecard(unittest.TestCase):
             def __init__(self, body, headers):
                 super().__init__(json.dumps(body)); self.headers=headers
         replies=[Response([{'id':1}],{'Link':'<https://api.github.com/next>; rel="next"'}),Response([{'id':2}],{})]
-        with patch('urllib.request.urlopen',side_effect=replies) as request:
+        with patch('urllib.request.OpenerDirector.open',side_effect=replies) as request:
             self.assertEqual(GitHub().get('repos/jxwalker/ariadne/pulls'),[{'id':1},{'id':2}])
-            self.assertTrue(request.call_args.kwargs['context'].check_hostname)
+            import ssl
+            self.assertTrue(ssl.create_default_context().check_hostname)
             self.assertNotIn('Authorization', request.call_args.args[0].headers)
         error=urllib.error.HTTPError('https://api.github.com/',429,'limited',{'Retry-After':'10'},None)
-        with patch('urllib.request.urlopen',side_effect=error):
+        with patch('urllib.request.OpenerDirector.open',side_effect=error):
             with self.assertRaisesRegex(RuntimeError,'retry after 10'): GitHub().get('repos/jxwalker/ariadne')
 
     def test_projection_rollback(self):
@@ -100,6 +101,7 @@ class Scorecard(unittest.TestCase):
                 if path=='repos/jxwalker/ariadne': return [{'private':False}]
                 if path.count('/')==2: return [{'private':True}]
                 if '/protection/' in path: return [{'contexts':['test'],'checks':[]}]
+                if '/statuses?' in path: return []
                 if '/check-runs?' in path: return pr['checks']
                 if '/reviews?' in path: return pr['reviews']
                 if '/commits?' in path: return pr['commits']
@@ -114,4 +116,5 @@ class Scorecard(unittest.TestCase):
             ingest(db,collect(db,Fake()))
         self.assertFalse(any('/reviews?' in path for path in calls))
         self.assertTrue(any('/check-runs?' in path for path in calls))
+        self.assertTrue(any('/statuses?' in path for path in calls))
         self.assertEqual(len(rows(db,'gh_pr')),1)

@@ -14,6 +14,7 @@ def connect(path):
         import psycopg
         db = psycopg.connect(path)
         db.execute('SET search_path TO scorecard')
+        db.commit()
         return db
     db = sqlite3.connect(path)
     for table in TABLES:
@@ -26,7 +27,11 @@ def put(db, table, key, repo, body, quality=None):
     if repo not in CONFIG['repositories']:
         raise ValueError('Repository not allowlisted')
     columns = 'id,repo,body' + (',binding_quality' if quality else '')
-    values = [key, repo, json.dumps(body)] + ([quality] if quality else [])
+    payload = json.dumps(body)
+    if not isinstance(db, sqlite3.Connection):
+        from psycopg.types.json import Jsonb
+        payload = Jsonb(body)
+    values = [key, repo, payload] + ([quality] if quality else [])
     marker = '?' if isinstance(db, sqlite3.Connection) else '%s'
     db.execute(f'INSERT INTO {table} ({columns}) VALUES ({",".join([marker]*len(values))}) ON CONFLICT(id) DO UPDATE SET repo=excluded.repo,body=excluded.body' + (',binding_quality=excluded.binding_quality' if quality else ''), values)
 
@@ -38,3 +43,12 @@ def rows(db, table):
         if value.get('repo') in CONFIG['repositories']:
             result.append(value)
     return result
+
+
+def delete_pr_children(db, repo, number):
+    """Replace only this PR's snapshot children within the caller's transaction."""
+    marker = '?' if isinstance(db, sqlite3.Connection) else '%s'
+    prefix = f'{repo}#{number}:'
+    for table in ('gh_review', 'gh_check_run', 'gh_commit_pr', 'gh_revert_link'):
+        db.execute(f'DELETE FROM {table} WHERE repo={marker} AND substr(id,1,{marker})={marker}',
+                   (repo, len(prefix), prefix))

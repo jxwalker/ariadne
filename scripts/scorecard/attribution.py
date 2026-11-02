@@ -3,7 +3,10 @@ import re
 
 
 def trailers(message):
-    paragraph = message.rstrip().split('\n\n')[-1]
+    paragraphs = message.rstrip().split('\n\n')
+    if len(paragraphs) < 2 or not paragraphs[0].strip():
+        return []
+    paragraph = paragraphs[-1]
     lines = paragraph.splitlines()
     # A trailer block contains only trailer entries (and folded continuations).
     if not lines or not all(re.match(r'^[A-Za-z0-9-]+\s*:', line) or
