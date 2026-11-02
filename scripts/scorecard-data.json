@@ -1,0 +1,113 @@
+{
+  "repositories": {
+    "jxwalker/ariadne": {
+      "registered": true
+    },
+    "jxwalker/patent-studio": {
+      "registered": true
+    },
+    "jxwalker/openscorpion": {
+      "registered": true
+    },
+    "jxwalker/tech-demos": {
+      "registered": false,
+      "coverage": "github-only"
+    }
+  },
+  "metrics": [
+    {
+      "repo": "jxwalker/ariadne",
+      "bot": "box-ariadne-bot",
+      "binding_quality": "source-only",
+      "day": "2026-10-01",
+      "review_rounds": 2,
+      "superseded": 0,
+      "bot_reviews": 0,
+      "human_reviews": 1,
+      "bot_changes_requested": 0,
+      "human_changes_requested": 1,
+      "opened": 1,
+      "merged": 1,
+      "first_ci_known": 1,
+      "first_ci_pass": 0,
+      "merge_ci_known": 1,
+      "merge_ci_pass": 1,
+      "merge_rate": 1.0,
+      "first_ci_rate": 0.0,
+      "merge_ci_rate": 1.0
+    },
+    {
+      "repo": "jxwalker/ariadne",
+      "bot": "box-ariadne-bot",
+      "binding_quality": "source-only",
+      "day": "2026-10-02",
+      "review_rounds": 2,
+      "superseded": 0,
+      "bot_reviews": 0,
+      "human_reviews": 1,
+      "bot_changes_requested": 0,
+      "human_changes_requested": 1,
+      "opened": 1,
+      "merged": 1,
+      "first_ci_known": 1,
+      "first_ci_pass": 0,
+      "merge_ci_known": 1,
+      "merge_ci_pass": 1,
+      "suspected_fixups": 1,
+      "merge_rate": 1.0,
+      "first_ci_rate": 0.0,
+      "merge_ci_rate": 1.0
+    },
+    {
+      "repo": "jxwalker/ariadne",
+      "bot": "unattributed",
+      "binding_quality": "unbound",
+      "day": "2026-10-03",
+      "opened": 1,
+      "merge_rate": null,
+      "first_ci_rate": null,
+      "merge_ci_rate": null
+    },
+    {
+      "repo": "jxwalker/ariadne",
+      "bot": "unattributed",
+      "binding_quality": "unbound",
+      "day": "2026-10-04",
+      "review_rounds": 2,
+      "superseded": 0,
+      "bot_reviews": 0,
+      "human_reviews": 1,
+      "bot_changes_requested": 0,
+      "human_changes_requested": 1,
+      "opened": 1,
+      "first_ci_known": 1,
+      "first_ci_pass": 0,
+      "merge_ci_known": 0,
+      "merge_ci_pass": 0,
+      "merge_rate": null,
+      "first_ci_rate": 0.0,
+      "merge_ci_rate": null
+    },
+    {
+      "repo": "jxwalker/ariadne",
+      "bot": "unattributed",
+      "binding_quality": "unbound",
+      "day": "2026-10-05",
+      "review_rounds": 2,
+      "superseded": 1,
+      "bot_reviews": 0,
+      "human_reviews": 1,
+      "bot_changes_requested": 0,
+      "human_changes_requested": 1,
+      "closed_unmerged": 1,
+      "first_ci_known": 1,
+      "first_ci_pass": 0,
+      "merge_ci_known": 0,
+      "merge_ci_pass": 0,
+      "reverts": 1,
+      "merge_rate": 0.0,
+      "first_ci_rate": 0.0,
+      "merge_ci_rate": null
+    }
+  ]
+}
