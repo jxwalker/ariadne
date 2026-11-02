@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """Bounded local spool and authenticated HTTPS delivery. Hooks never perform network IO."""
-import argparse, fcntl, hashlib, hmac, json, os, pathlib, subprocess, sys, time, urllib.error, urllib.request, uuid
+import argparse, fcntl, hashlib, hmac, json, os, pathlib, stat, subprocess, sys, time, urllib.error, urllib.request, uuid
 from datetime import datetime, timezone
 from activity_server import validate, canonical
 
@@ -15,7 +15,9 @@ def enqueue(c,kind,run,task,summary='',parent=None,session=None,operating=None):
     spool=pathlib.Path(c['spool']); spool.mkdir(parents=True,exist_ok=True,mode=0o700)
     with open(spool/'.lock','a') as lock:
         fcntl.flock(lock,fcntl.LOCK_EX)
-        if len(list(spool.glob('*.json')))>=1000: return None
+        if len(list(spool.glob('*.json')))>=1000:
+            print('Ariadne sender: spool capacity reached; new event not enqueued',file=sys.stderr)
+            return None
         state=spool/'sequence.json.state'; seqs=json.loads(state.read_text()) if state.exists() else {}; seq=seqs.get(run,-1)+1; seqs[run]=seq
         tmp=spool/'.sequence.tmp'; tmp.write_text(json.dumps(seqs)); tmp.replace(state)
         e={'schemaVersion':1,'eventId':str(uuid.uuid4()),'sourceId':c['sourceId'],'agent':c['agent'],'project':c['project'],'repository':c['repository'],'taskId':task,'runId':run,'sequence':seq,'occurredAt':datetime.now(timezone.utc).isoformat(),'kind':kind,'label':c.get('label','Repository activity')[:160],'summary':summary[:500]}
@@ -47,13 +49,107 @@ def persist(path, value):
     finally:
         tmp.unlink(missing_ok=True)
 
+def quarantine(spool,event,status):
+    # Keep protected storage on the same filesystem and under the delivery lock.
+    deadletter=spool/'spool-deadletter'
+    deadletter.mkdir(exist_ok=True,mode=0o700)
+    metadata=deadletter.lstat()
+    if not stat.S_ISDIR(metadata.st_mode) or metadata.st_uid!=os.geteuid():
+        raise OSError('unsafe dead-letter directory')
+    os.chmod(deadletter,0o700)
+    target=deadletter/event.name
+    if not target.exists() and len(list(deadletter.glob('*.json')))>=10000:
+        raise OSError('dead-letter capacity reached')
+    labels={400:'invalid request',401:'unauthorized',403:'forbidden',404:'route not found',
+            409:'conflicting event',413:'body too large',422:'unprocessable event'}
+    # Preserve evidence on a filename collision; recover an interrupted identical move.
+    if target.exists() and (target.is_symlink() or target.read_bytes()!=event.read_bytes()):
+        raise OSError('dead-letter identity conflict')
+    reason=deadletter/(event.stem+'.reason')
+    if not reason.exists():
+        persist(reason,{'status':status,'serverError':labels[status],
+                        'at':datetime.now(timezone.utc).isoformat()})
+    os.chmod(event,0o600)
+    descriptor=os.open(event,os.O_RDONLY | os.O_NOFOLLOW)
+    try:os.fsync(descriptor)
+    finally:os.close(descriptor)
+    if not target.exists():os.link(event,target)
+    # Destination must be durable before removing the original spool link.
+    for directory in (deadletter,spool):
+        descriptor=os.open(directory,os.O_RDONLY)
+        try:os.fsync(descriptor)
+        finally:os.close(descriptor)
+    event.unlink()
+    descriptor=os.open(spool,os.O_RDONLY)
+    try:os.fsync(descriptor)
+    finally:os.close(descriptor)
+    print('Ariadne sender dead-letter: HTTP '+str(status)+' '+labels[status],file=sys.stderr)
+
+_FAILED_RETRY={}
+
+def save_retry(path,retry):
+    # Retain cooldown in this worker if durable storage temporarily fails.
+    _FAILED_RETRY[str(path)]=dict(retry)
+    persist(path,retry)
+    _FAILED_RETRY.pop(str(path),None)
+
+def valid_retry(retry):
+    if not isinstance(retry,dict) or set(retry)-{'at','attempt','permanent','consecutive','paused','probeEvent'}:return False
+    # Range comparison avoids float conversion overflow for corrupt JSON integers.
+    if type(retry.get('at')) not in (int,float) or not 0<=retry['at']<=253402300799:return False
+    if type(retry.get('attempt')) is not int or not 0<=retry['attempt']<=10:return False
+    if type(retry.get('paused',False)) is not bool:return False
+    count=retry.get('consecutive',0)
+    if type(count) is not int or not 0<=count<=100:return False
+    fingerprint=retry.get('permanent')
+    if fingerprint is not None:
+        labels={400:'invalid-request',401:'authentication',403:'authentication',404:'route',409:'conflict',413:'body-size',422:'unprocessable'}
+        if not isinstance(fingerprint,dict) or set(fingerprint)!={'status','class'} or type(fingerprint['status']) is not int:return False
+        if fingerprint['status'] not in labels or fingerprint['class']!=labels[fingerprint['status']] or count<1:return False
+    elif count or retry.get('paused'):return False
+    probe=retry.get('probeEvent')
+    if probe is not None and (not isinstance(probe,str) or pathlib.Path(probe).name!=probe or not probe.endswith('.json')):return False
+    if retry.get('paused') and not probe:return False
+    return True
+
 def flush(c):
+    try:_flush(c)
+    except (OSError,ValueError,TypeError,KeyError):
+        print('Ariadne sender: retry storage unavailable; delivery paused, evidence retained',file=sys.stderr)
+
+def _flush(c):
     spool=pathlib.Path(c['spool']); spool.mkdir(parents=True,exist_ok=True,mode=0o700)
     with open(spool/'.delivery-lock','a') as lock:
         try: fcntl.flock(lock,fcntl.LOCK_EX|fcntl.LOCK_NB)
         except BlockingIOError: return
-        state=spool/'.retry'; retry=json.loads(state.read_text()) if state.exists() else {'at':0,'attempt':0}
+        state=spool/'.retry'
+        try:retry=_FAILED_RETRY.get(str(state)) or (json.loads(state.read_text()) if state.exists() else {'at':0,'attempt':0})
+        except (ValueError,OSError):retry=None
+        try:
+            threshold=int(c.get('permanentFailureThreshold',3))
+            backoff=int(c.get('circuitBreakerBackoffSeconds',300))
+            if not 1<=threshold<=100 or not 1<=backoff<=86400:raise ValueError()
+        except (ValueError,TypeError,OverflowError):
+            print('Ariadne sender circuit breaker: invalid settings; delivery paused, backlog retained',file=sys.stderr)
+            return
+        reset=spool/'.circuit-reset'
+        if reset.exists():
+            metadata=reset.lstat()
+            if not stat.S_ISREG(metadata.st_mode) or metadata.st_uid!=os.geteuid() or metadata.st_mode & 0o077:
+                print('Ariadne sender circuit breaker: unsafe reset file ignored; require protected regular file',file=sys.stderr)
+            else:
+                retry={'at':0,'attempt':0}
+                save_retry(state,retry) # persist reset before consuming it
+                reset.unlink()
+                descriptor=os.open(spool,os.O_RDONLY)
+                try:os.fsync(descriptor)
+                finally:os.close(descriptor)
+                print('Ariadne sender circuit breaker: operator reset consumed',file=sys.stderr)
+        if not valid_retry(retry):
+            print('Ariadne sender: invalid retry state; protected operator reset required, backlog retained',file=sys.stderr)
+            return
         if time.time()<retry['at']: return
+        save_retry(state,retry) # storage preflight before any outbound call
         # Filesystem timestamps can tie: preserve each run's producer order.
         def order(path):
             try:
@@ -62,6 +158,12 @@ def flush(c):
             except (OSError,ValueError,KeyError,TypeError):
                 return '~invalid',0
         files=sorted(spool.glob('*.json'),key=order)
+        if retry.get('paused'):
+            probe=retry.get('probeEvent')
+            if not isinstance(probe,str) or pathlib.Path(probe).name!=probe or not probe.endswith('.json') or not (spool/probe).is_file():
+                print('Ariadne sender circuit breaker: probe event unavailable; operator reset required',file=sys.stderr)
+                return
+            files=[spool/probe]
         for p in files[:100]:
             try:
                 receipt=deliver(c,p.read_bytes())
@@ -73,9 +175,43 @@ def flush(c):
                         known[reply['requestId']+':'+reply['requestRevision']]=reply
                     persist(replies,dict(list(known.items())[-100:]))
                 p.unlink();retry={'at':0,'attempt':0}
+            except urllib.error.HTTPError as error:
+                try:
+                    if error.code in {400,401,403,404,409,413,422}:
+                        # Fixed local classes only: never store response bodies, URLs or error text.
+                        labels={400:'invalid-request',401:'authentication',403:'authentication',404:'route',409:'conflict',413:'body-size',422:'unprocessable'}
+                        fingerprint={'status':error.code,'class':labels[error.code]}
+                        same=retry.get('permanent')==fingerprint
+                        count=min(100,retry.get('consecutive',0)+1) if same else 1
+                        still_paused=retry.get('paused',False) and same
+                        retry.update(permanent=fingerprint,consecutive=count,paused=still_paused)
+                        limit=1 if error.code in {401,403} else threshold
+                        if still_paused or count>=limit:
+                            retry.update(paused=True,at=time.time()+backoff,attempt=0,probeEvent=p.name)
+                            save_retry(state,retry)
+                            print('Ariadne sender circuit breaker: paused HTTP '+str(error.code)+' '+labels[error.code]+'; backlog retained; probe after backoff or protected .circuit-reset required',file=sys.stderr)
+                            break
+                        # A different probe outcome releases the old circuit. Persist streak before quarantine.
+                        retry.update(at=0,paused=False)
+                        save_retry(state,retry)
+                        try:
+                            quarantine(spool,p,error.code)
+                        except OSError:
+                            print('Ariadne sender dead-letter storage unavailable; preserving evidence with backoff',file=sys.stderr)
+                        else:
+                            retry.update(at=0,attempt=0)
+                            save_retry(state,retry)
+                            continue
+                    else:
+                        # Transient status differs from the tripping outcome; resume after normal backoff.
+                        retry.pop('permanent',None);retry.pop('consecutive',None);retry['paused']=False
+                    retry['attempt']=min(retry['attempt']+1,10); retry['at']=time.time()+min(300,2**retry['attempt']); break
+                finally:
+                    error.close()
             except Exception:
-                retry['attempt']=min(retry['attempt']+1,10); retry['at']=time.time()+min(300,2**retry['attempt']); break
-        persist(state,retry)
+                # Network/storage failure is not an HTTP probe outcome; keep any paused circuit.
+                retry['attempt']=min(retry['attempt']+1,10); retry['at']=time.time()+(backoff if retry.get('paused') else min(300,2**retry['attempt'])); break
+        save_retry(state,retry)
 
 HOOKS={'SessionStart':'session.start','UserPromptSubmit':'task.start','PreToolUse':'task.progress','PostToolUse':'task.progress','PostToolUseFailure':'task.progress','Stop':'task.progress','SessionEnd':'session.end','Interrupt':'task.interrupted','SubagentStart':'subagent.start','SubagentStop':'subagent.end'}
 def hook(c,data):
