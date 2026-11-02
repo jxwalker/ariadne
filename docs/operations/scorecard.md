@@ -56,9 +56,13 @@ final PR head SHA and explicit required contexts. First-pass CI evaluates the
 first completed attempt of each required context independently across suites;
 all must succeed. Missing contexts or ambiguous multi-context rerun evidence
 remain unknown and are excluded from the first-pass denominator. Eventual CI
-uses each context's latest completion at or before merge; pending reruns at
-merge prevent a pass (also when their start time is unavailable). Reruns known
-to start after merge do not affect that outcome. Unknown required-check policy
+uses each context's latest state as of merge. Legacy commit statuses use only
+the latest status event at or before merge, so pending followed by success
+resolves to success. Check-run attempts are ordered by start/creation time; a
+latest attempt still incomplete at merge, including one completed afterward,
+makes CI unknown and excludes it from the merge-CI denominator. Missing timing
+evidence for an outstanding run also remains unknown. Reruns known to start
+after merge do not affect that outcome. Unknown required-check policy
 produces unknown CI, never an assumed pass. REST collection reads legacy
 branch-protection required status checks when available; ruleset-only requirements
 remain unsupported/unknown. required_checks can also be supplied in reviewed

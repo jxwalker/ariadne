@@ -99,7 +99,8 @@ def commit_checks(client, repo, sha):
         checks.append(dict(id='status:' + str(status['id']), name=status['context'],
                            head_sha=sha, status='completed' if status['state'] != 'pending' else 'in_progress',
                            conclusion='success' if status['state'] == 'success' else 'failure',
-                           completed_at=status['created_at'], evidence_type='commit_status', raw_status=status))
+                           created_at=status['created_at'], completed_at=status['created_at'],
+                           evidence_type='commit_status', raw_status=status))
     return checks
 
 

@@ -58,9 +58,10 @@ class ReviewFixes(unittest.TestCase):
                     pending = dict(pr['checks'][-1], id=999, status=status,
                         conclusion=None, completed_at=None, started_at=started)
                     candidate = dict(pr, checks=pr['checks'] + [pending])
-                    self.assertIs(ci(candidate)[1], False)
+                    self.assertIsNone(ci(candidate)[1])
                     ingest(self.db, [dict(self.bundle, prs=[candidate])])
                     self.assertEqual(sum(r['merge_ci_pass'] for r in project(self.db)), 0)
+                    self.assertEqual(sum(r['merge_ci_known'] for r in project(self.db)), 0)
         pending['started_at'] = '2026-10-02T00:00:00Z'
         self.assertEqual(ci(dict(pr, checks=pr['checks'] + [pending]))[1], baseline[1])
 
@@ -109,8 +110,80 @@ class ReviewFixes(unittest.TestCase):
         pr = self.bundle['prs'][0]
         pr['checks'] = commit_checks(Fake(),self.bundle['repo'],pr['head']['sha'])
         self.assertEqual(ci(pr), (False, True))
-        pr['checks'].append(dict(pr['checks'][0],id='status:3',status='in_progress',completed_at='2026-10-01T07:00:00Z'))
-        self.assertEqual(ci(pr), (False, False))
+        pr['checks'].append(dict(pr['checks'][0],id='status:3',status='in_progress',
+            created_at='2026-10-01T07:00:00Z',completed_at='2026-10-01T07:00:00Z'))
+        self.assertEqual(ci(pr), (False, None))
+
+    def test_legacy_pending_resolved_by_latest_status_at_merge(self):
+        pr = self.bundle['prs'][0]
+        class Fake:
+            def get(self, path):
+                if '/check-runs?' in path:
+                    return []
+                return [dict(id=i, context='test', state=state, created_at=at)
+                        for i, state, at in [
+                            (1, 'pending', '2026-10-01T05:00:00Z'),
+                            (2, 'success', '2026-10-01T06:00:00Z'),
+                            (3, 'pending', '2026-10-02T00:00:00Z')]]
+        checks = commit_checks(Fake(), self.bundle['repo'], pr['head']['sha'])
+        for legacy_payload in (False, True):
+            with self.subTest(legacy_payload=legacy_payload):
+                candidate = copy.deepcopy(checks)
+                if legacy_payload:
+                    for check in candidate:
+                        check.pop('created_at')
+                # API order must not change which event is selected.
+                for ordered in (candidate, list(reversed(candidate))):
+                    self.assertEqual(ci(dict(pr, checks=ordered)), (True, True))
+
+    def test_check_run_state_reconstructed_at_merge(self):
+        pr = self.bundle['prs'][0]
+        pr['required_checks'] = ['test']
+        pr['merged_at'] = '2026-10-01T08:00:00Z'
+        success = dict(id=1, name='test', head_sha=pr['head']['sha'],
+            status='completed', conclusion='success',
+            started_at='2026-10-01T05:00:00Z', completed_at='2026-10-01T06:00:00Z')
+        for prior_success in (False, True):
+            for completed in (None, '2026-10-01T09:00:00Z'):
+                for start_key in ('started_at', 'created_at'):
+                    with self.subTest(prior_success=prior_success, completed=completed,
+                                      start_key=start_key):
+                        rerun = dict(success, id=2, status='completed' if completed else 'in_progress',
+                                     completed_at=completed)
+                        rerun.pop('started_at')
+                        rerun[start_key] = pr['merged_at']
+                        checks = ([success] if prior_success else []) + [rerun]
+                        self.assertIsNone(ci(dict(pr, checks=checks))[1])
+                        if completed:
+                            undated = dict(rerun)
+                            undated.pop(start_key)
+                            self.assertIsNone(ci(dict(pr, checks=[success, undated]))[1])
+                        # Once it completes at merge, its success is known.
+                        rerun.update(status='completed', completed_at=pr['merged_at'])
+                        self.assertIs(ci(dict(pr, checks=checks))[1], True)
+                        # A run known to start after merge cannot replace success.
+                        rerun[start_key] = '2026-10-01T09:00:00Z'
+                        rerun['completed_at'] = '2026-10-01T10:00:00Z'
+                        self.assertIs(ci(dict(pr, checks=[success, rerun]))[1], True)
+
+    def test_latest_attempt_per_context_across_split_suites(self):
+        pr = self.bundle['prs'][0]
+        pr['required_checks'] = ['a', 'b']
+        pr['merged_at'] = '2026-10-01T08:00:00Z'
+        pr['checks'] = [dict(id=i, name=name, check_suite={'id': i}, run_attempt=1,
+            head_sha=pr['head']['sha'], status='completed', conclusion='success',
+            started_at='2026-10-01T04:00:00Z', completed_at='2026-10-01T05:00:00Z')
+            for i, name in enumerate(['a', 'b'], 1)]
+        self.assertEqual(ci(pr), (True, True))
+        rerun = dict(pr['checks'][0], id=3, run_attempt=2,
+            started_at='2026-10-01T07:00:00Z', completed_at='2026-10-01T09:00:00Z')
+        pr['checks'].append(rerun)
+        self.assertEqual(ci(pr), (True, None))
+        ingest(self.db, [dict(self.bundle, prs=[pr])])
+        row = next(r for r in project(self.db) if r.get('merged'))
+        self.assertEqual((row['merge_ci_known'], row['merge_ci_pass']), (0, 0))
+        rerun['completed_at'] = pr['merged_at']
+        self.assertEqual(ci(pr), (True, True))
 
     def test_redirect_host_rejected_before_forwarding_token(self):
         handler = SameOriginRedirect()

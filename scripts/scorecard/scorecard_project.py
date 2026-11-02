@@ -38,17 +38,36 @@ def ci(pr):
     first = None if None in first_results else all(first_results)
     eventual = None
     if pr.get('merged_at'):
-        eventual = True
+        merge_results = []
         for name in required:
-            runs = sorted((c for c in checks if c['name'] == name and c.get('completed_at') and c['completed_at'] <= pr['merged_at']),
-                          key=lambda c: (c['completed_at'], str(c['id'])))
-            # A pending rerun has no completion timestamp. Include it unless
-            # its start/creation evidence places it strictly after the merge.
-            pending = any(
-                c['name'] == name and c.get('status') != 'completed'
-                and (c.get('started_at') or c.get('created_at') or '') <= pr['merged_at']
-                for c in checks)
-            eventual &= bool(not pending and runs and runs[-1].get('status') == 'completed' and runs[-1].get('conclusion') == 'success')
+            snapshot = []
+            undated_pending = False
+            for check in (c for c in checks if c['name'] == name):
+                if check.get('evidence_type') == 'commit_status':
+                    # Statuses are immutable events, including pending events.
+                    # Older ingests stored their event time in completed_at.
+                    at = check.get('created_at') or check.get('completed_at')
+                else:
+                    # Order attempts by their start, not by their completion:
+                    # a rerun can finish after merge yet be outstanding then.
+                    at = check.get('started_at') or check.get('created_at')
+                    if not at and (check.get('completed_at') or '') <= pr['merged_at']:
+                        at = check.get('completed_at')
+                if not at:
+                    undated_pending = True
+                elif at <= pr['merged_at']:
+                    snapshot.append((at, str(check['id']), check))
+            if undated_pending or not snapshot:
+                merge_results.append(None)
+                continue
+            latest = max(snapshot, key=lambda item: item[:2])[2]
+            completed = latest.get('completed_at')
+            if (latest.get('status') != 'completed' or not completed
+                    or completed > pr['merged_at']):
+                merge_results.append(None)
+            else:
+                merge_results.append(latest.get('conclusion') == 'success')
+        eventual = None if None in merge_results else all(merge_results)
     return first, eventual
 
 
