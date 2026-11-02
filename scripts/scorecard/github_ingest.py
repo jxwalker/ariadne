@@ -82,7 +82,13 @@ def _ingest(db, bundles):
                 if match:
                     put(db, 'gh_revert_link', key + ':' + commit['sha'], repo, dict(id=key + ':' + commit['sha'], repo=repo, pr=pr['number'], reverted_sha=match[1]))
             put(db, 'gh_pr', key, repo, pr)
-        commits = [(p['repo'], c['sha'], p['number']) for p in rows(db, 'gh_pr') for c in p.get('commits', [])]
+        commits = []
+        for p in rows(db, 'gh_pr'):
+            commits.extend((p['repo'], c['sha'], p['number']) for c in p.get('commits', []))
+            # Before merge GitHub may expose a temporary test-merge SHA.
+            # Only completed merges provide a merge/squash revert target.
+            if p.get('merged_at') and p.get('merge_commit_sha'):
+                commits.append((p['repo'], p['merge_commit_sha'], p['number']))
         for link in rows(db, 'gh_revert_link'):
             if link.get('reverted_sha'):
                 candidates = sorted({n for repo, sha, n in commits if repo == link['repo'] and sha.startswith(link['reverted_sha'])})

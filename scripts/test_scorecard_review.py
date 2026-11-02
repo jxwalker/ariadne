@@ -102,6 +102,50 @@ class ReviewFixes(unittest.TestCase):
         self.assertEqual([(r['bot'],r['day'],r['reverts']) for r in charged],
                          [('box-ariadne-bot','2026-10-01',1)])
 
+    def test_revert_resolves_merged_pr_merge_sha(self):
+        original, other, reverting = self.bundle['prs'][:3]
+        merge_sha = 'abcdef0123456789abcdef0123456789abcdef01'
+        original['merge_commit_sha'] = merge_sha
+        reverting.update(merged_at='2026-10-03T12:00:00Z', body='')
+        message = reverting['commits'][0]['commit']
+        for reference in (merge_sha, merge_sha[:7]):
+            with self.subTest(reference=reference):
+                message['message'] = 'This reverts commit ' + reference
+                ingest(self.db, [self.bundle])
+                link, = rows(self.db, 'gh_revert_link')
+                self.assertEqual(link['original_pr'], 1)
+                self.assertEqual(link['candidate_prs'], [1])
+                charged = [r for r in project(self.db) if r.get('reverts')]
+                self.assertEqual([(r['bot'], r['day'], r['reverts']) for r in charged],
+                                 [('box-ariadne-bot', '2026-10-01', 1)])
+
+        # A constituent and merge SHA for the same PR remain one candidate.
+        original['commits'][0]['sha'] = merge_sha
+        ingest(self.db, [self.bundle])
+        self.assertEqual(rows(self.db, 'gh_revert_link')[0]['candidate_prs'], [1])
+
+        # Collisions with either kind of SHA must remain unresolved.
+        for source in ('merge', 'constituent'):
+            with self.subTest(collision=source):
+                other['merge_commit_sha'] = merge_sha if source == 'merge' else None
+                other['commits'][0]['sha'] = merge_sha if source == 'constituent' else '2' * 40
+                ingest(self.db, [self.bundle])
+                link, = rows(self.db, 'gh_revert_link')
+                self.assertIsNone(link['original_pr'])
+                self.assertEqual(link['candidate_prs'], [1, 2])
+                self.assertEqual(sum(r.get('reverts', 0) for r in project(self.db)), 0)
+
+    def test_unmerged_pr_merge_sha_is_not_a_revert_candidate(self):
+        original, _, reverting = self.bundle['prs'][:3]
+        original.update(merged_at=None, merge_commit_sha='a' * 40)
+        reverting.update(merged_at='2026-10-03T12:00:00Z', body='')
+        reverting['commits'][0]['commit']['message'] = 'This reverts commit ' + 'a' * 40
+        ingest(self.db, [self.bundle])
+        link, = rows(self.db, 'gh_revert_link')
+        self.assertIsNone(link['original_pr'])
+        self.assertEqual(link['candidate_prs'], [])
+        self.assertEqual(sum(r.get('reverts', 0) for r in project(self.db)), 0)
+
     def test_legacy_status_history_and_pending_merge(self):
         class Fake:
             def get(self, path):
