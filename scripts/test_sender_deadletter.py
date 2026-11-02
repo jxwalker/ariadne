@@ -208,3 +208,7 @@ class SenderDeadletter(unittest.TestCase):
                 (spool/'.circuit-reset').touch(mode=0o600)
                 with patch('activity_sender.deliver',return_value={'eventId':'synthetic-ok'}),redirect_stderr(io.StringIO()):flush(c)
                 self.assertEqual(list(spool.glob('*.json')),[])
+
+
+if __name__ == "__main__":
+    unittest.main()
